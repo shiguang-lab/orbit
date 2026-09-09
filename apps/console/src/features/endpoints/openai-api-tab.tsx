@@ -22,6 +22,7 @@ import {
   type EndpointCardDef,
 } from "./constants";
 import { QuickTestModal } from "./quick-test-modal";
+import { buildEndpointUrl } from "./endpoint-url";
 import { useQuery } from "@tanstack/react-query";
 import { providersApi } from "@/entities/api";
 import { useI18n } from "@/i18n";
@@ -149,7 +150,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             {/* Grid of Endpoint Cards */}
             <Row gutter={[12, 12]}>
               {categoryEndpoints.map((ep) => {
-                const fullUrl = `${baseUrl.replace(/\/$/, "")}${ep.path}`;
+                const fullUrl = buildEndpointUrl(baseUrl, ep.path);
                 const titleText = isZh ? ep.titleZh : ep.titleEn;
                 const descText = isZh ? ep.descriptionZh : ep.descriptionEn;
 
@@ -252,7 +253,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             </Text>
             <div style={{ marginTop: 6 }}>
               <Text code strong style={{ fontSize: 12 }}>
-                {baseUrl.replace(/\/$/, "")}/api/v1/vscode/<code>{"{API_KEY}"}</code>/chat/completions
+                {buildEndpointUrl(baseUrl, "/api/v1/vscode/{API_KEY}/chat/completions")}
               </Text>
             </div>
           </div>
@@ -261,7 +262,7 @@ export function OpenAiApiTab({ baseUrl }: OpenAiApiTabProps) {
             icon={<MaterialIcon name="content_copy" size={14} />}
             onClick={() =>
               copyToClipboard(
-                `${baseUrl.replace(/\/$/, "")}/api/v1/vscode/{token}/chat/completions`,
+                buildEndpointUrl(baseUrl, "/api/v1/vscode/{token}/chat/completions"),
                 tt("已复制 VS Code 兼容基址", "Copied VS Code URL template")
               )
             }

@@ -16,6 +16,7 @@ import { keysApi } from "@/entities/api";
 import { useQuery } from "@tanstack/react-query";
 import type { EndpointCardDef } from "./constants";
 import { useI18n } from "@/i18n";
+import { buildEndpointUrl } from "./endpoint-url";
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -84,7 +85,7 @@ export function QuickTestModal({ endpoint, baseUrl, onClose }: QuickTestModalPro
 
   if (!endpoint) return null;
 
-  const fullEndpointUrl = `${baseUrl.replace(/\/$/, "")}${endpoint.path}`;
+  const fullEndpointUrl = buildEndpointUrl(baseUrl, endpoint.path);
   const method = endpoint.path === "/v1/models" ? "GET" : "POST";
   const titleText = isZh ? endpoint.titleZh : endpoint.titleEn;
   const descText = isZh ? endpoint.descriptionZh : endpoint.descriptionEn;

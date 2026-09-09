@@ -87,4 +87,5 @@ export function getApiKeyMetadata(
 export function isModelAllowedForKey(
   key: string | null | undefined,
   modelId: string | null | undefined,
+  effort?: string,
 ): Promise<boolean>;

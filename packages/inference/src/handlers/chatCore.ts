@@ -2918,6 +2918,30 @@ export async function handleChatCore({
       );
     }
   }
+  // Recheck the actual routed model and translated effort, including combo legs
+  // and background-model redirects. Catalog presentation never grants access.
+  if (apiKeyInfo?.id && !apiKeyInfo.allowedQuotas?.length &&
+      (apiKeyInfo.modelAccessMode === "restricted" || apiKeyInfo.allowedModels?.length ||
+       apiKeyInfo.blockedModels?.length || apiKeyInfo.disableNonPublicModels)) {
+    const { getApiKeyById, isModelAllowedForKey } = await import("@orbit/core/db/api-keys");
+    let allowed = false;
+    try {
+      const key = await getApiKeyById(apiKeyInfo.id);
+      const effort = translatedBody.reasoning_effort || translatedBody.reasoning?.effort ||
+        translatedBody.output_config?.effort ||
+        (translatedBody.thinking?.type === "disabled" ? "none" : undefined);
+      allowed = Boolean(key?.key) && await isModelAllowedForKey(
+        key!.key, `${provider}/${finalModelToUpstream}`, effort
+      );
+    } catch {
+      // Policy backend failure must not permit the upstream request.
+    }
+    if (!allowed) {
+      trackPendingRequest(model, provider, connectionId, false);
+      return createErrorResult(403, "Resolved model or reasoning effort is not allowed for this API key", null, "model_not_allowed");
+    }
+  }
+
   // G2: Propagate soft penalty to the current candidate so combo scoring can deprioritize.
   if (quotaSoftDeprioritize && isCombo && comboStepId) {
     try {

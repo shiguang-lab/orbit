@@ -430,6 +430,7 @@ export async function resolvePlaygroundTestKey(request: Request): Promise<string
 }
 
 type PolicyContext = {
+  effort?: string;
   request: Request;
   apiKey: string;
   apiKeyInfo: ApiKeyMetadata;
@@ -547,7 +548,7 @@ async function validateModelAccess(context: PolicyContext): Promise<Response | n
     }
   }
   if (requestedComboName || !hasModelRestrictions) return null;
-  if (await isModelAllowedForKey(apiKey, modelStr)) return null;
+  if (await isModelAllowedForKey(apiKey, modelStr, context.effort)) return null;
   return policyErrorResponse(
     request,
     HTTP_STATUS.FORBIDDEN,
@@ -673,7 +674,8 @@ function extractUngatedClientApiKey(request: Request): string | null {
 
 export async function enforceApiKeyPolicy(
   request: Request,
-  modelStr: string | null
+  modelStr: string | null,
+  effort?: string
 ): Promise<ApiKeyPolicyResult> {
   // A real bearer key wins; then a bare x-api-key/x-goog-api-key that auth
   // accepted but extractApiKey() gates out; otherwise an authenticated dashboard
@@ -708,7 +710,7 @@ export async function enforceApiKeyPolicy(
     return { apiKey, apiKeyInfo: null, rejection: null };
   }
 
-  const context = { request, apiKey, apiKeyInfo, modelStr };
+  const context = { request, apiKey, apiKeyInfo, modelStr, effort };
   const statusRejection = validateKeyStatus(context);
   if (statusRejection) return { apiKey, apiKeyInfo, rejection: statusRejection };
   const scheduleRejection = await validateKeyScheduleAndUsage(context);

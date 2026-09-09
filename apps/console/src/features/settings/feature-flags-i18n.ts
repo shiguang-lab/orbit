@@ -184,6 +184,10 @@ export const FEATURE_FLAG_TRANSLATIONS_ZH: Record<string, LocalizedFlagText> = {
     label: "模型名录输出易读名称",
     description: "在 /v1/models 接口响应中附带易于阅读的模型友好显示名称。",
   },
+  HIDE_EFFORT_VARIANTS: {
+    label: "对外聚合推理档位变体",
+    description: "对外模型列表将 Orbit 派生的推理档位聚合到基础模型，保留上游真实模型。内部目录、权限校验和用量记录仍保留具体档位。",
+  },
   MODELS_CATALOG_PREFIX_MODE: {
     label: "模型名录 ID 前缀输出模式",
     description: "控制 /v1/models 返回的模型 ID 前缀格式：dual（同时输出别名与规范 ID）、alias（仅短别名）、canonical（仅完整前缀）。",

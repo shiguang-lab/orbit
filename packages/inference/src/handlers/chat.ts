@@ -604,7 +604,9 @@ async function handleChatImplementation(
 
   // Pipeline: API key policy enforcement (model restrictions + budget limits)
   telemetry.startPhase("policy");
-  const policy = await enforceApiKeyPolicy(request, modelStr);
+  const policy = await enforceApiKeyPolicy(request, modelStr,
+    body.reasoning_effort || body.reasoning?.effort || body.output_config?.effort ||
+    (body.thinking?.type === "disabled" ? "none" : undefined));
   if (policy.rejection) {
     log.warn(
       "POLICY",
@@ -940,11 +942,13 @@ async function handleChatImplementation(
       // disableNonPublicModels=true can reach free/prohibited models through auto/*.
       const hasModelRestrictions =
         apiKeyInfo &&
-        (Boolean(apiKeyInfo.allowedModels?.length) ||
+        (apiKeyInfo.modelAccessMode === "restricted" || Boolean(apiKeyInfo.allowedModels?.length) ||
           Boolean(apiKeyInfo.blockedModels?.length) ||
           apiKeyInfo.disableNonPublicModels === true);
       if (hasModelRestrictions && apiKey) {
-        const modelAllowed = await isModelAllowedForKey(apiKey, modelString);
+        const modelAllowed = await isModelAllowedForKey(apiKey, modelString,
+          body.reasoning_effort || body.reasoning?.effort || body.output_config?.effort ||
+          (body.thinking?.type === "disabled" ? "none" : undefined));
         if (!modelAllowed) return false;
       }
 

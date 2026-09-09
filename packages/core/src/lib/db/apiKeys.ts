@@ -3,6 +3,7 @@
  */
 
 import { createHash } from "crypto";
+import { resolveEffortTarget } from "./apiKeys/effortTarget";
 import { v4 as uuidv4 } from "uuid";
 import { getDbInstance, rowToCamel } from "./core";
 import { backupDbFile } from "./backup";
@@ -335,6 +336,7 @@ async function getModelPermissionCandidates(modelId: string): Promise<string[]> 
     const firstSlash = cleanModelId.indexOf("/");
     const providerOrAlias = cleanModelId.slice(0, firstSlash);
     const providerScopedModel = cleanModelId.slice(firstSlash + 1);
+    addModelCandidate(candidates, providerScopedModel);
     if (CLAUDE_CODE_PROVIDER_PREFIXES.has(providerOrAlias) && providerScopedModel) {
       addModelCandidate(candidates, providerScopedModel);
       addModelCandidate(candidates, `cc/${providerScopedModel}`);
@@ -1486,6 +1488,7 @@ export async function getApiKeyMetadata(
 export async function isModelAllowedForKey(
   key: string | null | undefined,
   modelId: string | null | undefined,
+  effort?: string,
 ) {
   // If no key provided, allow (request may be using different auth method like JWT)
   // If no modelId provided, deny (invalid request)
@@ -1493,7 +1496,7 @@ export async function isModelAllowedForKey(
   if (!modelId) return false;
 
   // Create cache key
-  const cacheKey = `${key}:${modelId}`;
+  const cacheKey = `${key}:${modelId}:${effort || ""}`;
   const now = Date.now();
   const catalogGeneration = getModelCatalogCacheVersion();
   const usesSettingDependentClaudeRouting = isPotentialUnprefixedClaudeCodeModel(modelId);
@@ -1509,18 +1512,37 @@ export async function isModelAllowedForKey(
   if (!metadata) return false;
 
   const { modelAccessMode, allowedModels, blockedModels, disableNonPublicModels } = metadata;
-  const modelPermissionCandidates = await getModelPermissionCandidates(modelId);
+  const resolved = await resolveEffortTarget(modelId, effort);
+  const baseCandidates = await getModelPermissionCandidates(resolved.base);
+  const modelPermissionCandidates = [...new Set([
+    ...await getModelPermissionCandidates(resolved.target), ...baseCandidates,
+    ...(resolved.effort === "none" ? baseCandidates.map((id) => `no-think/${id}`) : []),
+  ])];
+  if (effort) {
+    const encoded = await resolveEffortTarget(modelId);
+    if (encoded.effort && encoded.effort !== effort) {
+      // Providers differ on whether a suffix or body field wins. Both must be
+      // authorized when a client supplies conflicting selectors.
+      if (!(await isModelAllowedForKey(key, modelId))) return false;
+    }
+  }
+  // An unspecified upstream default must not bypass a blocked individual tier.
+  // Explicit effort requests are checked against the actual selected tier instead.
+  const denyCandidates = resolved.effort ? modelPermissionCandidates : [
+    ...modelPermissionCandidates,
+    ...baseCandidates.flatMap((id) => ["none", "minimal", "low", "medium", "high", "xhigh", "max", "ultra"].map((tier) => `${id}-${tier}`)),
+  ];
 
   // Deny-list patterns win over any allow-list entry. This lets operators keep
   // broad dynamic scopes like cc/* while excluding expensive families.
-  if (blockedModels?.some((pattern) => modelPatternMatches(pattern, modelPermissionCandidates))) {
+  if (blockedModels?.some((pattern) => modelPatternMatches(pattern, denyCandidates))) {
     return false;
   }
 
   // Check disableNonPublicModels flag
   if (disableNonPublicModels) {
-    const resolvedModelId = resolveModelAlias(modelId);
-    const effectiveModelId = resolvedModelId || modelId;
+    const resolvedModelId = resolveModelAlias(resolved.base);
+    const effectiveModelId = resolvedModelId || resolved.base;
 
     if (!hasClaudeCodeWildcardPermission(allowedModels, modelPermissionCandidates)) {
       const lookupTarget = await getPublishedModelLookupTarget(effectiveModelId);
@@ -1564,7 +1586,9 @@ export async function isModelAllowedForKey(
   if (metadata.id) {
     const targetOk = checkKeyModelAccess(metadata.id, modelTarget, provider).allowed;
     const fullOk = checkKeyModelAccess(metadata.id, modelId || "", provider).allowed;
-    if (!targetOk || !fullOk) allowed = false;
+    const effortOk = checkKeyModelAccess(metadata.id, resolved.target, provider).allowed &&
+      checkKeyModelAccess(metadata.id, resolved.target.split("/").slice(-1)[0], provider).allowed;
+    if (!targetOk || !fullOk || !effortOk) allowed = false;
   }
   // Cache the result
   if (!usesSettingDependentClaudeRouting) {

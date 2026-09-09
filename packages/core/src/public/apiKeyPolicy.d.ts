@@ -45,7 +45,7 @@ export interface ApiKeyPolicyResult {
   apiKeyInfo: ApiKeyMetadata | null;
   rejection: Response | null;
 }
-export function enforceApiKeyPolicy(request: Request, modelStr: string | null): Promise<ApiKeyPolicyResult>;
+export function enforceApiKeyPolicy(request: Request, modelStr: string | null, effort?: string): Promise<ApiKeyPolicyResult>;
 export function validateApiKeyRoutingTarget(
   request: Request,
   apiKey: string | null,

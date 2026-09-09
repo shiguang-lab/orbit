@@ -31,36 +31,36 @@ export const codexProvider: RegistryEntry = {
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-sol-ultra",
+      id: "gpt-5.6-sol-ultra", effortVariant: { baseModel: "gpt-5.6-sol", effort: "ultra" },
       name: "GPT 5.6 Sol (Ultra)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-sol-max",
+      id: "gpt-5.6-sol-max", effortVariant: { baseModel: "gpt-5.6-sol", effort: "max" },
       name: "GPT 5.6 Sol (Max)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-sol-xhigh",
+      id: "gpt-5.6-sol-xhigh", effortVariant: { baseModel: "gpt-5.6-sol", effort: "xhigh" },
       name: "GPT 5.6 Sol (xHigh)",
       ...GPT_5_6_CODEX_CAPABILITIES,
       // #6354: reasoning-heavy tier — more header-wait room than the global default.
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.6-sol-high",
+      id: "gpt-5.6-sol-high", effortVariant: { baseModel: "gpt-5.6-sol", effort: "high" },
       name: "GPT 5.6 Sol (High)",
       ...GPT_5_6_CODEX_CAPABILITIES,
       // #6354: reasoning-heavy tier — more header-wait room than the global default.
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.6-sol-medium",
+      id: "gpt-5.6-sol-medium", effortVariant: { baseModel: "gpt-5.6-sol", effort: "medium" },
       name: "GPT 5.6 Sol (Medium)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-sol-low",
+      id: "gpt-5.6-sol-low", effortVariant: { baseModel: "gpt-5.6-sol", effort: "low" },
       name: "GPT 5.6 Sol (Low)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
@@ -70,36 +70,36 @@ export const codexProvider: RegistryEntry = {
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-terra-ultra",
+      id: "gpt-5.6-terra-ultra", effortVariant: { baseModel: "gpt-5.6-terra", effort: "ultra" },
       name: "GPT 5.6 Terra (Ultra)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-terra-max",
+      id: "gpt-5.6-terra-max", effortVariant: { baseModel: "gpt-5.6-terra", effort: "max" },
       name: "GPT 5.6 Terra (Max)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-terra-xhigh",
+      id: "gpt-5.6-terra-xhigh", effortVariant: { baseModel: "gpt-5.6-terra", effort: "xhigh" },
       name: "GPT 5.6 Terra (xHigh)",
       ...GPT_5_6_CODEX_CAPABILITIES,
       // #6354: reasoning-heavy tier — more header-wait room than the global default.
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.6-terra-high",
+      id: "gpt-5.6-terra-high", effortVariant: { baseModel: "gpt-5.6-terra", effort: "high" },
       name: "GPT 5.6 Terra (High)",
       ...GPT_5_6_CODEX_CAPABILITIES,
       // #6354: reasoning-heavy tier — more header-wait room than the global default.
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.6-terra-medium",
+      id: "gpt-5.6-terra-medium", effortVariant: { baseModel: "gpt-5.6-terra", effort: "medium" },
       name: "GPT 5.6 Terra (Medium)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-terra-low",
+      id: "gpt-5.6-terra-low", effortVariant: { baseModel: "gpt-5.6-terra", effort: "low" },
       name: "GPT 5.6 Terra (Low)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
@@ -109,31 +109,31 @@ export const codexProvider: RegistryEntry = {
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-luna-max",
+      id: "gpt-5.6-luna-max", effortVariant: { baseModel: "gpt-5.6-luna", effort: "max" },
       name: "GPT 5.6 Luna (Max)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-luna-xhigh",
+      id: "gpt-5.6-luna-xhigh", effortVariant: { baseModel: "gpt-5.6-luna", effort: "xhigh" },
       name: "GPT 5.6 Luna (xHigh)",
       ...GPT_5_6_CODEX_CAPABILITIES,
       // #6354: reasoning-heavy tier — more header-wait room than the global default.
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.6-luna-high",
+      id: "gpt-5.6-luna-high", effortVariant: { baseModel: "gpt-5.6-luna", effort: "high" },
       name: "GPT 5.6 Luna (High)",
       ...GPT_5_6_CODEX_CAPABILITIES,
       // #6354: reasoning-heavy tier — more header-wait room than the global default.
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.6-luna-medium",
+      id: "gpt-5.6-luna-medium", effortVariant: { baseModel: "gpt-5.6-luna", effort: "medium" },
       name: "GPT 5.6 Luna (Medium)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
     {
-      id: "gpt-5.6-luna-low",
+      id: "gpt-5.6-luna-low", effortVariant: { baseModel: "gpt-5.6-luna", effort: "low" },
       name: "GPT 5.6 Luna (Low)",
       ...GPT_5_6_CODEX_CAPABILITIES,
     },
@@ -155,7 +155,7 @@ export const codexProvider: RegistryEntry = {
       maxOutputTokens: 128000,
     },
     {
-      id: "gpt-5.5-xhigh",
+      id: "gpt-5.5-xhigh", effortVariant: { baseModel: "gpt-5.5", effort: "xhigh" },
       name: "GPT 5.5 (xHigh)",
       ...GPT_5_5_CODEX_CAPABILITIES,
       contextLength: 400000,
@@ -166,7 +166,7 @@ export const codexProvider: RegistryEntry = {
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.5-high",
+      id: "gpt-5.5-high", effortVariant: { baseModel: "gpt-5.5", effort: "high" },
       name: "GPT 5.5 (High)",
       ...GPT_5_5_CODEX_CAPABILITIES,
       contextLength: 400000,
@@ -177,7 +177,7 @@ export const codexProvider: RegistryEntry = {
       timeoutMs: 1200000,
     },
     {
-      id: "gpt-5.5-medium",
+      id: "gpt-5.5-medium", effortVariant: { baseModel: "gpt-5.5", effort: "medium" },
       name: "GPT 5.5 (Medium)",
       ...GPT_5_5_CODEX_CAPABILITIES,
       contextLength: 400000,
@@ -186,7 +186,7 @@ export const codexProvider: RegistryEntry = {
       maxOutputTokens: 128000,
     },
     {
-      id: "gpt-5.5-low",
+      id: "gpt-5.5-low", effortVariant: { baseModel: "gpt-5.5", effort: "low" },
       name: "GPT 5.5 (Low)",
       ...GPT_5_5_CODEX_CAPABILITIES,
       contextLength: 400000,

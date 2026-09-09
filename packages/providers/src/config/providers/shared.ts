@@ -47,6 +47,8 @@ import {
 // ── Types ─────────────────────────────────────────────────────────────────
 
 export interface RegistryModel {
+  /** Orbit-created alias; never inferred from upstream model-name suffixes. */
+  effortVariant?: { baseModel: string; effort: string };
   id: string;
   name: string;
   aliases?: readonly string[];

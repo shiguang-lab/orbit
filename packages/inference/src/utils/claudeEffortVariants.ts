@@ -19,8 +19,8 @@
  * catalog-only client saw the base model (e.g. `claude/claude-fable-5`) but never
  * its effort levels. This module closes that gap the same way `noThinkingAlias.ts`
  * exposes `no-think/…` variants: it synthesizes the effort ids from the
- * already-key-filtered catalog list, so a variant only appears when its real model
- * is permitted.
+ * visibility-filtered catalog list. API-key filtering runs after generation so
+ * individual effort permissions can be enforced.
  *
  * Levels come from the single source of truth (`supportsXHighEffort`): every
  * effort-capable Claude model advertises Low/Medium/High, and xHigh is added only
@@ -143,6 +143,7 @@ export function appendClaudeEffortVariants<T extends CatalogModelEntry>(
 ): T[] {
   if (!Array.isArray(models)) return models;
   const variants: T[] = [];
+  const existingIds = new Set(models.map((model) => model.id));
   for (const model of models) {
     if (!shouldExposeClaudeEffortVariants(model)) continue;
     const rawId = model.id;
@@ -152,10 +153,13 @@ export function appendClaudeEffortVariants<T extends CatalogModelEntry>(
     const bareName = bareModelName(qualifiedId);
     for (const level of claudeEffortLevelsFor(providerId, bareName)) {
       const variantId = `${qualifiedId}-${level}`;
+      if (existingIds.has(variantId)) continue;
+      existingIds.add(variantId);
       // root stays UNPREFIXED (base root, or the bare model name, plus the suffix):
       // the provider-scoped models route uses `root` verbatim as the unprefixed id.
       const baseRoot = typeof model.root === "string" && model.root ? model.root : bareName;
-      const variant: T = { ...model, id: variantId, root: `${baseRoot}-${level}` };
+      const variant: T = { ...model, id: variantId, root: `${baseRoot}-${level}`,
+        effort_variant: { source: "orbit", base_model: qualifiedId, base_root: baseRoot, base_name: model.name, effort: level } };
       if (typeof model.name === "string" && model.name) {
         variant.name = `${model.name} (${formatClaudeEffortLabel(level)})`;
       }

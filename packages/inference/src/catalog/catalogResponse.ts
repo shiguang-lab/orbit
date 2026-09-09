@@ -40,8 +40,8 @@ import { extractApiKey } from "../services/auth.ts";
 import { isCodexModelCatalogClient } from "./catalogRequest";
 
 /**
- * Post-filter chain applied AFTER the API-key filter, so variants and mirrors are
- * only derived from models the caller may actually see.
+ * Generate the full candidate catalog before effort-level API-key filtering.
+ * Filtering the base first would discard individually allowed variants.
  *
  * Shared by the full build and by the quota-exclusive short-circuit: the quota path
  * returns early, but it still owes the caller these steps — the discovery mirrors in
@@ -74,8 +74,8 @@ export async function applyCatalogPostFilters(
   await yieldTurn();
 
   // Advertise Claude reasoning-effort variants (claude/<model>-{low,medium,high[,xhigh]}).
-  // Derived from the already key-filtered list so a variant only appears when its real
-  // model is permitted. Runs before the no-thinking pass: the gateway already routes these
+  // Runs before the no-thinking pass; final authorization checks each generated tier.
+  // The gateway already routes these
   // suffixed ids (claudeEffortVariant.ts), this just makes them selectable in catalog-only
   // clients (OpenCode) that can't set a reasoning_effort config the way VS Code does.
   finalModels = appendClaudeEffortVariants(
@@ -83,8 +83,7 @@ export async function applyCatalogPostFilters(
     ctx.prefixMode === "canonical" ? ctx.aliasToProviderId : undefined
   );
 
-  // Advertise no-thinking gateway variants (Fase 8.1). Derived from the already
-  // key-filtered list, so a variant only appears when its real model is permitted.
+  // Advertise no-thinking gateway variants; final authorization checks the none tier.
   // #9418: skip when hideNoThinkVariants is on — the ids are still routable when
   // sent explicitly, just not advertised in the catalog.
   if (!ctx.hideNoThinkVariants) {
@@ -151,7 +150,7 @@ export async function applyCatalogPostFilters(
 
   // #7694: advertise `<provider>/<model>-<tier>` variants for synced models that
   // captured `reasoning.supported_efforts` at sync time (capabilities.effort_tiers).
-  // Derived from the already key-filtered list; skips codex/kimi (own suffix mechanism).
+  // Skips codex/kimi (own suffix mechanism); authorization follows generation.
   finalModels = appendSyncedEffortVariants(finalModels);
 
   await yieldTurn();
@@ -167,9 +166,7 @@ export async function applyCatalogPostFilters(
 
 /**
  * Functional-gateway mirrors remain gateway-prefixed through request-time policy
- * enforcement, so they must authorize that final public ID. Other synthetic IDs
- * are normalized back to their base model before policy enforcement and keep the
- * base model's permission by design.
+ * enforcement, so they must additionally authorize that final public ID.
  */
 export async function filterUnauthorizedFunctionalGatewayMirrors(
   models: Array<Record<string, unknown>>,
@@ -212,11 +209,14 @@ export async function finalizeCatalogResponse(
     );
     const keyMeta = await getApiKeyMetadata(apiKey);
     if (keyMeta && keyMeta.id !== "env-key" && !keyMeta.allowedQuotas?.length) {
-      finalModels = await filterUnauthorizedFunctionalGatewayMirrors(
-        finalModels,
-        apiKey,
-        isModelAllowedForKey
-      );
+      const permitted: Array<Record<string, unknown>> = [];
+      for (const model of finalModels) {
+        const variant = model.effort_variant as { base_model?: string; effort?: string } | undefined;
+        if (typeof model.id === "string" && await isModelAllowedForKey(
+          apiKey, variant?.base_model || model.id, variant?.effort
+        )) permitted.push(model);
+      }
+      finalModels = await filterUnauthorizedFunctionalGatewayMirrors(permitted, apiKey, isModelAllowedForKey);
     }
   }
 

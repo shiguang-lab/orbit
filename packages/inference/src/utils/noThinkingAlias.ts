@@ -169,7 +169,9 @@ export function appendNoThinkingVariants<T extends CatalogModelEntry>(
     const qualifiedId = aliasToCanonical ? normalizeProviderPrefix(rawId, aliasToCanonical) : rawId;
     const aliasId = toNoThinkingAlias(qualifiedId);
     const bareRoot = toNoThinkingAlias(bareModelName(qualifiedId));
-    const variant: T = { ...model, id: aliasId, root: bareRoot };
+    const variant: T = { ...model, id: aliasId, root: bareRoot,
+      effort_variant: { source: "orbit", base_model: qualifiedId,
+        base_root: typeof model.root === "string" ? model.root : bareModelName(qualifiedId), base_name: model.name, effort: "none" } };
     if (typeof model.name === "string" && model.name) {
       variant.name = `${model.name} (no thinking)`;
     }

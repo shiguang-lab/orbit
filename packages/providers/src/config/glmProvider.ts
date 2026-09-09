@@ -31,7 +31,7 @@ export const GLM_SHARED_MODELS = Object.freeze([
     supportedThinkingEfforts: ["low", "high", "max"],
   },
   {
-    id: "glm-5.3-high",
+    id: "glm-5.3-high", effortVariant: { baseModel: "glm-5.3", effort: "high" },
     name: "GLM 5.3 High",
     contextLength: 1000000,
     maxOutputTokens: 131072,
@@ -40,7 +40,7 @@ export const GLM_SHARED_MODELS = Object.freeze([
     supportedThinkingEfforts: ["high"],
   },
   {
-    id: "glm-5.3-low",
+    id: "glm-5.3-low", effortVariant: { baseModel: "glm-5.3", effort: "low" },
     name: "GLM 5.3 Low",
     contextLength: 1000000,
     maxOutputTokens: 131072,
@@ -51,7 +51,7 @@ export const GLM_SHARED_MODELS = Object.freeze([
   {
     // Explicit alias for the upstream default (max) — pins reasoning_effort so
     // the tier survives an upstream default change, and mirrors glm-5.2-max UX.
-    id: "glm-5.3-max",
+    id: "glm-5.3-max", effortVariant: { baseModel: "glm-5.3", effort: "max" },
     name: "GLM 5.3 Max",
     contextLength: 1000000,
     maxOutputTokens: 131072,
@@ -72,7 +72,7 @@ export const GLM_SHARED_MODELS = Object.freeze([
     supportedThinkingEfforts: ["high", "max"],
   },
   {
-    id: "glm-5.2-high",
+    id: "glm-5.2-high", effortVariant: { baseModel: "glm-5.2", effort: "high" },
     name: "GLM 5.2 High",
     contextLength: 1000000,
     maxOutputTokens: 131072,
@@ -81,7 +81,7 @@ export const GLM_SHARED_MODELS = Object.freeze([
     supportedThinkingEfforts: ["high"],
   },
   {
-    id: "glm-5.2-max",
+    id: "glm-5.2-max", effortVariant: { baseModel: "glm-5.2", effort: "max" },
     name: "GLM 5.2 Max",
     contextLength: 1000000,
     maxOutputTokens: 131072,

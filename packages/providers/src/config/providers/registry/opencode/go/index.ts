@@ -28,8 +28,8 @@ export const opencode_goProvider: RegistryEntry = {
       supportsReasoning: true,
       supportedThinkingEfforts: ["high", "max"],
     },
-    { id: "glm-5.2-high", name: "GLM-5.2 (high effort)", supportsReasoning: true },
-    { id: "glm-5.2-max", name: "GLM-5.2 (max effort)", supportsReasoning: true },
+    { id: "glm-5.2-high", effortVariant: { baseModel: "glm-5.2", effort: "high" }, name: "GLM-5.2 (high effort)", supportsReasoning: true },
+    { id: "glm-5.2-max", effortVariant: { baseModel: "glm-5.2", effort: "max" }, name: "GLM-5.2 (max effort)", supportsReasoning: true },
 
     ...OPENCODE_ZEN_GO_SHARED_MODELS,
     // models[0] (glm-5.2) is the dashboard default (LlmChatCard/ProviderTestSlideOver take models[0]).
@@ -41,7 +41,7 @@ export const opencode_goProvider: RegistryEntry = {
     { id: "kimi-k2.5", name: "Kimi K2.5" },
     // #8353: Kimi K3 base + max-effort alias from the OpenCode Go registry.
     { id: "kimi-k3", name: "Kimi K3", supportsReasoning: true, supportedThinkingEfforts: ["max"] },
-    { id: "kimi-k3-max", name: "Kimi K3 (max effort)", supportsReasoning: true },
+    { id: "kimi-k3-max", effortVariant: { baseModel: "kimi-k3", effort: "max" }, name: "Kimi K3 (max effort)", supportsReasoning: true },
     // MiMo-V2.5 — base model + effort-tier aliases (#6922).
     { id: "mimo-v2.5-pro", name: "MiMo-V2.5-Pro", supportsReasoning: true },
     {
@@ -50,8 +50,8 @@ export const opencode_goProvider: RegistryEntry = {
       supportsReasoning: true,
       supportedThinkingEfforts: ["high", "max"],
     },
-    { id: "mimo-v2.5-high", name: "MiMo-V2.5 (high effort)", supportsReasoning: true },
-    { id: "mimo-v2.5-max", name: "MiMo-V2.5 (max effort)", supportsReasoning: true },
+    { id: "mimo-v2.5-high", effortVariant: { baseModel: "mimo-v2.5", effort: "high" }, name: "MiMo-V2.5 (high effort)", supportsReasoning: true },
+    { id: "mimo-v2.5-max", effortVariant: { baseModel: "mimo-v2.5", effort: "max" }, name: "MiMo-V2.5 (max effort)", supportsReasoning: true },
     // #3110: MiniMax M3 via OpenCode Go tier
     {
       id: "minimax-m3",
@@ -79,14 +79,14 @@ export const opencode_goProvider: RegistryEntry = {
       supportedThinkingEfforts: ["high", "max"],
     },
     {
-      id: "qwen3.7-max-high",
+      id: "qwen3.7-max-high", effortVariant: { baseModel: "qwen3.7-max", effort: "high" },
       name: "Qwen3.7 Max (high effort)",
       targetFormat: "claude",
       supportsVision: false,
       supportsReasoning: true,
     },
     {
-      id: "qwen3.7-max-max",
+      id: "qwen3.7-max-max", effortVariant: { baseModel: "qwen3.7-max", effort: "max" },
       name: "Qwen3.7 Max (max effort)",
       targetFormat: "claude",
       supportsVision: false,
@@ -101,14 +101,14 @@ export const opencode_goProvider: RegistryEntry = {
       supportedThinkingEfforts: ["high", "max"],
     },
     {
-      id: "qwen3.7-plus-high",
+      id: "qwen3.7-plus-high", effortVariant: { baseModel: "qwen3.7-plus", effort: "high" },
       name: "Qwen3.7 Plus (high effort)",
       targetFormat: "claude",
       supportsVision: false,
       supportsReasoning: true,
     },
     {
-      id: "qwen3.7-plus-max",
+      id: "qwen3.7-plus-max", effortVariant: { baseModel: "qwen3.7-plus", effort: "max" },
       name: "Qwen3.7 Plus (max effort)",
       targetFormat: "claude",
       supportsVision: false,
@@ -117,14 +117,14 @@ export const opencode_goProvider: RegistryEntry = {
     // qwen3.6-plus / qwen3.5-plus base ids declared identically on opencode-zen — see
     // OPENCODE_ZEN_GO_SHARED_MODELS.
     {
-      id: "qwen3.6-plus-high",
+      id: "qwen3.6-plus-high", effortVariant: { baseModel: "qwen3.6-plus", effort: "high" },
       name: "Qwen3.6 Plus (high effort)",
       targetFormat: "claude",
       supportsVision: false,
       supportsReasoning: true,
     },
     {
-      id: "qwen3.6-plus-max",
+      id: "qwen3.6-plus-max", effortVariant: { baseModel: "qwen3.6-plus", effort: "max" },
       name: "Qwen3.6 Plus (max effort)",
       targetFormat: "claude",
       supportsVision: false,
@@ -139,19 +139,19 @@ export const opencode_goProvider: RegistryEntry = {
       supportedThinkingEfforts: ["none", "low", "high"],
     },
     {
-      id: "hy3-none",
+      id: "hy3-none", effortVariant: { baseModel: "hy3", effort: "none" },
       name: "Hunyuan3 (none effort)",
       contextLength: 256000,
       supportsReasoning: true,
     },
     {
-      id: "hy3-low",
+      id: "hy3-low", effortVariant: { baseModel: "hy3", effort: "low" },
       name: "Hunyuan3 (low effort)",
       contextLength: 256000,
       supportsReasoning: true,
     },
     {
-      id: "hy3-high",
+      id: "hy3-high", effortVariant: { baseModel: "hy3", effort: "high" },
       name: "Hunyuan3 (high effort)",
       contextLength: 256000,
       supportsReasoning: true,
@@ -172,7 +172,7 @@ export const opencode_goProvider: RegistryEntry = {
       targetFormat: "openai-responses",
     },
     {
-      id: "muse-spark-1.2-contributor-minimal",
+      id: "muse-spark-1.2-contributor-minimal", effortVariant: { baseModel: "muse-spark-1.2-contributor", effort: "minimal" },
       name: "Muse Spark 1.2 Contributor (minimal effort)",
       contextLength: 1048576,
       maxOutputTokens: 131072,
@@ -183,7 +183,7 @@ export const opencode_goProvider: RegistryEntry = {
       targetFormat: "openai-responses",
     },
     {
-      id: "muse-spark-1.2-contributor-low",
+      id: "muse-spark-1.2-contributor-low", effortVariant: { baseModel: "muse-spark-1.2-contributor", effort: "low" },
       name: "Muse Spark 1.2 Contributor (low effort)",
       contextLength: 1048576,
       maxOutputTokens: 131072,
@@ -194,7 +194,7 @@ export const opencode_goProvider: RegistryEntry = {
       targetFormat: "openai-responses",
     },
     {
-      id: "muse-spark-1.2-contributor-medium",
+      id: "muse-spark-1.2-contributor-medium", effortVariant: { baseModel: "muse-spark-1.2-contributor", effort: "medium" },
       name: "Muse Spark 1.2 Contributor (medium effort)",
       contextLength: 1048576,
       maxOutputTokens: 131072,
@@ -205,7 +205,7 @@ export const opencode_goProvider: RegistryEntry = {
       targetFormat: "openai-responses",
     },
     {
-      id: "muse-spark-1.2-contributor-high",
+      id: "muse-spark-1.2-contributor-high", effortVariant: { baseModel: "muse-spark-1.2-contributor", effort: "high" },
       name: "Muse Spark 1.2 Contributor (high effort)",
       contextLength: 1048576,
       maxOutputTokens: 131072,
@@ -216,7 +216,7 @@ export const opencode_goProvider: RegistryEntry = {
       targetFormat: "openai-responses",
     },
     {
-      id: "muse-spark-1.2-contributor-xhigh",
+      id: "muse-spark-1.2-contributor-xhigh", effortVariant: { baseModel: "muse-spark-1.2-contributor", effort: "xhigh" },
       name: "Muse Spark 1.2 Contributor (xhigh effort)",
       contextLength: 1048576,
       maxOutputTokens: 131072,
@@ -233,9 +233,9 @@ export const opencode_goProvider: RegistryEntry = {
       supportsReasoning: true,
       supportedThinkingEfforts: ["low", "medium", "high"],
     },
-    { id: "grok-4.5-low", name: "Grok 4.5 (low effort)", supportsReasoning: true },
-    { id: "grok-4.5-medium", name: "Grok 4.5 (medium effort)", supportsReasoning: true },
-    { id: "grok-4.5-high", name: "Grok 4.5 (high effort)", supportsReasoning: true },
+    { id: "grok-4.5-low", effortVariant: { baseModel: "grok-4.5", effort: "low" }, name: "Grok 4.5 (low effort)", supportsReasoning: true },
+    { id: "grok-4.5-medium", effortVariant: { baseModel: "grok-4.5", effort: "medium" }, name: "Grok 4.5 (medium effort)", supportsReasoning: true },
+    { id: "grok-4.5-high", effortVariant: { baseModel: "grok-4.5", effort: "high" }, name: "Grok 4.5 (high effort)", supportsReasoning: true },
     {
       id: "deepseek-v4-pro",
       name: "DeepSeek V4 Pro",

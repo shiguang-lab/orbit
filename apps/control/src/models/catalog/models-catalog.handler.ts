@@ -13,7 +13,7 @@ import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 export async function GET(request: Request) {
   const diagnosticHeaders = getCatalogDiagnosticsHeaders({ request });
   try {
-    const response = await getUnifiedModelsResponse(request, {});
+    const response = await getUnifiedModelsResponse(request, {}, { internal: true });
     const body = await response.json();
 
     if (!response.ok) {

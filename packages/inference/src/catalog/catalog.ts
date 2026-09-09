@@ -1,3 +1,5 @@
+import { isFeatureFlagEnabled } from "@orbit/core/runtime/feature-flags";
+import { aggregateEffortVariants } from "./effortPresentation.ts";
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,
@@ -198,7 +200,7 @@ function yieldCatalogBuildTurn(): Promise<void> {
 export async function getUnifiedModelsResponse(
   request: Request,
   corsHeaders: Record<string, string> = {},
-  options: { scheduleBackgroundRefresh?: BackgroundRefreshScheduler } = {}
+  options: { scheduleBackgroundRefresh?: BackgroundRefreshScheduler; internal?: boolean } = {}
 ) {
   const diagnosticHeaders = getCatalogDiagnosticsHeaders({ request });
 
@@ -229,7 +231,7 @@ export async function getUnifiedModelsResponse(
   }
 
   try {
-    return await resolveCachedCatalogResponse(
+    const response = await resolveCachedCatalogResponse(
       request,
       { corsHeaders, diagnosticHeaders },
       buildCatalogPayload,
@@ -243,6 +245,14 @@ export async function getUnifiedModelsResponse(
         scheduleBackgroundRefresh: options.scheduleBackgroundRefresh,
       }
     );
+    if (options.internal || !response.ok || !isFeatureFlagEnabled("HIDE_EFFORT_VARIANTS")) return response;
+    const payload = await response.json();
+    payload.data = aggregateEffortVariants(payload.data);
+    if (Array.isArray(payload.models)) payload.models = aggregateEffortVariants(payload.models);
+    const headers = new Headers(response.headers);
+    headers.delete("content-length");
+    headers.delete("etag");
+    return Response.json(payload, { status: response.status, headers });
   } catch (err) {
     // Hard rule #12: never put a raw err.message/err.stack in a response body.
     // Route it through the shared sanitizer instead — same status/type/code as
@@ -1900,7 +1910,7 @@ async function buildUnifiedModelsResponseCore(
     const apiKey = extractApiKey(request);
     let finalModels = models;
     if (apiKey) {
-      const { isModelAllowedForKey, getApiKeyMetadata } = await import(
+      const { getApiKeyMetadata } = await import(
         "@orbit/core/db/api-keys"
       );
 
@@ -1918,28 +1928,21 @@ async function buildUnifiedModelsResponseCore(
           timestamp,
           (c) => buildComboCatalogMetadata(c, combos)
         );
-      } else if (!keyMeta) {
-        // #6406: A valid apiKey without a DB metadata row is an env-var master key
-        // (gateway API key variables per isValidApiKey). Those keys have no
-        // per-key allow/deny/quota restrictions — they authenticate the request but
-        // do NOT scope the catalog. Skipping the per-model filter matches the intent:
-        // auth GATES access; env-var master keys see everything the unauth path sees.
-        // Without this branch, isModelAllowedForKey returns false for every model
-        // (metadata missing → deny), collapsing /v1/models to 0 entries.
-      } else {
-        const filtered = [];
-        for (const m of models) {
-          // m.id is the full identifier (e.g. openai/gpt-4o), m.root is the raw model string
-          // check either one as the config could use either patterns
-          if (
-            (await isModelAllowedForKey(apiKey, m.id)) ||
-            (await isModelAllowedForKey(apiKey, m.root))
-          ) {
-            filtered.push(m);
-          }
-        }
-        finalModels = filtered;
       }
+    }
+    // Record the origin of curated aliases, excluding exact live upstream IDs.
+    // Dynamic variants record the same metadata at their creation sites.
+    for (const entry of finalModels) {
+      const owner = aliasToProviderId[entry.owned_by] || entry.owned_by;
+      if (syncedModelIdsByCanonicalProvider.get(owner)?.has(entry.root)) continue;
+      const alias = PROVIDER_ID_TO_ALIAS[owner] || owner;
+      const variant = PROVIDER_MODELS[alias]?.find((m) => m.id === entry.root)?.effortVariant;
+      if (!variant || typeof entry.id !== "string") continue;
+      entry.effort_variant = {
+        source: "orbit", effort: variant.effort, base_root: variant.baseModel,
+        base_model: entry.id.slice(0, -entry.root.length) + variant.baseModel,
+        base_name: PROVIDER_MODELS[alias]?.find((m) => m.id === variant.baseModel)?.name,
+      };
     }
     // ?configuredOnly — hide models that have no eligible DB connection.
     finalModels = await applyCatalogPostFilters(request, finalModels, {

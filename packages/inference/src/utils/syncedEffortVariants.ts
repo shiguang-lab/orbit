@@ -84,10 +84,10 @@ export function shouldExposeSyncedEffortVariants(
 /**
  * Append reasoning-effort variants for every eligible synced model. Returns the original
  * array reference unchanged when nothing is eligible (no allocation in the common case).
- * Derived from the already key-filtered/hidden-filtered catalog list, so a variant's base
+ * Derived from the visibility-filtered catalog list, so a variant's base
  * fields (visibility, capabilities, pricing) are inherited by spreading the base entry
  * rather than re-running any filter — an alias never bypasses a filter the base model was
- * already subject to.
+ * already subject to. API-key authorization runs after variant generation.
  */
 export function appendSyncedEffortVariants<T extends CatalogModelEntry>(models: T[]): T[] {
   if (!Array.isArray(models)) return models;
@@ -102,7 +102,8 @@ export function appendSyncedEffortVariants<T extends CatalogModelEntry>(models: 
       const variantId = `${model.id}-${tier}`;
       if (existingIds.has(variantId)) continue;
       existingIds.add(variantId);
-      variants.push({ ...model, id: variantId, root: `${baseRoot}-${tier}` });
+      variants.push({ ...model, id: variantId, root: `${baseRoot}-${tier}`,
+        effort_variant: { source: "orbit", base_model: model.id, base_root: baseRoot, base_name: model.name, effort: tier } });
     }
   }
 
