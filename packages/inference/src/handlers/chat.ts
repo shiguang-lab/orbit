@@ -932,7 +932,7 @@ async function handleChatImplementation(
     ) => {
       if (isComboLiveTest) return true;
 
-      // #9057: for keys with model restrictions (allowedModels or disableNonPublicModels),
+      // #9057: for keys with model restrictions (allowlist, blocklist, or non-public-model ban),
       // run isModelAllowedForKey even for auto/* models. The API-key policy gate
       // (validateModelAccess in apiKeyPolicy.ts) treats auto/* as a virtual combo and
       // skips isModelAllowedForKey, so the per-candidate check here is the only
@@ -940,7 +940,9 @@ async function handleChatImplementation(
       // disableNonPublicModels=true can reach free/prohibited models through auto/*.
       const hasModelRestrictions =
         apiKeyInfo &&
-        (Boolean(apiKeyInfo.allowedModels?.length) || apiKeyInfo.disableNonPublicModels === true);
+        (Boolean(apiKeyInfo.allowedModels?.length) ||
+          Boolean(apiKeyInfo.blockedModels?.length) ||
+          apiKeyInfo.disableNonPublicModels === true);
       if (hasModelRestrictions && apiKey) {
         const modelAllowed = await isModelAllowedForKey(apiKey, modelString);
         if (!modelAllowed) return false;
