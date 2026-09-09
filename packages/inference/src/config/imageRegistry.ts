@@ -354,6 +354,20 @@ export const IMAGE_PROVIDERS: Record<string, ImageProviderConfig> = {
     supportedSizes: ["1024x1024"],
   },
 
+  // Antigravity CLI provider — parallel to `antigravity` (IDE/Web), same backend but
+  // separate credentials connection. Must be registered independently so that
+  // `agy/gemini-3.1-flash-image` resolves via parseImageModel and credentials are
+  // fetched under the `agy` provider id (matching the chat registry entry).
+  agy: {
+    id: "agy",
+    baseUrl: "https://daily-cloudcode-pa.googleapis.com/v1internal:generateContent",
+    authType: "oauth",
+    authHeader: "bearer",
+    format: "gemini-image",
+    models: [{ id: "gemini-3.1-flash-image", name: "Gemini 3.1 Flash Image" }],
+    supportedSizes: ["1024x1024"],
+  },
+
   //Curruntly no models serving
   nebius: {
     id: "nebius",
