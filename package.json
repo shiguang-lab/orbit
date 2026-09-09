@@ -26,7 +26,7 @@
     "audit:inference-boundary": "node scripts/audit-inference-boundary.mjs --strict",
     "verify:external-state": "node scripts/verify-external-state.mjs",
     "audit:provider-config": "node scripts/audit-provider-config.mjs",
-    "audit:release-readiness": "node scripts/release-readiness.mjs",
+    "verify:release": "pnpm --filter @orbit/cliproxy-manager test && pnpm --filter @orbit/control exec tsx --test test/service-nodes.test.ts && node --test scripts/ops/import-cliproxy.test.mjs && pnpm audit:gateway-independence && pnpm audit:route-contracts && pnpm audit:brand && pnpm --filter @orbit/console test && pnpm --filter @orbit/auth test && pnpm --filter @orbit/realtime test && pnpm --filter @orbit/utils test && pnpm --filter @orbit/http test && pnpm --filter @orbit/control exec node --import tsx --test ../../packages/http/test/web-request.test.ts && pnpm --filter @orbit/control exec node --import tsx --test test/settings-import-request.test.ts && pnpm --filter @orbit/control exec node --import tsx --test test/auth-session.test.ts test/combo-runtime-registration.test.ts && pnpm --filter @orbit/gateway exec tsx --test test/dispatcher-module-injection.test.ts && pnpm smoke:route-imports && pnpm smoke:split-deployment && node --test scripts/smoke-worker-start.test.mjs && node --test scripts/compose-auth-contract.test.mjs && pnpm smoke:worker && pnpm smoke:agent-skills",
     "smoke:provider-matrix": "node scripts/smoke-provider-matrix.mjs",
     "smoke:split-deployment": "node scripts/smoke-split-deployment.mjs",
     "smoke:worker": "node scripts/smoke-worker-start.mjs",
