@@ -65,5 +65,5 @@ test("exception filter redacts credentials from uncaught 5xx responses", () => {
   );
 
   assert.doesNotMatch(body, /sk-proj-/);
-  assert.match(body, /REDACTED_CREDENTIAL/);
+  assert.match(body, /\[REDACTED\]/);
 });
