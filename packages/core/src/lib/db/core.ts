@@ -542,9 +542,41 @@ function setDb(db: SqliteDatabase | null): void {
   }
 }
 
+/**
+ * Parse the row returned by `PRAGMA wal_checkpoint(...)` (better-sqlite3 pragma returns
+ * `[{ busy, log, checkpointed }]`). A `busy = 1` result means another connection still holds
+ * the WAL, so a TRUNCATE request is a silent no-op — the frames were never reclaimed. Fails
+ * open (non-busy) when the row shape is unexpected so a driver quirk never fabricates a warning.
+ */
+function parseWalCheckpointResult(result: unknown): {
+  busy: boolean;
+  logFrames: number | null;
+  checkpointedFrames: number | null;
+} {
+  const row = Array.isArray(result) ? result[0] : result;
+  if (!row || typeof row !== "object") {
+    return { busy: false, logFrames: null, checkpointedFrames: null };
+  }
+  const record = row as Record<string, unknown>;
+  const busy = Number(record.busy);
+  const logFrames = Number(record.log);
+  const checkpointedFrames = Number(record.checkpointed);
+  if (!Number.isFinite(busy) || !Number.isFinite(logFrames) || !Number.isFinite(checkpointedFrames)) {
+    return { busy: false, logFrames: null, checkpointedFrames: null };
+  }
+  return { busy: busy === 1, logFrames, checkpointedFrames };
+}
+
 function checkpointDb(db: SqliteDatabase, mode: CheckpointMode = "TRUNCATE"): boolean {
   if (isCloud || isBuildPhase || !SQLITE_FILE) return false;
-  db.pragma(`wal_checkpoint(${mode})`);
+  const outcome = parseWalCheckpointResult(db.pragma(`wal_checkpoint(${mode})`));
+  if (outcome.busy) {
+    console.warn(
+      `[DB] SQLite WAL checkpoint (${mode}) busy — ${
+        outcome.logFrames ?? "unknown"
+      } frame(s) pending, truncation was a no-op (another connection is holding the WAL)`
+    );
+  }
   return true;
 }
 

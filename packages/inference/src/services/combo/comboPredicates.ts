@@ -11,6 +11,7 @@ import { errorResponse } from "../../utils/error.ts";
 import { parseModel } from "../model.ts";
 import { isSelfInflictedUpstreamTimeout } from "../../handlers/chatCore/cooldownClassification.ts";
 import {
+  isLocalExecutionError,
   isLocalStreamLifecycleError,
   isModelCapacityOverloadError,
 } from "@orbit/core/resilience/circuit-breaker";
@@ -222,7 +223,8 @@ export function shouldRecordProviderBreakerFailure(args: {
     (!args.sameProviderNext || args.isProxyUnreachable === true) &&
     !args.skipProviderBreaker &&
     !args.requestScopedFailure &&
-    !isLocalStreamLifecycleError(args.error)
+    !isLocalStreamLifecycleError(args.error) &&
+    !isLocalExecutionError(args.error)
   );
 }
 
@@ -319,6 +321,9 @@ export function shouldSkipConnDisable(
     // Client abort surfaced as a bare error (no statusCode → defaults to 502):
     // a local lifecycle event, not a provider failure (#4602 policy).
     isLocalStreamLifecycleError(result.error) ||
+    // #12233: a local host execution failure (ENOENT/EACCES/EPIPE/child exit) is our own
+    // runtime, not the provider — never disable the connection for it.
+    isLocalExecutionError(result.error) ||
     (result.response ? getTrustedLocalRateLimitResponse(result.response) !== null : false) ||
     result.errorCode === "plugin_block" ||
     result.errorType === "plugin_block" ||
@@ -475,6 +480,28 @@ export function hasFutureRateLimitUntil(value: unknown): boolean {
   return Number.isFinite(time) && time > Date.now();
 }
 
+/**
+ * #12168: mirrors ERROR_LABEL_GRACE_MS in packages/core/src/lib/quota/connectionRecovery.ts —
+ * a bare status label with no cooldown timestamp is only trusted while the failure that wrote
+ * it is recent. Kept in sync with that constant deliberately: both answer the same question
+ * ("is this label still meaningful?") and must not disagree, or a connection the recovery job
+ * already treats as reclaimable would still be pre-skipped by combo dispatch.
+ */
+const UNAVAILABLE_LABEL_GRACE_MS = 60 * 1000;
+
+/**
+ * True when a bare `unavailable` label should still be honoured: the recorded failure is
+ * inside the grace window. A missing/unparseable `lastErrorAt` counts as stale (not blocking)
+ * — an unbounded skip is exactly the failure mode #12168 reported, and one extra upstream
+ * attempt is far cheaper than a permanently dark connection pool.
+ */
+export function isWithinUnavailableGrace(lastErrorAt: unknown): boolean {
+  if (lastErrorAt == null || lastErrorAt === "") return false;
+  const time = new Date(String(lastErrorAt)).getTime();
+  if (!Number.isFinite(time)) return false;
+  return Date.now() - time < UNAVAILABLE_LABEL_GRACE_MS;
+}
+
 export function getConnectionStatusQuotaCutoffReason(
   connection: Record<string, unknown> | undefined
 ): string | undefined {
@@ -494,8 +521,8 @@ export function getConnectionStatusQuotaCutoffReason(
  * connection that SQLite already marked unavailable until a future reset.
  *
  * Honours a future rateLimitedUntil regardless of testStatus, the terminal
- * statuses that must never be dispatched, and a bare `unavailable` status even
- * when no timestamp was written alongside it.
+ * statuses that must never be dispatched, and a recent bare `unavailable`
+ * status whose failure timestamp is still inside the label grace window.
  */
 export function getPersistedConnectionCooldownSkipReason(
   target: { modelStr: string; connectionId?: string | null },
@@ -511,13 +538,22 @@ export function getPersistedConnectionCooldownSkipReason(
   if (QUOTA_BLOCKING_CONNECTION_STATUSES.has(status)) {
     return `Skipping ${target.modelStr} — connection ${target.connectionId} status=${status}`;
   }
-  // `unavailable` with no (or an already-expired) rateLimitedUntil still means AUTH
-  // took this connection out of rotation — markAccountUnavailable() writes the status
-  // before, and sometimes without, a timestamp ("Using zai account …" then a real
-  // upstream 429). Without this branch the pre-skip only fired once the timestamp had
-  // landed, so a burst still dispatched against a connection AUTH had already retired.
-  // Lazy recovery is unaffected: clearAccountError() resets the status on first success.
-  if (status === "unavailable") {
+  // `unavailable` with no rateLimitedUntil still means AUTH took this connection out of
+  // rotation — markAccountUnavailable() writes the status before, and sometimes without, a
+  // timestamp ("Using zai account …" then a real upstream 429). Without this branch the
+  // pre-skip only fired once the timestamp had landed, so a burst still dispatched against a
+  // connection AUTH had already retired.
+  //
+  // #12168: the skip is BOUNDED. Returning here for any `unavailable` row is the raw-label
+  // anti-pattern AGENTS.md warns about — the resilience layers recover lazily. The previous
+  // justification ("clearAccountError() resets the status on first success") does not hold on
+  // this path: the gate runs BEFORE dispatch, so it prevents the very success that would call
+  // clearAccountError(), and the out-of-band recovery job cannot rescue a row with no
+  // rateLimitedUntil either (its hasElapsedCooldown() requires a timestamp). Result was a pool
+  // answering ALL_TARGETS_SKIPPED with zero upstream attempts, forever. Honour the bare label
+  // only while the failure is recent; past the window let the request through, and one real
+  // attempt either succeeds (clearing the status) or re-arms the cooldown with a fresh stamp.
+  if (status === "unavailable" && isWithinUnavailableGrace(connection.lastErrorAt)) {
     return `Skipping ${target.modelStr} — connection ${target.connectionId} status=unavailable`;
   }
   return null;

@@ -65,6 +65,46 @@ export function isLocalStreamLifecycleError(error: unknown): boolean {
   );
 }
 
+const LOCAL_EXECUTION_CODES = new Set([
+  "ENOENT",
+  "EACCES",
+  "EPIPE",
+  "ERR_CHILD_PROCESS_STDIO_MAXBUFFER",
+]);
+
+const LOCAL_EXECUTION_PATTERNS = [
+  /\bspawn\b.*\b(ENOENT|EACCES|EPIPE)\b/i,
+  /\bcommand not found\b/i,
+  /\bis not recognized as an internal or external command\b/i,
+  /\bchild process exited with code\b/i,
+  /\blocal host execution error\b/i,
+];
+
+/**
+ * #12233 — Detect a LOCAL host execution error (missing binary ENOENT, permission
+ * EACCES, broken pipe EPIPE, child-process exit failures, …). These originate in our
+ * own process spawning a local CLI/helper, not in the upstream provider, so they must
+ * neither count as a whole-provider failure nor disable the connection. Guard every
+ * breaker-trip / connection-disable predicate with this the same way
+ * `isLocalStreamLifecycleError` is used for stream-lifecycle events.
+ */
+export function isLocalExecutionError(error: unknown): boolean {
+  if (!error) return false;
+  const errObj = typeof error === "object" ? (error as Record<string, unknown>) : null;
+  const code = typeof errObj?.code === "string" ? errObj.code : "";
+  if (LOCAL_EXECUTION_CODES.has(code)) return true;
+
+  const message =
+    typeof error === "string"
+      ? error
+      : typeof errObj?.message === "string"
+        ? (errObj.message as string)
+        : "";
+  if (!message) return false;
+
+  return LOCAL_EXECUTION_PATTERNS.some((pattern) => pattern.test(message));
+}
+
 /**
  * Detect model-capacity overloads that must not count as a whole-provider
  * outage. Anthropic can surface this as HTTP 529, a structured 529 error, or a

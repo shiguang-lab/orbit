@@ -877,6 +877,10 @@
       "types": "./dist/types/services/usage/codex.d.ts",
       "import": "./src/services/usage/codex.ts"
     },
+    "./services/quotaFetchThrottle": {
+      "types": "./dist/types/services/quotaFetchThrottle.d.ts",
+      "import": "./src/services/quotaFetchThrottle.ts"
+    },
     "./services/memoryRuntime": {
       "types": "./dist/types/services/memoryRuntime.d.ts",
       "import": "./src/services/memoryRuntime.ts"

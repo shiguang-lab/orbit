@@ -1,4 +1,5 @@
 import {
+  isLocalExecutionError,
   isLocalStreamLifecycleError,
   isModelCapacityOverloadError,
 } from "@orbit/core/resilience/circuit-breaker";
@@ -32,6 +33,9 @@ export function shouldTripProviderBreakerForResult(
     !isRequestScopedUpstreamFailure({ code: result.errorCode, type: result.errorType }) &&
     !(result.response && getTrustedLocalRateLimitResponse(result.response)) &&
     !isLocalStreamLifecycleError(result.error) &&
+    // #12233: local host execution failures (ENOENT/EACCES/EPIPE/child exit) come from our
+    // own process spawning a local CLI — never treat them as a provider failure.
+    !isLocalExecutionError(result.error) &&
     // Network-layer errors (ECONNREFUSED, ETIMEDOUT) never reached the provider —
     // the provider may be healthy, only the network path is broken. Orbit's own
     // rate-limit queue timeouts are backpressure we applied, not a provider failure.

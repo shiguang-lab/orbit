@@ -10,6 +10,8 @@ export const HTTP_STATUS = {
   REQUEST_TIMEOUT: 408,
   GONE: 410,
   RATE_LIMITED: 429,
+  /** Upstream "plan limit reached" — used by search/plan-metered upstreams (e.g. Tavily, Context7). */
+  PLAN_LIMIT_EXCEEDED: 432,
   SERVER_ERROR: 500,
   BAD_GATEWAY: 502,
   SERVICE_UNAVAILABLE: 503,

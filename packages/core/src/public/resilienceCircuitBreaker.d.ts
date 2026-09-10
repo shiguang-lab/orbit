@@ -59,6 +59,7 @@ export class CircuitBreakerOpenError extends Error {
   retryAfterMs: number;
 }
 
+export function isLocalExecutionError(error: unknown): boolean;
 export function isLocalStreamLifecycleError(error: unknown): boolean;
 export function isModelCapacityOverloadError(error: unknown): boolean;
 export function getAllCircuitBreakerStatuses(): CircuitBreakerStatus[];

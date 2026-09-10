@@ -14,7 +14,9 @@ const expectedRuntimeExports = [
   "CircuitBreakerOpenError",
   "getAllCircuitBreakerStatuses",
   "getCircuitBreaker",
+  "isLocalExecutionError",
   "isLocalStreamLifecycleError",
+  "isModelCapacityOverloadError",
   "resetAllCircuitBreakers",
 ] as const;
 

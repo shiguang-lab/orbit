@@ -1,7 +1,17 @@
 import { createHash } from "node:crypto";
 import { registerDbRuntimeHooks } from "@orbit/core/db/runtime-hooks";
+import { getCircuitBreaker } from "@orbit/core/resilience/circuit-breaker";
+import type { ResilienceSettings } from "@orbit/core/resilience/settings";
+import { canAffordRequest } from "@orbit/core/quota/reservations";
 
-import type { ResolvedComboTarget } from "./types.ts";
+import { buildErrorBody } from "../../utils/error.ts";
+import { hasPerModelQuota, isModelLocked } from "../accountFallback.ts";
+import { checkCredentialGate } from "../credentialGate.ts";
+import { isProviderInCooldown } from "../providerCooldownTracker.ts";
+import { parseModel } from "../model.ts";
+import { resolveQuotaExhaustionCutoffForTarget } from "./quotaExhaustionCutoff.ts";
+import type { ResetWindowConfig } from "./quotaScoring.ts";
+import type { ComboLogger, IsModelAvailable, ResolvedComboTarget } from "./types.ts";
 
 type NativeTurnPin = {
   comboName: string;
@@ -149,6 +159,141 @@ export function revokeNativeCodexTurnPinsForConnection(connectionId: string): nu
     revoked += 1;
   }
   return revoked;
+}
+
+// #12240: a native Codex turn that has already emitted output cannot switch provider or model.
+// When every candidate for the pinned provider+model is unavailable for a MODEL-SCOPED reason
+// (model lockout / per-model quota / exhausted cutoff / credential gate), the turn must terminate
+// cleanly with a non-retryable 400 instead of burning the retry budget and returning a 503 — the
+// pin is preserved so the NEXT turn still routes normally through Combo.
+export const NATIVE_CODEX_PINNED_MODEL_UNAVAILABLE_CODE = "NATIVE_CODEX_PINNED_MODEL_UNAVAILABLE";
+export const NATIVE_CODEX_PINNED_MODEL_UNAVAILABLE_MESSAGE =
+  "The model handling this native Codex turn is no longer available. This turn cannot switch providers or models after output has been emitted. Start a new turn to allow Combo routing to select another model.";
+
+export function createPinnedModelUnavailableResponse(): Response {
+  const body = buildErrorBody(400, NATIVE_CODEX_PINNED_MODEL_UNAVAILABLE_MESSAGE, undefined, {
+    code: NATIVE_CODEX_PINNED_MODEL_UNAVAILABLE_CODE,
+    type: "invalid_request_error",
+  });
+  return new Response(JSON.stringify(body), {
+    status: 400,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+const NOOP_LOGGER: ComboLogger = {
+  info: () => {},
+  warn: () => {},
+  error: () => {},
+  debug: () => {},
+};
+
+export interface CheckPinnedTargetsModelScopedUnusableOptions {
+  pinnedTargets: ResolvedComboTarget[];
+  resilienceSettings?: ResilienceSettings | null;
+  quotaCutoffResetWindowConfig?: ResetWindowConfig;
+  comboName: string;
+  body: Record<string, unknown>;
+  log?: ComboLogger;
+  isModelAvailable?: IsModelAvailable;
+}
+
+/**
+ * True when the pinned target is unusable for a reason that is scoped to its MODEL (lockout,
+ * per-model quota, exhausted cutoff) rather than a transient provider/connection problem. Only
+ * model-scoped reasons justify terminating a pinned turn: a transient failure can still recover on
+ * the same pinned model, so it must keep the normal dispatch path.
+ */
+export async function isPinnedTargetModelScopedUnusable(args: {
+  target: ResolvedComboTarget;
+  resilienceSettings?: ResilienceSettings | null;
+  quotaCutoffResetWindowConfig?: ResetWindowConfig;
+  comboName: string;
+  body: Record<string, unknown>;
+  log?: ComboLogger;
+  isModelAvailable?: IsModelAvailable;
+}): Promise<boolean> {
+  const {
+    target,
+    resilienceSettings,
+    quotaCutoffResetWindowConfig,
+    comboName,
+    body,
+    log,
+    isModelAvailable,
+  } = args;
+  const provider = target.provider;
+  const connectionId = target.connectionId || "";
+  const rawModel = parseModel(target.modelStr).model || target.modelStr;
+
+  // A transient/unavailable reason is NOT model-scoped — the pinned model may still recover, so
+  // never terminate the turn on account of it.
+  if (provider && provider !== "unknown") {
+    const cb = getCircuitBreaker(provider);
+    if (cb.getStatus().state === "OPEN") return false;
+    if (
+      resilienceSettings?.providerCooldown?.enabled &&
+      (isProviderInCooldown(provider, connectionId || undefined, resilienceSettings) ||
+        isProviderInCooldown(provider, undefined, resilienceSettings))
+    ) {
+      return false;
+    }
+  }
+
+  if (connectionId && checkCredentialGate(connectionId, provider, target.modelStr).allowed === false) {
+    return false;
+  }
+
+  if (provider && rawModel && isModelLocked(provider, connectionId, rawModel)) return true;
+
+  if (
+    process.env.ORBIT_QUOTA_AWARE_ROUTING === "1" &&
+    provider &&
+    connectionId &&
+    !canAffordRequest(connectionId, target.modelStr, body).affordable
+  ) {
+    return true;
+  }
+
+  if (provider && connectionId && quotaCutoffResetWindowConfig) {
+    const cutoff = await resolveQuotaExhaustionCutoffForTarget(
+      provider,
+      connectionId,
+      resilienceSettings,
+      quotaCutoffResetWindowConfig,
+      comboName,
+      log ?? NOOP_LOGGER
+    );
+    if (cutoff.blocked) return true;
+  }
+
+  if (isModelAvailable) {
+    const available = await Promise.resolve(isModelAvailable(target.modelStr, target)).catch(
+      () => true
+    );
+    if (
+      !available &&
+      provider &&
+      rawModel &&
+      (isModelLocked(provider, connectionId, rawModel) || hasPerModelQuota(provider, rawModel))
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+export async function areAllPinnedTargetsModelScopedUnusable(
+  options: CheckPinnedTargetsModelScopedUnusableOptions
+): Promise<boolean> {
+  if (!options.pinnedTargets?.length) return false;
+  for (const target of options.pinnedTargets) {
+    if (!(await isPinnedTargetModelScopedUnusable({ ...options, target }))) {
+      return false;
+    }
+  }
+  return true;
 }
 
 export function clearNativeCodexTurnPinsForTests(): void {

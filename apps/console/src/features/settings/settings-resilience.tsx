@@ -70,6 +70,7 @@ export function SettingsResiliencePage() {
   const oauthBreaker = ((s.providerBreaker as any)?.oauth as any) || {};
   const waitForCooldown = (s.waitForCooldown as any) || {};
   const comboCooldownWait = (s.comboCooldownWait as any) || {};
+  const quotaPreflight = (s.quotaPreflight as any) || {};
 
   const handleSave = (values: any) => {
     saveMutation.mutate(values);
@@ -134,6 +135,7 @@ export function SettingsResiliencePage() {
           concurrentRequests: requestQueue.concurrentRequests || 20,
           globalConcurrentRequests: requestQueue.globalConcurrentRequests || 0,
           maxWaitMs: requestQueue.maxWaitMs || 10000,
+          executionMaxWaitMs: requestQueue.executionMaxWaitMs || 600000,
           baseCooldownMs: oauthCooldown.baseCooldownMs || 3000,
           useUpstreamRetryHints: oauthCooldown.useUpstreamRetryHints ?? true,
           maxBackoffSteps: oauthCooldown.maxBackoffSteps || 5,
@@ -142,6 +144,9 @@ export function SettingsResiliencePage() {
           waitForCooldownMaxWaitSec: waitForCooldown.maxRetryWaitSec || 90,
           comboCooldownWaitEnabled: comboCooldownWait.enabled ?? true,
           comboCooldownMaxWaitMs: comboCooldownWait.maxWaitMs || 90000,
+          quotaPreflightEnabled: quotaPreflight.enabled ?? false,
+          quotaPreflightThresholdPercent: quotaPreflight.defaultThresholdPercent ?? 2,
+          quotaPreflightWarnPercent: quotaPreflight.warnThresholdPercent ?? 20,
         }}
         onFinish={(v) => {
           handleSave({
@@ -150,6 +155,7 @@ export function SettingsResiliencePage() {
               concurrentRequests: v.concurrentRequests,
               globalConcurrentRequests: v.globalConcurrentRequests,
               maxWaitMs: v.maxWaitMs,
+              executionMaxWaitMs: v.executionMaxWaitMs,
             },
             connectionCooldown: {
               oauth: { baseCooldownMs: v.baseCooldownMs, useUpstreamRetryHints: v.useUpstreamRetryHints, maxBackoffSteps: v.maxBackoffSteps },
@@ -167,6 +173,11 @@ export function SettingsResiliencePage() {
             comboCooldownWait: {
               enabled: v.comboCooldownWaitEnabled,
               maxWaitMs: v.comboCooldownMaxWaitMs,
+            },
+            quotaPreflight: {
+              enabled: v.quotaPreflightEnabled,
+              defaultThresholdPercent: v.quotaPreflightThresholdPercent,
+              warnThresholdPercent: v.quotaPreflightWarnPercent,
             },
           });
         }}
@@ -218,6 +229,18 @@ export function SettingsResiliencePage() {
             <Col xs={24} sm={12} md={6}>
               <Form.Item label={tt("排队最长等待时间", "Max Queue Wait Time")} name="maxWaitMs">
                 <InputNumber min={500} max={60000} step={500} style={{ width: "100%" }} addonAfter="ms" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <Form.Item
+                label={tt("执行超时上限 (Bottleneck)", "Execution Backstop")}
+                name="executionMaxWaitMs"
+                tooltip={tt(
+                  "仅约束已出队后的执行时长，不限制排队等待。非流式网关首次响应可达数分钟，应显著高于排队等待时间",
+                  "Bounds execution only (after the job leaves the queue), never queue wait. Must stay well above the queue-wait budget for non-incremental gateways"
+                )}
+              >
+                <InputNumber min={1000} max={3600000} step={1000} style={{ width: "100%" }} addonAfter="ms" />
               </Form.Item>
             </Col>
           </Row>
@@ -286,6 +309,49 @@ export function SettingsResiliencePage() {
             <Col xs={24} sm={12}>
               <Form.Item label={tt("最大等待超时预算", "Max Wait Budget")} name="comboCooldownMaxWaitMs">
                 <InputNumber min={1000} max={30000} step={1000} style={{ width: "100%" }} addonAfter="ms" />
+              </Form.Item>
+            </Col>
+          </Row>
+        </Card>
+
+        {/* 8. Quota preflight cutoff */}
+        <Card title={tt("配额预检与低配额账户剔除 (Quota Preflight)", "Quota Preflight & Low-quota Skipping")} className={styles.sectionCard} size="small">
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12}>
+              <Flex justify="space-between" align="center" style={{ padding: "8px 0" }}>
+                <div>
+                  <Text strong>{tt("启用自动路由配额剔除", "Enable Quota Cutoff for Auto Routing")}</Text>
+                  <br />
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt(
+                      "候选账户剩余配额低于阈值时不再参与自动路由评分，避免把请求打到即将耗尽的账户",
+                      "Skip accounts whose remaining quota is below the cutoff when scoring auto-routing candidates"
+                    )}
+                  </Text>
+                </div>
+                <Form.Item name="quotaPreflightEnabled" valuePropName="checked" noStyle>
+                  <Switch checkedChildren={tt("开启", "ON")} unCheckedChildren={tt("关闭", "OFF")} />
+                </Form.Item>
+              </Flex>
+            </Col>
+
+            <Col xs={24} sm={6}>
+              <Form.Item
+                label={tt("剔除阈值 (剩余 %)", "Cutoff (remaining %)")}
+                name="quotaPreflightThresholdPercent"
+                tooltip={tt("剩余配额降到该值及以下时剔除该账户", "Skip the account at or below this remaining %")}
+              >
+                <InputNumber min={0} max={99} style={{ width: "100%" }} addonAfter="%" />
+              </Form.Item>
+            </Col>
+
+            <Col xs={24} sm={6}>
+              <Form.Item
+                label={tt("告警阈值 (剩余 %)", "Warn (remaining %)")}
+                name="quotaPreflightWarnPercent"
+                tooltip={tt("剩余配额降到该值及以下时提前告警，应高于剔除阈值", "Warn at or below this remaining %; must be higher than the cutoff")}
+              >
+                <InputNumber min={0} max={100} style={{ width: "100%" }} addonAfter="%" />
               </Form.Item>
             </Col>
           </Row>

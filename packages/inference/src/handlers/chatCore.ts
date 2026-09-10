@@ -451,7 +451,14 @@ import { isLocalStreamLifecycleError } from "@orbit/core/resilience/circuit-brea
 import { shouldIsolateProbeFailures } from "@orbit/core/network/probe-origin";
 import { writeTerminalStatus } from "@orbit/core/shared/terminal-status";
 import { extractFacts } from "../services/memoryRuntime.ts";
-import { handleToolCallExecution } from "@orbit/core/edge/skills-runtime";
+import {
+  handleToolCallExecution,
+  interceptToolCalls,
+  runServerOwnedToolLoop,
+  shouldRunServerOwnedToolLoop,
+  isServerOwnedToolLoopEnabled,
+  LOOP_BUDGET_MS,
+} from "@orbit/core/edge/skills-runtime";
 import { MEMORY_BUILTIN_TOOL_NAMES } from "@orbit/core/edge/skills-runtime";
 import { ORBIT_RESPONSE_HEADERS } from "@orbit/contracts/gateway-headers";
 import { resolveProviderId } from "@orbit/providers/catalog";
@@ -1958,10 +1965,21 @@ export async function handleChatCore({
         // target's window; min(...allTargets) is only a defensive fallback —
         // the old unconditional min compressed a 1M-target request at the
         // smallest sibling's window ("agent keeps forgetting things").
+        // An operator-set combo `context_length` is an explicit declaration and
+        // outranks the inferred per-target window — see resolveComboContextLimit().
+        const rawComboContextLength = (comboConfig as { context_length?: unknown } | null)
+          ?.context_length;
+        const comboContextLength =
+          typeof rawComboContextLength === "number" &&
+          Number.isFinite(rawComboContextLength) &&
+          rawComboContextLength > 0
+            ? rawComboContextLength
+            : null;
         const resolved = resolveComboContextLimit({
           provider,
           model: effectiveModel,
           comboTargetLimits,
+          comboContextLength,
         });
         contextLimit = resolved.limit;
         log?.info?.(
@@ -3041,13 +3059,17 @@ export async function handleChatCore({
   // leak (GHSA-6c7w-56xp-wpc6).
   const dedupHash = dedupEnabled ? computeRequestHash(dedupRequestBody, apiKeyInfo?.id) : null;
 
-  const executeProviderRequest = async (modelToCall = effectiveModel, allowDedup = false) => {
+  const executeProviderRequest = async (
+    modelToCall = effectiveModel,
+    allowDedup = false,
+    sourceBodyOverride?: Record<string, unknown>
+  ) => {
     const execute = async () => {
       // Upstream body preparation extracted to chatCore/upstreamBody.ts (#3501 — first internal
       // sub-slice of executeProviderRequest); produces the body sent upstream (payload rules +
       // tool-limit truncation + prompt_cache_key injection).
       let bodyToSend = await prepareUpstreamBody({
-        translatedBody,
+        translatedBody: sourceBodyOverride ?? translatedBody,
         modelToCall,
         provider,
         targetFormat,
@@ -5164,24 +5186,135 @@ export async function handleChatCore({
     ].filter((name): name is string => Boolean(name));
     if (customSkillExecutionEnabled || builtinToolNames.length > 0) {
       const skillSessionId = pipelineSessionId;
+      const skillContext = {
+        apiKeyId: memoryOwnerId || "local",
+        sessionId: skillSessionId,
+        requestId: skillRequestId,
+        builtinToolNames,
+        customSkillExecutionEnabled,
+        provider,
+        model: effectiveModel,
+        resolveProviderCredentials: (providerId, quotaPreflight) =>
+          quotaPreflight
+            ? getProviderCredentialsWithQuotaPreflight(providerId)
+            : getProviderCredentials(providerId),
+      };
 
-      translatedResponse = await handleToolCallExecution(
-        translatedResponse,
-        getSkillsModelIdForFormat(sourceFormat),
-        {
-          apiKeyId: memoryOwnerId || "local",
-          sessionId: skillSessionId,
-          requestId: skillRequestId,
-          builtinToolNames,
-          customSkillExecutionEnabled,
-          provider,
-          model: effectiveModel,
-          resolveProviderCredentials: (providerId, quotaPreflight) =>
-            quotaPreflight
-              ? getProviderCredentialsWithQuotaPreflight(providerId)
-              : getProviderCredentials(providerId),
+      // Server-owned tool follow-up (#12867): when a non-streaming Chat Completions / Messages
+      // turn ends on Orbit-owned tools, resume the same connection with the executed results
+      // instead of handing the intermediate step back to the caller. Flag-gated so the default
+      // behaviour stays the inline tool-result append below.
+      if (
+        shouldRunServerOwnedToolLoop({
+          enabled: isServerOwnedToolLoopEnabled(),
+          stream,
+          isResponsesEndpoint,
+          sourceFormat,
+        })
+      ) {
+        const loop = await runServerOwnedToolLoop({
+          initialResponse: translatedResponse,
+          initialUsage: isJsonRecord(usage) ? (usage as Record<string, unknown>) : null,
+          initialConnectionId: connectionId,
+          sourceBody: body as Record<string, unknown>,
+          sourceFormat: sourceFormat === FORMATS.CLAUDE ? "claude" : "openai",
+          executionContext: skillContext,
+          executeServerOwned: async (calls, ctx) => {
+            const results = await interceptToolCalls(calls, ctx);
+            return results.map((entry, index) => ({
+              id: entry.id,
+              name: calls[index]?.name ?? "",
+              result: entry.result,
+            }));
+          },
+          resumeUpstream: async (nextSourceBody) => {
+            try {
+              const followUpTargetBody = translateRequest(
+                sourceFormat,
+                targetFormat,
+                effectiveModel,
+                nextSourceBody,
+                false,
+                credentials,
+                provider,
+                reqLogger
+              );
+              const followUp = await executeProviderRequest(
+                effectiveModel,
+                false,
+                followUpTargetBody
+              );
+              if (!followUp.response.ok) {
+                return {
+                  kind: "error" as const,
+                  message: `Follow-up provider leg returned ${followUp.response.status}`,
+                  status: followUp.response.status,
+                };
+              }
+              const parsedFollowUp = await parseNonStreamingResponseBody({
+                providerResponse: followUp.response,
+                upstreamStream: undefined,
+                providerHeaders: followUp.headers,
+                finalBody: followUp.transformedBody,
+                targetFormat,
+                model,
+                log,
+              });
+              if (parsedFollowUp.kind !== "ok") {
+                return {
+                  kind: "error" as const,
+                  message: parsedFollowUp.message,
+                  status: HTTP_STATUS.BAD_GATEWAY,
+                };
+              }
+              const followUpResponse = needsTranslation(
+                parsedFollowUp.responsePayloadFormat,
+                clientResponseFormat
+              )
+                ? translateNonStreamingResponse(
+                    parsedFollowUp.responseBody,
+                    parsedFollowUp.responsePayloadFormat,
+                    clientResponseFormat,
+                    responseToolNameMap,
+                    extractToolSchemaMap(followUp.transformedBody)
+                  )
+                : parsedFollowUp.responseBody;
+              return {
+                kind: "ok" as const,
+                response: followUpResponse,
+                connectionId: getCurrentConnectionId(),
+                usage: isJsonRecord(followUpResponse.usage) ? followUpResponse.usage : null,
+              };
+            } catch (error) {
+              return {
+                kind: "error" as const,
+                message:
+                  error instanceof Error ? error.message : "Follow-up provider leg failed",
+                status: HTTP_STATUS.BAD_GATEWAY,
+              };
+            }
+          },
+          abortSignal: streamController?.signal,
+          deadlineAtMs: startTime + LOOP_BUDGET_MS,
+        });
+
+        if (loop.kind === "error") {
+          return createErrorResult(
+            loop.error?.status ?? HTTP_STATUS.SERVER_ERROR,
+            loop.error?.message ?? "Server-owned tool follow-up failed"
+          );
         }
-      );
+        if (loop.response) translatedResponse = loop.response;
+        if (loop.cumulativeUsage) {
+          (translatedResponse as Record<string, unknown>).usage = loop.cumulativeUsage;
+        }
+      } else {
+        translatedResponse = await handleToolCallExecution(
+          translatedResponse,
+          getSkillsModelIdForFormat(sourceFormat),
+          skillContext
+        );
+      }
     }
 
     const guardrailContext = buildPostCallGuardrailContext({

@@ -90,6 +90,7 @@ import {
   buildSubscriptionQuotaFallback,
   buildWeeklyQuotaFallback,
   buildSessionQuotaFallback,
+  SUBSCRIPTION_QUOTA_COOLDOWN_MS,
 } from "./quotaTextCooldowns.ts";
 import {
   ACCOUNT_DEACTIVATED_SIGNALS,
@@ -1488,7 +1489,7 @@ export function classifyError(
   if (status === HTTP_STATUS.UNAUTHORIZED || status === HTTP_STATUS.FORBIDDEN) {
     return RateLimitReason.AUTH_ERROR;
   }
-  if (status === HTTP_STATUS.PAYMENT_REQUIRED) {
+  if (status === HTTP_STATUS.PAYMENT_REQUIRED || status === HTTP_STATUS.PLAN_LIMIT_EXCEEDED) {
     return RateLimitReason.QUOTA_EXHAUSTED;
   }
   if (status === HTTP_STATUS.RATE_LIMITED) {
@@ -2041,6 +2042,26 @@ export function checkFallbackError(
 
   if (status === HTTP_STATUS.NOT_ACCEPTABLE || retryableStatuses.has(status)) {
     return buildRetryableFallback(RateLimitReason.SERVER_ERROR);
+  }
+
+  // #12139 — 432: plan limit reached (Tavily, Context7 and other plan-metered search
+  // upstreams). Treated as an exhausted quota so the connection cools down instead of
+  // hot-looping the same plan-limited account on every search attempt.
+  if (status === HTTP_STATUS.PLAN_LIMIT_EXCEEDED) {
+    const subResult = buildSubscriptionQuotaFallback(
+      errorStr,
+      () => getUpstreamRetryHint()?.retryAfterMs ?? null,
+      parseRetryFromErrorText,
+      provider
+    );
+    if (subResult) return subResult;
+    const cooldownMs = getUpstreamRetryHint()?.retryAfterMs ?? SUBSCRIPTION_QUOTA_COOLDOWN_MS;
+    return {
+      shouldFallback: true,
+      cooldownMs,
+      baseCooldownMs: cooldownMs,
+      reason: RateLimitReason.QUOTA_EXHAUSTED,
+    };
   }
 
   // 400 — context overflow / malformed request / model access denied

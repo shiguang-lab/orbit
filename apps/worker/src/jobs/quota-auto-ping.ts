@@ -25,6 +25,7 @@ import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { getExecutor } from "@orbit/inference/executors/index";
 import type { BaseExecutor } from "@orbit/inference/executors/base";
 import { getCodexUsage } from "@orbit/inference/services/usage/codex";
+import { throttleQuotaFetch } from "@orbit/inference/services/quotaFetchThrottle";
 import {
   getSettings,
 } from "@orbit/core/db/settings";
@@ -78,6 +79,12 @@ export interface QuotaAutoPingDeps {
     accessToken?: string,
     providerSpecificData?: JsonRecord
   ) => Promise<JsonRecord>;
+  /**
+   * #11904: the #6009/#6058 gate that spaces genuine upstream quota fetches. Every
+   * other Codex quota read is behind it; this scheduler's read has to be too, since
+   * it runs unattended once a minute per connection.
+   */
+  throttleQuotaFetch: () => Promise<void>;
   getExecutor: (provider: string) => Promise<BaseExecutor>;
   canExecuteProvider: (provider: string) => boolean;
   isConnectionUnavailableToAuxiliaryActivity: (connectionId: string) => Promise<boolean>;
@@ -141,6 +148,7 @@ export function createDefaultQuotaAutoPingDeps(): QuotaAutoPingDeps {
     refreshAndUpdateCredentials: async (connection) =>
       refreshAndUpdateCredentials(connection as never),
     getCodexUsage,
+    throttleQuotaFetch,
     getExecutor,
     canExecuteProvider: (provider) => getCircuitBreaker(provider).canExecute(),
     isConnectionUnavailableToAuxiliaryActivity,
@@ -388,6 +396,10 @@ async function pingConnection(
   const current = await refreshConnectionForPing(connection, provider, deps, state, key, nowMs);
   if (!current) return;
 
+  // Pace this the same way every other quota fetcher does. Placed after the skip
+  // checks above so a connection that never reaches the network does not consume a
+  // slot and delay the ones that do.
+  await deps.throttleQuotaFetch();
   const usage = await deps.getCodexUsage(current.accessToken, current.providerSpecificData);
   const quotas = (usage.quotas as JsonRecord) || {};
   const quota = quotas[providerConfig.quotaKey] as JsonRecord | undefined;

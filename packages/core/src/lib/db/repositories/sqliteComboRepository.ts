@@ -42,10 +42,16 @@ function getComboId(value: unknown): string | null {
   return typeof row.id === "string" && row.id.trim().length > 0 ? row.id : null;
 }
 
+/**
+ * Enforces the SQLite row's primary key id on the parsed JSON record.
+ * The database row.id column is always authoritative over any stale id persisted inside the
+ * data JSON blob (e.g. left behind by duplication or import), otherwise GET /api/combos returns
+ * an id that no longer matches the row and subsequent DELETE/PUT targets 404.
+ */
 function withRowId(payload: string, row: JsonRecord): JsonRecord {
   const parsed = withSortOrder(payload, getSortOrder(row));
   const comboId = getComboId(row);
-  if (comboId && typeof parsed.id !== "string") {
+  if (comboId) {
     parsed.id = comboId;
   }
   return parsed;

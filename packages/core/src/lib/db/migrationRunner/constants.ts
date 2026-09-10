@@ -179,6 +179,33 @@ export const RENAMED_MIGRATION_COMPATIBILITY = [
     toVersion: "153",
     toName: "radar_local_model_state",
   },
+  // Renamed-in-place migrations: the version slot was reused under a new name, so a
+  // database that applied the old name must be reconciled against the current file
+  // instead of re-running the migration.
+  {
+    fromVersion: "056",
+    fromName: "provider_default",
+    toVersion: "056",
+    toName: "mcp_accessibility_compression",
+  },
+  {
+    fromVersion: "073",
+    fromName: "discovery_results",
+    toVersion: "073",
+    toName: "per_model_token_limits",
+  },
+  {
+    fromVersion: "077",
+    fromName: "plugin_metrics",
+    toVersion: "077",
+    toName: "api_key_stream_default_mode",
+  },
+  {
+    fromVersion: "101",
+    fromName: "proxy_pool_rotation",
+    toVersion: "101",
+    toName: "api_key_usage_limits",
+  },
 ] as const;
 
 export const LEGACY_VERSION_SLOT_MIGRATIONS = [

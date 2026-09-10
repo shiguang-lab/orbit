@@ -26,13 +26,13 @@ function projectSkillResultForPublicResponse(result: unknown): unknown {
   return projectSkillOutputForBoundary(result as Record<string, unknown>);
 }
 
-interface ToolCall {
+export interface ToolCall {
   id: string;
   name: string;
   arguments: Record<string, unknown>;
 }
 
-interface ExecutionContext {
+export interface ExecutionContext {
   apiKeyId: string;
   sessionId: string;
   requestId: string;
@@ -203,8 +203,16 @@ export async function interceptToolCalls(
   return results;
 }
 
-export function extractToolCalls(response: any, modelId: string): ToolCall[] {
-  const provider = detectProvider(modelId);
+export function extractToolCalls(response: any, modelIdOrSourceFormat: string): ToolCall[] {
+  // Accept either a sourceFormat ("openai" | "claude") or a model ID. The follow-up loop
+  // always knows the request's source format, and classifying tool calls by it avoids relying
+  // on a model-alias heuristic that can mis-attribute provider-specific shapes.
+  const format =
+    modelIdOrSourceFormat === "openai" || modelIdOrSourceFormat === "claude"
+      ? modelIdOrSourceFormat
+      : undefined;
+  const provider =
+    format === "claude" ? "anthropic" : format === "openai" ? "openai" : detectProvider(modelIdOrSourceFormat);
 
   switch (provider) {
     case "openai": {
@@ -438,4 +446,128 @@ export async function handleToolCallExecution(
     default:
       return response;
   }
+}
+
+/**
+ * Split a response's tool calls into those Orbit owns (builtins and registered skills) and
+ * those the caller's own runtime must run. The follow-up loop only resumes the upstream turn
+ * when every call is server-owned; a mixed response is handed back untouched minus the
+ * server-owned subset.
+ */
+export async function classifyServerOwnedCalls(
+  toolCalls: ToolCall[],
+  context: ExecutionContext
+): Promise<{ serverOwned: ToolCall[]; clientNative: ToolCall[] }> {
+  await skillRegistry.loadFromDatabase(context.apiKeyId);
+
+  const serverOwned: ToolCall[] = [];
+  const clientNative: ToolCall[] = [];
+  for (const call of toolCalls) {
+    if (typeof call?.name !== "string" || !call.name) {
+      clientNative.push(call);
+      continue;
+    }
+    const isBuiltin = resolveBuiltinHandlerName(call.name, context) !== null;
+    const isCustom =
+      !isBuiltin &&
+      context.customSkillExecutionEnabled !== false &&
+      isRegisteredCustomSkill(call.name, context.apiKeyId);
+    if (isBuiltin || isCustom) serverOwned.push(call);
+    else clientNative.push(call);
+  }
+  return { serverOwned, clientNative };
+}
+
+function openAiMessageToolCalls(response: Record<string, unknown>): Record<string, unknown>[] {
+  const choices = Array.isArray(response.choices) ? response.choices : [];
+  const message = choices.length > 0 ? (choices[0] as Record<string, unknown>)?.message : null;
+  const raw = message && typeof message === "object" ? (message as any).tool_calls : null;
+  return Array.isArray(raw) ? raw : [];
+}
+
+/**
+ * Render a response that ends on server-owned tool calls without continuing the turn: the
+ * server-owned calls are resolved inline (bounded text) and the response is returned as a
+ * terminal answer, leaving any client-native calls intact for the caller to run.
+ */
+export function formatEscapeHatchResponse(
+  response: Record<string, unknown>,
+  serverCalls: ToolCall[],
+  results: Array<{ id: string; name: string; result: unknown }>,
+  clientCalls: ToolCall[],
+  sourceFormat: "openai" | "claude",
+  serializedResultTextById?: Map<string, string>
+): Record<string, unknown> {
+  const serverIds = new Set(serverCalls.map((call) => call.id));
+  const textFor = (result: { id: string; result: unknown }) =>
+    serializedResultTextById?.get(result.id) ?? JSON.stringify(result.result);
+
+  if (sourceFormat === "claude") {
+    const remainingContent = (Array.isArray(response.content) ? response.content : []).filter(
+      (block: any) => !(block?.type === "tool_use" && serverIds.has(block.id))
+    );
+    const resultTextBlocks = results
+      .filter((result) => serverIds.has(result.id))
+      .map((result) => ({ type: "text", text: `[${result.name} result]\n${textFor(result)}` }));
+    const firstRemainingIndex = remainingContent.findIndex((block: any) => block?.type === "tool_use");
+    const content =
+      firstRemainingIndex === -1
+        ? [...remainingContent, ...resultTextBlocks]
+        : [
+            ...remainingContent.slice(0, firstRemainingIndex),
+            ...resultTextBlocks,
+            ...remainingContent.slice(firstRemainingIndex),
+          ];
+    const formatted: Record<string, unknown> = { ...response, content };
+    const remainingToolUseCount = remainingContent.filter(
+      (block: any) => block?.type === "tool_use"
+    ).length;
+    if (remainingToolUseCount === 0 && clientCalls.length === 0) {
+      formatted.stop_reason = "end_turn";
+      formatted.stop_sequence = null;
+    }
+    return formatted;
+  }
+
+  const responsesOutput = getResponsesOutputContainer(response);
+  const resultTexts = results
+    .filter((result) => serverIds.has(result.id))
+    .map((result) => `[${result.name} result]\n${textFor(result)}`)
+    .join("\n\n");
+
+  if (responsesOutput) {
+    const functionOutputs = results
+      .filter((result) => serverIds.has(result.id))
+      .map((result) => ({
+        type: "function_call_output",
+        call_id: result.id,
+        output: textFor(result),
+      }));
+    if (responsesOutput.root === responsesOutput.responseRoot) {
+      return { ...response, output: [...responsesOutput.output, ...functionOutputs] };
+    }
+    return {
+      ...response,
+      response: {
+        ...responsesOutput.responseRoot,
+        output: [...responsesOutput.output, ...functionOutputs],
+      },
+    };
+  }
+
+  const remainingToolCalls = openAiMessageToolCalls(response).filter((call: any) => {
+    const id = call?.id || call?.call_id;
+    return !(typeof id === "string" && serverIds.has(id));
+  });
+  const formatted = JSON.parse(JSON.stringify(response)) as Record<string, unknown>;
+  const choices = Array.isArray(formatted.choices) ? (formatted.choices as any[]) : [];
+  if (choices[0]?.message) {
+    const existing = typeof choices[0].message.content === "string" ? choices[0].message.content : "";
+    choices[0].message.content = existing ? `${existing}\n\n${resultTexts}` : resultTexts;
+    choices[0].message.tool_calls = remainingToolCalls.length > 0 ? remainingToolCalls : undefined;
+    if (remainingToolCalls.length === 0 && clientCalls.length === 0) {
+      choices[0].finish_reason = "stop";
+    }
+  }
+  return formatted;
 }

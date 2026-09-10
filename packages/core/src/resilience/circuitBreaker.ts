@@ -2,6 +2,7 @@ export {
   CircuitBreakerOpenError,
   getAllCircuitBreakerStatuses,
   getCircuitBreaker,
+  isLocalExecutionError,
   isLocalStreamLifecycleError,
   isModelCapacityOverloadError,
   resetAllCircuitBreakers,
