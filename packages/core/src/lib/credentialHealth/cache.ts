@@ -175,27 +175,49 @@ export function getAllCredentialHealth(): Record<string, CredentialHealthStatus>
   return result;
 }
 
-/**
- * Get cache summary stats for health API.
- */
-export function getCredentialHealthSummary(): {
+export interface CredentialHealthSummary {
   total: number;
   healthy: number;
   failed: number;
   unknown: number;
   stale: number;
-} {
-  const all = getAllCredentialHealth();
-  const entries = Object.values(all);
-  const now = Date.now();
+}
 
-  return {
-    total: entries.length,
-    healthy: entries.filter((e) => e.status === "active").length,
-    failed: entries.filter((e) => e.status === "error").length,
-    unknown: entries.filter((e) => e.status === "unknown").length,
-    stale: entries.filter((e) => now - e.lastTested.getTime() > STALE_THRESHOLD_MS).length,
-  };
+/**
+ * Snapshot credential health for GET /api/monitoring/health.
+ *
+ * Never probes upstream and never expires entries on read. Expired / old
+ * rows stay in the counts so a scrape can return immediately while the
+ * background scheduler refreshes them (#12532).
+ */
+export function getCachedCredentialHealthSummary(): CredentialHealthSummary {
+  const state = getCacheState();
+  const now = Date.now();
+  let total = 0;
+  let healthy = 0;
+  let failed = 0;
+  let unknown = 0;
+  let stale = 0;
+
+  for (const entry of state.cache.values()) {
+    total += 1;
+    if (entry.status.status === "active") healthy += 1;
+    else if (entry.status.status === "error") failed += 1;
+    else unknown += 1;
+    if (now - entry.status.lastTested.getTime() > STALE_THRESHOLD_MS || now > entry.expiresAt) {
+      stale += 1;
+    }
+  }
+
+  return { total, healthy, failed, unknown, stale };
+}
+
+/**
+ * Get cache summary stats for health API.
+ * Monitoring scrapes must use the stale-safe snapshot (no live probes).
+ */
+export function getCredentialHealthSummary(): CredentialHealthSummary {
+  return getCachedCredentialHealthSummary();
 }
 
 /**

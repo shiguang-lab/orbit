@@ -11,7 +11,7 @@ const manifest = JSON.parse(
 ) as { exports: Record<string, { types?: string; import?: string } | string> };
 
 const contracts = {
-  "./db/connection": ["getDbInstance"],
+  "./db/connection": ["getDbInstance", "resetDbInstance"],
   "./db/ping": ["pingDb"],
   "./db/health": ["isNativeSqliteLoadError", "runManagedDbHealthCheck", "runManagedWalCheckpoint"],
   "./db/runtime-lifecycle": ["closeDbInstance"],

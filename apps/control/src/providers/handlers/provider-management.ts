@@ -16,7 +16,6 @@ import {
   CODEX_SPARK_QUOTA_SESSION,
   CODEX_SPARK_QUOTA_WEEKLY,
 } from "@orbit/inference/config/codexQuotaScopes";
-import { finalizeValidatedChatGptWebCodexSecrets } from "@orbit/inference/services/chatgptWebCodexAdmin";
 import { testSingleConnection } from "./provider-test/provider-test.handler.js";
 
 type ProviderIdentity = { id: string; provider: string };
@@ -183,6 +182,13 @@ export async function createProvider(request: Request) {
           ? providerSpecificData.validationId
           : "";
       try {
+        // #12355: imported lazily inside this branch only — the module chain
+        // reaches tiktoken's WASM tokenizer via the codex executor graph, and
+        // a static top-level import would pay that cost (and that bundling
+        // risk) on every provider-creation request regardless of provider.
+        const { finalizeValidatedChatGptWebCodexSecrets } = await import(
+          "@orbit/inference/services/chatgptWebCodexAdmin"
+        );
         const finalized = finalizeValidatedChatGptWebCodexSecrets(apiKey || "", validationId);
         persistedApiKey = finalized.encodedCredential;
         providerSpecificData = { ...(providerSpecificData || {}) };

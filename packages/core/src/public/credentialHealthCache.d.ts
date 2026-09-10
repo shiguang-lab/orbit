@@ -28,10 +28,12 @@ export function initCredentialCache(): void;
 export function isCredentialHealthy(connectionId: string): boolean | undefined;
 export function isCredentialStale(connectionId: string): boolean;
 export function getAllCredentialHealth(): Record<string, CredentialHealthStatus>;
-export function getCredentialHealthSummary(): {
+export interface CredentialHealthSummary {
   total: number;
   healthy: number;
   failed: number;
   unknown: number;
   stale: number;
-};
+}
+export function getCachedCredentialHealthSummary(): CredentialHealthSummary;
+export function getCredentialHealthSummary(): CredentialHealthSummary;

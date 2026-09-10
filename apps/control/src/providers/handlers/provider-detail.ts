@@ -27,7 +27,6 @@ import { cleanupProviderModelsAfterConnectionDelete } from "@orbit/core/control/
 import { canUpdateProviderApiKey } from "@orbit/contracts/config/webSessionCredentials";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
 import {
-  finalizeValidatedChatGptWebCodexSecrets,
   decodeChatGptWebCodexSecrets,
   encodeChatGptWebCodexSecrets,
 } from "@orbit/inference/services/chatgptWebCodexAdmin";
@@ -181,6 +180,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
             cookie: incomingSecrets.cookie,
             runtimeKey: incomingSecrets.runtimeKey || existingSecrets.runtimeKey,
           });
+          // #12355: imported lazily — see the chatgptWebCodexAdmin boundary
+          // comment; the static chain reaches tiktoken's WASM tokenizer.
+          const { finalizeValidatedChatGptWebCodexSecrets } = await import(
+            "@orbit/inference/services/chatgptWebCodexAdmin"
+          );
           updateData.apiKey = finalizeValidatedChatGptWebCodexSecrets(
             encoded,
             validationId

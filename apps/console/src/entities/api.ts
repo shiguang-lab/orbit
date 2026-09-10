@@ -1050,6 +1050,10 @@ export interface UsageAnalyticsPayload {
   weeklyPattern: Array<{ day: string; avgTokens: number; totalTokens?: number }>;
   activityMap: Record<string, number>;
   presetSummaries?: Record<string, { totalCost: number; totalRequests?: number }>;
+  // The API reports whether the returned cost figures include token-price
+  // equivalents for flat-rate subscriptions. Billed-cost mode omits it, so
+  // treat anything but an explicit `true` as billed money.
+  includesFlatRateEstimates?: boolean;
 }
 
 export const usageApi = {
@@ -1059,6 +1063,7 @@ export const usageApi = {
     apiKeyIds?: string;
     startDate?: string;
     endDate?: string;
+    includeFlatRateEstimates?: string;
   }) => {
     const q = new URLSearchParams();
     if (params.range) q.set("range", params.range);
@@ -1066,6 +1071,7 @@ export const usageApi = {
     if (params.apiKeyIds) q.set("apiKeyIds", params.apiKeyIds);
     if (params.startDate) q.set("startDate", params.startDate);
     if (params.endDate) q.set("endDate", params.endDate);
+    if (params.includeFlatRateEstimates) q.set("includeFlatRateEstimates", params.includeFlatRateEstimates);
     return api<UsageAnalyticsPayload>(`/usage/analytics?${q.toString()}`);
   },
   getDiversity: () => api<DiversityReport>("/analytics/diversity"),
@@ -3101,7 +3107,7 @@ export interface ProviderStat {
   provider: string;
   totalRequests: number;
   successfulRequests: number;
-  avgLatencyMs: number;
+  avgLatencyMs: number | null;
   totalTokensIn: number;
   totalTokensOut: number;
 }
@@ -3110,7 +3116,7 @@ export interface ModelStat {
   provider: string;
   model: string;
   requests: number;
-  avgLatencyMs: number;
+  avgLatencyMs: number | null;
   successfulRequests: number;
 }
 

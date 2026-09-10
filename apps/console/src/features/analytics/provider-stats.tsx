@@ -108,15 +108,20 @@ export function ProviderStatsPage() {
     let reqs = 0;
     let succ = 0;
     let totalLatency = 0;
+    let latencyRequests = 0;
     for (const p of providers) {
       reqs += p.totalRequests;
       succ += p.successfulRequests;
+      // Providers with no measured duration must not dilute the average with a
+      // fabricated 0ms — they are simply excluded from the weighted mean.
+      if (p.avgLatencyMs == null) continue;
       totalLatency += p.avgLatencyMs * p.totalRequests;
+      latencyRequests += p.totalRequests;
     }
     return {
       totalRequests: reqs,
       totalSuccessful: succ,
-      avgLatency: reqs > 0 ? Math.round(totalLatency / reqs) : 0,
+      avgLatency: latencyRequests > 0 ? Math.round(totalLatency / latencyRequests) : null,
     };
   }, [providers]);
 
@@ -174,8 +179,8 @@ export function ProviderStatsPage() {
       title: tt("平均延迟", "Avg Latency"),
       dataIndex: "avgLatencyMs",
       key: "avgLatencyMs",
-      sorter: (a, b) => a.avgLatencyMs - b.avgLatencyMs,
-      render: (ms: number) => formatLatency(ms),
+      sorter: (a, b) => (a.avgLatencyMs ?? -1) - (b.avgLatencyMs ?? -1),
+      render: (ms: number | null) => formatLatency(ms),
     },
     {
       title: tt("输入 Token", "Input Tokens"),
@@ -237,7 +242,7 @@ export function ProviderStatsPage() {
         title: tt("平均延迟", "Avg Latency"),
         dataIndex: "avgLatencyMs",
         key: "avgLatencyMs",
-        render: (ms: number) => formatLatency(ms),
+        render: (ms: number | null) => formatLatency(ms),
       },
     ];
 

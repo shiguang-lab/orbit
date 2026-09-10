@@ -17,7 +17,9 @@ export async function getMoonshotUsage(connection: Record<string, unknown>) {
     const data = json.data && typeof json.data === "object" ? json.data as Record<string, unknown> : json;
     const available = Number(data.available_balance ?? data.availableBalance ?? data.balance);
     if (!Number.isFinite(available)) return { message: "Moonshot balance response did not include available balance." };
-    const balance: UsageQuota = { used: 0, total: 0, remaining: available, remainingPercentage: available > 0 ? 100 : 0, resetAt: null, unlimited: true, currency: "CNY", displayName: "Available Balance" };
+    // Absolute CNY balance bucket: leftover follows the balance, never a fake
+    // percentage, and `unlimited` is false so the dashboard renders credits (¥).
+    const balance: UsageQuota = { used: 0, total: 0, remaining: available, remainingPercentage: available > 0 ? 100 : 0, resetAt: null, unlimited: false, currency: "CNY", displayName: "Available Balance" };
     return { plan: "Moonshot Open Platform", quotas: { balance } };
   } catch (error) { return { message: `Moonshot balance error: ${error instanceof Error ? error.message : String(error)}` }; }
 }

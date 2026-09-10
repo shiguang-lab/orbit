@@ -47,7 +47,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const data = validation.data;
     const payload: Parameters<typeof updateApiKeyPermissions>[1] = {};
     for (const field of [
-      "name", "modelAccessMode", "allowedModels", "blockedModels", "allowedCombos", "allowedConnections",
+      "name", "modelAccessMode", "allowedModels", "blockedModels", "allowedCombos",
       "noLog", "autoResolve", "isActive", "throttleDelayMs", "isBanned", "expiresAt", "maxSessions",
       "accessSchedule", "rateLimits", "scopes", "allowedEndpoints", "streamDefaultMode", "compressionEnabled",
       "cacheDefaultMode", "disableNonPublicModels", "allowUsageCommand", "usageLimitEnabled", "dailyUsageLimitUsd",
@@ -56,13 +56,30 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       const value = data[field];
       if (value !== undefined) (payload as Record<string, unknown>)[field] = value;
     }
+    // Connection access is a two-state policy: "all" clears the allow-list so the key can
+    // reach every active connection; otherwise the explicit allow-list is persisted as-is.
+    if (data.connectionAccessMode === "all") {
+      payload.allowedConnections = [];
+    } else if (data.allowedConnections !== undefined) {
+      payload.allowedConnections = data.allowedConnections;
+    }
     const updated = await updateApiKeyPermissions(id, payload);
     if (!updated) return json({ error: "Key not found" }, { status: 404 });
     await syncKeysToCloudIfEnabled();
     return json({ message: "API key settings updated successfully", ...payload });
   } catch (error) {
-    if (error instanceof ApiKeyPolicyInvariantError) {
-      return json(buildErrorBody(400, error.message, null, { type: "lease_error", code: error.code }), { status: 400 });
+    if (
+      error instanceof ApiKeyPolicyInvariantError ||
+      (error instanceof Error && (error as { code?: string }).code === "LEASE_KEY_POLICY_INVALID")
+    ) {
+      const leaseError = error as Error & { code?: string };
+      return json(
+        buildErrorBody(400, leaseError.message, null, {
+          type: "lease_error",
+          code: leaseError.code || "LEASE_KEY_POLICY_INVALID",
+        }),
+        { status: 400 }
+      );
     }
     log.error("keys", "Error updating key permissions", error);
     return json({ error: "Failed to update permissions" }, { status: 500 });

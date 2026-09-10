@@ -3,6 +3,7 @@ export function findExistingOAuthConnectionMatch(...args: any[]): any;
 export function buildOAuthConnectionCreatePayload(...args: any[]): any;
 export function classifyKiroSocialPoll(...args: any[]): any;
 export function normalizeCodexImportRecord(...args: any[]): any;
+export function preserveExistingCodexConnectionState(...args: any[]): any;
 export function flattenCodexImportPayload(...args: any[]): any;
 export function extractCodexAccountInfo(...args: any[]): any;
 export function parseCodexSessionJson(...args: any[]): any;

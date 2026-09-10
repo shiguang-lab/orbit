@@ -14,7 +14,6 @@ import {
 import { syncToCloud } from "@orbit/core/sync/cloud";
 import { setQuotaCache } from "@orbit/core/quota/cache";
 import { buildClaudeExtraUsageConnectionUpdate } from "@orbit/core/usage/claude-extra-usage";
-import { isConnectionUnavailableToAuxiliaryActivity } from "@orbit/core/shared/connection-isolation";
 import { clearRecoveredProviderState } from "@orbit/inference/services/auth";
 import { getMachineId } from "@orbit/core/usage/provider-limits-support/machine";
 import { USAGE_SUPPORTED_PROVIDERS } from "@orbit/providers/catalog";
@@ -860,9 +859,6 @@ async function fetchLiveProviderLimitsWithOptions(
   connection: ProviderConnectionLike;
   usage: JsonRecord;
 }> {
-  if (await isConnectionUnavailableToAuxiliaryActivity(connectionId)) {
-    throw withStatus(new Error("Usage refresh deferred while an exclusive lease is active"), 409);
-  }
   let connection = (await getProviderConnectionById(
     connectionId
   )) as unknown as ProviderConnectionLike | null;
@@ -1073,16 +1069,7 @@ export async function syncAllProviderLimits(
   const connectionRows = (await getProviderConnections({
     isActive: true,
   })) as unknown as ProviderConnectionLike[];
-  const connections = (
-    await Promise.all(
-      connectionRows.map(async (connection) => ({
-        connection,
-        blocked: await isConnectionUnavailableToAuxiliaryActivity(connection.id),
-      }))
-    )
-  )
-    .filter(({ connection, blocked }) => isSupportedUsageConnection(connection) && !blocked)
-    .map(({ connection }) => connection);
+  const connections = connectionRows.filter(isSupportedUsageConnection);
   const cacheEntries: Array<{ connectionId: string; entry: ProviderLimitsCacheEntry }> = [];
   const caches: Record<string, ProviderLimitsCacheEntry> = {};
   const errors: Record<string, string> = {};

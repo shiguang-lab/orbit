@@ -16,6 +16,33 @@ function ensureBackup(configPath) {
   return backupPath;
 }
 
+// Claude Code's settings.json holds user-level state (hooks, statusLine,
+// effortLevel, custom env keys). Regenerating it from scratch would wipe
+// those, so `config set claude` merges: existing settings first, generated
+// keys on top, with `env` merged key-by-key (#12407).
+function mergeClaudeSettings(existingContent, generatedContent) {
+  const generated = JSON.parse(generatedContent);
+  let current = {};
+  if (existingContent && existingContent.trim()) {
+    current = JSON.parse(existingContent);
+    if (!current || typeof current !== "object" || Array.isArray(current)) current = {};
+  }
+  return JSON.stringify(
+    {
+      ...current,
+      ...generated,
+      env: {
+        ...(current.env && typeof current.env === "object" && !Array.isArray(current.env)
+          ? current.env
+          : {}),
+        ...(generated.env || {}),
+      },
+    },
+    null,
+    2
+  );
+}
+
 async function runConfigListCommand(opts = {}) {
   const { detectAllTools } = await import(
     "@orbit/core/cli/tool-detector"
@@ -126,7 +153,12 @@ async function runConfigSetCommand(toolId, opts = {}) {
   const backupPath = ensureBackup(result.configPath);
   if (backupPath) printInfo(`Backup saved to: ${backupPath}`);
 
-  fs.writeFileSync(result.configPath, result.content, "utf-8");
+  let content = result.content;
+  if (toolId === "claude" && fs.existsSync(result.configPath)) {
+    content = mergeClaudeSettings(fs.readFileSync(result.configPath, "utf-8"), result.content);
+  }
+
+  fs.writeFileSync(result.configPath, content, "utf-8");
   printSuccess(`Config written to ${result.configPath}`);
   return 0;
 }

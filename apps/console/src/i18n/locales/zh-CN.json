@@ -2627,7 +2627,7 @@
   "cliTools.ccOnboardingTitle": "网关模型发现的 settings.json",
   "cliTools.ccOnboardingCopy": "复制",
   "cliTools.ccOnboardingCopied": "已复制",
-  "cliTools.ccOnboardingKeyPlaceholder": "<你的 智枢 API 密钥>",
+  "cliTools.ccOnboardingKeyPlaceholder": "'<你的 智枢 API 密钥>'",
   "cliTools.ccOnboardingWindowNote": "Claude Code 对所有不认识的模型 ID 都假设 200K 上下文窗口。如果模型的实际窗口不同，请在下方添加 CLAUDE_CODE_AUTO_COMPACT_WINDOW，这样自动压缩就不会过早触发。",
   "cliTools.failedSave": "保存失败",
   "cliTools.profileSyncTitle": "CLI 配置文件自动同步",

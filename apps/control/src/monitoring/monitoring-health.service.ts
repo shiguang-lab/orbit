@@ -88,11 +88,22 @@ function publicHealthView(payload: unknown): Record<string, unknown> {
 
 @Injectable()
 export class MonitoringHealthService {
+  // #12532: short-TTL cache with stale-while-revalidate. Health is a
+  // frequently-polled endpoint; rebuilding it on the request path (DB reads +
+  // status aggregation) shares the event loop with GET /healthz. After the
+  // first fill, scrapes always receive the last payload immediately. An
+  // expired entry is refreshed in the background — never by awaiting live
+  // credential probes.
   private cache: { payload: unknown; expiresAt: number } | null = null;
+  private refreshInFlight = false;
+  private cacheGeneration = 0;
 
   async read(fullView: boolean): Promise<Response> {
     const now = Date.now();
-    if (this.cache && now <= this.cache.expiresAt) {
+    if (this.cache) {
+      if (now > this.cache.expiresAt) {
+        this.scheduleRefresh();
+      }
       return Response.json(fullView ? this.cache.payload : publicHealthView(this.cache.payload));
     }
 
@@ -107,12 +118,40 @@ export class MonitoringHealthService {
     }
   }
 
+  private scheduleRefresh(): void {
+    if (this.refreshInFlight) return;
+    this.refreshInFlight = true;
+    const generation = this.cacheGeneration;
+    setImmediate(() => {
+      buildMonitoringHealthSnapshot()
+        .then((payload) => {
+          if (generation === this.cacheGeneration) {
+            this.cache = { payload, expiresAt: Date.now() + HEALTH_PAYLOAD_TTL_MS };
+          }
+        })
+        .catch((error) => {
+          console.warn(
+            "[API] GET /api/monitoring/health background refresh failed:",
+            error instanceof Error ? error.message : error
+          );
+        })
+        .finally(() => {
+          this.refreshInFlight = false;
+        });
+    });
+  }
+
   async reset(): Promise<Response> {
     try {
       const { resetCount } = await executeEdgeRuntimeCommand<{ resetCount: number }>({
         command: "resilience.reset",
       });
+      // Bump the generation instead of nulling the cache: an in-flight
+      // background refresh from before the reset must not repopulate stale
+      // breaker state over the freshly-reset snapshot.
+      this.cacheGeneration += 1;
       this.cache = null;
+      this.refreshInFlight = false;
       return Response.json({
         success: true,
         message: `Reset ${resetCount} circuit breaker(s) to healthy state`,

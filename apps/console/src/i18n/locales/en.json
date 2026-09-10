@@ -2628,7 +2628,7 @@
   "cliTools.ccOnboardingTitle": "settings.json for gateway model discovery",
   "cliTools.ccOnboardingCopy": "Copy",
   "cliTools.ccOnboardingCopied": "Copied",
-  "cliTools.ccOnboardingKeyPlaceholder": "<your Orbit API key>",
+  "cliTools.ccOnboardingKeyPlaceholder": "'<your Orbit API key>'",
   "cliTools.ccOnboardingWindowNote": "Claude Code assumes a 200K context window for any model id it does not recognize. For a model with a different real window, add CLAUDE_CODE_AUTO_COMPACT_WINDOW just under it so auto-compaction does not fire too early.",
   "cliTools.failedSave": "Failed to save",
   "cliTools.profileSyncTitle": "CLI profile auto-sync",

@@ -794,6 +794,39 @@ export class DefaultExecutor extends BaseExecutor {
       withDefaults = withoutClientMetadata;
     }
 
+    // #11861: Nous Research inference gateway (portal.nousresearch.com) requires
+    // a top-level `tags` array containing at least a `user=` item on raw API-key
+    // requests. Without `tags`, upstream returns 400 "missing tags". Without
+    // `user=...`, upstream returns 400 "missing user tag".
+    if (
+      this.provider === "nous-research" &&
+      withDefaults &&
+      typeof withDefaults === "object" &&
+      !Array.isArray(withDefaults)
+    ) {
+      const record = withDefaults as Record<string, unknown>;
+      const extraBody = record.extra_body as Record<string, unknown> | undefined;
+
+      const rawTags = Array.isArray(record.tags)
+        ? (record.tags as unknown[])
+        : Array.isArray(extraBody?.tags)
+          ? (extraBody.tags as unknown[])
+          : [];
+
+      const stringTags = rawTags.filter(
+        (t): t is string => typeof t === "string" && t.trim().length > 0
+      );
+
+      const hasUserTag = stringTags.some((t) => t.startsWith("user="));
+      if (!hasUserTag) {
+        const username =
+          typeof record.user === "string" && record.user.trim() ? record.user.trim() : "omniroute";
+        record.tags = [...stringTags, `user=${username}`];
+      } else {
+        record.tags = stringTags;
+      }
+    }
+
     // 9router#1649: Mistral's API returns 422 (extra_forbidden) when an
     // assistant message carries a `reasoning_content` field (replayed thinking
     // from a prior turn, e.g. via the Codex /responses path). The field is

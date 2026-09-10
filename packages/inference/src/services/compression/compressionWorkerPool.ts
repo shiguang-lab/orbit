@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { Worker } from "node:worker_threads";
 import type { CompressionResult } from "./types.ts";
@@ -14,13 +14,59 @@ function positiveInteger(value: string | undefined, fallback: number): number {
   const parsed = Number(value);
   return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : fallback;
 }
-function workerUrl(): URL {
-  const dir = dirname(fileURLToPath(import.meta.url));
-  for (const name of ["compressionWorker.js", "compressionWorker.ts"]) {
-    const candidate = join(dir, name);
-    if (existsSync(candidate)) return pathToFileURL(candidate);
+/** Relative path (from an ancestor dir) to the compression worker entry. */
+const WORKER_JS_REL = join("packages", "inference", "dist", "services", "compression", "compressionWorker.js");
+const WORKER_TS_REL = join("packages", "inference", "src", "services", "compression", "compressionWorker.ts");
+const MAX_WALK_UP = 8;
+
+/**
+ * Walk up from each anchor directory (≤ MAX_WALK_UP levels) and return the first
+ * ancestor that actually contains `relPath`, or null.
+ *
+ * Runtime anchors survive bundlers that rewrite `import.meta.url` to a
+ * build-machine path (the bug this guards against — a Worker pointing at a
+ * nonexistent absolute path crashes every spawn).
+ */
+function firstAncestorWith(anchors: string[], relPath: string): string | null {
+  for (const anchor of anchors) {
+    if (!anchor) continue;
+    let dir = resolve(anchor);
+    for (let i = 0; i <= MAX_WALK_UP; i++) {
+      if (existsSync(join(dir, relPath))) return dir;
+      const parent = dirname(dir);
+      if (parent === dir) break;
+      dir = parent;
+    }
   }
-  return pathToFileURL(join(dir, "compressionWorker.js"));
+  return null;
+}
+
+function runtimeAnchors(): string[] {
+  const anchors = [process.cwd()];
+  const argv1 = process.argv[1];
+  if (typeof argv1 === "string" && argv1) anchors.push(dirname(argv1));
+  return anchors;
+}
+
+function workerUrl(): URL {
+  // Primary: the real module location (accurate under tsx and tsc builds).
+  try {
+    const dir = dirname(fileURLToPath(import.meta.url));
+    for (const name of ["compressionWorker.js", "compressionWorker.ts"]) {
+      const candidate = join(dir, name);
+      if (existsSync(candidate)) return pathToFileURL(candidate);
+    }
+  } catch {
+    // import.meta.url unavailable or rewritten — fall through to anchors.
+  }
+  // Fallback: walk up from runtime anchors to find the built (.js) then
+  // source (.ts) worker entry.
+  const anchors = runtimeAnchors();
+  const jsRoot = firstAncestorWith(anchors, WORKER_JS_REL);
+  if (jsRoot) return pathToFileURL(join(jsRoot, WORKER_JS_REL));
+  const tsRoot = firstAncestorWith(anchors, WORKER_TS_REL);
+  if (tsRoot) return pathToFileURL(join(tsRoot, WORKER_TS_REL));
+  return pathToFileURL(WORKER_JS_REL);
 }
 function unchanged(body: Record<string, unknown>): CompressionResult {
   return { body, compressed: false, stats: null };

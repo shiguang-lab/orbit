@@ -24,6 +24,7 @@ function baseDeps(overrides: Partial<QuotaAutoPingDeps> = {}): QuotaAutoPingDeps
     getExecutor: async () => ({ execute: async () => ({}) }) as never,
     canExecuteProvider: () => true,
     isConnectionUnavailableToAuxiliaryActivity: async () => false,
+    resolvePingModel: async () => "gpt-5.3-codex",
     ...overrides,
   };
 }

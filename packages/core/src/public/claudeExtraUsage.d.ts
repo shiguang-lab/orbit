@@ -27,6 +27,10 @@ export function isClaudeExtraUsageBlockEnabled(
   provider: string | null | undefined,
   providerSpecificData: unknown,
 ): boolean;
+export function isClaudeExtraUsageAllowed(
+  provider: string | null | undefined,
+  providerSpecificData: unknown,
+): boolean;
 export function buildClaudeExtraUsageConnectionUpdate(
   connection: ClaudeExtraUsageConnectionState,
   usage: unknown,

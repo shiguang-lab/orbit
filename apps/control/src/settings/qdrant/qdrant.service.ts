@@ -15,7 +15,8 @@ import {
 } from "@orbit/core/memory/settings";
 import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { providerAllowsOptionalApiKey } from "@orbit/providers/catalog";
-import { getAllEmbeddingModels } from "@orbit/inference/config/embeddingRegistry";
+import { getAllEmbeddingModels, deriveEmbeddingProviderForChatProvider } from "@orbit/inference/config/embeddingRegistry";
+import { REGISTRY } from "@orbit/providers/provider-registry";
 
 type EmbeddingModelOption = {
   value: string;
@@ -114,6 +115,29 @@ export class QdrantService {
         ...(model.dimensions ? { dimensions: model.dimensions } : {}),
       }))
       .sort((a, b) => a.value.localeCompare(b.value));
+
+    // #11390: providers whose embedding models are not in the curated registry
+    // can still serve embeddings on a standard OpenAI-compatible /embeddings
+    // endpoint — derive the config from the chat registry entry (curated
+    // entries always win). Surfaced as a free-text provider option so the
+    // operator can pick `<provider>/<model>` manually.
+    const curatedProviders = new Set(getAllEmbeddingModels().map((model) => model.provider));
+    const derivedOptions: EmbeddingModelOption[] = [];
+    for (const provider of configuredProviders) {
+      if (curatedProviders.has(provider)) continue;
+      const derived = deriveEmbeddingProviderForChatProvider(
+        provider,
+        REGISTRY[provider] as { id?: string; baseUrl?: string | string[] } | undefined,
+      );
+      if (!derived) continue;
+      const value = `${provider}/embed`;
+      if (options.some((option) => option.value === value)) continue;
+      derivedOptions.push({
+        value,
+        label: modelLabel(value, `${provider} (OpenAI-compatible /embeddings)`),
+      });
+    }
+    options.push(...derivedOptions);
 
     // OpenRouter exposes an account-specific embedding catalog in addition to
     // the static registry. This is best effort and never makes the settings UI fail.

@@ -57,7 +57,7 @@ export interface EmbeddingProviderListing {
 export declare function listEmbeddingProviders(): Promise<EmbeddingProviderListing[]>;
 
 export interface MemoryEngineStatus {
-  keyword: { available: true; backend: "FTS5" };
+  keyword: { available: boolean; backend: "FTS5" | "none"; reason: string };
   embedding: {
     source: "remote" | "static" | "transformers" | null;
     model: string | null;

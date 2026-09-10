@@ -298,12 +298,16 @@ function convertContent(content) {
 
     // Function response → collect all, each becomes a separate tool message
     if (part.functionResponse) {
+      // #12191: extract the `result` key explicitly so falsy primitive
+      // results (false / 0 / "" / null) survive instead of collapsing into
+      // the whole response object or an empty one.
+      const resp = part.functionResponse.response;
+      const resultPayload =
+        resp && typeof resp === "object" && "result" in resp ? resp.result : (resp ?? {});
       toolResults.push({
         role: "tool",
         tool_call_id: part.functionResponse.id || part.functionResponse.name,
-        content: JSON.stringify(
-          part.functionResponse.response?.result || part.functionResponse.response || {}
-        ),
+        content: JSON.stringify(resultPayload),
       });
     }
   }

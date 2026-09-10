@@ -16,6 +16,11 @@ export const groqProvider: RegistryEntry = {
       supportsReasoning: false,
     },
     { id: "llama-3.3-70b-versatile", name: "Llama 3.3 70B", supportsReasoning: false },
+    // Same class (#12134/#12379): compound and ALLaM are not reasoning models
+    // on Groq either, so declare it here — undeclared models default to
+    // reasoning-capable via the heuristic and Groq 400s on reasoning_effort.
+    { id: "groq/compound", name: "Groq Compound", supportsReasoning: false },
+    { id: "allam-2-7b", name: "ALLaM 2 7B", supportsReasoning: false },
     { id: "openai/gpt-oss-120b", name: "GPT-OSS 120B" },
     { id: "openai/gpt-oss-20b", name: "GPT-OSS 20B" },
     { id: "qwen/qwen3-32b", name: "Qwen3 32B" },

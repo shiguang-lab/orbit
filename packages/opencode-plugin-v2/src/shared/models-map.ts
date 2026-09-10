@@ -54,7 +54,7 @@ export type OrbitModelsFetcher = (
 export const defaultOrbitModelsFetcher: OrbitModelsFetcher = async (
   baseURL,
   apiKey,
-  timeoutMs = 10_000
+  timeoutMs = 30_000
 ) => {
   if (!apiKey) throw new Error("[orbit-v2] apiKey required to fetch /v1/models");
   if (!baseURL) throw new Error("[orbit-v2] baseURL required to fetch /v1/models");
@@ -76,7 +76,15 @@ export const defaultOrbitModelsFetcher: OrbitModelsFetcher = async (
       signal: controller.signal,
     });
     if (!res.ok) {
-      throw new Error(`[orbit-v2] GET ${url} failed: ${res.status} ${res.statusText}`);
+      // Attach the HTTP status (#12602) so callers can distinguish an expired
+      // credential (401/403) from a transient gateway failure without parsing
+      // the message text.
+      const err = new Error(
+        `[orbit-v2] GET ${url} failed: ${res.status} ${res.statusText}`
+      ) as Error & { statusCode: number; status: number };
+      err.statusCode = res.status;
+      err.status = res.status;
+      throw err;
     }
     const body = (await res.json()) as unknown;
     const rawList: unknown[] = Array.isArray(body)

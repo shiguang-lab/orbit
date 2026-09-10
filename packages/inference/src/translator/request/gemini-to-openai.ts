@@ -147,12 +147,16 @@ function convertGeminiContent(content) {
     }
 
     if (part.functionResponse) {
+      // #12191: `response?.result || response` collapses falsy primitive
+      // results (false / 0 / "" / null) into the whole response object or an
+      // empty one — extract the `result` key explicitly so they survive.
+      const resp = part.functionResponse.response;
+      const resultPayload =
+        resp && typeof resp === "object" && "result" in resp ? resp.result : (resp ?? {});
       return {
         role: "tool",
         tool_call_id: part.functionResponse.id || part.functionResponse.name,
-        content: JSON.stringify(
-          part.functionResponse.response?.result || part.functionResponse.response || {}
-        ),
+        content: JSON.stringify(resultPayload),
       };
     }
   }

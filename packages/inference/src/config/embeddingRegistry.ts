@@ -250,7 +250,7 @@ export const EMBEDDING_PROVIDERS: Record<string, EmbeddingProvider> = {
       {
         id: "google/gemini-embedding-001",
         name: "Gemini Embedding 001 (OpenRouter)",
-        dimensions: 768,
+        dimensions: 3072,
       },
       {
         id: "google/gemini-embedding-2",
@@ -284,7 +284,7 @@ export const EMBEDDING_PROVIDERS: Record<string, EmbeddingProvider> = {
         dimensions: 3072,
         modalities: ["text", "image", "audio", "video", "document"],
       },
-      { id: "gemini-embedding-001", name: "Gemini Embedding 001", dimensions: 768 },
+      { id: "gemini-embedding-001", name: "Gemini Embedding 001", dimensions: 3072 },
     ],
   },
 
@@ -479,6 +479,35 @@ function toProviderScopedModelId(providerId: string, modelId: string): string {
  */
 export function getEmbeddingProvider(providerId: string): EmbeddingProvider | null {
   return EMBEDDING_PROVIDERS[resolveEmbeddingProviderId(providerId)] || null;
+}
+
+/**
+ * Derive an OpenAI-compatible embeddings config for a chat provider that has NO
+ * curated EMBEDDING_PROVIDERS entry (#11390). Works for any registry provider
+ * whose base URL ends in /chat/completions by swapping that suffix for
+ * /embeddings (groq, mistral, together, upstage, fireworks, nvidia,
+ * vercel-ai-gateway, ...). Dynamic-URL providers (no usable static base)
+ * derive to null — they need bespoke URL handling, not a bogus endpoint.
+ *
+ * This is a FALLBACK only: callers must check getEmbeddingProvider() first so
+ * curated entries keep their specialized configuration.
+ */
+export function deriveEmbeddingProviderForChatProvider(
+  providerId: string,
+  chatEntry: { id?: string; baseUrl?: string | string[] } | null | undefined
+): EmbeddingProvider | null {
+  if (!chatEntry) return null;
+  const rawBase = Array.isArray(chatEntry.baseUrl) ? chatEntry.baseUrl[0] : chatEntry.baseUrl;
+  if (!rawBase || typeof rawBase !== "string") return null;
+  const base = rawBase.replace(/\/+$/, "");
+  if (!base.endsWith("/chat/completions")) return null;
+  return {
+    id: providerId,
+    baseUrl: `${base.slice(0, -"/chat/completions".length)}/embeddings`,
+    authType: "apikey",
+    authHeader: "bearer",
+    models: [],
+  };
 }
 
 /**

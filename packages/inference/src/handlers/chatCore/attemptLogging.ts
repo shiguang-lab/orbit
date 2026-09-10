@@ -12,6 +12,7 @@
 
 import { extractProviderWarnings } from "@orbit/core/compliance/provider-audit";
 import { logAuditEvent } from "@orbit/core/compliance/audit-log";
+import { maybeLogToolCallSpecViolation } from "./toolCallSpecViolationAudit.ts";
 import { emit } from "@orbit/core/events/eventBus";
 import type { RequestCompletedPayload, RequestFailedPayload } from "@orbit/core/events/types";
 import { saveCallLog } from "@orbit/core/usage/call-logs";
@@ -271,6 +272,15 @@ export function persistAttemptLogs(args: PersistAttemptLogsArgs, ctx: PersistAtt
       },
     });
   }
+
+  maybeLogToolCallSpecViolation({
+    responseBody,
+    provider,
+    model,
+    connectionId: finalConnectionId,
+    httpStatus: status,
+    requestId: skillRequestId,
+  });
 
   const capturedPipeline = reqLogger?.getPipelinePayloads?.() ?? null;
   const pipelinePayloads = detailedLoggingEnabled

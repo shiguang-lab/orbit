@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { CORS_HEADERS } from "@orbit/contracts/cors";
 import { computeFreeProviderRankings } from "@orbit/core/control/free-provider-rankings";
-import { getRadarCatalog } from "@orbit/core/radar/read";
+import { getCatalogWithoutOverlay, getRadarCatalog } from "@orbit/core/radar/read";
 import { sumUsageTokensThisMonth } from "@orbit/core/usage/summary";
 import { listNoCredentialProviders } from "./provider-credential-requirement.js";
 import {
@@ -50,13 +50,31 @@ function buildFreeTierSummary(options: {
   authenticated: boolean;
 }): Record<string, unknown> {
   const { entries, meta } = getRadarCatalog();
-  const serveOverlay = meta !== null && (meta.tier !== "live" || options.authenticated);
+  // #12215: a feed built before the catalog this release ships is not an
+  // overlay, it is a regression — the totals would be recomputed from data
+  // older than the baseline the operator installed. An unknown build date —
+  // a cache row written before the column existed — counts as older: unknown
+  // never outranks known.
+  const overlayIsFresh =
+    meta !== null &&
+    meta.generatedAt !== null &&
+    meta.generatedAt.slice(0, 10) >= FREE_CATALOG_CURATED_AT;
+  const serveOverlay = overlayIsFresh && (meta.tier !== "live" || options.authenticated);
+  // Withheld only because it is stale: drop the feed, keep the operator's own
+  // local state. Falling back to the raw baseline here would resurrect models
+  // the operator disabled or tombstoned.
+  const overlayWithheldAsStale = meta !== null && !overlayIsFresh;
   const totals = serveOverlay
     ? computeFreeModelTotals({
         excludeTosAvoid: options.excludeTosAvoid,
         entries: entries.map(toBudgetEntry),
       })
-    : computeFreeModelTotals({ excludeTosAvoid: options.excludeTosAvoid });
+    : overlayWithheldAsStale
+      ? computeFreeModelTotals({
+          excludeTosAvoid: options.excludeTosAvoid,
+          entries: getCatalogWithoutOverlay().map(toBudgetEntry),
+        })
+      : computeFreeModelTotals({ excludeTosAvoid: options.excludeTosAvoid });
   const usedThisMonth = sumUsageTokensThisMonth();
 
   return {

@@ -38,17 +38,26 @@ export class CacheSettingsService {
     const flatSettings = await getSettings();
     const config: Record<string, unknown> = {};
     for (const key of CACHE_CONFIG_KEYS) {
-      config[key] =
-        key === "idempotencyWindowMs"
-          ? flatSettings[key] ?? DEFAULTS[key]
-          : cache[key] ?? DEFAULTS[key];
+      if (key === "idempotencyWindowMs" || key === "alwaysPreserveClientCache") {
+        // These live in the flat general settings: idempotencyLayer and the
+        // runtime-settings snapshot both read from there, so reporting the
+        // databaseSettings "cache" copy would show a value the runtime never uses.
+        config[key] = flatSettings[key] ?? DEFAULTS[key];
+      } else {
+        config[key] = cache[key] ?? DEFAULTS[key];
+      }
     }
     return config;
   }
 
   async updateConfig(updates: Record<string, unknown>): Promise<void> {
+    // idempotencyWindowMs and alwaysPreserveClientCache are read from the flat
+    // general settings (see getConfig) — persisting them into the databaseSettings
+    // "cache" section would be a silent no-op for the runtime, which is what made
+    // alwaysPreserveClientCache writes ineffective before (#12304).
     const databaseUpdates: Record<string, unknown> = { ...updates };
     delete databaseUpdates.idempotencyWindowMs;
+    delete databaseUpdates.alwaysPreserveClientCache;
     if (Object.keys(databaseUpdates).length > 0) {
       updateDatabaseSettings({
         cache: databaseUpdates as NonNullable<
@@ -56,8 +65,15 @@ export class CacheSettingsService {
         >,
       });
     }
+    const flatUpdates: Record<string, unknown> = {};
     if (updates.idempotencyWindowMs !== undefined) {
-      await updatePersistedRuntimeSettings({ idempotencyWindowMs: updates.idempotencyWindowMs });
+      flatUpdates.idempotencyWindowMs = updates.idempotencyWindowMs;
+    }
+    if (updates.alwaysPreserveClientCache !== undefined) {
+      flatUpdates.alwaysPreserveClientCache = updates.alwaysPreserveClientCache;
+    }
+    if (Object.keys(flatUpdates).length > 0) {
+      await updatePersistedRuntimeSettings(flatUpdates);
     }
   }
 

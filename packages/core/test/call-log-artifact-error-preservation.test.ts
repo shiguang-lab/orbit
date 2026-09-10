@@ -90,10 +90,14 @@ test("a size-limit-fallback artifact keeps the upstream error verbatim", () => {
     UPSTREAM_ERROR,
     "the upstream error must survive the size-limit fallback"
   );
+  // The 64KB pipeline bodies — the thing that actually blew the cap — must be
+  // replaced by the omission marker; the error must not be collateral damage.
+  const pipeline = (stored as { pipeline?: { error?: { _orbit_truncated?: boolean } } }).pipeline;
+  assert.equal(pipeline?.error?._orbit_truncated, true, "oversized pipeline must be omitted");
   assert.equal(
-    (stored as { requestBody?: unknown }).requestBody,
+    (pipeline as { providerRequest?: unknown })?.providerRequest,
     undefined,
-    "oversized bodies must still be dropped"
+    "oversized pipeline bodies must be dropped"
   );
 });
 

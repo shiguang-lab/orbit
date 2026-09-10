@@ -147,6 +147,7 @@ test("resolves the canonical shared and runtime utility contracts", () => {
   ]);
   assert.deepEqual(Object.keys(credentialHealth).sort(), [
     "getAllCredentialHealth",
+    "getCachedCredentialHealthSummary",
     "getCredentialHealth",
     "getCredentialHealthSummary",
     "initCredentialCache",

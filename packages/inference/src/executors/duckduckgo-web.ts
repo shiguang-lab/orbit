@@ -629,6 +629,17 @@ export class DuckDuckGoWebExecutor extends BaseExecutor {
       let chatResponse = await sendChat(vqdHeaders);
 
       if (chatResponse.status === 418) {
+        // Check if this is ERR_BN_LIMIT (rate limit/ban) — cannot be solved by
+        // retrying with fresh VQD; return immediately without burning another
+        // VQD acquisition that would only count against the IP limit (#11598).
+        const bodyText = await chatResponse.clone().text();
+        const parsedError = parseDuckDuckGoError(bodyText);
+        const errorType = parsedError ? String(parsedError.type) : "";
+        if (errorType === "ERR_BN_LIMIT") {
+          clearTimeout(timeout);
+          return await this.processResponse(chatResponse, isStreaming, hasTools, requestedTools);
+        }
+        // ERR_CHALLENGE: the challenge was unsolved or expired — retry with fresh VQD.
         this.pendingVqdHash1 = null;
         const freshVqd = await this.acquireAuthHeaders(mergedSignal);
         if (freshVqd.vqd4 || freshVqd.vqdHash1) {

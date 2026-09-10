@@ -27,6 +27,7 @@ export function isQuotaExhaustedForRequest(
   connectionId: string,
   provider: string,
   requestedModel?: string | null,
+  providerSpecificData?: unknown,
 ): boolean;
 export function isAccountQuotaExhausted(connectionId: string): boolean;
 export function getQuotaWindowStatus(

@@ -72,7 +72,12 @@ export function createApiKey(
   name: string,
   machineId: string,
   scopes?: string[],
-  options?: { allowedConnections?: string[] },
+  options?: {
+    modelAccessMode?: "all" | "restricted";
+    allowedModels?: string[];
+    allowedCombos?: string[];
+    allowedConnections?: string[];
+  },
 ): Promise<ApiKeyRecord & { id: string; name: string; key: string; machineId: string }>;
 export function regenerateApiKey(id: string): Promise<{ id: string; key: string } | null>;
 export function updateApiKeyPermissions(

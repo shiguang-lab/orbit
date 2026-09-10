@@ -58,6 +58,8 @@ export type PluginOptions = z.infer<typeof pluginOptionsSchema>;
 
 /** Per-endpoint timeout defaults (v1 parity). `timeoutMs` is the global fallback. */
 export const DEFAULT_TIMEOUT_MS = 10_000 as const;
+/** Models pulls a full catalog build (#12602) — longer budget than the other endpoints. */
+export const DEFAULT_MODELS_TIMEOUT_MS = 30_000 as const;
 /** Auto-combos keep the v1 5s budget; the field is resolved now for the P3 port. */
 export const DEFAULT_AUTO_COMBOS_TIMEOUT_MS = 5_000 as const;
 
@@ -73,8 +75,11 @@ export function resolveTimeouts(
 ): EndpointTimeouts {
   const fallback =
     typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : DEFAULT_TIMEOUT_MS;
+  const explicitModels =
+    typeof opts.timeoutMs === "number" && opts.timeoutMs > 0 ? opts.timeoutMs : null;
   return {
-    models: opts.timeouts?.models ?? fallback,
+    // An explicit global `timeoutMs` still wins; the default rises to 30s (#12602).
+    models: opts.timeouts?.models ?? explicitModels ?? DEFAULT_MODELS_TIMEOUT_MS,
     combos: opts.timeouts?.combos ?? fallback,
     autoCombos: opts.timeouts?.autoCombos ?? DEFAULT_AUTO_COMBOS_TIMEOUT_MS,
     enrichment: opts.timeouts?.enrichment ?? fallback,

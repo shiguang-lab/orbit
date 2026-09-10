@@ -141,7 +141,7 @@ function buildMinimalArtifactForSizeLimit(artifact: CallLogArtifact) {
     // failed (e.g. "Fetch timeout after 110000ms on https://..."). Diagnosing a
     // provider outage from a row that shows only an omission marker is
     // impossible, and the error string is tiny next to the request/response bodies.
-    error: artifact.error ? truncateErrorForSizeLimit(artifact.error) : null,
+    error: preserveErrorForSizeLimit(artifact.error),
     pipeline: {
       error: {
         _orbit_truncated: true,
@@ -151,10 +151,33 @@ function buildMinimalArtifactForSizeLimit(artifact: CallLogArtifact) {
   };
 }
 
-function truncateErrorForSizeLimit(error: unknown): string {
-  const text = typeof error === "string" ? error : (JSON.stringify(error) ?? String(error));
-  if (Buffer.byteLength(text) <= MAX_CALL_LOG_ARTIFACT_ERROR_BYTES) return text;
-  return `${text.slice(0, MAX_CALL_LOG_ARTIFACT_ERROR_BYTES)}${SIZE_LIMIT_EXCEEDED_SUFFIX}`;
+// Cut a string at a UTF-8 sequence boundary so multi-byte characters (CJK,
+// emoji) are never split into replacement-garbage by the byte cap.
+function truncateUtf8(text: string, maxBytes: number): string {
+  const buf = Buffer.from(text, "utf8");
+  if (buf.byteLength <= maxBytes) return text;
+  let cut = maxBytes;
+  while (cut > 0 && (buf[cut] & 0xc0) === 0x80) cut--;
+  return buf.subarray(0, cut).toString("utf8");
+}
+
+// Preserve the error through the size-limit fallback layers. Circular error
+// payloads must not throw inside JSON.stringify, and the cut must respect
+// UTF-8 boundaries. Values within the cap keep their original shape (string or
+// object); oversized ones degrade to a truncated serialized string.
+function preserveErrorForSizeLimit(error: unknown): unknown {
+  if (error === null || error === undefined) return null;
+
+  let serialized: string;
+  try {
+    serialized = typeof error === "string" ? error : (JSON.stringify(error) ?? String(error));
+  } catch {
+    serialized = String(error);
+  }
+  if (Buffer.byteLength(serialized, "utf8") <= MAX_CALL_LOG_ARTIFACT_ERROR_BYTES) {
+    return error;
+  }
+  return `${truncateUtf8(serialized, MAX_CALL_LOG_ARTIFACT_ERROR_BYTES)}${SIZE_LIMIT_EXCEEDED_SUFFIX}`;
 }
 
 function serializeFinalSizeLimitFallback(artifact: CallLogArtifact, maxBytes: number): string {
@@ -169,7 +192,7 @@ function serializeFinalSizeLimitFallback(artifact: CallLogArtifact, maxBytes: nu
     schemaVersion: artifact.schemaVersion,
     _orbit_truncated: true,
     reason: SIZE_LIMIT_EXCEEDED_REASON,
-    error: artifact.error ? truncateErrorForSizeLimit(artifact.error) : null,
+    error: preserveErrorForSizeLimit(artifact.error),
   });
   if (Buffer.byteLength(errorOnly) <= maxBytes) {
     return errorOnly;
@@ -212,7 +235,7 @@ function serializeArtifactForStorage(artifact: CallLogArtifact): string {
     ...omitOversizedPipeline(artifact),
     requestBody: OMITTED_FOR_SIZE_LIMIT,
     responseBody: OMITTED_FOR_SIZE_LIMIT,
-    error: artifact.error ? truncateErrorForSizeLimit(artifact.error) : null,
+    error: preserveErrorForSizeLimit(artifact.error),
   });
   if (Buffer.byteLength(minimal) <= maxBytes) {
     return minimal;

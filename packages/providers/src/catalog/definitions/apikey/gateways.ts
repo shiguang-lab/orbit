@@ -837,6 +837,7 @@ export const APIKEY_PROVIDERS_GATEWAYS = {
     color: "#111827",
     textIcon: "VAI",
     website: "https://vercel.com/docs/ai-gateway",
+    passthroughModels: true,
   },
   llm7: {
     id: "llm7",

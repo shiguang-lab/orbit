@@ -78,6 +78,48 @@ export function resolveEmbeddingSource(settings: MemorySettingsExtended): Embedd
   return runtime.resolveEmbeddingSource(settings);
 }
 
+/** Build a signature string (mirrors the embedding runtime's convention). */
+function makeEmbeddingSignature(
+  source: "remote" | "static" | "transformers" | null,
+  model: string | null,
+  dim: number | null
+): string {
+  return `${source ?? "null"}:${model ?? "null"}:${dim ?? "null"}`;
+}
+
+/**
+ * Fill in the vector width the lazy probe was waiting for.
+ *
+ * `dimensions` is null for every source the hard-coded registry does not
+ * describe — a self-hosted endpoint by definition — and the only thing that can
+ * answer it is an embedding that has actually come back. Callers that hold one
+ * pass its length here; the signature is rebuilt the same way the resolution
+ * built it, so reindex detection still sees a model change as a change. (#12154)
+ */
+export function withMeasuredDimensions(
+  resolution: EmbeddingResolution,
+  dimensions: number
+): EmbeddingResolution {
+  if (
+    resolution.dimensions !== null ||
+    !resolution.source ||
+    !Number.isInteger(dimensions) ||
+    dimensions <= 0
+  ) {
+    return resolution;
+  }
+  return {
+    ...resolution,
+    dimensions,
+    signature: makeEmbeddingSignature(
+      resolution.source,
+      resolution.identity ?? resolution.model,
+      dimensions
+    ),
+    reason: `${resolution.reason} [dim=${dimensions} measured]`,
+  };
+}
+
 export function embed(
   text: string,
   settings: MemorySettingsExtended,

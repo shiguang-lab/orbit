@@ -4,6 +4,7 @@ import { Agent, fetch as undiciFetch } from "undici";
 import {
   type OutboundUrlGuardMode,
   isPrivateHost,
+  parseAndValidateNonMetadataUrl,
   parseAndValidatePublicUrl,
   parseOutboundUrl,
 } from "@orbit/utils/network";
@@ -51,7 +52,10 @@ export type RemoteMediaFetchOptions = RemoteImageFetchOptions;
 export type RemoteMediaFetchResult = RemoteImageFetchResult;
 
 function validateRemoteImageUrl(input: string | URL, guard: OutboundUrlGuardMode) {
-  return guard === "public-only" ? parseAndValidatePublicUrl(input) : parseOutboundUrl(input);
+  if (guard === "public-only") return parseAndValidatePublicUrl(input);
+  // Default mode must also reject cloud-metadata hosts, not just validate shape.
+  if (guard === "block-metadata") return parseAndValidateNonMetadataUrl(input);
+  return parseOutboundUrl(input);
 }
 
 function requireHttps(url: URL, enabled: boolean): URL {

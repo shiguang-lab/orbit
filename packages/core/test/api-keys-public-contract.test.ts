@@ -15,6 +15,7 @@ const expectedRuntimeExports = [
   "createApiKey",
   "deleteApiKey",
   "getApiKeyById",
+  "getApiKeyDisplayNames",
   "getApiKeyMetadata",
   "getApiKeys",
   "getApiKeysCount",

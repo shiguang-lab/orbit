@@ -1,45 +1,141 @@
 {
   "name": "@orbit/inference",
   "version": "3.8.51",
-  "description": "Orbit streaming engine \u2014 handles provider dispatch, protocol translation, and SSE streaming",
+  "description": "Orbit streaming engine — handles provider dispatch, protocol translation, and SSE streaming",
   "type": "module",
   "private": true,
   "exports": {
-    "./oauth/providers": {
-      "types": "./dist/types/oauth/providers.d.ts",
-      "import": "./src/oauth/providers.ts"
+    "./catalog/provider-maps": {
+      "types": "./dist/types/catalog/catalogProviderMaps.d.ts",
+      "import": "./src/catalog/catalogProviderMaps.ts"
     },
-    "./oauth/constants": {
-      "types": "./dist/types/oauth/constants/oauth.d.ts",
-      "import": "./src/oauth/constants/oauth.ts"
+    "./catalog/specialty": {
+      "types": "./dist/types/catalog/specialtyCatalog.d.ts",
+      "import": "./src/catalog/specialtyCatalog.ts"
     },
-    "./oauth/services/cursor": {
-      "types": "./dist/types/oauth/services/cursor.d.ts",
-      "import": "./src/oauth/services/cursor.ts"
+    "./catalog/unified": {
+      "types": "./dist/types/catalog/catalog.d.ts",
+      "import": "./src/catalog/catalog.ts"
     },
-    "./oauth/services/cursor-login": {
-      "types": "./dist/types/oauth/services/cursorLogin.d.ts",
-      "import": "./src/oauth/services/cursorLogin.ts"
+    "./config/agyModels": {
+      "types": "./dist/types/config/agyModels.d.ts",
+      "import": "./src/config/agyModels.ts"
     },
-    "./oauth/services/cursor-models": {
-      "types": "./dist/types/oauth/services/cursorAvailableModels.d.ts",
-      "import": "./src/oauth/services/cursorAvailableModels.ts"
+    "./config/antigravity-upstream": {
+      "types": "./dist/types/config/antigravityUpstream.d.ts",
+      "import": "./src/config/antigravityUpstream.ts"
     },
-    "./oauth/services/kiro": {
-      "types": "./dist/types/oauth/services/kiro.d.ts",
-      "import": "./src/oauth/services/kiro.ts"
+    "./config/antigravityModelAliases": {
+      "types": "./dist/types/config/antigravityModelAliases.d.ts",
+      "import": "./src/config/antigravityModelAliases.ts"
     },
-    "./oauth/provider-auth-import": {
-      "types": "./dist/types/oauth/providerAuthImport.d.ts",
-      "import": "./src/oauth/providerAuthImport.ts"
+    "./config/audioRegistry": {
+      "types": "./dist/types/config/audioRegistry.d.ts",
+      "import": "./src/config/audioRegistry.ts"
     },
-    "./oauth/provider-auth-files/claude": {
-      "types": "./dist/types/oauth/utils/claudeAuthFile.d.ts",
-      "import": "./src/oauth/utils/claudeAuthFile.ts"
+    "./config/azureAi": {
+      "types": "./dist/types/config/azureAi.d.ts",
+      "import": "./src/config/azureAi.ts"
     },
-    "./oauth/provider-auth-files/codex": {
-      "types": "./dist/types/oauth/utils/codexAuthFile.d.ts",
-      "import": "./src/oauth/utils/codexAuthFile.ts"
+    "./config/codexClient": {
+      "types": "./dist/types/config/codexClient.d.ts",
+      "import": "./src/config/codexClient.ts"
+    },
+    "./config/codexQuotaScopes": {
+      "types": "./dist/types/config/codexQuotaScopes.d.ts",
+      "import": "./src/config/codexQuotaScopes.ts"
+    },
+    "./config/constants": {
+      "types": "./dist/types/config/constants.d.ts",
+      "import": "./src/config/constants.ts"
+    },
+    "./config/datarobot": {
+      "types": "./dist/types/config/datarobot.d.ts",
+      "import": "./src/config/datarobot.ts"
+    },
+    "./config/embeddingRegistry": {
+      "types": "./dist/types/exports/config/embeddingRegistry.d.ts",
+      "import": "./src/exports/config/embeddingRegistry.ts"
+    },
+    "./config/glmProvider": {
+      "types": "./dist/types/config/glmProvider.d.ts",
+      "import": "./src/config/glmProvider.ts"
+    },
+    "./config/grokBuild": {
+      "types": "./dist/types/config/grokBuild.d.ts",
+      "import": "./src/config/grokBuild.ts"
+    },
+    "./config/imageRegistry": {
+      "types": "./dist/types/config/imageRegistry.d.ts",
+      "import": "./src/config/imageRegistry.ts"
+    },
+    "./config/moderationRegistry": {
+      "types": "./dist/types/config/moderationRegistry.d.ts",
+      "import": "./src/config/moderationRegistry.ts"
+    },
+    "./config/musicRegistry": {
+      "types": "./dist/types/config/musicRegistry.d.ts",
+      "import": "./src/config/musicRegistry.ts"
+    },
+    "./config/oci": {
+      "types": "./dist/types/config/oci.d.ts",
+      "import": "./src/config/oci.ts"
+    },
+    "./config/ocrRegistry": {
+      "types": "./dist/types/config/ocrRegistry.d.ts",
+      "import": "./src/config/ocrRegistry.ts"
+    },
+    "./config/ollamaModels": {
+      "types": "./dist/types/config/ollamaModels.d.ts",
+      "import": "./src/config/ollamaModels.ts"
+    },
+    "./config/providerConstants": {
+      "types": "./dist/types/config/providerConstants.d.ts",
+      "import": "./src/config/providerConstants.ts"
+    },
+    "./config/providerPluginManifest": {
+      "types": "./dist/types/config/providerPluginManifest.d.ts",
+      "import": "./src/config/providerPluginManifest.ts"
+    },
+    "./config/providerPluginManifestRegistry": {
+      "types": "./dist/types/config/providerPluginManifestRegistry.d.ts",
+      "import": "./src/config/providerPluginManifestRegistry.ts"
+    },
+    "./config/providerPluginManifestUrl": {
+      "types": "./dist/types/config/providerPluginManifestUrl.d.ts",
+      "import": "./src/config/providerPluginManifestUrl.ts"
+    },
+    "./config/providerRegistry": {
+      "types": "./dist/types/config/providerRegistry.d.ts",
+      "import": "./src/config/providerRegistry.ts"
+    },
+    "./config/providers/registry/alibaba/index": {
+      "types": "./dist/types/config/providers/registry/alibaba/index.d.ts",
+      "import": "./src/config/providers/registry/alibaba/index.ts"
+    },
+    "./config/providers/registry/kimi/coding/runtime": {
+      "types": "./dist/types/config/providers/registry/kimi/coding/runtime.d.ts",
+      "import": "./src/config/providers/registry/kimi/coding/runtime.ts"
+    },
+    "./config/providers/registry/qwen-cloud/index": {
+      "types": "./dist/types/config/providers/registry/qwen-cloud/index.d.ts",
+      "import": "./src/config/providers/registry/qwen-cloud/index.ts"
+    },
+    "./config/sap": {
+      "types": "./dist/types/config/sap.d.ts",
+      "import": "./src/config/sap.ts"
+    },
+    "./config/searchRegistry": {
+      "types": "./dist/types/config/searchRegistry.d.ts",
+      "import": "./src/config/searchRegistry.ts"
+    },
+    "./config/videoRegistry": {
+      "types": "./dist/types/config/videoRegistry.d.ts",
+      "import": "./src/config/videoRegistry.ts"
+    },
+    "./config/watsonx": {
+      "types": "./dist/types/config/watsonx.d.ts",
+      "import": "./src/config/watsonx.ts"
     },
     "./executors/base": {
       "types": "./dist/types/executors/base.d.ts",
@@ -49,173 +145,53 @@
       "types": "./dist/types/executors/chatgpt-web-codex/mcpCommand.d.ts",
       "import": "./src/executors/chatgpt-web-codex/mcpCommand.ts"
     },
-    "./services/reasoningCache": {
-      "types": "./dist/types/services/reasoningCache.d.ts",
-      "import": "./src/services/reasoningCache.ts"
+    "./executors/cliproxyapi": {
+      "types": "./dist/types/executors/cliproxyapi.d.ts",
+      "import": "./src/executors/cliproxyapi.ts"
     },
-    "./services/compression/eval/fidelityCheck": {
-      "types": "./dist/types/services/compression/eval/fidelityCheck.d.ts",
-      "import": "./src/services/compression/eval/fidelityCheck.ts"
+    "./executors/codex": {
+      "types": "./dist/types/executors/codex.d.ts",
+      "import": "./src/executors/codex.ts"
     },
-    "./services/compression/eval/types": {
-      "types": "./dist/types/services/compression/eval/types.d.ts",
-      "import": "./src/services/compression/eval/types.ts"
+    "./executors/codex/app-server-auth-probe": {
+      "types": "./dist/types/executors/codex/appServerAuthProbe.d.ts",
+      "import": "./src/executors/codex/appServerAuthProbe.ts"
     },
-    "./utils/error": {
-      "types": "./dist/types/utils/error.d.ts",
-      "import": "./src/utils/error.ts"
+    "./executors/codex/app-server-config": {
+      "types": "./dist/types/executors/codex/appServerConfig.d.ts",
+      "import": "./src/executors/codex/appServerConfig.ts"
     },
-    "./utils/kimiJwt": {
-      "types": "./dist/types/utils/kimiJwt.d.ts",
-      "import": "./src/utils/kimiJwt.ts"
+    "./executors/codex/reasoningSuffix": {
+      "types": "./dist/types/executors/codex/reasoningSuffix.d.ts",
+      "import": "./src/executors/codex/reasoningSuffix.ts"
     },
-    "./utils/proxyFetch": {
-      "types": "./dist/types/utils/proxyFetch.d.ts",
-      "import": "./src/utils/proxyFetch.ts"
+    "./executors/codex/tools": {
+      "types": "./dist/types/executors/codex/tools.d.ts",
+      "import": "./src/executors/codex/tools.ts"
     },
-    "./utils/proxyDispatcher": {
-      "types": "./dist/types/utils/proxyDispatcher.d.ts",
-      "import": "./src/utils/proxyDispatcher.ts"
+    "./executors/index": {
+      "types": "./dist/types/executors/index.d.ts",
+      "import": "./src/executors/index.ts"
     },
-    "./utils/proxyFallback": {
-      "types": "./dist/types/utils/proxyFallback.d.ts",
-      "import": "./src/utils/proxyFallback.ts"
+    "./executors/vertex": {
+      "types": "./dist/types/executors/vertex.d.ts",
+      "import": "./src/executors/vertex.ts"
     },
-    "./utils/earlyStreamKeepalive": {
-      "types": "./dist/types/utils/earlyStreamKeepalive.d.ts",
-      "import": "./src/utils/earlyStreamKeepalive.ts"
+    "./handlers/audioSpeech": {
+      "types": "./dist/types/handlers/audioSpeech.d.ts",
+      "import": "./src/handlers/audioSpeech.ts"
     },
-    "./utils/keepaliveThreshold": {
-      "types": "./dist/types/utils/keepaliveThreshold.d.ts",
-      "import": "./src/utils/keepaliveThreshold.ts"
+    "./handlers/audioTranscription": {
+      "types": "./dist/types/handlers/audioTranscription.d.ts",
+      "import": "./src/handlers/audioTranscription.ts"
     },
-    "./utils/ollamaTransform": {
-      "types": "./dist/types/utils/ollamaTransform.d.ts",
-      "import": "./src/utils/ollamaTransform.ts"
+    "./handlers/audioTranslation": {
+      "types": "./dist/types/handlers/audioTranslation.d.ts",
+      "import": "./src/handlers/audioTranslation.ts"
     },
-    "./utils/upstreamResponseHeaders": {
-      "types": "./src/public/upstreamResponseHeaders.d.ts",
-      "import": "./src/utils/upstreamResponseHeaders.ts"
-    },
-    "./utils/aiSdkCompat": {
-      "types": "./dist/types/utils/aiSdkCompat.d.ts",
-      "import": "./src/utils/aiSdkCompat.ts"
-    },
-    "./utils/logger": {
-      "types": "./dist/types/utils/logger.d.ts",
-      "import": "./src/utils/logger.ts"
-    },
-    "./config/constants": {
-      "types": "./dist/types/config/constants.d.ts",
-      "import": "./src/config/constants.ts"
-    },
-    "./utils/sseHeartbeat": {
-      "types": "./dist/types/utils/sseHeartbeat.d.ts",
-      "import": "./src/utils/sseHeartbeat.ts"
-    },
-    "./config/embeddingRegistry": {
-      "types": "./dist/types/exports/config/embeddingRegistry.d.ts",
-      "import": "./src/exports/config/embeddingRegistry.ts"
-    },
-    "./config/searchRegistry": {
-      "types": "./dist/types/config/searchRegistry.d.ts",
-      "import": "./src/config/searchRegistry.ts"
-    },
-    "./config/providerPluginManifest": {
-      "types": "./dist/types/config/providerPluginManifest.d.ts",
-      "import": "./src/config/providerPluginManifest.ts"
-    },
-    "./config/providerPluginManifestUrl": {
-      "types": "./dist/types/config/providerPluginManifestUrl.d.ts",
-      "import": "./src/config/providerPluginManifestUrl.ts"
-    },
-    "./config/providerPluginManifestRegistry": {
-      "types": "./dist/types/config/providerPluginManifestRegistry.d.ts",
-      "import": "./src/config/providerPluginManifestRegistry.ts"
-    },
-    "./config/providerRegistry": {
-      "types": "./dist/types/config/providerRegistry.d.ts",
-      "import": "./src/config/providerRegistry.ts"
-    },
-    "./config/providerConstants": {
-      "types": "./dist/types/config/providerConstants.d.ts",
-      "import": "./src/config/providerConstants.ts"
-    },
-    "./config/ollamaModels": {
-      "types": "./dist/types/config/ollamaModels.d.ts",
-      "import": "./src/config/ollamaModels.ts"
-    },
-    "./translator": {
-      "types": "./dist/types/translator/index.d.ts",
-      "import": "./src/translator/index.ts"
-    },
-    "./translator/formats": {
-      "types": "./dist/types/translator/formats.d.ts",
-      "import": "./src/translator/formats.ts"
-    },
-    "./translator/response/openai-to-gemini-sse": {
-      "types": "./dist/types/translator/response/openai-to-gemini-sse.d.ts",
-      "import": "./src/translator/response/openai-to-gemini-sse.ts"
-    },
-    "./services/provider": {
-      "types": "./dist/types/services/provider.d.ts",
-      "import": "./src/services/provider.ts"
-    },
-    "./services/embedding-route": {
-      "types": "./dist/types/services/embeddingRoute/service.d.ts",
-      "import": "./src/services/embeddingRoute/service.ts"
-    },
-    "./handlers/embeddings": {
-      "types": "./dist/types/exports/handlers/embeddings.d.ts",
-      "import": "./src/exports/handlers/embeddings.ts"
-    },
-    "./services/provider-validation": {
-      "types": "./src/public/providerValidation.d.ts",
-      "import": "./src/services/providerValidation.ts"
-    },
-    "./services/provider-validation/url-helpers": {
-      "types": "./dist/types/services/providerValidation/urlHelpers.d.ts",
-      "import": "./src/services/providerValidation/urlHelpers.ts"
-    },
-    "./services/provider-validation/search-providers": {
-      "types": "./dist/types/services/providerValidation/searchProviders.d.ts",
-      "import": "./src/services/providerValidation/searchProviders.ts"
-    },
-    "./services/provider-validation/web-cookie": {
-      "types": "./dist/types/services/providerValidation/webCookie.d.ts",
-      "import": "./src/services/providerValidation/webCookie.ts"
-    },
-    "./services/static-models": {
-      "types": "./dist/types/services/staticModels.d.ts",
-      "import": "./src/services/staticModels.ts"
-    },
-    "./services/web-session-contract": {
-      "types": "./dist/types/services/webSessionContract.d.ts",
-      "import": "./src/services/webSessionContract.ts"
-    },
-    "./transformer/responsesTransformer": {
-      "types": "./dist/types/transformer/responsesTransformer.d.ts",
-      "import": "./src/transformer/responsesTransformer.ts"
-    },
-    "./handlers/imageGeneration": {
-      "types": "./dist/types/handlers/imageGeneration.d.ts",
-      "import": "./src/handlers/imageGeneration.ts"
-    },
-    "./handlers/search": {
-      "types": "./dist/types/handlers/search.d.ts",
-      "import": "./src/handlers/search.ts"
-    },
-    "./handlers/imageGeneration/providers/fal": {
-      "types": "./dist/types/handlers/imageGeneration/providers/fal.d.ts",
-      "import": "./src/handlers/imageGeneration/providers/fal.ts"
-    },
-    "./handlers/webFetch": {
-      "types": "./dist/types/handlers/webFetch.d.ts",
-      "import": "./src/handlers/webFetch.ts"
-    },
-    "./handlers/cursorCliProxy": {
-      "types": "./dist/types/handlers/cursorCliProxy.d.ts",
-      "import": "./src/handlers/cursorCliProxy.ts"
+    "./handlers/autoComboCandidates": {
+      "types": "./dist/types/handlers/autoComboCandidates.d.ts",
+      "import": "./src/handlers/autoComboCandidates.ts"
     },
     "./handlers/autoRouting": {
       "types": "./dist/types/handlers/autoRouting.d.ts",
@@ -224,6 +200,10 @@
     "./handlers/chat": {
       "types": "./dist/types/handlers/chat.d.ts",
       "import": "./src/handlers/chat.ts"
+    },
+    "./handlers/chat-core/cliproxyapi-credentials": {
+      "types": "./dist/types/handlers/chatCore/cliproxyapiCredentials.d.ts",
+      "import": "./src/handlers/chatCore/cliproxyapiCredentials.ts"
     },
     "./handlers/chat/clientRawRequest": {
       "types": "./dist/types/handlers/chat/clientRawRequest.d.ts",
@@ -249,6 +229,38 @@
       "types": "./dist/types/handlers/comboFailureLogging.d.ts",
       "import": "./src/handlers/comboFailureLogging.ts"
     },
+    "./handlers/cursorCliProxy": {
+      "types": "./dist/types/handlers/cursorCliProxy.d.ts",
+      "import": "./src/handlers/cursorCliProxy.ts"
+    },
+    "./handlers/embeddings": {
+      "types": "./dist/types/exports/handlers/embeddings.d.ts",
+      "import": "./src/exports/handlers/embeddings.ts"
+    },
+    "./handlers/imageGeneration": {
+      "types": "./dist/types/handlers/imageGeneration.d.ts",
+      "import": "./src/handlers/imageGeneration.ts"
+    },
+    "./handlers/imageGeneration/providers/fal": {
+      "types": "./dist/types/handlers/imageGeneration/providers/fal.d.ts",
+      "import": "./src/handlers/imageGeneration/providers/fal.ts"
+    },
+    "./handlers/jinaFoundation": {
+      "types": "./dist/types/handlers/jinaFoundation.d.ts",
+      "import": "./src/handlers/jinaFoundation.ts"
+    },
+    "./handlers/moderations": {
+      "types": "./dist/types/handlers/moderations.d.ts",
+      "import": "./src/handlers/moderations.ts"
+    },
+    "./handlers/musicGeneration": {
+      "types": "./dist/types/handlers/musicGeneration.d.ts",
+      "import": "./src/handlers/musicGeneration.ts"
+    },
+    "./handlers/ocr": {
+      "types": "./dist/types/handlers/ocr.d.ts",
+      "import": "./src/handlers/ocr.ts"
+    },
     "./handlers/reasoningRouting": {
       "types": "./dist/types/handlers/reasoningRouting.d.ts",
       "import": "./src/handlers/reasoningRouting.ts"
@@ -265,201 +277,237 @@
       "types": "./dist/types/handlers/resolveRoutingModel.d.ts",
       "import": "./src/handlers/resolveRoutingModel.ts"
     },
-    "./services/auth": {
-      "types": "./dist/types/services/auth.d.ts",
-      "import": "./src/services/auth.ts"
+    "./handlers/search": {
+      "types": "./dist/types/handlers/search.d.ts",
+      "import": "./src/handlers/search.ts"
     },
-    "./services/credential-selection": {
-      "types": "./dist/types/services/credential-selection.d.ts",
-      "import": "./src/services/credential-selection.ts"
+    "./handlers/videoGeneration": {
+      "types": "./dist/types/handlers/videoGeneration.d.ts",
+      "import": "./src/handlers/videoGeneration.ts"
     },
-    "./catalog/unified": {
-      "types": "./dist/types/catalog/catalog.d.ts",
-      "import": "./src/catalog/catalog.ts"
+    "./handlers/videoGeneration/googleFlow": {
+      "types": "./dist/types/handlers/videoGeneration/googleFlow.d.ts",
+      "import": "./src/handlers/videoGeneration/googleFlow.ts"
     },
-    "./catalog/specialty": {
-      "types": "./dist/types/catalog/specialtyCatalog.d.ts",
-      "import": "./src/catalog/specialtyCatalog.ts"
+    "./handlers/webFetch": {
+      "types": "./dist/types/handlers/webFetch.d.ts",
+      "import": "./src/handlers/webFetch.ts"
     },
-    "./catalog/provider-maps": {
-      "types": "./dist/types/catalog/catalogProviderMaps.d.ts",
-      "import": "./src/catalog/catalogProviderMaps.ts"
+    "./mcp-server/audit": {
+      "types": "./dist/types/mcp-server/audit.d.ts",
+      "import": "./src/mcp-server/audit.ts"
     },
-    "./services/authExpiredCredentials": {
-      "types": "./dist/types/services/authExpiredCredentials.d.ts",
-      "import": "./src/services/authExpiredCredentials.ts"
+    "./mcp-server/factory": {
+      "types": "./dist/types/mcp-server/factory.d.ts",
+      "import": "./src/mcp-server/factory.ts"
     },
-    "./services/autoDisableBannedAccount": {
-      "types": "./dist/types/services/autoDisableBannedAccount.d.ts",
-      "import": "./src/services/autoDisableBannedAccount.ts"
+    "./mcp-server/httpTransport": {
+      "types": "./dist/types/mcp-server/httpTransport.d.ts",
+      "import": "./src/mcp-server/httpTransport.ts"
     },
-    "./services/cooldownAwareRetry": {
-      "types": "./dist/types/services/cooldownAwareRetry.d.ts",
-      "import": "./src/services/cooldownAwareRetry.ts"
+    "./mcp-server/runtimeHeartbeat": {
+      "types": "./dist/types/mcp-server/runtimeHeartbeat.d.ts",
+      "import": "./src/mcp-server/runtimeHeartbeat.ts"
     },
-    "./services/credentialTokenRefresh": {
-      "types": "./dist/types/services/credentialTokenRefresh.d.ts",
-      "import": "./src/services/credentialTokenRefresh.ts"
+    "./mcp-server/schemas/tools": {
+      "types": "./dist/types/mcp-server/schemas/tools.d.ts",
+      "import": "./src/mcp-server/schemas/tools.ts"
     },
-    "./services/exclusiveConnectionLeasePolicy": {
-      "types": "./dist/types/services/exclusiveConnectionLeasePolicy.d.ts",
-      "import": "./src/services/exclusiveConnectionLeasePolicy.ts"
+    "./oauth/constants": {
+      "types": "./dist/types/oauth/constants/oauth.d.ts",
+      "import": "./src/oauth/constants/oauth.ts"
     },
-    "./services/googApiKeyAuth": {
-      "types": "./dist/types/services/googApiKeyAuth.d.ts",
-      "import": "./src/services/googApiKeyAuth.ts"
+    "./oauth/provider-auth-files/claude": {
+      "types": "./dist/types/oauth/utils/claudeAuthFile.d.ts",
+      "import": "./src/oauth/utils/claudeAuthFile.ts"
     },
-    "./services/headerReader": {
-      "types": "./dist/types/services/headerReader.d.ts",
-      "import": "./src/services/headerReader.ts"
+    "./oauth/provider-auth-files/codex": {
+      "types": "./dist/types/oauth/utils/codexAuthFile.d.ts",
+      "import": "./src/oauth/utils/codexAuthFile.ts"
     },
-    "./services/imageCredentialRetry": {
-      "types": "./dist/types/services/imageCredentialRetry.d.ts",
-      "import": "./src/services/imageCredentialRetry.ts"
+    "./oauth/provider-auth-import": {
+      "types": "./dist/types/oauth/providerAuthImport.d.ts",
+      "import": "./src/oauth/providerAuthImport.ts"
     },
-    "./services/leaseContext": {
-      "types": "./dist/types/services/leaseContext.d.ts",
-      "import": "./src/services/leaseContext.ts"
+    "./oauth/providers": {
+      "types": "./dist/types/oauth/providers.d.ts",
+      "import": "./src/oauth/providers.ts"
     },
-    "./services/noAuthOptionalApiKey": {
-      "types": "./dist/types/services/noAuthOptionalApiKey.d.ts",
-      "import": "./src/services/noAuthOptionalApiKey.ts"
+    "./oauth/services/cursor": {
+      "types": "./dist/types/oauth/services/cursor.d.ts",
+      "import": "./src/oauth/services/cursor.ts"
     },
-    "./services/noAuthProviderSiblings": {
-      "types": "./dist/types/services/noAuthProviderSiblings.d.ts",
-      "import": "./src/services/noAuthProviderSiblings.ts"
+    "./oauth/services/cursor-login": {
+      "types": "./dist/types/oauth/services/cursorLogin.d.ts",
+      "import": "./src/oauth/services/cursorLogin.ts"
     },
-    "./services/noAuthProviderSettings": {
-      "types": "./dist/types/services/noAuthProviderSettings.d.ts",
-      "import": "./src/services/noAuthProviderSettings.ts"
+    "./oauth/services/cursor-models": {
+      "types": "./dist/types/oauth/services/cursorAvailableModels.d.ts",
+      "import": "./src/oauth/services/cursorAvailableModels.ts"
     },
-    "./services/noAuthProxyResolution": {
-      "types": "./dist/types/services/noAuthProxyResolution.d.ts",
-      "import": "./src/services/noAuthProxyResolution.ts"
-    },
-    "./services/requestResourceHealth": {
-      "types": "./dist/types/services/requestResourceHealth.d.ts",
-      "import": "./src/services/requestResourceHealth.ts"
-    },
-    "./services/runtimeModel": {
-      "types": "./dist/types/services/runtimeModel.d.ts",
-      "import": "./src/services/runtimeModel.ts"
-    },
-    "./services/sessionAffinityPin": {
-      "types": "./dist/types/services/sessionAffinityPin.d.ts",
-      "import": "./src/services/sessionAffinityPin.ts"
-    },
-    "./services/sameAccountTransportRetry": {
-      "types": "./dist/types/services/sameAccountTransportRetry.d.ts",
-      "import": "./src/services/sameAccountTransportRetry.ts"
-    },
-    "./services/vertexErrorClassifier": {
-      "types": "./dist/types/services/vertexErrorClassifier.d.ts",
-      "import": "./src/services/vertexErrorClassifier.ts"
-    },
-    "./utils/backpressure": {
-      "types": "./dist/types/utils/backpressure.d.ts",
-      "import": "./src/utils/backpressure.ts"
-    },
-    "./handlers/autoComboCandidates": {
-      "types": "./dist/types/handlers/autoComboCandidates.d.ts",
-      "import": "./src/handlers/autoComboCandidates.ts"
-    },
-    "./config/imageRegistry": {
-      "types": "./dist/types/config/imageRegistry.d.ts",
-      "import": "./src/config/imageRegistry.ts"
-    },
-    "./utils/syncedEffortVariants": {
-      "types": "./dist/types/utils/syncedEffortVariants.d.ts",
-      "import": "./src/utils/syncedEffortVariants.ts"
-    },
-    "./executors/codex/tools": {
-      "types": "./dist/types/executors/codex/tools.d.ts",
-      "import": "./src/executors/codex/tools.ts"
-    },
-    "./services/deviceTracker": {
-      "types": "./dist/types/services/deviceTracker.d.ts",
-      "import": "./src/services/deviceTracker.ts"
-    },
-    "./services/sessionManager": {
-      "types": "./dist/types/services/sessionManager.d.ts",
-      "import": "./src/services/sessionManager.ts"
-    },
-    "./services/webSessionPoolHealth": {
-      "types": "./dist/types/services/webSessionPoolHealth.d.ts",
-      "import": "./src/services/webSessionPoolHealth.ts"
+    "./oauth/services/kiro": {
+      "types": "./dist/types/oauth/services/kiro.d.ts",
+      "import": "./src/oauth/services/kiro.ts"
     },
     "./services/accountFallback": {
       "types": "./dist/types/exports/services/accountFallback.d.ts",
       "import": "./src/exports/services/accountFallback.ts"
     },
-    "./services/chatgptWebCodexAdmin": {
-      "types": "./dist/types/services/chatgptWebCodexAdmin.d.ts",
-      "import": "./src/services/chatgptWebCodexAdmin.ts"
+    "./services/accountSemaphore": {
+      "types": "./dist/types/services/accountSemaphore.d.ts",
+      "import": "./src/services/accountSemaphore.ts"
     },
-    "./services/rateLimitManager": {
-      "types": "./dist/types/exports/services/rateLimitManager.d.ts",
-      "import": "./src/exports/services/rateLimitManager.ts"
+    "./services/admission/runtime": {
+      "types": "./dist/types/services/admission/runtime.d.ts",
+      "import": "./src/services/admission/runtime.ts"
     },
-    "./services/combo/decisionTrace": {
-      "types": "./dist/types/services/combo/decisionTrace.d.ts",
-      "import": "./src/services/combo/decisionTrace.ts"
+    "./services/adobeFireflyBrowserLogin": {
+      "types": "./dist/types/services/adobeFireflyBrowserLogin.d.ts",
+      "import": "./src/services/adobeFireflyBrowserLogin.ts"
     },
-    "./services/providerDefaultRateLimit": {
-      "types": "./dist/types/services/providerDefaultRateLimit.d.ts",
-      "import": "./src/services/providerDefaultRateLimit.ts"
+    "./services/adobeFireflyClient": {
+      "types": "./dist/types/services/adobeFireflyClient.d.ts",
+      "import": "./src/services/adobeFireflyClient.ts"
     },
-    "./services/systemPrompt": {
-      "types": "./dist/types/services/systemPrompt.d.ts",
-      "import": "./src/services/systemPrompt.ts"
+    "./services/adobeFireflyModels": {
+      "types": "./dist/types/services/adobeFireflyModels.d.ts",
+      "import": "./src/services/adobeFireflyModels.ts"
     },
-    "./services/thinkingBudget": {
-      "types": "./dist/types/services/thinkingBudget.d.ts",
-      "import": "./src/services/thinkingBudget.ts"
+    "./services/adobeFireflyUpscale": {
+      "types": "./dist/types/services/adobeFireflyUpscale.d.ts",
+      "import": "./src/services/adobeFireflyUpscale.ts"
+    },
+    "./services/alibabaFreeTier": {
+      "types": "./dist/types/services/alibabaFreeTier.d.ts",
+      "import": "./src/services/alibabaFreeTier.ts"
+    },
+    "./services/alibabaFreeTierDiscovery": {
+      "types": "./dist/types/services/alibabaFreeTierDiscovery.d.ts",
+      "import": "./src/services/alibabaFreeTierDiscovery.ts"
+    },
+    "./services/alibabaFreeTierQuotaFetcher": {
+      "types": "./dist/types/services/alibabaFreeTierQuotaFetcher.d.ts",
+      "import": "./src/services/alibabaFreeTierQuotaFetcher.ts"
+    },
+    "./services/antigravity-client-profile": {
+      "types": "./dist/types/services/antigravityClientProfile.d.ts",
+      "import": "./src/services/antigravityClientProfile.ts"
+    },
+    "./services/antigravity-headers": {
+      "types": "./dist/types/services/antigravityHeaders.d.ts",
+      "import": "./src/services/antigravityHeaders.ts"
+    },
+    "./services/antigravityProjectBootstrap": {
+      "types": "./dist/types/services/antigravityProjectBootstrap.d.ts",
+      "import": "./src/services/antigravityProjectBootstrap.ts"
+    },
+    "./services/antigravityProjectPersist": {
+      "types": "./dist/types/services/antigravityProjectPersist.d.ts",
+      "import": "./src/services/antigravityProjectPersist.ts"
+    },
+    "./services/api-key-rotator": {
+      "types": "./dist/types/services/apiKeyRotator.d.ts",
+      "import": "./src/services/apiKeyRotator.ts"
+    },
+    "./services/audio-provider-nodes": {
+      "types": "./dist/types/services/audioProviderNodes.d.ts",
+      "import": "./src/services/audioProviderNodes.ts"
+    },
+    "./services/auth": {
+      "types": "./dist/types/services/auth.d.ts",
+      "import": "./src/services/auth.ts"
+    },
+    "./services/authExpiredCredentials": {
+      "types": "./dist/types/services/authExpiredCredentials.d.ts",
+      "import": "./src/services/authExpiredCredentials.ts"
+    },
+    "./services/auto-refresh-daemon": {
+      "types": "./dist/types/services/autoRefreshDaemon.d.ts",
+      "import": "./src/services/autoRefreshDaemon.ts"
+    },
+    "./services/autoCombo/autoPrefix": {
+      "types": "./dist/types/services/autoCombo/autoPrefix.d.ts",
+      "import": "./src/services/autoCombo/autoPrefix.ts"
+    },
+    "./services/autoCombo/builtinCatalog": {
+      "types": "./dist/types/services/autoCombo/builtinCatalog.d.ts",
+      "import": "./src/services/autoCombo/builtinCatalog.ts"
+    },
+    "./services/autoCombo/modePacks": {
+      "types": "./dist/types/services/autoCombo/modePacks.d.ts",
+      "import": "./src/services/autoCombo/modePacks.ts"
+    },
+    "./services/autoCombo/modelFamily": {
+      "types": "./dist/types/services/autoCombo/modelFamily.d.ts",
+      "import": "./src/services/autoCombo/modelFamily.ts"
+    },
+    "./services/autoCombo/providerDiversity": {
+      "types": "./dist/types/services/autoCombo/providerDiversity.d.ts",
+      "import": "./src/services/autoCombo/providerDiversity.ts"
+    },
+    "./services/autoCombo/scoring": {
+      "types": "./dist/types/services/autoCombo/scoring.d.ts",
+      "import": "./src/services/autoCombo/scoring.ts"
+    },
+    "./services/autoCombo/suffixComposition": {
+      "types": "./dist/types/services/autoCombo/suffixComposition.d.ts",
+      "import": "./src/services/autoCombo/suffixComposition.ts"
+    },
+    "./services/autoCombo/taskFitness": {
+      "types": "./dist/types/services/autoCombo/taskFitness.d.ts",
+      "import": "./src/services/autoCombo/taskFitness.ts"
+    },
+    "./services/autoCombo/virtualFactory": {
+      "types": "./dist/types/services/autoCombo/virtualFactory.d.ts",
+      "import": "./src/services/autoCombo/virtualFactory.ts"
+    },
+    "./services/autoDisableBannedAccount": {
+      "types": "./dist/types/services/autoDisableBannedAccount.d.ts",
+      "import": "./src/services/autoDisableBannedAccount.ts"
     },
     "./services/backgroundTaskDetector": {
       "types": "./dist/types/services/backgroundTaskDetector.d.ts",
       "import": "./src/services/backgroundTaskDetector.ts"
     },
-    "./services/modelDeprecation": {
-      "types": "./dist/types/services/modelDeprecation.d.ts",
-      "import": "./src/services/modelDeprecation.ts"
+    "./services/bailianQuotaFetcher": {
+      "types": "./dist/types/services/bailianQuotaFetcher.d.ts",
+      "import": "./src/services/bailianQuotaFetcher.ts"
     },
-    "./services/model": {
-      "types": "./dist/types/services/model.d.ts",
-      "import": "./src/services/model.ts"
+    "./services/bedrock": {
+      "types": "./dist/types/services/bedrock.d.ts",
+      "import": "./src/services/bedrock.ts"
     },
-    "./services/routing": {
-      "types": "./dist/types/services/routing/index.d.ts",
-      "import": "./src/services/routing/index.ts"
+    "./services/chat-completions-compat": {
+      "types": "./dist/types/services/chatCompletionsCompat.d.ts",
+      "import": "./src/services/chatCompletionsCompat.ts"
     },
-    "./services/ipFilter": {
-      "types": "./dist/types/services/ipFilter.d.ts",
-      "import": "./src/services/ipFilter.ts"
+    "./services/chatgptWebCodexAdmin": {
+      "types": "./dist/types/services/chatgptWebCodexAdmin.d.ts",
+      "import": "./src/services/chatgptWebCodexAdmin.ts"
     },
-    "./services/payloadRules": {
-      "types": "./dist/types/services/payloadRules.d.ts",
-      "import": "./src/services/payloadRules.ts"
+    "./services/claudeCodeCompatible": {
+      "types": "./dist/types/services/claudeCodeCompatible.d.ts",
+      "import": "./src/services/claudeCodeCompatible.ts"
     },
-    "./services/compression/cavemanRules": {
-      "types": "./dist/types/services/compression/cavemanRules.d.ts",
-      "import": "./src/services/compression/cavemanRules.ts"
+    "./services/clinepassModels": {
+      "types": "./dist/types/services/clinepassModels.d.ts",
+      "import": "./src/services/clinepassModels.ts"
     },
-    "./services/compression/deriveDefaultPlan": {
-      "types": "./dist/types/services/compression/deriveDefaultPlan.d.ts",
-      "import": "./src/services/compression/deriveDefaultPlan.ts"
+    "./services/codex-responses-ws-runtime": {
+      "types": "./dist/types/services/codexResponsesWsRuntime.d.ts",
+      "import": "./src/services/codexResponsesWsRuntime.ts"
     },
-    "./services/compression/engines/rtk": {
-      "types": "./dist/types/services/compression/engines/rtk/index.d.ts",
-      "import": "./src/services/compression/engines/rtk/index.ts"
+    "./services/codexAccount/index": {
+      "types": "./dist/types/services/codexAccount/index.d.ts",
+      "import": "./src/services/codexAccount/index.ts"
     },
-    "./services/compression/engines/rtk/filterLoader": {
-      "types": "./dist/types/services/compression/engines/rtk/filterLoader.d.ts",
-      "import": "./src/services/compression/engines/rtk/filterLoader.ts"
+    "./services/codexQuotaFetcher": {
+      "types": "./dist/types/services/codexQuotaFetcher.d.ts",
+      "import": "./src/services/codexQuotaFetcher.ts"
     },
-    "./services/compression/engines/rtk/tomlCompatibility": {
-      "types": "./dist/types/services/compression/engines/rtk/tomlCompatibility.d.ts",
-      "import": "./src/services/compression/engines/rtk/tomlCompatibility.ts"
+    "./services/codexResetCredits": {
+      "types": "./dist/types/services/codexResetCredits.d.ts",
+      "import": "./src/services/codexResetCredits.ts"
     },
     "./services/combo": {
       "types": "./dist/types/services/combo.d.ts",
@@ -473,6 +521,10 @@
       "types": "./dist/types/services/combo/comboStructure.d.ts",
       "import": "./src/services/combo/comboStructure.ts"
     },
+    "./services/combo/decisionTrace": {
+      "types": "./dist/types/services/combo/decisionTrace.d.ts",
+      "import": "./src/services/combo/decisionTrace.ts"
+    },
     "./services/combo/resolveAutoStrategy": {
       "types": "./src/public/comboResolveAutoStrategy.d.ts",
       "import": "./src/services/combo/resolveAutoStrategy.ts"
@@ -481,149 +533,21 @@
       "types": "./dist/types/services/combo/types.d.ts",
       "import": "./src/services/combo/types.ts"
     },
-    "./services/imageCombo": {
-      "types": "./dist/types/services/imageCombo.d.ts",
-      "import": "./src/services/imageCombo.ts"
-    },
-    "./services/refreshSerializer": {
-      "types": "./dist/types/services/refreshSerializer.d.ts",
-      "import": "./src/services/refreshSerializer.ts"
-    },
-    "./services/token-refresh": {
-      "types": "./dist/types/services/tokenRefresh.d.ts",
-      "import": "./src/services/tokenRefresh.ts"
-    },
-    "./services/qoder-cli-resolve": {
-      "types": "./dist/types/services/qoderCliResolve.d.ts",
-      "import": "./src/services/qoderCliResolve.ts"
-    },
-    "./services/api-key-rotator": {
-      "types": "./dist/types/services/apiKeyRotator.d.ts",
-      "import": "./src/services/apiKeyRotator.ts"
-    },
-    "./services/antigravity-headers": {
-      "types": "./dist/types/services/antigravityHeaders.d.ts",
-      "import": "./src/services/antigravityHeaders.ts"
-    },
-    "./services/antigravity-client-profile": {
-      "types": "./dist/types/services/antigravityClientProfile.d.ts",
-      "import": "./src/services/antigravityClientProfile.ts"
-    },
-    "./config/antigravity-upstream": {
-      "types": "./dist/types/config/antigravityUpstream.d.ts",
-      "import": "./src/config/antigravityUpstream.ts"
-    },
-    "./executors/codex": {
-      "types": "./dist/types/executors/codex.d.ts",
-      "import": "./src/executors/codex.ts"
-    },
-    "./executors/codex/app-server-config": {
-      "types": "./dist/types/executors/codex/appServerConfig.d.ts",
-      "import": "./src/executors/codex/appServerConfig.ts"
-    },
-    "./executors/codex/app-server-auth-probe": {
-      "types": "./dist/types/executors/codex/appServerAuthProbe.d.ts",
-      "import": "./src/executors/codex/appServerAuthProbe.ts"
-    },
-    "./services/kiro-external-idp": {
-      "types": "./dist/types/services/kiroExternalIdp.d.ts",
-      "import": "./src/services/kiroExternalIdp.ts"
-    },
-    "./services/tier-resolver": {
-      "types": "./dist/types/services/tierResolver.d.ts",
-      "import": "./src/services/tierResolver.ts"
-    },
-    "./services/context-manager": {
-      "types": "./dist/types/services/contextManager.d.ts",
-      "import": "./src/services/contextManager.ts"
-    },
-    "./services/codex-responses-ws-runtime": {
-      "types": "./dist/types/services/codexResponsesWsRuntime.d.ts",
-      "import": "./src/services/codexResponsesWsRuntime.ts"
-    },
-    "./services/audio-provider-nodes": {
-      "types": "./dist/types/services/audioProviderNodes.d.ts",
-      "import": "./src/services/audioProviderNodes.ts"
-    },
-    "./services/video-model-resolution": {
-      "types": "./dist/types/services/videoModelResolution.d.ts",
-      "import": "./src/services/videoModelResolution.ts"
-    },
-    "./services/chat-completions-compat": {
-      "types": "./dist/types/services/chatCompletionsCompat.d.ts",
-      "import": "./src/services/chatCompletionsCompat.ts"
-    },
-    "./services/taskAwareRouter": {
-      "types": "./dist/types/services/taskAwareRouter.d.ts",
-      "import": "./src/services/taskAwareRouter.ts"
-    },
-    "./services/volcengineConsoleAutoLogin": {
-      "types": "./dist/types/services/volcengineConsoleAutoLogin.d.ts",
-      "import": "./src/services/volcengineConsoleAutoLogin.ts"
-    },
-    "./services/inAppLoginService": {
-      "types": "./dist/types/services/inAppLoginService.d.ts",
-      "import": "./src/services/inAppLoginService.ts"
-    },
-    "./services/adobeFireflyBrowserLogin": {
-      "types": "./dist/types/services/adobeFireflyBrowserLogin.d.ts",
-      "import": "./src/services/adobeFireflyBrowserLogin.ts"
-    },
-    "./services/conolBrowserLogin": {
-      "types": "./dist/types/services/conolBrowserLogin.d.ts",
-      "import": "./src/services/conolBrowserLogin.ts"
-    },
-    "./services/searchCache": {
-      "types": "./dist/types/services/searchCache.d.ts",
-      "import": "./src/services/searchCache.ts"
-    },
-    "./mcp-server/httpTransport": {
-      "types": "./dist/types/mcp-server/httpTransport.d.ts",
-      "import": "./src/mcp-server/httpTransport.ts"
-    },
-    "./mcp-server/factory": {
-      "types": "./dist/types/mcp-server/factory.d.ts",
-      "import": "./src/mcp-server/factory.ts"
-    },
-    "./services/qoderCli": {
-      "types": "./dist/types/services/qoderCli.d.ts",
-      "import": "./src/services/qoderCli.ts"
-    },
-    "./services/codexAccount/index": {
-      "types": "./dist/types/services/codexAccount/index.d.ts",
-      "import": "./src/services/codexAccount/index.ts"
-    },
-    "./config/codexQuotaScopes": {
-      "types": "./dist/types/config/codexQuotaScopes.d.ts",
-      "import": "./src/config/codexQuotaScopes.ts"
-    },
-    "./config/audioRegistry": {
-      "types": "./dist/types/config/audioRegistry.d.ts",
-      "import": "./src/config/audioRegistry.ts"
-    },
-    "./executors/cliproxyapi": {
-      "types": "./dist/types/executors/cliproxyapi.d.ts",
-      "import": "./src/executors/cliproxyapi.ts"
-    },
-    "./handlers/audioTranscription": {
-      "types": "./dist/types/handlers/audioTranscription.d.ts",
-      "import": "./src/handlers/audioTranscription.ts"
-    },
-    "./mcp-server/audit": {
-      "types": "./dist/types/mcp-server/audit.d.ts",
-      "import": "./src/mcp-server/audit.ts"
-    },
-    "./mcp-server/runtimeHeartbeat": {
-      "types": "./dist/types/mcp-server/runtimeHeartbeat.d.ts",
-      "import": "./src/mcp-server/runtimeHeartbeat.ts"
-    },
-    "./mcp-server/schemas/tools": {
-      "types": "./dist/types/mcp-server/schemas/tools.d.ts",
-      "import": "./src/mcp-server/schemas/tools.ts"
+    "./services/comboMetrics": {
+      "types": "./dist/types/services/comboMetrics.d.ts",
+      "import": "./src/services/comboMetrics.ts"
     },
     "./services/compression": {
       "types": "./dist/types/services/compression/index.d.ts",
       "import": "./src/services/compression/index.ts"
+    },
+    "./services/compression/cavemanRules": {
+      "types": "./dist/types/services/compression/cavemanRules.d.ts",
+      "import": "./src/services/compression/cavemanRules.ts"
+    },
+    "./services/compression/deriveDefaultPlan": {
+      "types": "./dist/types/services/compression/deriveDefaultPlan.d.ts",
+      "import": "./src/services/compression/deriveDefaultPlan.ts"
     },
     "./services/compression/diffHelper": {
       "types": "./dist/types/services/compression/diffHelper.d.ts",
@@ -657,17 +581,29 @@
       "types": "./dist/types/services/compression/engines/registry.d.ts",
       "import": "./src/services/compression/engines/registry.ts"
     },
+    "./services/compression/engines/rtk": {
+      "types": "./dist/types/services/compression/engines/rtk/index.d.ts",
+      "import": "./src/services/compression/engines/rtk/index.ts"
+    },
+    "./services/compression/engines/rtk/filterLoader": {
+      "types": "./dist/types/services/compression/engines/rtk/filterLoader.d.ts",
+      "import": "./src/services/compression/engines/rtk/filterLoader.ts"
+    },
+    "./services/compression/engines/rtk/tomlCompatibility": {
+      "types": "./dist/types/services/compression/engines/rtk/tomlCompatibility.d.ts",
+      "import": "./src/services/compression/engines/rtk/tomlCompatibility.ts"
+    },
+    "./services/compression/eval/fidelityCheck": {
+      "types": "./dist/types/services/compression/eval/fidelityCheck.d.ts",
+      "import": "./src/services/compression/eval/fidelityCheck.ts"
+    },
+    "./services/compression/eval/types": {
+      "types": "./dist/types/services/compression/eval/types.d.ts",
+      "import": "./src/services/compression/eval/types.ts"
+    },
     "./services/compression/harness/benchmark": {
       "types": "./dist/types/services/compression/harness/benchmark.d.ts",
       "import": "./src/services/compression/harness/benchmark.ts"
-    },
-    "./services/requestDedup": {
-      "types": "./dist/types/services/requestDedup.d.ts",
-      "import": "./src/services/requestDedup.ts"
-    },
-    "./services/admission/runtime": {
-      "types": "./dist/types/services/admission/runtime.d.ts",
-      "import": "./src/services/admission/runtime.ts"
     },
     "./services/compression/strategySelector": {
       "types": "./dist/types/services/compression/strategySelector.d.ts",
@@ -677,313 +613,137 @@
       "types": "./dist/types/services/compression/types.d.ts",
       "import": "./src/services/compression/types.ts"
     },
-    "./services/conversationTurnContent": {
-      "types": "./dist/types/services/conversationTurnContent.d.ts",
-      "import": "./src/services/conversationTurnContent.ts"
-    },
-    "./services/quotaMonitor": {
-      "types": "./dist/types/services/quotaMonitor.d.ts",
-      "import": "./src/services/quotaMonitor.ts"
-    },
-    "./services/quotaTrackersBatch": {
-      "types": "./dist/types/services/quotaTrackersBatch.d.ts",
-      "import": "./src/services/quotaTrackersBatch.ts"
-    },
-    "./services/quota-saturation": {
-      "types": "./dist/types/services/quotaSaturation.d.ts",
-      "import": "./src/services/quotaSaturation.ts"
-    },
-    "./services/runtime-settings-hooks": {
-      "types": "./dist/types/services/runtimeSettingsHooks.d.ts",
-      "import": "./src/services/runtimeSettingsHooks.ts"
-    },
-    "./services/tierTypes": {
-      "types": "./dist/types/services/tierTypes.d.ts",
-      "import": "./src/services/tierTypes.ts"
-    },
-    "./services/accountSemaphore": {
-      "types": "./dist/types/services/accountSemaphore.d.ts",
-      "import": "./src/services/accountSemaphore.ts"
-    },
-    "./services/autoCombo/providerDiversity": {
-      "types": "./dist/types/services/autoCombo/providerDiversity.d.ts",
-      "import": "./src/services/autoCombo/providerDiversity.ts"
-    },
-    "./services/autoCombo/virtualFactory": {
-      "types": "./dist/types/services/autoCombo/virtualFactory.d.ts",
-      "import": "./src/services/autoCombo/virtualFactory.ts"
-    },
-    "./services/autoCombo/autoPrefix": {
-      "types": "./dist/types/services/autoCombo/autoPrefix.d.ts",
-      "import": "./src/services/autoCombo/autoPrefix.ts"
-    },
-    "./services/autoCombo/builtinCatalog": {
-      "types": "./dist/types/services/autoCombo/builtinCatalog.d.ts",
-      "import": "./src/services/autoCombo/builtinCatalog.ts"
-    },
-    "./services/autoCombo/suffixComposition": {
-      "types": "./dist/types/services/autoCombo/suffixComposition.d.ts",
-      "import": "./src/services/autoCombo/suffixComposition.ts"
-    },
-    "./services/autoCombo/modelFamily": {
-      "types": "./dist/types/services/autoCombo/modelFamily.d.ts",
-      "import": "./src/services/autoCombo/modelFamily.ts"
-    },
-    "./services/comboMetrics": {
-      "types": "./dist/types/services/comboMetrics.d.ts",
-      "import": "./src/services/comboMetrics.ts"
-    },
-    "./services/rateLimitManager/errors": {
-      "types": "./dist/types/services/rateLimitManager/errors.d.ts",
-      "import": "./src/services/rateLimitManager/errors.ts"
-    },
-    "./services/toolLatencyTracker": {
-      "types": "./dist/types/services/toolLatencyTracker.d.ts",
-      "import": "./src/services/toolLatencyTracker.ts"
-    },
-    "./services/quotaPreflight": {
-      "types": "./dist/types/services/quotaPreflight.d.ts",
-      "import": "./src/services/quotaPreflight.ts"
-    },
-    "./services/signatureCache": {
-      "types": "./dist/types/services/signatureCache.d.ts",
-      "import": "./src/services/signatureCache.ts"
-    },
-    "./handlers/audioSpeech": {
-      "types": "./dist/types/handlers/audioSpeech.d.ts",
-      "import": "./src/handlers/audioSpeech.ts"
-    },
-    "./services/speechCombo": {
-      "types": "./dist/types/services/speechCombo.d.ts",
-      "import": "./src/services/speechCombo.ts"
-    },
-    "./handlers/audioTranslation": {
-      "types": "./dist/types/handlers/audioTranslation.d.ts",
-      "import": "./src/handlers/audioTranslation.ts"
-    },
-    "./handlers/jinaFoundation": {
-      "types": "./dist/types/handlers/jinaFoundation.d.ts",
-      "import": "./src/handlers/jinaFoundation.ts"
-    },
-    "./services/adobeFireflyClient": {
-      "types": "./dist/types/services/adobeFireflyClient.d.ts",
-      "import": "./src/services/adobeFireflyClient.ts"
-    },
-    "./services/adobeFireflyUpscale": {
-      "types": "./dist/types/services/adobeFireflyUpscale.d.ts",
-      "import": "./src/services/adobeFireflyUpscale.ts"
-    },
-    "./executors/index": {
-      "types": "./dist/types/executors/index.d.ts",
-      "import": "./src/executors/index.ts"
-    },
-    "./utils/usageTracking": {
-      "types": "./dist/types/utils/usageTracking.d.ts",
-      "import": "./src/utils/usageTracking.ts"
-    },
-    "./handlers/moderations": {
-      "types": "./dist/types/handlers/moderations.d.ts",
-      "import": "./src/handlers/moderations.ts"
-    },
-    "./config/moderationRegistry": {
-      "types": "./dist/types/config/moderationRegistry.d.ts",
-      "import": "./src/config/moderationRegistry.ts"
-    },
-    "./handlers/musicGeneration": {
-      "types": "./dist/types/handlers/musicGeneration.d.ts",
-      "import": "./src/handlers/musicGeneration.ts"
-    },
-    "./config/musicRegistry": {
-      "types": "./dist/types/config/musicRegistry.d.ts",
-      "import": "./src/config/musicRegistry.ts"
-    },
-    "./handlers/ocr": {
-      "types": "./dist/types/handlers/ocr.d.ts",
-      "import": "./src/handlers/ocr.ts"
-    },
-    "./config/ocrRegistry": {
-      "types": "./dist/types/config/ocrRegistry.d.ts",
-      "import": "./src/config/ocrRegistry.ts"
-    },
-    "./services/codexQuotaFetcher": {
-      "types": "./dist/types/services/codexQuotaFetcher.d.ts",
-      "import": "./src/services/codexQuotaFetcher.ts"
-    },
-    "./services/bailianQuotaFetcher": {
-      "types": "./dist/types/services/bailianQuotaFetcher.d.ts",
-      "import": "./src/services/bailianQuotaFetcher.ts"
-    },
-    "./services/qwenTokenPlanQuotaFetcher": {
-      "types": "./dist/types/services/qwenTokenPlanQuotaFetcher.d.ts",
-      "import": "./src/services/qwenTokenPlanQuotaFetcher.ts"
-    },
-    "./services/crofUsageFetcher": {
-      "types": "./dist/types/services/crofUsageFetcher.d.ts",
-      "import": "./src/services/crofUsageFetcher.ts"
-    },
-    "./services/deepseekQuotaFetcher": {
-      "types": "./dist/types/services/deepseekQuotaFetcher.d.ts",
-      "import": "./src/services/deepseekQuotaFetcher.ts"
-    },
-    "./services/openrouterQuotaFetcher": {
-      "types": "./dist/types/services/openrouterQuotaFetcher.d.ts",
-      "import": "./src/services/openrouterQuotaFetcher.ts"
-    },
-    "./services/opencodeQuotaFetcher": {
-      "types": "./dist/types/services/opencodeQuotaFetcher.d.ts",
-      "import": "./src/services/opencodeQuotaFetcher.ts"
-    },
-    "./services/grokQuotaFetcher": {
-      "types": "./dist/types/services/grokQuotaFetcher.d.ts",
-      "import": "./src/services/grokQuotaFetcher.ts"
-    },
-    "./services/genericQuotaFetcher": {
-      "types": "./dist/types/services/genericQuotaFetcher.d.ts",
-      "import": "./src/services/genericQuotaFetcher.ts"
-    },
-    "./handlers/videoGeneration": {
-      "types": "./dist/types/handlers/videoGeneration.d.ts",
-      "import": "./src/handlers/videoGeneration.ts"
-    },
-    "./handlers/videoGeneration/googleFlow": {
-      "types": "./dist/types/handlers/videoGeneration/googleFlow.d.ts",
-      "import": "./src/handlers/videoGeneration/googleFlow.ts"
-    },
-    "./config/videoRegistry": {
-      "types": "./dist/types/config/videoRegistry.d.ts",
-      "import": "./src/config/videoRegistry.ts"
-    },
-    "./services/videoCombo": {
-      "types": "./dist/types/services/videoCombo.d.ts",
-      "import": "./src/services/videoCombo.ts"
-    },
-    "./services/codexResetCredits": {
-      "types": "./dist/types/services/codexResetCredits.d.ts",
-      "import": "./src/services/codexResetCredits.ts"
-    },
-    "./services/grokResetCredits": {
-      "types": "./src/public/grokResetCredits.d.ts",
-      "import": "./src/services/grokResetCredits.ts"
-    },
-    "./services/internalUsageCommand": {
-      "types": "./dist/types/services/internalUsageCommand.d.ts",
-      "import": "./src/services/internalUsageCommand.ts"
-    },
-    "./services/providerLimits": {
-      "types": "./dist/types/services/providerLimits.d.ts",
-      "import": "./src/services/providerLimits.ts"
-    },
-    "./services/kimiTokenRefresh": {
-      "types": "./dist/types/services/kimiTokenRefresh.d.ts",
-      "import": "./src/services/kimiTokenRefresh.ts"
-    },
-    "./services/dbRuntimeHooks": {
-      "types": "./dist/types/services/dbRuntimeHooks.d.ts",
-      "import": "./src/services/dbRuntimeHooks.ts"
-    },
-    "./services/auto-refresh-daemon": {
-      "types": "./dist/types/services/autoRefreshDaemon.d.ts",
-      "import": "./src/services/autoRefreshDaemon.ts"
-    },
-    "./handlers/chat-core/cliproxyapi-credentials": {
-      "types": "./dist/types/handlers/chatCore/cliproxyapiCredentials.d.ts",
-      "import": "./src/handlers/chatCore/cliproxyapiCredentials.ts"
-    },
-    "./services/usage/codex": {
-      "types": "./dist/types/services/usage/codex.d.ts",
-      "import": "./src/services/usage/codex.ts"
-    },
-    "./services/quotaFetchThrottle": {
-      "types": "./dist/types/services/quotaFetchThrottle.d.ts",
-      "import": "./src/services/quotaFetchThrottle.ts"
-    },
-    "./services/memoryRuntime": {
-      "types": "./dist/types/services/memoryRuntime.d.ts",
-      "import": "./src/services/memoryRuntime.ts"
-    },
-    "./services/autoCombo/scoring": {
-      "types": "./dist/types/services/autoCombo/scoring.d.ts",
-      "import": "./src/services/autoCombo/scoring.ts"
-    },
-    "./services/autoCombo/modePacks": {
-      "types": "./dist/types/services/autoCombo/modePacks.d.ts",
-      "import": "./src/services/autoCombo/modePacks.ts"
-    },
-    "./services/autoCombo/taskFitness": {
-      "types": "./dist/types/services/autoCombo/taskFitness.d.ts",
-      "import": "./src/services/autoCombo/taskFitness.ts"
-    },
-    "./services/adobeFireflyModels": {
-      "types": "./dist/types/services/adobeFireflyModels.d.ts",
-      "import": "./src/services/adobeFireflyModels.ts"
-    },
     "./services/conolAuth": {
       "types": "./dist/types/services/conolAuth.d.ts",
       "import": "./src/services/conolAuth.ts"
+    },
+    "./services/conolBrowserLogin": {
+      "types": "./dist/types/services/conolBrowserLogin.d.ts",
+      "import": "./src/services/conolBrowserLogin.ts"
     },
     "./services/conolModels": {
       "types": "./dist/types/services/conolModels.d.ts",
       "import": "./src/services/conolModels.ts"
     },
-    "./config/codexClient": {
-      "types": "./dist/types/config/codexClient.d.ts",
-      "import": "./src/config/codexClient.ts"
+    "./services/context-manager": {
+      "types": "./dist/types/services/contextManager.d.ts",
+      "import": "./src/services/contextManager.ts"
     },
-    "./config/antigravityModelAliases": {
-      "types": "./dist/types/config/antigravityModelAliases.d.ts",
-      "import": "./src/config/antigravityModelAliases.ts"
+    "./services/conversationTurnContent": {
+      "types": "./dist/types/services/conversationTurnContent.d.ts",
+      "import": "./src/services/conversationTurnContent.ts"
     },
-    "./config/agyModels": {
-      "types": "./dist/types/config/agyModels.d.ts",
-      "import": "./src/config/agyModels.ts"
+    "./services/cooldownAwareRetry": {
+      "types": "./dist/types/services/cooldownAwareRetry.d.ts",
+      "import": "./src/services/cooldownAwareRetry.ts"
     },
-    "./services/antigravityProjectBootstrap": {
-      "types": "./dist/types/services/antigravityProjectBootstrap.d.ts",
-      "import": "./src/services/antigravityProjectBootstrap.ts"
+    "./services/credential-selection": {
+      "types": "./dist/types/services/credential-selection.d.ts",
+      "import": "./src/services/credential-selection.ts"
     },
-    "./services/antigravityProjectPersist": {
-      "types": "./dist/types/services/antigravityProjectPersist.d.ts",
-      "import": "./src/services/antigravityProjectPersist.ts"
+    "./services/credentialTokenRefresh": {
+      "types": "./dist/types/services/credentialTokenRefresh.d.ts",
+      "import": "./src/services/credentialTokenRefresh.ts"
     },
-    "./config/grokBuild": {
-      "types": "./dist/types/config/grokBuild.d.ts",
-      "import": "./src/config/grokBuild.ts"
-    },
-    "./services/clinepassModels": {
-      "types": "./dist/types/services/clinepassModels.d.ts",
-      "import": "./src/services/clinepassModels.ts"
-    },
-    "./services/claudeCodeCompatible": {
-      "types": "./dist/types/services/claudeCodeCompatible.d.ts",
-      "import": "./src/services/claudeCodeCompatible.ts"
-    },
-    "./config/providers/registry/kimi/coding/runtime": {
-      "types": "./dist/types/config/providers/registry/kimi/coding/runtime.d.ts",
-      "import": "./src/config/providers/registry/kimi/coding/runtime.ts"
-    },
-    "./config/providers/registry/alibaba/index": {
-      "types": "./dist/types/config/providers/registry/alibaba/index.d.ts",
-      "import": "./src/config/providers/registry/alibaba/index.ts"
-    },
-    "./config/providers/registry/qwen-cloud/index": {
-      "types": "./dist/types/config/providers/registry/qwen-cloud/index.d.ts",
-      "import": "./src/config/providers/registry/qwen-cloud/index.ts"
-    },
-    "./services/alibabaFreeTierDiscovery": {
-      "types": "./dist/types/services/alibabaFreeTierDiscovery.d.ts",
-      "import": "./src/services/alibabaFreeTierDiscovery.ts"
-    },
-    "./services/alibabaFreeTier": {
-      "types": "./dist/types/services/alibabaFreeTier.d.ts",
-      "import": "./src/services/alibabaFreeTier.ts"
+    "./services/crofUsageFetcher": {
+      "types": "./dist/types/services/crofUsageFetcher.d.ts",
+      "import": "./src/services/crofUsageFetcher.ts"
     },
     "./services/dashscopeTextModels": {
       "types": "./dist/types/services/dashscopeTextModels.d.ts",
       "import": "./src/services/dashscopeTextModels.ts"
     },
-    "./services/zaiWebCredentials": {
-      "types": "./dist/types/services/zaiWebCredentials.d.ts",
-      "import": "./src/services/zaiWebCredentials.ts"
+    "./services/dbRuntimeHooks": {
+      "types": "./dist/types/services/dbRuntimeHooks.d.ts",
+      "import": "./src/services/dbRuntimeHooks.ts"
+    },
+    "./services/deepseekQuotaFetcher": {
+      "types": "./dist/types/services/deepseekQuotaFetcher.d.ts",
+      "import": "./src/services/deepseekQuotaFetcher.ts"
+    },
+    "./services/deviceTracker": {
+      "types": "./dist/types/services/deviceTracker.d.ts",
+      "import": "./src/services/deviceTracker.ts"
+    },
+    "./services/embedding-route": {
+      "types": "./dist/types/services/embeddingRoute/service.d.ts",
+      "import": "./src/services/embeddingRoute/service.ts"
+    },
+    "./services/exclusiveConnectionLeasePolicy": {
+      "types": "./dist/types/services/exclusiveConnectionLeasePolicy.d.ts",
+      "import": "./src/services/exclusiveConnectionLeasePolicy.ts"
+    },
+    "./services/genericQuotaFetcher": {
+      "types": "./dist/types/services/genericQuotaFetcher.d.ts",
+      "import": "./src/services/genericQuotaFetcher.ts"
+    },
+    "./services/githubCopilotModels": {
+      "types": "./dist/types/services/githubCopilotModels.d.ts",
+      "import": "./src/services/githubCopilotModels.ts"
+    },
+    "./services/googApiKeyAuth": {
+      "types": "./dist/types/services/googApiKeyAuth.d.ts",
+      "import": "./src/services/googApiKeyAuth.ts"
+    },
+    "./services/grokQuotaFetcher": {
+      "types": "./dist/types/services/grokQuotaFetcher.d.ts",
+      "import": "./src/services/grokQuotaFetcher.ts"
+    },
+    "./services/grokResetCredits": {
+      "types": "./src/public/grokResetCredits.d.ts",
+      "import": "./src/services/grokResetCredits.ts"
+    },
+    "./services/headerReader": {
+      "types": "./dist/types/services/headerReader.d.ts",
+      "import": "./src/services/headerReader.ts"
+    },
+    "./services/imageCombo": {
+      "types": "./dist/types/services/imageCombo.d.ts",
+      "import": "./src/services/imageCombo.ts"
+    },
+    "./services/imageCredentialRetry": {
+      "types": "./dist/types/services/imageCredentialRetry.d.ts",
+      "import": "./src/services/imageCredentialRetry.ts"
+    },
+    "./services/inAppLoginService": {
+      "types": "./dist/types/services/inAppLoginService.d.ts",
+      "import": "./src/services/inAppLoginService.ts"
+    },
+    "./services/internalUsageCommand": {
+      "types": "./dist/types/services/internalUsageCommand.d.ts",
+      "import": "./src/services/internalUsageCommand.ts"
+    },
+    "./services/ipFilter": {
+      "types": "./dist/types/services/ipFilter.d.ts",
+      "import": "./src/services/ipFilter.ts"
+    },
+    "./services/kimiTokenRefresh": {
+      "types": "./dist/types/services/kimiTokenRefresh.d.ts",
+      "import": "./src/services/kimiTokenRefresh.ts"
+    },
+    "./services/kiro-external-idp": {
+      "types": "./dist/types/services/kiroExternalIdp.d.ts",
+      "import": "./src/services/kiroExternalIdp.ts"
+    },
+    "./services/kiroModels": {
+      "types": "./dist/types/services/kiroModels.d.ts",
+      "import": "./src/services/kiroModels.ts"
+    },
+    "./services/leaseContext": {
+      "types": "./dist/types/services/leaseContext.d.ts",
+      "import": "./src/services/leaseContext.ts"
+    },
+    "./services/memoryRuntime": {
+      "types": "./dist/types/services/memoryRuntime.d.ts",
+      "import": "./src/services/memoryRuntime.ts"
+    },
+    "./services/model": {
+      "types": "./dist/types/services/model.d.ts",
+      "import": "./src/services/model.ts"
+    },
+    "./services/modelDeprecation": {
+      "types": "./dist/types/services/modelDeprecation.d.ts",
+      "import": "./src/services/modelDeprecation.ts"
     },
     "./services/modelEndpointPolicy": {
       "types": "./dist/types/services/modelEndpointPolicy.d.ts",
@@ -993,61 +753,305 @@
       "types": "./dist/types/services/modelLifecycle.d.ts",
       "import": "./src/services/modelLifecycle.ts"
     },
-    "./shared/zedAuth": {
-      "types": "./dist/types/shared/zedAuth.d.ts",
-      "import": "./src/shared/zedAuth.ts"
+    "./services/noAuthOptionalApiKey": {
+      "types": "./dist/types/services/noAuthOptionalApiKey.d.ts",
+      "import": "./src/services/noAuthOptionalApiKey.ts"
     },
-    "./services/githubCopilotModels": {
-      "types": "./dist/types/services/githubCopilotModels.d.ts",
-      "import": "./src/services/githubCopilotModels.ts"
+    "./services/noAuthProviderSettings": {
+      "types": "./dist/types/services/noAuthProviderSettings.d.ts",
+      "import": "./src/services/noAuthProviderSettings.ts"
     },
-    "./services/kiroModels": {
-      "types": "./dist/types/services/kiroModels.d.ts",
-      "import": "./src/services/kiroModels.ts"
+    "./services/noAuthProviderSiblings": {
+      "types": "./dist/types/services/noAuthProviderSiblings.d.ts",
+      "import": "./src/services/noAuthProviderSiblings.ts"
     },
-    "./config/glmProvider": {
-      "types": "./dist/types/config/glmProvider.d.ts",
-      "import": "./src/config/glmProvider.ts"
-    },
-    "./services/bedrock": {
-      "types": "./dist/types/services/bedrock.d.ts",
-      "import": "./src/services/bedrock.ts"
-    },
-    "./services/promptqlModels": {
-      "types": "./dist/types/services/promptqlModels.d.ts",
-      "import": "./src/services/promptqlModels.ts"
+    "./services/noAuthProxyResolution": {
+      "types": "./dist/types/services/noAuthProxyResolution.d.ts",
+      "import": "./src/services/noAuthProxyResolution.ts"
     },
     "./services/notionWebModels": {
       "types": "./dist/types/services/notionWebModels.d.ts",
       "import": "./src/services/notionWebModels.ts"
     },
-    "./config/azureAi": {
-      "types": "./dist/types/config/azureAi.d.ts",
-      "import": "./src/config/azureAi.ts"
+    "./services/opencodeQuotaFetcher": {
+      "types": "./dist/types/services/opencodeQuotaFetcher.d.ts",
+      "import": "./src/services/opencodeQuotaFetcher.ts"
     },
-    "./config/datarobot": {
-      "types": "./dist/types/config/datarobot.d.ts",
-      "import": "./src/config/datarobot.ts"
+    "./services/openrouterQuotaFetcher": {
+      "types": "./dist/types/services/openrouterQuotaFetcher.d.ts",
+      "import": "./src/services/openrouterQuotaFetcher.ts"
     },
-    "./config/oci": {
-      "types": "./dist/types/config/oci.d.ts",
-      "import": "./src/config/oci.ts"
+    "./services/payloadRules": {
+      "types": "./dist/types/services/payloadRules.d.ts",
+      "import": "./src/services/payloadRules.ts"
     },
-    "./config/sap": {
-      "types": "./dist/types/config/sap.d.ts",
-      "import": "./src/config/sap.ts"
+    "./services/promptqlModels": {
+      "types": "./dist/types/services/promptqlModels.d.ts",
+      "import": "./src/services/promptqlModels.ts"
     },
-    "./config/watsonx": {
-      "types": "./dist/types/config/watsonx.d.ts",
-      "import": "./src/config/watsonx.ts"
+    "./services/provider": {
+      "types": "./dist/types/services/provider.d.ts",
+      "import": "./src/services/provider.ts"
     },
-    "./executors/vertex": {
-      "types": "./dist/types/executors/vertex.d.ts",
-      "import": "./src/executors/vertex.ts"
+    "./services/provider-validation": {
+      "types": "./src/public/providerValidation.d.ts",
+      "import": "./src/services/providerValidation.ts"
     },
-    "./services/alibabaFreeTierQuotaFetcher": {
-      "types": "./dist/types/services/alibabaFreeTierQuotaFetcher.d.ts",
-      "import": "./src/services/alibabaFreeTierQuotaFetcher.ts"
+    "./services/provider-validation/search-providers": {
+      "types": "./dist/types/services/providerValidation/searchProviders.d.ts",
+      "import": "./src/services/providerValidation/searchProviders.ts"
+    },
+    "./services/provider-validation/url-helpers": {
+      "types": "./dist/types/services/providerValidation/urlHelpers.d.ts",
+      "import": "./src/services/providerValidation/urlHelpers.ts"
+    },
+    "./services/provider-validation/web-cookie": {
+      "types": "./dist/types/services/providerValidation/webCookie.d.ts",
+      "import": "./src/services/providerValidation/webCookie.ts"
+    },
+    "./services/providerDefaultRateLimit": {
+      "types": "./dist/types/services/providerDefaultRateLimit.d.ts",
+      "import": "./src/services/providerDefaultRateLimit.ts"
+    },
+    "./services/providerLimits": {
+      "types": "./dist/types/services/providerLimits.d.ts",
+      "import": "./src/services/providerLimits.ts"
+    },
+    "./services/qoder-cli-resolve": {
+      "types": "./dist/types/services/qoderCliResolve.d.ts",
+      "import": "./src/services/qoderCliResolve.ts"
+    },
+    "./services/qoderCli": {
+      "types": "./dist/types/services/qoderCli.d.ts",
+      "import": "./src/services/qoderCli.ts"
+    },
+    "./services/quota-saturation": {
+      "types": "./dist/types/services/quotaSaturation.d.ts",
+      "import": "./src/services/quotaSaturation.ts"
+    },
+    "./services/quotaFetchThrottle": {
+      "types": "./dist/types/services/quotaFetchThrottle.d.ts",
+      "import": "./src/services/quotaFetchThrottle.ts"
+    },
+    "./services/quotaMonitor": {
+      "types": "./dist/types/services/quotaMonitor.d.ts",
+      "import": "./src/services/quotaMonitor.ts"
+    },
+    "./services/quotaPreflight": {
+      "types": "./dist/types/services/quotaPreflight.d.ts",
+      "import": "./src/services/quotaPreflight.ts"
+    },
+    "./services/quotaTrackersBatch": {
+      "types": "./dist/types/services/quotaTrackersBatch.d.ts",
+      "import": "./src/services/quotaTrackersBatch.ts"
+    },
+    "./services/qwenTokenPlanQuotaFetcher": {
+      "types": "./dist/types/services/qwenTokenPlanQuotaFetcher.d.ts",
+      "import": "./src/services/qwenTokenPlanQuotaFetcher.ts"
+    },
+    "./services/rateLimitManager": {
+      "types": "./dist/types/exports/services/rateLimitManager.d.ts",
+      "import": "./src/exports/services/rateLimitManager.ts"
+    },
+    "./services/rateLimitManager/errors": {
+      "types": "./dist/types/services/rateLimitManager/errors.d.ts",
+      "import": "./src/services/rateLimitManager/errors.ts"
+    },
+    "./services/reasoningCache": {
+      "types": "./dist/types/services/reasoningCache.d.ts",
+      "import": "./src/services/reasoningCache.ts"
+    },
+    "./services/refreshSerializer": {
+      "types": "./dist/types/services/refreshSerializer.d.ts",
+      "import": "./src/services/refreshSerializer.ts"
+    },
+    "./services/requestDedup": {
+      "types": "./dist/types/services/requestDedup.d.ts",
+      "import": "./src/services/requestDedup.ts"
+    },
+    "./services/requestResourceHealth": {
+      "types": "./dist/types/services/requestResourceHealth.d.ts",
+      "import": "./src/services/requestResourceHealth.ts"
+    },
+    "./services/routing": {
+      "types": "./dist/types/services/routing/index.d.ts",
+      "import": "./src/services/routing/index.ts"
+    },
+    "./services/runtime-settings-hooks": {
+      "types": "./dist/types/services/runtimeSettingsHooks.d.ts",
+      "import": "./src/services/runtimeSettingsHooks.ts"
+    },
+    "./services/runtimeModel": {
+      "types": "./dist/types/services/runtimeModel.d.ts",
+      "import": "./src/services/runtimeModel.ts"
+    },
+    "./services/sameAccountTransportRetry": {
+      "types": "./dist/types/services/sameAccountTransportRetry.d.ts",
+      "import": "./src/services/sameAccountTransportRetry.ts"
+    },
+    "./services/searchCache": {
+      "types": "./dist/types/services/searchCache.d.ts",
+      "import": "./src/services/searchCache.ts"
+    },
+    "./services/sessionAffinityPin": {
+      "types": "./dist/types/services/sessionAffinityPin.d.ts",
+      "import": "./src/services/sessionAffinityPin.ts"
+    },
+    "./services/sessionManager": {
+      "types": "./dist/types/services/sessionManager.d.ts",
+      "import": "./src/services/sessionManager.ts"
+    },
+    "./services/signatureCache": {
+      "types": "./dist/types/services/signatureCache.d.ts",
+      "import": "./src/services/signatureCache.ts"
+    },
+    "./services/speechCombo": {
+      "types": "./dist/types/services/speechCombo.d.ts",
+      "import": "./src/services/speechCombo.ts"
+    },
+    "./services/static-models": {
+      "types": "./dist/types/services/staticModels.d.ts",
+      "import": "./src/services/staticModels.ts"
+    },
+    "./services/systemPrompt": {
+      "types": "./dist/types/services/systemPrompt.d.ts",
+      "import": "./src/services/systemPrompt.ts"
+    },
+    "./services/taskAwareRouter": {
+      "types": "./dist/types/services/taskAwareRouter.d.ts",
+      "import": "./src/services/taskAwareRouter.ts"
+    },
+    "./services/thinkingBudget": {
+      "types": "./dist/types/services/thinkingBudget.d.ts",
+      "import": "./src/services/thinkingBudget.ts"
+    },
+    "./services/tier-resolver": {
+      "types": "./dist/types/services/tierResolver.d.ts",
+      "import": "./src/services/tierResolver.ts"
+    },
+    "./services/tierTypes": {
+      "types": "./dist/types/services/tierTypes.d.ts",
+      "import": "./src/services/tierTypes.ts"
+    },
+    "./services/token-refresh": {
+      "types": "./dist/types/services/tokenRefresh.d.ts",
+      "import": "./src/services/tokenRefresh.ts"
+    },
+    "./services/toolLatencyTracker": {
+      "types": "./dist/types/services/toolLatencyTracker.d.ts",
+      "import": "./src/services/toolLatencyTracker.ts"
+    },
+    "./services/usage/codex": {
+      "types": "./dist/types/services/usage/codex.d.ts",
+      "import": "./src/services/usage/codex.ts"
+    },
+    "./services/vertexErrorClassifier": {
+      "types": "./dist/types/services/vertexErrorClassifier.d.ts",
+      "import": "./src/services/vertexErrorClassifier.ts"
+    },
+    "./services/video-model-resolution": {
+      "types": "./dist/types/services/videoModelResolution.d.ts",
+      "import": "./src/services/videoModelResolution.ts"
+    },
+    "./services/videoCombo": {
+      "types": "./dist/types/services/videoCombo.d.ts",
+      "import": "./src/services/videoCombo.ts"
+    },
+    "./services/volcengineConsoleAutoLogin": {
+      "types": "./dist/types/services/volcengineConsoleAutoLogin.d.ts",
+      "import": "./src/services/volcengineConsoleAutoLogin.ts"
+    },
+    "./services/web-session-contract": {
+      "types": "./dist/types/services/webSessionContract.d.ts",
+      "import": "./src/services/webSessionContract.ts"
+    },
+    "./services/webSessionPoolHealth": {
+      "types": "./dist/types/services/webSessionPoolHealth.d.ts",
+      "import": "./src/services/webSessionPoolHealth.ts"
+    },
+    "./services/zaiWebCredentials": {
+      "types": "./dist/types/services/zaiWebCredentials.d.ts",
+      "import": "./src/services/zaiWebCredentials.ts"
+    },
+    "./shared/zedAuth": {
+      "types": "./dist/types/shared/zedAuth.d.ts",
+      "import": "./src/shared/zedAuth.ts"
+    },
+    "./transformer/responsesTransformer": {
+      "types": "./dist/types/transformer/responsesTransformer.d.ts",
+      "import": "./src/transformer/responsesTransformer.ts"
+    },
+    "./translator": {
+      "types": "./dist/types/translator/index.d.ts",
+      "import": "./src/translator/index.ts"
+    },
+    "./translator/formats": {
+      "types": "./dist/types/translator/formats.d.ts",
+      "import": "./src/translator/formats.ts"
+    },
+    "./translator/response/openai-to-gemini-sse": {
+      "types": "./dist/types/translator/response/openai-to-gemini-sse.d.ts",
+      "import": "./src/translator/response/openai-to-gemini-sse.ts"
+    },
+    "./utils/aiSdkCompat": {
+      "types": "./dist/types/utils/aiSdkCompat.d.ts",
+      "import": "./src/utils/aiSdkCompat.ts"
+    },
+    "./utils/backpressure": {
+      "types": "./dist/types/utils/backpressure.d.ts",
+      "import": "./src/utils/backpressure.ts"
+    },
+    "./utils/earlyStreamKeepalive": {
+      "types": "./dist/types/utils/earlyStreamKeepalive.d.ts",
+      "import": "./src/utils/earlyStreamKeepalive.ts"
+    },
+    "./utils/error": {
+      "types": "./dist/types/utils/error.d.ts",
+      "import": "./src/utils/error.ts"
+    },
+    "./utils/keepaliveThreshold": {
+      "types": "./dist/types/utils/keepaliveThreshold.d.ts",
+      "import": "./src/utils/keepaliveThreshold.ts"
+    },
+    "./utils/kimiJwt": {
+      "types": "./dist/types/utils/kimiJwt.d.ts",
+      "import": "./src/utils/kimiJwt.ts"
+    },
+    "./utils/logger": {
+      "types": "./dist/types/utils/logger.d.ts",
+      "import": "./src/utils/logger.ts"
+    },
+    "./utils/ollamaTransform": {
+      "types": "./dist/types/utils/ollamaTransform.d.ts",
+      "import": "./src/utils/ollamaTransform.ts"
+    },
+    "./utils/proxyDispatcher": {
+      "types": "./dist/types/utils/proxyDispatcher.d.ts",
+      "import": "./src/utils/proxyDispatcher.ts"
+    },
+    "./utils/proxyFallback": {
+      "types": "./dist/types/utils/proxyFallback.d.ts",
+      "import": "./src/utils/proxyFallback.ts"
+    },
+    "./utils/proxyFetch": {
+      "types": "./dist/types/utils/proxyFetch.d.ts",
+      "import": "./src/utils/proxyFetch.ts"
+    },
+    "./utils/sseHeartbeat": {
+      "types": "./dist/types/utils/sseHeartbeat.d.ts",
+      "import": "./src/utils/sseHeartbeat.ts"
+    },
+    "./utils/syncedEffortVariants": {
+      "types": "./dist/types/utils/syncedEffortVariants.d.ts",
+      "import": "./src/utils/syncedEffortVariants.ts"
+    },
+    "./utils/upstreamResponseHeaders": {
+      "types": "./src/public/upstreamResponseHeaders.d.ts",
+      "import": "./src/utils/upstreamResponseHeaders.ts"
+    },
+    "./utils/usageTracking": {
+      "types": "./dist/types/utils/usageTracking.d.ts",
+      "import": "./src/utils/usageTracking.ts"
     }
   },
   "scripts": {

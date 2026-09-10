@@ -1,4 +1,5 @@
 export {
+  getCatalogWithoutOverlay,
   getRadarCatalog,
   getRadarIntel,
   getRadarOffers,

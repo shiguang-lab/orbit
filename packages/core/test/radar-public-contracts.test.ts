@@ -11,7 +11,7 @@ const manifest = JSON.parse(
 ) as { exports: Record<string, { types?: string; import?: string } | string> };
 
 const contracts = [
-  ["./radar/read", "./src/public/radarRead.d.ts", "./src/radar/read.ts", ["getRadarCatalog", "getRadarIntel", "getRadarOffers", "getRadarReferrals"]],
+  ["./radar/read", "./src/public/radarRead.d.ts", "./src/radar/read.ts", ["getCatalogWithoutOverlay", "getRadarCatalog", "getRadarIntel", "getRadarOffers", "getRadarReferrals"]],
   ["./radar/store", "./src/public/radarStore.d.ts", "./src/radar/store.ts", [
     "clearRadarLocalModelOverride",
     "getRadarCache",

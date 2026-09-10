@@ -14,6 +14,7 @@ import { getAntigravityEnvelopeUserAgent } from "../services/antigravityIdentity
 import { kieExecutor } from "../executors/kie.ts";
 import { mapImageSize } from "../translator/image/sizeMapper.ts";
 import { getCodexClientVersion, getCodexUserAgent } from "../config/codexClient.ts";
+import { isCodexFreePlan } from "../executors/codex/tools.ts";
 import { saveCallLog } from "@orbit/core/usage/call-logs";
 import { sleep } from "../utils/sleep.ts";
 import {
@@ -233,6 +234,15 @@ function normalizeImageAspectRatio(value: unknown, fallbackSize: unknown): strin
     if (IMAGE_ASPECT_RATIO_PATTERN.test(trimmedValue)) return trimmedValue;
   }
   return mapImageSize(typeof fallbackSize === "string" ? fallbackSize : null);
+}
+
+const IMAGE_SIZE_PATTERN = /^(?:1K|2K|4K)$/;
+
+function normalizeImageGenerationSize(snakeCaseValue: unknown, camelCaseValue: unknown): string {
+  const value = snakeCaseValue ?? camelCaseValue;
+  if (typeof value !== "string") return "1K";
+  const normalized = value.trim().toUpperCase();
+  return IMAGE_SIZE_PATTERN.test(normalized) ? normalized : "1K";
 }
 
 function parseJsonOrNull(value: string): unknown | null {
@@ -996,12 +1006,16 @@ async function handleGeminiImageGeneration({ model, providerConfig, body, creden
   const candidateCount =
     typeof body.n === "number" && Number.isFinite(body.n) && body.n > 0 ? Math.floor(body.n) : 1;
   const promptText = typeof body.prompt === "string" ? body.prompt : String(body.prompt ?? "");
+  const aspectRatio = normalizeImageAspectRatio(body.aspect_ratio, body.size);
+  const imageSize = normalizeImageGenerationSize(body.image_size, body.imageSize);
 
   // Summarized request for call log
   const logRequestBody = {
     model: body.model,
     prompt: promptText.slice(0, 200),
     size: body.size || "default",
+    aspect_ratio: aspectRatio,
+    image_size: imageSize,
     n: candidateCount,
   };
 
@@ -1030,7 +1044,8 @@ async function handleGeminiImageGeneration({ model, providerConfig, body, creden
       generationConfig: {
         candidateCount,
         imageConfig: {
-          aspectRatio: normalizeImageAspectRatio(body.aspect_ratio, body.size),
+          aspectRatio,
+          imageSize,
         },
       },
     },
@@ -2464,6 +2479,21 @@ async function handleCodexImageGeneration({
       startTime,
       error: "Codex credentials missing accessToken — reconnect the Codex provider",
       path: logPath,
+    });
+  }
+
+  // Free-plan accounts (including imported ones, whose plan lands in
+  // chatgptPlanType) cannot run the hosted image_generation tool — fail over
+  // instead of letting the upstream request hang or 4xx opaquely.
+  if (isCodexFreePlan(credentials?.providerSpecificData)) {
+    return saveImageErrorResult({
+      provider,
+      model,
+      status: 403,
+      startTime,
+      error: "Codex image_generation is unavailable on free-plan accounts",
+      path: logPath,
+      retryable: true,
     });
   }
 

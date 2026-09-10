@@ -400,6 +400,8 @@ const SCHEMA_SQL = `
   );
   CREATE INDEX IF NOT EXISTS idx_cl_timestamp ON call_logs(timestamp);
   CREATE INDEX IF NOT EXISTS idx_cl_status ON call_logs(status);
+  CREATE INDEX IF NOT EXISTS idx_cl_provider_timestamp ON call_logs(provider, timestamp);
+  CREATE INDEX IF NOT EXISTS idx_cl_request_provider ON call_logs(request_type, provider);
 
   CREATE TABLE IF NOT EXISTS proxy_logs (
     id TEXT PRIMARY KEY,
@@ -1079,8 +1081,12 @@ export function getDbInstance(): SqliteDatabase {
   // as applied, making the fresh DB look like a wiped existing DB (#1328).
   // #9934: also classify as fresh a file that `orbit setup` created with
   // only the clipped skeleton schema (see the probe below) — even though the
-  // file exists, it has never had migrations run.
-  let isNewDb = !fs.existsSync(sqliteFile);
+  // file exists, it has never had migrations run. That classification is
+  // "logically fresh" for the mass guard only; the physical-file fact is kept
+  // separate (#12435) because the skeleton can already hold operator state and
+  // still deserves a mandatory pre-migration snapshot.
+  const databaseExistedBeforeInitialization = fs.existsSync(sqliteFile);
+  let isNewDb = !databaseExistedBeforeInitialization;
 
   // Detect and handle old schema format — preserve data when possible (#146)
   // Uses a single probe connection that becomes the real connection when possible.
@@ -1267,7 +1273,7 @@ export function getDbInstance(): SqliteDatabase {
     VALUES ('001', 'initial_schema');
   `);
 
-  runMigrations(db, { isNewDb });
+  runMigrations(db, { isNewDb, databaseExistedBeforeInitialization });
   // Fresh installs need the same post-migration index guarantee as upgraded
   // databases, including recovery from an interrupted migration 127 attempt.
   ensureUsageHistoryAccountIndex(db);

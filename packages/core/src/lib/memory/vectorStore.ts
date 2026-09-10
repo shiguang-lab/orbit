@@ -18,6 +18,7 @@ import {
 import { getDbInstance } from "../db/core";
 import { logger } from "@orbit/utils/logging";
 import { sanitizeErrorMessage } from "@orbit/utils/errors";
+import { sanitizeFts5Query } from "./retrieval/scoring";
 
 const _require = createRequire(import.meta.url);
 
@@ -292,6 +293,16 @@ class VectorStoreImpl implements VectorStore {
     const k = topK > 0 ? topK : TOP_K_DEFAULT;
     const rrfK = RRF_K;
     const q = liveVecQuantization();
+    // Sanitize the FTS5 MATCH input: an unsanitized queryText can carry FTS
+    // control operators ("AND", "OR", "NEAR", quotes, filters) and crash or
+    // skew the MATCH expression. Empty sanitized query → disable FTS side.
+    const safeFtsQuery = sanitizeFts5Query(queryText);
+    const ftsMatchClause = safeFtsQuery ? "fts.memory_fts MATCH ?" : "0 = 1";
+    const params: unknown[] = [encodeVector(vector), { apiKeyId: apiKeyId ?? null }, k];
+    if (safeFtsQuery) {
+      params.push(safeFtsQuery);
+    }
+    params.push(k, k);
 
     // SQLite does not support FULL OUTER JOIN — use UNION ALL + GROUP BY (RRF recipe).
     // Reference: https://alexgarcia.xyz/blog/2024/sqlite-vec-hybrid-search/
@@ -313,7 +324,7 @@ class VectorStoreImpl implements VectorStore {
                   fts.rank AS fts_score
            FROM memory_fts fts
            JOIN memories m ON m.memory_id = fts.rowid
-           WHERE fts.memory_fts MATCH ?
+           WHERE ${ftsMatchClause}
              AND ($apiKeyId IS NULL OR m.api_key_id = $apiKeyId)
            LIMIT ?
          ),
@@ -340,14 +351,7 @@ class VectorStoreImpl implements VectorStore {
          ORDER BY rrf_score DESC
          LIMIT ?`,
       )
-      .all(
-        encodeVector(vector),
-        { apiKeyId: apiKeyId ?? null },
-        k,
-        queryText,
-        k,
-        k,
-      ) as Array<{
+      .all(...params) as Array<{
         memory_id: string;
         vec_rank: number | null;
         fts_rank: number | null;

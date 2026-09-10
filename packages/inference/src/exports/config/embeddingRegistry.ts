@@ -1,4 +1,5 @@
 export {
+  deriveEmbeddingProviderForChatProvider,
   getAllEmbeddingModels,
   getEmbeddingProvider,
 } from "../../config/embeddingRegistry.ts";

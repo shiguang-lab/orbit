@@ -150,3 +150,15 @@ export function getRadarCatalog(deps?: GetRadarCatalogDeps): RadarCatalogResult;
 export function getRadarIntel(deps?: GetRadarIntelDeps): RadarIntelResult;
 export function getRadarOffers(deps?: GetRadarOffersDeps): RadarOffersResult;
 export function getRadarReferrals(deps?: GetRadarReferralsDeps): RadarReferralsResult;
+
+/** Injectable deps for getCatalogWithoutOverlay. */
+export interface GetCatalogWithoutOverlayDeps {
+  baseline?: MergedEntry[];
+  getLocalState?: () => {
+    localOverrides: Map<string, { displayName?: string; enabled?: boolean }>;
+    tombstones: Set<string>;
+  };
+}
+
+/** The shipped baseline seen through the operator's own local Radar state (#12215). */
+export function getCatalogWithoutOverlay(deps?: GetCatalogWithoutOverlayDeps): MergedEntry[];

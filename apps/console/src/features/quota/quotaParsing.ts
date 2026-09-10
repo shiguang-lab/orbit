@@ -268,6 +268,24 @@ function parseAgentrouter(data: any) {
   return quotaEntries(data).map(([quotaKey, quota]) => parseAgentrouterQuota(quotaKey, quota));
 }
 
+function parseMoonshotQuota(quotaKey: string, quota: any) {
+  if (quotaKey !== "balance") return normalizeQuotaEntry(quotaKey, quota);
+  // Absolute CNY balance: leftover follows the bucket balance so an empty
+  // account renders as ¥0.00, not a fabricated percentage bar.
+  const remaining = Math.max(0, Number(quota?.remaining ?? 0));
+  const currency = quota?.currency || "CNY";
+  const remainingPercentage =
+    safePercentage(quota?.remainingPercentage) ?? (remaining > 0 ? 100 : 0);
+  return buildCreditsQuota(quotaKey, remaining, remainingPercentage, {
+    currency,
+    displayName: quota?.displayName,
+  });
+}
+
+function parseMoonshot(data: any) {
+  return quotaEntries(data).map(([quotaKey, quota]) => parseMoonshotQuota(quotaKey, quota));
+}
+
 function parseProviderQuotas(providerId: string, data: any) {
   if (providerId === "github") return parseGithub(data);
   if (["glm", "glm-cn", "glmt", "opencode-go"].includes(providerId)) return parseGlmFamily(data);
@@ -277,6 +295,7 @@ function parseProviderQuotas(providerId: string, data: any) {
   if (providerId === "claude") return parseClaude(data);
   if (providerId === "deepseek") return parseDeepseek(data);
   if (providerId === "agentrouter") return parseAgentrouter(data);
+  if (providerId === "moonshot") return parseMoonshot(data);
   return parseGeneric(data);
 }
 

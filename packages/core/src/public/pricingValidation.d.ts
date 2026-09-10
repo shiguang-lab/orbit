@@ -26,3 +26,8 @@ export function validateBody<TSchema extends z.ZodTypeAny>(
 export function isValidationFailure<TData>(
   validation: { success: true; data: TData } | { success: false; error: unknown }
 ): validation is { success: false; error: { message: string; details: Array<{ field: string; message: string; keys?: string[] }> } };
+
+export function formatValidationMessage(error: {
+  message: string;
+  details: Array<{ field: string; message: string; keys?: string[] }>;
+}): string;

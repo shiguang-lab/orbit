@@ -72,6 +72,9 @@ export async function POST(request: Request) {
     }
     const {
       name,
+      modelAccessMode,
+      allowedModels,
+      allowedCombos,
       noLog,
       scopes,
       allowedConnections,
@@ -85,7 +88,12 @@ export async function POST(request: Request) {
     // Always get machineId from server
     const machineId = await getConsistentMachineId();
     const normalizedScopes = normalizeSelfServiceScopesForCreate(scopes);
-    const apiKey = await createApiKey(name, machineId, normalizedScopes, { allowedConnections });
+    const apiKey = await createApiKey(name, machineId, normalizedScopes, {
+      modelAccessMode,
+      allowedModels,
+      allowedCombos,
+      allowedConnections,
+    });
     if (
       noLog === true ||
       allowUsageCommand === true ||
@@ -120,6 +128,9 @@ export async function POST(request: Request) {
         name: apiKey.name,
         id: apiKey.id,
         machineId: apiKey.machineId,
+        modelAccessMode: apiKey.modelAccessMode,
+        allowedModels: apiKey.allowedModels,
+        allowedCombos: apiKey.allowedCombos,
         allowedConnections: apiKey.allowedConnections,
         noLog: noLog === true,
         allowUsageCommand: allowUsageCommand === true,

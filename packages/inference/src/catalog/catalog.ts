@@ -1119,7 +1119,13 @@ async function buildUnifiedModelsResponseCore(
         );
         const thinkingCapabilities =
           Object.keys(thinkingFields).length > 0 ? { capabilities: thinkingFields } : {};
-        if (includeAlias) {
+        // #12381: a self-aliased provider (registry `alias` undefined or equal
+        // to its own id — antigravity, agy, most built-ins) has a single id
+        // form, so its alias row IS its canonical row. Emit it in canonical
+        // mode too; the canonical branch below still skips it
+        // (`canonicalProviderId !== alias`), so dual mode cannot double up.
+        const selfAliased = canonicalProviderId === alias;
+        if (includeAlias || selfAliased) {
           models.push({
             id: aliasId,
             object: "model",
@@ -1310,7 +1316,9 @@ async function buildUnifiedModelsResponseCore(
             continue;
           }
 
-          if (includeAlias || Boolean(prefix)) {
+          // #12381: see the static loop — the alias row is the only row here
+          // for a self-aliased provider.
+          if (includeAlias || Boolean(prefix) || canonicalProviderId === alias) {
             models.push({
               id: aliasId,
               object: "model",
@@ -1458,13 +1466,13 @@ async function buildUnifiedModelsResponseCore(
       return activeAliases.has(alias) || activeAliases.has(provider);
     };
 
-    const hasEquivalentSpecialtyModel = (
+    const findEquivalentSpecialtyModel = (
       providerId: string,
       rawModelId: string,
       type: string,
       scopedModelId: string
     ) =>
-      models.some((model: any) => {
+      models.find((model: any) => {
         if (model?.id === scopedModelId) return true;
         if (model?.owned_by !== providerId || model?.type !== type) return false;
         const existingRoot =
@@ -1476,6 +1484,12 @@ async function buildUnifiedModelsResponseCore(
         return existingRoot === rawModelId;
       });
 
+    const hasEquivalentSpecialtyModel = (
+      providerId: string,
+      rawModelId: string,
+      type: string,
+      scopedModelId: string
+    ) => findEquivalentSpecialtyModel(providerId, rawModelId, type, scopedModelId) !== undefined;
     // Helper: strip the provider prefix from a specialty model ID to get the
     // provider-relative path (e.g. "openrouter/google/chirp-3" -> "google/chirp-3").
     // This is the correct key used by the hidden-model lookup — using .split("/").pop()
@@ -1490,7 +1504,24 @@ async function buildUnifiedModelsResponseCore(
       const rawModelId = getSpecialtyModelRelativeId(embModel.id, embModel.provider);
       if (!providerSupportsModel(embModel.provider, rawModelId)) continue;
       if (isModelHiddenBulk(embModel.provider, rawModelId)) continue;
-      if (hasEquivalentSpecialtyModel(embModel.provider, rawModelId, "embedding", embModel.id)) {
+      const existingEmbedding = findEquivalentSpecialtyModel(
+        embModel.provider,
+        rawModelId,
+        "embedding",
+        embModel.id
+      );
+      if (existingEmbedding) {
+        // #11761: discovery publishes no vector width, so the registry is the
+        // authority.
+        if (embModel.dimensions !== undefined) {
+          existingEmbedding.dimensions = embModel.dimensions;
+        }
+        // A provider that does not report its endpoints leaves the model
+        // unclassified. Being in the embedding registry is that statement, so
+        // make it rather than leave it untyped.
+        if (!existingEmbedding.type) {
+          existingEmbedding.type = "embedding";
+        }
         continue;
       }
       models.push({
@@ -1736,7 +1767,9 @@ async function buildUnifiedModelsResponseCore(
             ? getCustomVisionCapabilityFields(model, aliasId, modelId)
             : null;
 
-          if (includeAlias || Boolean(prefix)) {
+          // #12381: see the static loop — the alias row is the only row here
+          // for a self-aliased provider.
+          if (includeAlias || Boolean(prefix) || canonicalProviderId === alias) {
             models.push({
               id: aliasId,
               object: "model",
@@ -1855,7 +1888,9 @@ async function buildUnifiedModelsResponseCore(
         const visionFields =
           getVisionCapabilityFields(aliasId) || getVisionCapabilityFields(modelId);
 
-        if (includeAlias || Boolean(nodePrefix)) {
+        // #12381: see the static loop — the alias row is the only row here
+        // for a self-aliased provider.
+        if (includeAlias || Boolean(nodePrefix) || canonicalProviderId === alias) {
           models.push({
             id: aliasId,
             object: "model",

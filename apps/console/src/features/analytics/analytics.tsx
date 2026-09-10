@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -160,11 +161,16 @@ function exportCsvReport(data: UsageAnalyticsPayload, range: string) {
   lines.push("# 智枢 成本与消耗分析报告");
   lines.push(`# 导出时间: ${new Date().toISOString()}`);
   lines.push(`# 统计周期: ${range}`);
+  if (data.includesFlatRateEstimates === true) {
+    lines.push("# 金额包含包月订阅的按 token 折算估算值，非实际账单成本。");
+  }
   lines.push("");
 
   lines.push("## 总体指标概览");
   lines.push("指标,数值");
-  lines.push(`总消耗支出 (USD),${data.summary.totalCost.toFixed(6)}`);
+  lines.push(
+    `${data.includesFlatRateEstimates === true ? "总消耗支出（含包月估算） (USD)" : "总消耗支出 (USD)"},${data.summary.totalCost.toFixed(6)}`
+  );
   lines.push(`总请求次数,${data.summary.totalRequests}`);
   lines.push(`总 Token 消耗,${data.summary.totalTokens}`);
   lines.push(`输入 Prompt Tokens,${data.summary.promptTokens}`);
@@ -621,6 +627,8 @@ export default function AnalyticsPage() {
         range,
         presets: "1d,7d,30d",
         apiKeyIds: effectiveApiKeyIdsParam || undefined,
+        // 本页将金额标注为估算值，因此对包月订阅 opt-in 按 token 折算口径。
+        includeFlatRateEstimates: "true",
       }),
     staleTime: 15_000,
   });
@@ -647,6 +655,9 @@ export default function AnalyticsPage() {
     requestedModelCoveragePct: 0,
     streak: 0,
   };
+
+  // 仅显式 true 表示估算口径；缺省/false/异常值保持账单口径，与 API 默认一致。
+  const includesFlatRateEstimates = data?.includesFlatRateEstimates === true;
 
   const presetCosts = useMemo(() => {
     return {
@@ -1139,6 +1150,15 @@ export default function AnalyticsPage() {
         </Col>
       </Row>
 
+      {includesFlatRateEstimates && (
+        <Alert
+          type="warning"
+          showIcon
+          message="金额包含包月订阅（如 Claude Code 等订阅制提供商）的按 token 折算估算值，并非实际账单成本。"
+          style={{ marginBottom: 12 }}
+        />
+      )}
+
       {/* Secondary Metrics Bar */}
       <Card className={styles.cardSection}>
         <Row gutter={[16, 12]}>
@@ -1388,6 +1408,11 @@ export default function AnalyticsPage() {
               <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 6 }}>
                 日均支出: {formatUsd(avgDailyCost)} · 本月剩余: {daysRemainingInMonth} 天
               </Text>
+              {includesFlatRateEstimates && (
+                <Text type="secondary" style={{ fontSize: 12, display: "block", marginTop: 2 }}>
+                  预测金额已包含包月订阅估算值。
+                </Text>
+              )}
             </Card>
           </Col>
 

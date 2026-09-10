@@ -152,6 +152,11 @@ export const USAGE_FETCHER_PROVIDERS = [
   "cnl",
   // AgentRouter (New-API) console balance (GET /api/user/self)
   "agentrouter",
+  // Adobe Firefly credit balance (GET firefly.adobe.io/v1/credits/balance).
+  // Dispatched by the switch below; missing them here kept the manifest and
+  // quota fetchers reporting no usage support for either id.
+  "adobe-firefly",
+  "firefly",
 ] as const;
 
 export type UsageFetcherProvider = (typeof USAGE_FETCHER_PROVIDERS)[number];

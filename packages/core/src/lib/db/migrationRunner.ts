@@ -29,15 +29,10 @@ import {
   OPTIONAL_FTS5_MIGRATION_VERSIONS,
 } from "./migrationRunner/constants";
 import { getExtraMigrationFiles } from "./migrationRunner/extraDirs";
-// Retention primitives live in their own `core`-free module: `core.ts` imports this file,
-// so importing `backup.ts` (which imports `core.ts`) here would close a dependency cycle.
-import {
-  MAX_DB_BACKUPS,
-  DEFAULT_DB_BACKUP_RETENTION_DAYS,
-  parsePositiveInt,
-  parseNonNegativeInt,
-  pruneBackupDirectory,
-} from "./backupRetention";
+// Content-addressed pre-migration snapshots (#12435): reuse an identical prior
+// snapshot for an unchanged DB state so repeated zero-progress startups (crash
+// loop on a failing migration) no longer grow db_backups/ without bound.
+import { createPreMigrationBackup } from "./migrationRunner/preMigrationBackup";
 
 const isNodeTestRunnerChild = typeof process.env.NODE_TEST_CONTEXT === "string";
 
@@ -191,7 +186,7 @@ function isOptionalFts5Migration(migration: { version: string; name: string }): 
   return OPTIONAL_FTS5_MIGRATION_VERSIONS.has(migration.version);
 }
 
-function supportsFts5(db: SqliteAdapter): boolean {
+export function supportsFts5(db: SqliteAdapter): boolean {
   const cached = fts5SupportCache.get(db);
   if (cached !== undefined) {
     return cached;
@@ -832,100 +827,24 @@ function rehomeLegacyVersionSlotMigrations(
 }
 
 /**
- * Read a persisted `dbBackup` retention setting through the adapter that is ALREADY open
- * for this migration run.
- *
- * `backup.ts`'s equivalent goes through `getDbInstance()`, which is unsafe here: this
- * code runs from inside database initialization, so asking for the singleton would
- * re-enter it. Reading off `db` keeps the same stored values without that risk. A DB too
- * old to have `key_value` yet simply falls back to the default.
- */
-function readStoredBackupSetting(db: SqliteAdapter, key: string, min: number): number | undefined {
-  try {
-    const row = db
-      .prepare("SELECT value FROM key_value WHERE namespace = ? AND key = ?")
-      .get("dbBackup", key) as { value?: string } | undefined;
-    if (!row?.value) return undefined;
-    const parsed = JSON.parse(row.value);
-    return Number.isInteger(parsed) && parsed >= min ? parsed : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-/**
- * Enforce the backup retention budget after a pre-migration snapshot (#10421).
- *
- * Precedence matches `backup.ts`: env override → persisted operator setting → default.
- * Never throws: a migration must not fail because housekeeping did.
- */
-function pruneMigrationBackups(db: SqliteAdapter, backupDir: string): void {
-  try {
-    const maxFiles = process.env.DB_BACKUP_MAX_FILES
-      ? parsePositiveInt(process.env.DB_BACKUP_MAX_FILES, MAX_DB_BACKUPS)
-      : (readStoredBackupSetting(db, "maxFiles", 1) ?? MAX_DB_BACKUPS);
-    const retentionDays = process.env.DB_BACKUP_RETENTION_DAYS
-      ? parseNonNegativeInt(process.env.DB_BACKUP_RETENTION_DAYS, DEFAULT_DB_BACKUP_RETENTION_DAYS)
-      : (readStoredBackupSetting(db, "retentionDays", 0) ?? DEFAULT_DB_BACKUP_RETENTION_DAYS);
-
-    const result = pruneBackupDirectory({ backupDir, maxFiles, retentionDays });
-    if (result.deletedFiles > 0) {
-      console.log(
-        `[Migration] Pruned ${result.deletedFiles} old backup file(s) ` +
-          `(${result.keptBackupFamilies} kept, maxFiles=${maxFiles}, retentionDays=${retentionDays}).`
-      );
-    }
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.warn(`[Migration] Failed to prune old backups: ${message}`);
-  }
-}
-
-/**
- * Create a pre-migration backup of the SQLite database using VACUUM INTO.
- * Returns the backup path on success, null on failure.
- */
-function createPreMigrationBackup(db: SqliteAdapter): string | null {
-  try {
-    const sqliteFile = db.name;
-    if (!sqliteFile || sqliteFile === ":memory:") return null;
-
-    const backupDir = path.join(path.dirname(sqliteFile), "db_backups");
-    if (!fs.existsSync(backupDir)) {
-      fs.mkdirSync(backupDir, { recursive: true });
-    }
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    const backupPath = path.join(backupDir, `db_${timestamp}_pre-migration.sqlite`);
-    const escapedBackupPath = backupPath.replace(/'/g, "''");
-
-    db.exec(`VACUUM INTO '${escapedBackupPath}'`);
-    console.log(`[Migration] Pre-migration backup created: ${backupPath}`);
-
-    // #10421: apply the operator's retention budget right here. Without this the
-    // migration path was the one backup producer that never pruned, so every process
-    // start with a pending migration added ~5 MB forever (observed: 49k files / 204 GB).
-    pruneMigrationBackups(db, backupDir);
-
-    return backupPath;
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.warn(`[Migration] Failed to create pre-migration backup: ${message}`);
-    return null;
-  }
-}
-
-/**
  * Run all pending migrations in order.
  * Returns the number of migrations applied.
  *
  * Includes safety checks:
  * 1. Detects migration name mismatches (renumbering) and warns
  * 2. Aborts if too many pending migrations on an existing DB (likely wipe)
- * 3. Creates automatic backup before running any migrations
+ * 3. Creates an automatic content-addressed backup before running any migrations
  */
-export function runMigrations(db: SqliteAdapter, options?: { isNewDb?: boolean }): number {
+export function runMigrations(
+  db: SqliteAdapter,
+  options?: { isNewDb?: boolean; databaseExistedBeforeInitialization?: boolean }
+): number {
   const isNewDb = options?.isNewDb === true;
+  // `isNewDb` also covers a setup-created skeleton so it can bypass the mass-migration
+  // false positive. Snapshot eligibility must use the independent physical-file fact:
+  // that skeleton can already contain provider credentials and other operator state.
+  const databaseExistedBeforeInitialization =
+    options?.databaseExistedBeforeInitialization ?? !isNewDb;
   ensureMigrationsTable(db);
 
   const files = filterSupersededDuplicateMigrations(getMigrationFiles());
@@ -1076,9 +995,18 @@ export function runMigrations(db: SqliteAdapter, options?: { isNewDb?: boolean }
   }
 
   // ── Safety Check 3: Pre-migration backup ──
-  // Skip backup if it's a completely fresh database (0 applied and all pending)
-  // or if running in tests (where AUTO_BACKUP might be disabled)
-  if (applied.size > 0 && process.env.DISABLE_SQLITE_AUTO_BACKUP !== "true") {
+  // Skip backup if it's a completely fresh database (0 applied and all pending),
+  // a purely in-memory DB, or if running in tests (where AUTO_BACKUP might be
+  // disabled). The snapshot is content-addressed: an unchanged DB state reuses
+  // the existing file, so crash-looping startups no longer multiply backups.
+  // Fail closed (#12435): a missing snapshot must never let migrations proceed
+  // on an existing database without a durable restore point.
+  if (
+    applied.size > 0 &&
+    databaseExistedBeforeInitialization &&
+    db.name !== ":memory:" &&
+    process.env.DISABLE_SQLITE_AUTO_BACKUP !== "true"
+  ) {
     createPreMigrationBackup(db);
   }
 

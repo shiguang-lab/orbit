@@ -1,6 +1,10 @@
 import { z } from "zod";
-import { normalizeCodexImportRecord, flattenCodexImportPayload } from "@orbit/core/control/oauth-runtime/services/codexImport";
-import { createProviderConnection } from "@orbit/core/control/oauth-persistence";
+import {
+  normalizeCodexImportRecord,
+  flattenCodexImportPayload,
+  preserveExistingCodexConnectionState,
+} from "@orbit/core/control/oauth-runtime/services/codexImport";
+import { createProviderConnection, getProviderConnections } from "@orbit/core/control/oauth-persistence";
 import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import type { CodexImportRefreshValidationResult } from "@orbit/contracts/edge-runtime-command";
@@ -138,7 +142,18 @@ export async function POST(request: Request) {
     }
 
     try {
-      const conn = await createProviderConnection(norm.payload as Record<string, unknown>);
+      // A record matching an existing connection (same email + workspaceId)
+      // flows into createProviderConnection's upsert, which replaces supplied
+      // columns wholesale — carry the matched row's providerSpecificData and
+      // priority through the payload so a re-import cannot clobber them.
+      // Fetched per record: an earlier record in this batch may have just
+      // created the row a later duplicate must match.
+      const existing = await getProviderConnections({ provider: "codex", authType: "oauth" });
+      const payload = preserveExistingCodexConnectionState(
+        norm.payload,
+        existing as Array<Record<string, unknown>>
+      );
+      const conn = await createProviderConnection(payload as Record<string, unknown>);
       imported += 1;
       results.push({
         index: i,

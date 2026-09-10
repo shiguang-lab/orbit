@@ -8,6 +8,7 @@ import {
   pricingSyncRequestSchema,
   validateBody,
   isValidationFailure,
+  formatValidationMessage,
 } from "@orbit/core/pricing/validation";
 
 @Controller("api/pricing")
@@ -44,7 +45,10 @@ export class PricingController {
 
     const validation = validateBody(updatePricingSchema, body);
     if (isValidationFailure(validation)) {
-      return reply.status(400).send({ error: validation.error });
+      // #12494: the console pricing tab reads `{ error?: string }` and feeds it
+      // straight to `new Error(...)` — a raw `{ message, details }` payload would
+      // render as "[object Object]". Send a field-naming string instead (#10849).
+      return reply.status(400).send({ error: formatValidationMessage(validation.error) });
     }
 
     try {

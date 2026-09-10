@@ -129,7 +129,9 @@ async function onboardAntigravityUser(
   config: AntigravityOAuthConfig,
   headers: Record<string, string>,
   tierId: string,
-  metadata: Record<string, string>
+  // loadCodeAssist metadata is protobuf-JSON-shaped: ideType/platform/pluginType
+  // are numeric enums on the wire, not strings.
+  metadata: Record<string, number>
 ): Promise<void> {
   // Bounded onboarding: cap retries (was 10) and jitter the delay so a stuck
   // loop cannot look like scripted automation to the upstream (ban-safety).

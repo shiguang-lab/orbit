@@ -8,13 +8,107 @@ import {
   countMemoryReindexPending,
   markMemoryNeedsReindex,
 } from "../localDb.ts";
-import { resolveEmbeddingSource, embed } from "./embeddingPort.ts";
+import {
+  resolveEmbeddingSource,
+  embed,
+  withMeasuredDimensions,
+  type EmbeddingResolution,
+} from "./embeddingPort.ts";
 import { getVectorStore } from "./vectorStore";
 import { getMemorySettings } from "./settings";
 import { logger } from "@orbit/utils/logging";
 import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const log = logger("MEMORY_REINDEX");
+
+type ReindexItem = { id: string; content: string; key: string };
+type MemorySettings = Awaited<ReturnType<typeof getMemorySettings>>;
+type VectorStore = NonNullable<ReturnType<typeof getVectorStore>>;
+
+function errMsg(err: unknown): string {
+  return sanitizeErrorMessage(err instanceof Error ? err.message : String(err));
+}
+
+/**
+ * Nothing but a returned embedding can supply the vector width for a source the
+ * registry does not describe. Spend one embed to measure it and reuse that
+ * vector rather than paying for it twice (#12154).
+ */
+async function measureUnknownWidth(
+  resolution: EmbeddingResolution,
+  probeItem: ReindexItem | undefined,
+  settings: MemorySettings
+): Promise<{ effective: EmbeddingResolution; probed: Map<string, Float32Array> }> {
+  const probed = new Map<string, Float32Array>();
+  if (!probeItem) {
+    return { effective: resolution, probed };
+  }
+  const probe = await embed(probeItem.content, settings);
+  if (!("vector" in probe)) {
+    return { effective: resolution, probed };
+  }
+  probed.set(probeItem.id, probe.vector);
+  return {
+    effective: withMeasuredDimensions(resolution, probe.vector.length),
+    probed,
+  };
+}
+
+/**
+ * ensureReady() returns `{ ready: false }` (without throwing) when dimensions
+ * are still unknown — abort so we don't burn embed credits upserting into a
+ * missing `vec_memories` table (#8074).
+ */
+async function ensureReindexStoreReady(
+  vec: VectorStore,
+  effective: EmbeddingResolution,
+  resolution: EmbeddingResolution,
+  pending: number
+): Promise<boolean> {
+  try {
+    const ready = await vec.ensureReady(effective);
+    if (ready.ready) return true;
+    log.warn("memory.reindex.ensure_ready.skipped", {
+      reason: ready.reason,
+      pending,
+      model: resolution.model,
+      dimensions: resolution.dimensions,
+    });
+    return false;
+  } catch (err: unknown) {
+    log.warn("memory.reindex.ensure_ready.fail", { error: errMsg(err) });
+    return false;
+  }
+}
+
+async function reindexOneItem(
+  item: ReindexItem,
+  settings: MemorySettings,
+  vec: VectorStore,
+  probed: Map<string, Float32Array>
+): Promise<"processed" | "error"> {
+  try {
+    const reusable = probed.get(item.id);
+    const embeddingResult = reusable ? { vector: reusable } : await embed(item.content, settings);
+    if (!("vector" in embeddingResult)) {
+      log.warn("memory.reindex.embed.fail", {
+        id: item.id,
+        reason: embeddingResult.reason,
+        message: sanitizeErrorMessage(embeddingResult.message),
+      });
+      return "error";
+    }
+    await vec.upsertVector(item.id, embeddingResult.vector);
+    markMemoryNeedsReindex(item.id, false);
+    return "processed";
+  } catch (err: unknown) {
+    log.warn("memory.reindex.item.fail", {
+      id: item.id,
+      error: errMsg(err),
+    });
+    return "error";
+  }
+}
 
 /**
  * Process up to `limit` memories that are marked needs_reindex=1.
@@ -50,25 +144,10 @@ export async function runReindexBatch(
     return { processed: 0, errors: 0 };
   }
 
-  // Ensure the vector table is ready before processing. ensureReady() returns
-  // `{ ready: false }` (without throwing) when dimensions are still unknown —
-  // abort the batch in that case so we don't burn embed credits upserting into
-  // a missing `vec_memories` table (#8074).
-  try {
-    const ready = await vec.ensureReady(resolution);
-    if (!ready.ready) {
-      log.warn("memory.reindex.ensure_ready.skipped", {
-        reason: ready.reason,
-        pending: queue.length,
-        model: resolution.model,
-        dimensions: resolution.dimensions,
-      });
-      return { processed: 0, errors: 0 };
-    }
-  } catch (err: unknown) {
-    log.warn("memory.reindex.ensure_ready.fail", {
-      error: sanitizeErrorMessage(err instanceof Error ? err.message : String(err)),
-    });
+  const probeItem = resolution.dimensions === null ? queue[0] : undefined;
+  const { effective, probed } = await measureUnknownWidth(resolution, probeItem, settings);
+  const ready = await ensureReindexStoreReady(vec, effective, resolution, queue.length);
+  if (!ready) {
     return { processed: 0, errors: 0 };
   }
 
@@ -76,29 +155,9 @@ export async function runReindexBatch(
   let errors = 0;
 
   for (const item of queue) {
-    try {
-      const embeddingResult = await embed(item.content, settings);
-
-      if (!("vector" in embeddingResult)) {
-        log.warn("memory.reindex.embed.fail", {
-          id: item.id,
-          reason: embeddingResult.reason,
-          message: sanitizeErrorMessage(embeddingResult.message),
-        });
-        errors++;
-        continue;
-      }
-
-      await vec.upsertVector(item.id, embeddingResult.vector);
-      markMemoryNeedsReindex(item.id, false);
-      processed++;
-    } catch (err: unknown) {
-      log.warn("memory.reindex.item.fail", {
-        id: item.id,
-        error: sanitizeErrorMessage(err instanceof Error ? err.message : String(err)),
-      });
-      errors++;
-    }
+    const outcome = await reindexOneItem(item, settings, vec, probed);
+    if (outcome === "processed") processed++;
+    else errors++;
   }
 
   log.info("memory.reindex.batch.complete", { processed, errors, batchSize: queue.length });

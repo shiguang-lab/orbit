@@ -17,6 +17,8 @@
  *   - Resets to default on success
  */
 
+import { setImmediate as yieldToEventLoop } from "node:timers/promises";
+
 import {
   getProviderConnections,
 } from "@orbit/core/db/provider-connections";
@@ -348,6 +350,9 @@ export async function sweep(): Promise<void> {
     }
 
     for (const batch of batches) {
+      // Yield so GET /healthz and cached /api/monitoring/health can drain
+      // while this background sweep talks to providers (#12532).
+      await yieldToEventLoop();
       await Promise.allSettled(
         batch.map((conn) => testConnection(conn, getConnIntervalMs(conn)))
       );

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { getProviderMetrics } from "@orbit/core/db/call-log-stats";
-import { toNumber } from "@orbit/contracts/numeric";
+import { toNumber, toNumberOrNull } from "@orbit/contracts/numeric";
 import {
   getModelCallStats,
   getProviderCallStats,
@@ -60,7 +60,7 @@ export class ProvidersService {
         totalRequests: number;
         totalSuccesses: number;
         successRate: number;
-        avgLatencyMs: number;
+        avgLatencyMs: number | null;
         lastRequestAt: string | null;
         lastErrorAt: string | null;
         lastStatus: number | null;

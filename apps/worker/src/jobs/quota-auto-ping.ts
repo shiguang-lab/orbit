@@ -88,16 +88,26 @@ export interface QuotaAutoPingDeps {
   getExecutor: (provider: string) => Promise<BaseExecutor>;
   canExecuteProvider: (provider: string) => boolean;
   isConnectionUnavailableToAuxiliaryActivity: (connectionId: string) => Promise<boolean>;
+  /**
+   * #12361: which model the tiny ping is sent as. Resolved from the live
+   * provider catalog + lifecycle registry every tick (see
+   * resolveQuotaAutoPingModel) instead of a pinned id, so a vendor shutdown
+   * pauses the ping with a diagnostic rather than turning the scheduler into
+   * a retry loop against a dead model.
+   */
+  resolvePingModel: (provider: "codex", nowMs: number) => Promise<string | null>;
 }
 
 export interface QuotaAutoPingState {
   running: boolean;
   resetCache: Record<string, string>;
   failureCache: Record<string, number>;
+  /** Last resolved ping model per provider (`null` = nothing selectable); logs on change only. */
+  pingModelCache: Record<string, string | null>;
 }
 
 export function createQuotaAutoPingState(): QuotaAutoPingState {
-  return { running: false, resetCache: {}, failureCache: {} };
+  return { running: false, resetCache: {}, failureCache: {}, pingModelCache: {} };
 }
 
 function optionalString(value: unknown): string | undefined {
@@ -152,7 +162,38 @@ export function createDefaultQuotaAutoPingDeps(): QuotaAutoPingDeps {
     getExecutor,
     canExecuteProvider: (provider) => getCircuitBreaker(provider).canExecute(),
     isConnectionUnavailableToAuxiliaryActivity,
+    resolvePingModel: resolveQuotaAutoPingModel,
   };
+}
+
+/**
+ * Pick the model the Codex ping is sent as (#12361).
+ *
+ * Walks the provider's catalog in registry order (the same "first entry is the
+ * default" rule as getDefaultModel) and returns the first id that is a base
+ * model — the ping sets `reasoning.effort` itself, so `-low`/`-max` variants
+ * are redundant — and that the lifecycle gate would let through on the request
+ * path (chatCore uses the same provider-scoped isModelSelectable). Returns
+ * null when nothing in the catalog is selectable; the caller logs and pauses
+ * instead of sending.
+ */
+export async function resolveQuotaAutoPingModel(
+  provider: "codex",
+  asOf: Date | number | string = Date.now()
+): Promise<string | null> {
+  // Lazy for the same reason the executor load is: this module sits on the
+  // worker boot path and the model registry is a large import graph.
+  const { getProviderModels } = await import("@orbit/providers/provider-models");
+  const { splitCodexReasoningSuffix } = await import(
+    "@orbit/inference/executors/codex/reasoningSuffix"
+  );
+  const { isModelSelectable } = await import("@orbit/inference/services/modelLifecycle");
+  for (const model of getProviderModels(provider)) {
+    if (splitCodexReasoningSuffix(model.id).effort !== null) continue;
+    if (!isModelSelectable(provider, model.id, { asOf })) continue;
+    return model.id;
+  }
+  return null;
 }
 
 function cacheKey(provider: string, connectionId: string): string {
@@ -225,7 +266,10 @@ function isRateLimited(connection: QuotaAutoPingConnection, nowMs: number): bool
   return Number.isFinite(untilMs) && untilMs > nowMs;
 }
 
-function buildCodexPingBody(providerConfig: QuotaAutoPingProviderConfig): JsonRecord {
+/** Provider config plus the ping model resolved for this tick (#12361). */
+type ResolvedQuotaAutoPingProviderConfig = QuotaAutoPingProviderConfig & { pingModel: string };
+
+function buildCodexPingBody(providerConfig: ResolvedQuotaAutoPingProviderConfig): JsonRecord {
   return {
     model: providerConfig.pingModel,
     input: [
@@ -264,7 +308,7 @@ async function drainResponseBody(response: Response | undefined): Promise<void> 
 
 async function sendCodexPing(
   connection: QuotaAutoPingConnection,
-  providerConfig: QuotaAutoPingProviderConfig,
+  providerConfig: ResolvedQuotaAutoPingProviderConfig,
   deps: QuotaAutoPingDeps
 ): Promise<boolean> {
   const executor = await deps.getExecutor("codex");
@@ -382,7 +426,7 @@ async function refreshConnectionForPing(
 async function pingConnection(
   connection: QuotaAutoPingConnection,
   provider: "codex",
-  providerConfig: QuotaAutoPingProviderConfig,
+  providerConfig: ResolvedQuotaAutoPingProviderConfig,
   deps: QuotaAutoPingDeps,
   state: QuotaAutoPingState,
   nowMs: number
@@ -438,9 +482,35 @@ function getEnabledConnectionIds(
   );
 }
 
+/**
+ * Resolve this tick's ping model and log only when the answer changes, so a
+ * catalog with nothing selectable produces one actionable warning rather than
+ * one per tick, and a model swap after an upgrade is visible in the log.
+ */
+async function resolveProviderPingModel(
+  provider: "codex",
+  deps: QuotaAutoPingDeps,
+  state: QuotaAutoPingState,
+  nowMs: number
+): Promise<string | null> {
+  const pingModel = await deps.resolvePingModel(provider, nowMs);
+  if (state.pingModelCache[provider] !== pingModel) {
+    state.pingModelCache[provider] = pingModel;
+    if (pingModel) {
+      log.info(`${provider}: ping model resolved`, { model: pingModel });
+    } else {
+      log.warn(
+        `${provider}: no selectable ping model in the ${provider} catalog — auto-ping paused ` +
+          "until the model registry or lifecycle data lists a live model (#12361)"
+      );
+    }
+  }
+  return pingModel;
+}
+
 async function pingProviderConnections(
   provider: "codex",
-  providerConfig: QuotaAutoPingProviderConfig,
+  providerConfig: ResolvedQuotaAutoPingProviderConfig,
   enabledMap: Record<string, boolean>,
   deps: QuotaAutoPingDeps,
   state: QuotaAutoPingState,
@@ -481,9 +551,11 @@ export async function runQuotaAutoPingTick(
     for (const [provider, providerConfig] of Object.entries(QUOTA_AUTOPING_PROVIDERS)) {
       const enabledMap = getEnabledConnectionIds(settings, providerConfig);
       if (Object.keys(enabledMap).length === 0) continue;
+      const pingModel = await resolveProviderPingModel(provider as "codex", deps, state, nowMs);
+      if (!pingModel) continue;
       await pingProviderConnections(
         provider as "codex",
-        providerConfig,
+        { ...providerConfig, pingModel },
         enabledMap,
         deps,
         state,

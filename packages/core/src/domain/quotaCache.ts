@@ -17,6 +17,7 @@
  */
 
 import { getCachedProviderConnectionById } from "../lib/db/readCache.js";
+import { isClaudeExtraUsageAllowed } from "../lib/providers/claudeExtraUsage.js";
 import { resolveProxyForConnection } from "../lib/db/settings.js";
 import { providerRuntimePorts, type CodexQuotaHydration } from "../runtime/providerRuntimePorts.js";
 import { safePercentage } from "../shared/utils/formatting.js";
@@ -424,8 +425,10 @@ function isStandardQuotaExhausted(entry: QuotaCacheEntry, now: number): boolean 
 export function isQuotaExhaustedForRequest(
   connectionId: string,
   provider: string,
-  requestedModel: string | null = null
+  requestedModel: string | null = null,
+  providerSpecificData?: unknown
 ): boolean {
+  if (isClaudeExtraUsageAllowed(provider, providerSpecificData)) return false;
   const entry = getState().cache.get(connectionId) || hydrateQuotaCacheFromSnapshots(connectionId);
   if (!entry) return false;
 

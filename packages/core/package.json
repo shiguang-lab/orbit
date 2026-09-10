@@ -1365,6 +1365,7 @@
     "./usage/provider-limits-support/quotaNormalize": "./src/lib/usage/providerLimits/quotaNormalize.ts",
     "./usage/provider-limits-support/chunkedSpacingSync": "./src/lib/usage/providerLimits/chunkedSpacingSync.ts",
     "./usage/reporting-support/combo-forecast": "./src/lib/db/comboForecast.ts",
+    "./usage/flat-rate-providers": "./src/lib/usage/flatRateProviders.ts",
     "./runtime/quota-key": "./src/lib/quota/quotaKey.ts",
     "./runtime/proxy-mappers": "./src/lib/db/proxies/mappers.ts",
     "./runtime/reasoning-effort": "./src/shared/reasoning/effortStandardization.ts",

@@ -206,6 +206,14 @@ export const RENAMED_MIGRATION_COMPATIBILITY = [
     toVersion: "101",
     toName: "api_key_usage_limits",
   },
+  {
+    // inspector_custom_hosts was once published in slot 074, now occupied by
+    // discovery_results. Its canonical idempotent migration lives at 081.
+    fromVersion: "074",
+    fromName: "inspector_custom_hosts",
+    toVersion: "081",
+    toName: "inspector_custom_hosts",
+  },
 ] as const;
 
 export const LEGACY_VERSION_SLOT_MIGRATIONS = [
