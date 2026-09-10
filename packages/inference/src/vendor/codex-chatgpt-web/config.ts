@@ -36,7 +36,6 @@ export const CHATGPT_CONNECTOR_NAME = "Orbit Codex v2";
 export const DEV_CHATGPT_CONNECTOR_NAME = `${CHATGPT_CONNECTOR_NAME} DEV`;
 export const LEGACY_CHATGPT_CONNECTOR_NAMES = [
   "Codex Native",
-  "OmniRoute Codex",
   "Orbit Codex",
 ] as const;
 
