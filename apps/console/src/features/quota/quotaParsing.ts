@@ -201,6 +201,15 @@ function parseCodex(data: any) {
   return quotas;
 }
 
+function parseGrokCli(data: any) {
+  const quotas = parseGeneric(data);
+  const bankedResetCredits = Number(data?.bankedResetCredits);
+  if (Number.isFinite(bankedResetCredits) && bankedResetCredits > 0) {
+    quotas.push(buildBankedResetCreditsQuota(bankedResetCredits));
+  }
+  return quotas;
+}
+
 function buildClaudeExtraUsageQuota(extraUsage: any) {
   const monthlyLimit = Number(extraUsage?.monthly_limit ?? 0);
   const usedCredits = Number(extraUsage?.used_credits ?? 0);
@@ -264,6 +273,7 @@ function parseProviderQuotas(providerId: string, data: any) {
   if (["glm", "glm-cn", "glmt", "opencode-go"].includes(providerId)) return parseGlmFamily(data);
   if (providerId === "antigravity" || providerId === "agy") return parseAntigravity(data);
   if (providerId === "codex") return parseCodex(data);
+  if (providerId === "grok-cli") return parseGrokCli(data);
   if (providerId === "claude") return parseClaude(data);
   if (providerId === "deepseek") return parseDeepseek(data);
   if (providerId === "agentrouter") return parseAgentrouter(data);

@@ -93,6 +93,13 @@ export const CLI_TARGET_MANIFEST = Object.freeze({
     configure: true,
     runModel: null,
   }),
+  "5dive": Object.freeze({
+    description: "5dive (agent fleet)",
+    aliases: Object.freeze(["fivedive", "5dive-cli"]),
+    run: false,
+    configure: true,
+    runModel: null,
+  }),
 });
 
 /**

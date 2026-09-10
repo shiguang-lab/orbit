@@ -6,6 +6,7 @@ import {
   type LeaderboardScope,
 } from "@orbit/core/control/gamification";
 import { requireManagementAuth } from "@orbit/core/control/management-auth";
+import { getApiKeyDisplayNames } from "@orbit/core/db/api-keys";
 
 export async function OPTIONS() {
   return handleCorsOptions();
@@ -28,7 +29,9 @@ export async function GET(request: Request) {
     );
   }
 
-  const entries = await getTopN(scope, limit);
+  const rawEntries = await getTopN(scope, limit);
+  const names = getApiKeyDisplayNames(rawEntries.map((entry) => entry.apiKeyId));
+  const entries = rawEntries.map((entry) => ({ ...entry, name: names.get(entry.apiKeyId) ?? null }));
   let myRank: number | null = null;
   let neighbors = null;
 

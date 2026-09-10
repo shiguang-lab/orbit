@@ -46,6 +46,13 @@ services:
       ORBIT_ENABLE_LIVE_WS: "false"
       LOG_LEVEL: ${LOG_LEVEL:-info}
       CLI_QODER_BIN: ${CLI_QODER_BIN:-qodercli}
+      # NAS deployments cannot discover the host Tailnet through Docker's bridge
+      # interface. Forward explicit host Tailscale identity into all runtimes.
+      TAILSCALE_URL: ${TAILSCALE_URL:-}
+      TAILSCALE_IP: ${TAILSCALE_IP:-}
+      TAILSCALE_HOSTNAME: ${TAILSCALE_HOSTNAME:-}
+      TS_DOMAIN: ${TS_DOMAIN:-}
+      MAGIC_DNS: ${MAGIC_DNS:-}
       SG_AUTH_ORIGIN: ${SG_AUTH_ORIGIN:-https://shiguanglab.com}
       SG_IDENTITY_ISSUER: ${SG_IDENTITY_ISSUER:-https://shiguanglab.com}
       SG_IDENTITY_AUDIENCE: ${SG_IDENTITY_AUDIENCE:-orbit-api}

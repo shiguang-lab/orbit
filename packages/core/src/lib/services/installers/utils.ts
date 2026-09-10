@@ -51,7 +51,7 @@ function classifyError(
   if (err.code === "ENOENT" && err.message.includes("npm")) {
     return new InstallError(
       raw,
-      "Node.js/npm não está disponível no PATH. Instale Node ≥22.22.2.",
+      "Node.js/npm não está disponível no PATH. Instale Node 24.20.0 LTS ou superior na linha 24.x.",
       500
     );
   }

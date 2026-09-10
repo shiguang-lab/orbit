@@ -1,7 +1,16 @@
 import type { RegistryEntry, RegistryModel } from "./providers/shared.ts";
+import { USAGE_FETCHER_PROVIDERS } from "../services/usage.ts";
+import { USAGE_SUPPORTED_PROVIDERS } from "@orbit/providers/catalog";
 
 export type ProviderPluginCapability =
-  "apikey" | "custom-executor" | "oauth" | "passthrough-models" | "responses" | "sidecar-candidate";
+  | "apikey"
+  | "custom-executor"
+  | "oauth"
+  | "passthrough-models"
+  | "responses"
+  | "sidecar-candidate"
+  | "usage-fetch"
+  | "usage-supported";
 
 export interface ProviderPluginModel {
   id: string;
@@ -51,6 +60,8 @@ export interface ProviderPluginManifest {
 }
 
 const SIDECAR_COMPATIBLE_EXECUTORS = new Set(["default"]);
+const USAGE_FETCHER_PROVIDER_SET = new Set<string>(USAGE_FETCHER_PROVIDERS);
+const USAGE_SUPPORTED_PROVIDER_SET = new Set<string>(USAGE_SUPPORTED_PROVIDERS);
 
 function compactObject<T extends Record<string, unknown>>(value: T): Partial<T> {
   return Object.fromEntries(
@@ -121,6 +132,15 @@ function capabilitiesFor(entry: RegistryEntry, eligible: boolean): ProviderPlugi
   }
   if (eligible) {
     capabilities.add("sidecar-candidate");
+  }
+  if (
+    USAGE_FETCHER_PROVIDER_SET.has(entry.id) ||
+    (entry.alias !== undefined && USAGE_FETCHER_PROVIDER_SET.has(entry.alias))
+  ) {
+    capabilities.add("usage-fetch");
+  }
+  if (USAGE_SUPPORTED_PROVIDER_SET.has(entry.id)) {
+    capabilities.add("usage-supported");
   }
 
   return [...capabilities].sort();

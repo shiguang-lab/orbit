@@ -264,20 +264,24 @@ export class RuntimeControlService {
         }
       }
       case "codex-reset-credits.list": {
-        const resetCredits = await import(
-          "@orbit/inference/services/codexResetCredits"
-        );
+        const { getProviderConnectionById } = await import("@orbit/core/db/provider-connections");
+        const connection = await getProviderConnectionById(command.connectionId);
+        const resetCredits = connection?.provider === "grok-cli"
+          ? await import("@orbit/inference/services/grokResetCredits")
+          : await import("@orbit/inference/services/codexResetCredits");
         try {
           return {
             ok: true,
-            value: await resetCredits.listCodexResetCredits(command.connectionId),
+            value: connection?.provider === "grok-cli"
+              ? await (resetCredits as typeof import("@orbit/inference/services/grokResetCredits")).listGrokResetCredits(command.connectionId)
+              : await (resetCredits as typeof import("@orbit/inference/services/codexResetCredits")).listCodexResetCredits(command.connectionId),
           };
         } catch (error) {
-          const typed = error instanceof resetCredits.CodexResetCreditError;
+          const typed = error instanceof Error && typeof (error as { status?: unknown }).status === "number";
           return {
             ok: false,
-            status: typed ? error.status : 500,
-            code: typed ? error.code : "codex_reset_credit_failed",
+            status: typed ? (error as Error & { status: number }).status : 500,
+            code: typed ? (error as Error & { code?: string }).code : "codex_reset_credit_failed",
             message:
               typed && error.message
                 ? error.message
@@ -286,24 +290,24 @@ export class RuntimeControlService {
         }
       }
       case "codex-reset-credits.consume": {
-        const resetCredits = await import(
-          "@orbit/inference/services/codexResetCredits"
-        );
+        const { getProviderConnectionById } = await import("@orbit/core/db/provider-connections");
+        const connection = await getProviderConnectionById(command.connectionId);
+        const resetCredits = connection?.provider === "grok-cli"
+          ? await import("@orbit/inference/services/grokResetCredits")
+          : await import("@orbit/inference/services/codexResetCredits");
         try {
           return {
             ok: true,
-            value: await resetCredits.consumeCodexResetCredit(
-              command.connectionId,
-              command.idempotencyKey,
-              command.creditId,
-            ),
+            value: connection?.provider === "grok-cli"
+              ? await (resetCredits as typeof import("@orbit/inference/services/grokResetCredits")).consumeGrokResetCredit(command.connectionId, command.idempotencyKey, command.creditId)
+              : await (resetCredits as typeof import("@orbit/inference/services/codexResetCredits")).consumeCodexResetCredit(command.connectionId, command.idempotencyKey, command.creditId),
           };
         } catch (error) {
-          const typed = error instanceof resetCredits.CodexResetCreditError;
+          const typed = error instanceof Error && typeof (error as { status?: unknown }).status === "number";
           return {
             ok: false,
-            status: typed ? error.status : 500,
-            code: typed ? error.code : "codex_reset_credit_failed",
+            status: typed ? (error as Error & { status: number }).status : 500,
+            code: typed ? (error as Error & { code?: string }).code : "codex_reset_credit_failed",
             message:
               typed && error.message
                 ? error.message

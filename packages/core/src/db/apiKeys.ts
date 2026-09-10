@@ -4,6 +4,7 @@ export {
   deleteApiKey,
   getApiKeyById,
   getApiKeyMetadata,
+  getApiKeyDisplayNames,
   getApiKeys,
   getApiKeysCount,
   getExclusiveLeaseConnectionIds,

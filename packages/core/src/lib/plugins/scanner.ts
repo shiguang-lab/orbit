@@ -25,6 +25,8 @@ export interface DiscoveredPlugin {
  * Get the default plugin directory: ~/.orbit/plugins/
  */
 export function getDefaultPluginDir(): string {
+  const configured = process.env.ORBIT_PLUGINS_DIR?.trim();
+  if (configured) return configured;
   const home = process.env.HOME || process.env.USERPROFILE || "/tmp";
   return join(home, ".orbit", "plugins");
 }

@@ -165,7 +165,7 @@ export function LeaderboardPage() {
                       <span style={{ fontSize: 32 }}>{MEDAL_ICONS[idx]}</span>
                       <div>
                         <Text strong style={{ fontSize: 14 }}>
-                          {entry.apiKeyId.slice(0, 16)}...
+                          {entry.name || `${entry.apiKeyId.slice(0, 16)}...`}
                         </Text>
                         <div style={{ fontSize: 22, fontWeight: 700, color: idx === 0 ? "#eab308" : "inherit", marginTop: 2 }}>
                           {entry.score.toLocaleString()} <span style={{ fontSize: 12, fontWeight: 400, color: "var(--ant-color-text-secondary)" }}>{scope === "tokens_shared" ? "Tokens" : "PTS"}</span>
@@ -228,7 +228,7 @@ export function LeaderboardPage() {
               title: tt("调用密钥 / 节点标识", "API Key / Node Identifier"),
               dataIndex: "apiKeyId",
               key: "apiKeyId",
-              render: (id) => <code style={{ fontSize: 12 }}>{id}</code>,
+              render: (id, entry) => <><div>{entry.name || tt("未命名密钥", "Unnamed key")}</div><code style={{ fontSize: 12 }}>{id}</code></>,
             },
             {
               title: tt("算力贡献分 / Tokens", "Score / Tokens"),

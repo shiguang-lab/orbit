@@ -73,6 +73,9 @@ import { getCommandCodeUsage } from "./usage/command-code.ts";
 import { getQwenTokenPlanUsage } from "./usage/qwen-token-plan.ts";
 import { getConolUsage } from "./conolUsage.ts";
 import { getAgentrouterUsage } from "./usage/agentrouter.ts";
+import { getKilocodeUsage } from "./usage/kilocode.ts";
+import { getDevinCliUsage } from "./usage/devinCli.ts";
+import { getMoonshotUsage } from "./usage/moonshot.ts";
 
 type JsonRecord = Record<string, unknown>;
 type UsageProviderConnection = JsonRecord & {
@@ -101,6 +104,10 @@ export const USAGE_FETCHER_PROVIDERS = [
   "cursor",
   "kiro",
   "amazon-q",
+  "kilocode",
+  "devin-cli",
+  "devin-cli-agentic",
+  "moonshot",
   "kimi-coding",
   "kimi-coding-apikey",
   "qoder",
@@ -182,6 +189,13 @@ export async function getUsageForProvider(
     case "kiro":
     case "amazon-q":
       return await getKiroUsage(accessToken, providerSpecificData);
+    case "kilocode":
+      return await getKilocodeUsage(connection);
+    case "devin-cli":
+    case "devin-cli-agentic":
+      return await getDevinCliUsage(accessToken || apiKey);
+    case "moonshot":
+      return await getMoonshotUsage(connection);
     case "vertex":
     case "vertex-partner":
       return await getVertexUsage(id || "", provider);

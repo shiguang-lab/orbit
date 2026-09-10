@@ -84,6 +84,7 @@ export class FreeTierService {
       availableOnly: url.searchParams.get("availableOnly") || undefined,
       withUsage: url.searchParams.get("withUsage") || undefined,
       usageRange: url.searchParams.get("usageRange") || undefined,
+      sortBy: url.searchParams.get("sortBy") || undefined,
     });
     if (!parsed.success) {
       return Response.json(
@@ -92,12 +93,13 @@ export class FreeTierService {
       );
     }
 
-    const { category, limit, configuredOnly, availableOnly, withUsage, usageRange } = parsed.data;
+    const { category, limit, configuredOnly, availableOnly, withUsage, usageRange, sortBy } = parsed.data;
     const rankings = await computeFreeProviderRankings(category, limit, {
       configuredOnly,
       availableOnly,
       withUsage,
       usageRange,
+      sortBy,
     });
     return Response.json({ rankings }, { headers: CORS_HEADERS });
   }

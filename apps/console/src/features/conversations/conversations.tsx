@@ -221,7 +221,9 @@ export function ConversationsPage() {
   const { tt } = useI18n();
 
   const [search, setSearch] = useState("");
-  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(() =>
+    typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("session")
+  );
   const [selectedLog, setSelectedLog] = useState<RequestCallLog | null>(null);
 
   const chatEndRef = useRef<HTMLDivElement>(null);

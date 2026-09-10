@@ -339,7 +339,7 @@ export default function ProviderDetailPage() {
       ) as Record<string, unknown>;
       const specificEmail = cleanAccountName(specific?.accountEmail as string | undefined);
       const cleanName = cleanAccountName(connection.name);
-      const matchesQuery = !query || [connection.name, cleanName, specificEmail, connection.id, connection.authType].some((value) => String(value ?? "").toLocaleLowerCase().includes(query));
+      const matchesQuery = !query || [connection.name, cleanName, specificEmail, connection.baseUrl, connection.id, connection.authType].some((value) => String(value ?? "").toLocaleLowerCase().includes(query));
       const isError = getConnectionHealth(connection) === "error";
       const matchesHealth = healthFilter === "all" || (healthFilter === "active" && connection.isActive !== false && !isError) || (healthFilter === "error" && isError) || (healthFilter === "disabled" && connection.isActive === false) || (healthFilter === "banned" && connection.testStatus === "banned") || (healthFilter === "exhausted" && connection.testStatus === "credits_exhausted");
       return matchesQuery && matchesHealth;
@@ -349,7 +349,7 @@ export default function ProviderDetailPage() {
     const overrides = settingsQuery.data?.providerStrategies as Record<string, { fallbackStrategy?: string; stickyRoundRobinLimit?: number }> | undefined;
     const override = overrides?.[providerId];
     setRoutingStrategy(override?.fallbackStrategy ?? "");
-    setStickyLimit(Math.min(10, Math.max(1, Number(override?.stickyRoundRobinLimit ?? 3))));
+    setStickyLimit(Math.min(1000, Math.max(1, Number(override?.stickyRoundRobinLimit ?? 3))));
   }, [providerId, settingsQuery.data]);
   useEffect(() => {
     const blocked = settingsQuery.data?.blockedProviders;
@@ -966,7 +966,7 @@ export default function ProviderDetailPage() {
       const current = await settingsApi.get();
       const providerStrategies = { ...((current.providerStrategies ?? {}) as Record<string, unknown>) };
       if (!strategy) delete providerStrategies[providerId];
-      else providerStrategies[providerId] = { fallbackStrategy: strategy, ...(strategy === "round-robin" ? { stickyRoundRobinLimit: Math.min(10, Math.max(1, nextStickyLimit)) } : {}) };
+      else providerStrategies[providerId] = { fallbackStrategy: strategy, ...(strategy === "round-robin" ? { stickyRoundRobinLimit: Math.min(1000, Math.max(1, nextStickyLimit)) } : {}) };
       await settingsApi.patch({ providerStrategies });
       await queryClient.invalidateQueries({ queryKey: ["settings", "provider-routing"] });
       messageApi.success("账号路由策略已保存");

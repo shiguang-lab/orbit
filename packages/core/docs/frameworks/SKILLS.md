@@ -166,7 +166,7 @@ Configured via `process.env` in `src/lib/skills/builtins.ts`:
 | `SKILLS_SANDBOX_NETWORK_ENABLED`  | `false`          | Master gate for egress. Set `1` or `true` to allow per-call opt-in |
 | `SKILLS_ALLOWED_SANDBOX_IMAGES`   | (see below)      | Comma-separated allowlist of Docker images                         |
 
-Default allowed images: `alpine:3.20`, `node:22-alpine`, `python:3.12-alpine`. Any additions via `SKILLS_ALLOWED_SANDBOX_IMAGES` are merged with the defaults; unknown images are rejected by `normalizeImage()`.
+Default allowed images: `alpine:3.20`, `node:24.20.0-alpine`, `python:3.12-alpine`. Any additions via `SKILLS_ALLOWED_SANDBOX_IMAGES` are merged with the defaults; unknown images are rejected by `normalizeImage()`.
 
 > Note: there is no separate `SKILLS_EXECUTION_TIMEOUT_MS` env var. The non-sandbox handler timeout is hard-coded to 30 s in `SkillExecutor` (`executor.ts:13`) but can be overridden at runtime via `skillExecutor.setTimeout(ms)`.
 
@@ -293,7 +293,7 @@ See [MCP-SERVER.md](./MCP-SERVER.md) for transport setup and scope assignments.
 
 - **Master switch:** `settings.skillsEnabled = false` blocks all execution and returns HTTP `503` on `/api/skills/executions`. The registry continues to load.
 - **Lock down egress:** keep `SKILLS_SANDBOX_NETWORK_ENABLED` unset (default) for fully air-gapped sandboxing. Per-call `networkEnabled: true` still requires the master gate.
-- **Allow specific images:** set `SKILLS_ALLOWED_SANDBOX_IMAGES="myorg/sandbox:1.0,node:22-alpine"` to extend the allowlist.
+- **Allow specific images:** set `SKILLS_ALLOWED_SANDBOX_IMAGES="myorg/sandbox:1.0,node:24.20.0-alpine"` to extend the allowlist.
 - **Audit executions:** `/dashboard/skills/executions` and `orbit_skills_executions` both query `skill_executions`. Successful runs include `durationMs`; failures include `errorMessage`.
 - **Cache invalidation:** call `skillRegistry.invalidateCache()` after manual DB edits; otherwise wait 60 s.
 - **Anonymous workspace:** when `apiKeyId` is empty, all calls hash to the same `"anonymous"` workspace — share-aware code should always pass a real key.

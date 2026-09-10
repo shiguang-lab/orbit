@@ -5,6 +5,7 @@ import {
   GROK_BUILD_ADDITIONAL_CREDITS_URL,
   type GrokAutoTopUpStatus,
 } from "@orbit/contracts/grok-billing";
+import { fetchGrokResetCredits } from "../grokResetCredits.ts";
 
 const GROK_BUILD_FETCH_TIMEOUT_MS = 10_000;
 const GROK_BUILD_MAX_RESPONSE_BYTES = 256 * 1024;
@@ -251,9 +252,11 @@ export async function getGrokCliUsage(accessToken?: string) {
         autoTopUpSchema
       )
     : null;
+  const resetCredits = await fetchGrokResetCredits(accessToken);
 
   return {
     quotas,
+    ...(resetCredits ? { bankedResetCredits: resetCredits.count, resetCreditsNextExpiresAt: resetCredits.nextExpiresAt } : {}),
     ...(tier ? { plan: tier } : {}),
     billing: {
       currency: "USD",

@@ -62,6 +62,7 @@ export class ApiKeyPolicyInvariantError extends Error {
 }
 export function getApiKeys(limit?: number, offset?: number): Promise<ApiKeyRecord[]>;
 export function getApiKeysCount(): number;
+export function getApiKeyDisplayNames(ids: readonly string[]): Map<string, string>;
 export function getExclusiveLeaseConnectionIds(): Promise<Set<string>>;
 export function pickApiKeyForInternalUse(
   purpose?: "combo-health-check" | "cloud-sync-verify" | "internal-probe",

@@ -381,7 +381,7 @@ export function ProfilePage() {
             <Progress percent={pct} strokeColor={{ "0%": "#6366f1", "100%": "#a855f7" }} />
             <Flex justify="space-between" style={{ fontSize: 11, color: "var(--ant-color-text-secondary)", marginTop: 4 }}>
               <span>{tt(`累计获取经验: ${totalXp.toLocaleString()} XP`, `Total XP: ${totalXp.toLocaleString()} XP`)}</span>
-              <span>🔥 {tt("连续活跃 7 天", "7-Day Active Streak")}</span>
+              <span>🔥 {tt(`连续活跃 ${levelQuery.data?.streak?.current ?? 0} 天`, `${levelQuery.data?.streak?.current ?? 0}-Day Active Streak`)}</span>
             </Flex>
           </Col>
         </Row>

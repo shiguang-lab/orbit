@@ -19,6 +19,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "chatgpt-web-codex": {
     id: "chatgpt-web-codex",
+    serviceKinds: ["llm"],
     alias: "cgpt-codex",
     name: "ChatGPT Web (Codex)",
     icon: "terminal",
@@ -33,6 +34,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "grok-web": {
     id: "grok-web",
+    serviceKinds: ["llm"],
     alias: "gw",
     name: "Grok Web (Subscription)",
     icon: "auto_awesome",
@@ -46,6 +48,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "gemini-web": {
     id: "gemini-web",
+    serviceKinds: ["llm"],
     alias: "gweb",
     name: "Gemini Web (Free)",
     icon: "auto_awesome",
@@ -61,6 +64,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "perplexity-web": {
     id: "perplexity-web",
+    serviceKinds: ["llm"],
     alias: "pplx-web",
     name: "Perplexity Web (Pro/Max)",
     icon: "search",
@@ -74,6 +78,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "blackbox-web": {
     id: "blackbox-web",
+    serviceKinds: ["llm"],
     alias: "bb-web",
     name: "Blackbox Web (Subscription)",
     icon: "view_in_ar",
@@ -88,6 +93,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "muse-spark-web": {
     id: "muse-spark-web",
+    serviceKinds: ["llm"],
     alias: "ms-web",
     name: "Muse Spark Web (Meta AI)",
     icon: "auto_awesome",
@@ -104,6 +110,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "claude-web": {
     id: "claude-web",
+    serviceKinds: ["llm"],
     alias: "cw",
     name: "Claude Web",
     icon: "auto_awesome",
@@ -119,6 +126,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "deepseek-web": {
     id: "deepseek-web",
+    serviceKinds: ["llm"],
     alias: "ds-web",
     name: "DeepSeek Web",
     icon: "auto_awesome",
@@ -133,6 +141,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "copilot-web": {
     id: "copilot-web",
+    serviceKinds: ["llm"],
     alias: "copilot",
     name: "Microsoft Copilot Web",
     icon: "auto_awesome",
@@ -146,6 +155,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "copilot-m365-web": {
     id: "copilot-m365-web",
+    serviceKinds: ["llm"],
     alias: "m365copilot",
     name: "Microsoft 365 Copilot (BizChat)",
     icon: "business_center",
@@ -159,6 +169,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "t3-web": {
     id: "t3-web",
+    serviceKinds: ["llm"],
     alias: "t3chat",
     name: "t3.chat (Pro/Free)",
     icon: "auto_awesome",
@@ -175,6 +186,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "inner-ai": {
     id: "inner-ai",
+    serviceKinds: ["llm"],
     alias: "in-ai",
     name: "Inner.ai (Subscription)",
     icon: "auto_awesome",
@@ -189,6 +201,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "adapta-web": {
     id: "adapta-web",
+    serviceKinds: ["llm"],
     alias: "adp-web",
     name: "Adapta.org (Adapta One Web)",
     icon: "auto_awesome",
@@ -205,6 +218,7 @@ export const WEB_COOKIE_PROVIDERS = {
     // Wire id stays `lmarena` for DB/combo/model-prefix back-compat.
     // Product rebranded LMArena → Arena (arena.ai) in Jan 2026.
     id: "lmarena",
+    serviceKinds: ["llm"],
     alias: "lma",
     name: "Arena (Free)",
     icon: "auto_awesome",
@@ -220,6 +234,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "yuanbao-web": {
     id: "yuanbao-web",
+    serviceKinds: ["llm"],
     alias: "ybw",
     name: "Tencent Yuanbao (Free)",
     icon: "auto_awesome",
@@ -235,6 +250,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "tencent-aistudio-web": {
     id: "tencent-aistudio-web",
+    serviceKinds: ["llm"],
     alias: "tasw",
     name: "Tencent AI Studio (Free)",
     icon: "auto_awesome",
@@ -250,6 +266,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   huggingchat: {
     id: "huggingchat",
+    serviceKinds: ["llm"],
     // huggingchat is addressed by its own id as alias (stable routing; the
     // historical "hc" alias collided with another provider and was retired).
     alias: "huggingchat",
@@ -266,6 +283,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "poe-web": {
     id: "poe-web",
+    serviceKinds: ["llm"],
     alias: "poe",
     name: "Poe Web (Subscription)",
     icon: "auto_awesome",
@@ -278,6 +296,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "venice-web": {
     id: "venice-web",
+    serviceKinds: ["llm"],
     alias: "ven",
     name: "Venice Web (Privacy)",
     icon: "auto_awesome",
@@ -289,6 +308,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "v0-vercel-web": {
     id: "v0-vercel-web",
+    serviceKinds: ["llm"],
     // #6343: was "v0", colliding with the unrelated "v0-vercel" API-key provider's
     // alias. Aliases resolve 1:1 to a provider id, so the dashboard's model-string
     // routing always picked v0-vercel, silently hiding this provider's own
@@ -306,6 +326,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "kimi-web": {
     id: "kimi-web",
+    serviceKinds: ["llm"],
     // Legacy "kimi" API provider keeps the short alias; web variant uses its own id.
     alias: "kimi-web",
     name: "Kimi Web",
@@ -320,6 +341,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "doubao-web": {
     id: "doubao-web",
+    serviceKinds: ["llm"],
     alias: "db",
     name: "Dola Web (ByteDance)",
     icon: "auto_awesome",
@@ -333,6 +355,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "gemini-business": {
     id: "gemini-business",
+    serviceKinds: ["llm"],
     alias: "gembiz",
     name: "Gemini Business (Enterprise)",
     icon: "business_center",
@@ -347,6 +370,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "zenmux-free": {
     id: "zenmux-free",
+    serviceKinds: ["llm"],
     alias: "zmf",
     name: "ZenMux Free (Web)",
     icon: "bolt",
@@ -361,6 +385,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "tinycms-web": {
     id: "tinycms-web",
+    serviceKinds: ["llm"],
     alias: "tcw",
     name: "TinyCMS Web (Free/Sub)",
     icon: "layers",
@@ -375,6 +400,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "zai-web": {
     id: "zai-web",
+    serviceKinds: ["llm"],
     alias: "zw",
     name: "Z.ai Web",
     icon: "auto_awesome",
@@ -391,6 +417,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   promptql: {
     id: "promptql",
+    serviceKinds: ["llm"],
     alias: "pql",
     name: "PromptQL (Unofficial/Experimental)",
     icon: "auto_awesome",
@@ -404,6 +431,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "notion-web": {
     id: "notion-web",
+    serviceKinds: ["llm"],
     alias: "nw",
     name: "Notion AI Web (Unofficial/Experimental)",
     icon: "auto_awesome",
@@ -423,6 +451,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "adobe-firefly": {
     id: "adobe-firefly",
+    serviceKinds: [],
     alias: "firefly",
     name: "Adobe Firefly (Image/Video)",
     icon: "auto_awesome",
@@ -436,6 +465,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   hyperagent: {
     id: "hyperagent",
+    serviceKinds: ["llm"],
     alias: "ha",
     name: "HyperAgent (Unofficial/Experimental)",
     icon: "auto_awesome",
@@ -449,6 +479,7 @@ export const WEB_COOKIE_PROVIDERS = {
   },
   "conol-web": {
     id: "conol-web",
+    serviceKinds: ["llm"],
     alias: "cnl",
     name: "Conol (Unofficial/Experimental)",
     icon: "auto_awesome",

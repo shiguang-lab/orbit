@@ -140,13 +140,13 @@ async function computeZScore(apiKeyId: string): Promise<number | null> {
  */
 async function getRecentXp(apiKeyId: string, windowMs: number): Promise<number> {
   const d = db();
-  const since = new Date(Date.now() - windowMs).toISOString();
+  const windowStart = `-${Math.ceil(windowMs / 1000)} seconds`;
 
   const row = d
     .prepare(
-      "SELECT COALESCE(SUM(xp_earned), 0) AS total FROM xp_audit_log WHERE api_key_id = ? AND created_at > ?"
+      "SELECT COALESCE(SUM(xp_earned), 0) AS total FROM xp_audit_log WHERE api_key_id = ? AND created_at > datetime('now', ?)"
     )
-    .get(apiKeyId, since) as { total: number };
+    .get(apiKeyId, windowStart) as { total: number };
 
   return row.total;
 }

@@ -12,6 +12,22 @@
  */
 
 import type { ProviderUsage } from "./freeProviderRankings";
+import type { FreeProviderRanking } from "./freeProviderRankings";
+
+export function sortRankingsByReliability(rankings: FreeProviderRanking[]): FreeProviderRanking[] {
+  const rateOf = (ranking: FreeProviderRanking): number | null =>
+    ranking.reliability?.usage?.successRate ?? null;
+
+  return [...rankings].sort((a, b) => {
+    const rateA = rateOf(a);
+    const rateB = rateOf(b);
+    if (rateA === null && rateB === null) return 0;
+    if (rateA === null) return 1;
+    if (rateB === null) return -1;
+    if (rateA !== rateB) return rateB - rateA;
+    return (b.topModel?.score ?? b.averageScore) - (a.topModel?.score ?? a.averageScore);
+  });
+}
 
 export type UsageTone = "good" | "fair" | "poor" | "unknown";
 

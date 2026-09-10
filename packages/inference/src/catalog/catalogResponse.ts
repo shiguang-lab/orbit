@@ -35,6 +35,7 @@ import {
   isModelCatalogNamesEnabled,
   maybeOmitCatalogModelName,
 } from "@orbit/core/catalog/response-presentation";
+import { isDisableThinkingLevelVariantsEnabled } from "@orbit/core/runtime/feature-flags";
 import { getPassthroughProviders, REGISTRY } from "@orbit/providers/provider-registry";
 import { extractApiKey } from "../services/auth.ts";
 import { isCodexModelCatalogClient } from "./catalogRequest";
@@ -151,7 +152,9 @@ export async function applyCatalogPostFilters(
   // #7694: advertise `<provider>/<model>-<tier>` variants for synced models that
   // captured `reasoning.supported_efforts` at sync time (capabilities.effort_tiers).
   // Skips codex/kimi (own suffix mechanism); authorization follows generation.
-  finalModels = appendSyncedEffortVariants(finalModels);
+  if (!isDisableThinkingLevelVariantsEnabled()) {
+    finalModels = appendSyncedEffortVariants(finalModels);
+  }
 
   await yieldTurn();
 

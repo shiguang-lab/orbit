@@ -5,7 +5,7 @@
  * LOCAL_ONLY: not process-spawning; management-scoped via requireManagementAuth.
  */
 import { CORS_HEADERS, handleCorsOptions } from "@orbit/core/shared/cors";
-import { getXp } from "@orbit/core/gamification/profile";
+import { getXp, getStreak, getAggregateStreak } from "@orbit/core/gamification/profile";
 import { getAggregateXp } from "../domain/profile.js";
 import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
@@ -19,5 +19,9 @@ export async function GET(request: Request) {
 
   const apiKeyId = new URL(request.url).searchParams.get("apiKeyId");
   const level = apiKeyId ? getXp(apiKeyId) : getAggregateXp();
-  return Response.json({ level }, { headers: CORS_HEADERS });
+  const streakData = apiKeyId ? await getStreak(apiKeyId) : await getAggregateStreak();
+  return Response.json({
+    level,
+    streak: { current: streakData.currentStreak, longest: streakData.longestStreak },
+  }, { headers: CORS_HEADERS });
 }

@@ -2,6 +2,9 @@
   "name": "orbit",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=24.20.0 <25"
+  },
   "packageManager": "pnpm@10.28.0",
   "pnpm": {
     "overrides": {
@@ -13,6 +16,12 @@
     "build": "turbo run build",
     "dev": "turbo run dev",
     "typecheck": "turbo run typecheck",
+    "test:scoped": "bash scripts/quality/test-scoped.sh",
+    "test:scoped:staged": "bash scripts/quality/test-scoped.sh --staged",
+    "test:scoped:full": "bash scripts/quality/test-scoped.sh --full",
+    "quality:complexity": "node scripts/check/check-complexity-ratchets.mjs",
+    "quality:dead-code": "node scripts/check/check-dead-code.mjs",
+    "release:reconcile": "node scripts/release/reconcile-changelog.mjs",
     "audit:gateway-independence": "node scripts/audit-gateway-independence.mjs --strict",
     "audit:brand": "node scripts/audit-brand-independence.mjs",
     "audit:console-routes": "node scripts/audit-console-routes.mjs --strict",

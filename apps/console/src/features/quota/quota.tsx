@@ -26,6 +26,7 @@ import { MaterialIcon } from "@/app/nav";
 import {
   providersApi,
   quotaApi,
+  resetCreditsApi,
   type ProviderConnection,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
@@ -408,6 +409,22 @@ export function QuotaPage() {
       void queryClient.invalidateQueries({ queryKey: ["providers-connections"] });
     } catch {
       messageApi.error("更新连接状态失败");
+    }
+  };
+
+  const handleRedeemResetCredit = async (connectionId: string, provider: string) => {
+    try {
+      const inventory = await resetCreditsApi.list(connectionId);
+      const credit = inventory.credits?.[0];
+      if (!credit) {
+        messageApi.info("当前没有可用的重置额度");
+        return;
+      }
+      const result = await resetCreditsApi.consume(connectionId, credit.selectionToken);
+      messageApi.success(result.outcome === "alreadyRedeemed" ? "该重置额度已使用" : "配额已重置");
+      await fetchSingleQuota(connectionId, provider, false);
+    } catch (error) {
+      messageApi.error(error instanceof Error ? error.message : "重置额度使用失败");
     }
   };
 
@@ -1098,6 +1115,14 @@ export function QuotaPage() {
                                                   ? `$${Number(q.remaining || 0).toFixed(2)}`
                                                   : `${pct.toFixed(0)}%`}
                                               </Text>
+                                              {q.isResetCredits && (record.provider === "codex" || record.provider === "grok-cli") && (
+                                                <Popconfirm
+                                                  title="确认使用一个重置额度？"
+                                                  onConfirm={() => handleRedeemResetCredit(record.id, record.provider)}
+                                                >
+                                                  <Button type="link">使用</Button>
+                                                </Popconfirm>
+                                              )}
                                               <Tooltip title="隐藏此配额行">
                                                 <Button
                                                   type="text"

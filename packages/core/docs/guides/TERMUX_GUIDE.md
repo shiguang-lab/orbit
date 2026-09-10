@@ -18,7 +18,7 @@ pkg upgrade
 pkg install nodejs python build-essential git
 ```
 
-> **Node.js version:** Orbit requires Node `>=22.22.2 <23 || >=24.0.0 <27` (matches `engines` in `package.json` / `SUPPORTED_NODE_RANGE`). Termux's `nodejs-lts` typically ships Node 20 LTS, which is **no longer supported** — install `pkg install nodejs` (current) instead and verify `node --version` reports a 22.x/24.x+ line.
+> **Node.js version:** Orbit requires Node `>=24.20.0 <25` (matches `engines` in `package.json` / `SUPPORTED_NODE_RANGE`). Install `pkg install nodejs-lts` and verify `node --version` reports 24.20.0 or newer on the 24.x line.
 
 If native package compilation fails, rerun the `pkg install` command above and then retry the Orbit install.
 

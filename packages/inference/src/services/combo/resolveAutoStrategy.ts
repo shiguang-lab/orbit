@@ -319,6 +319,8 @@ export async function resolveAutoStrategyOrder(
               boolean | undefined,
             estimatedInputTokens,
             sla: slaPolicy,
+            weights,
+            explorationRate,
           },
           routingStrategy
         );

@@ -16,6 +16,7 @@ const CATALOG_RELEVANT_FEATURE_FLAGS = new Set([
   "MODEL_CATALOG_INCLUDE_NAMES",
   "MODELS_CATALOG_PREFIX_MODE",
   "EXPOSE_CC_DISCOVERY_ALIASES",
+  "ORBIT_DISABLE_THINKING_LEVEL_VARIANTS",
 ]);
 
 /**
@@ -91,10 +92,12 @@ export function removeFeatureFlagOverride(key: string): void {
  */
 export function clearAllFeatureFlagOverrides(): void {
   const db = getDbInstance();
+  const catalogFlags = Array.from(CATALOG_RELEVANT_FEATURE_FLAGS);
+  const placeholders = catalogFlags.map(() => "?").join(", ");
   const hadRelevantOverride = Boolean(
     db
-      .prepare("SELECT 1 FROM key_value WHERE namespace = ? AND key IN (?, ?, ?) LIMIT 1")
-      .get(NAMESPACE, ...Array.from(CATALOG_RELEVANT_FEATURE_FLAGS)),
+      .prepare(`SELECT 1 FROM key_value WHERE namespace = ? AND key IN (${placeholders}) LIMIT 1`)
+      .get(NAMESPACE, ...catalogFlags),
   );
   db.prepare("DELETE FROM key_value WHERE namespace = ?").run(NAMESPACE);
   if (hadRelevantOverride) {

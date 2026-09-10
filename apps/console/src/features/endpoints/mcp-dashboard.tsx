@@ -153,12 +153,22 @@ export function McpDashboard() {
   const status = mcpStatusQuery.data;
   const tools = mcpToolsQuery.data ?? [];
   const auditData = auditQuery.data ?? { entries: [], total: 0 };
-
-  const formatDuration = (ms?: number | null) => {
-    if (typeof ms !== "number" || !Number.isFinite(ms)) return "—";
-    if (ms < 1000) return `${Math.round(ms)}ms`;
-    return `${(ms / 1000).toFixed(1)}s`;
-  };
+  const hasActivity = Number(status?.activity?.totalCalls24h ?? 0) > 0;
+  const runtimeState = status?.runtimeState || status?.status;
+  const runtimeLabel = runtimeState === "online"
+    ? tt("正常在线", "Online")
+    : runtimeState === "idle"
+      ? tt("等待客户端连接", "Waiting for client")
+      : runtimeState === "disabled"
+        ? tt("未启用", "Disabled")
+        : tt("连接异常", "Connection error");
+  const runtimeColor = runtimeState === "online"
+    ? "#10B981"
+    : runtimeState === "idle"
+      ? "#F59E0B"
+      : runtimeState === "disabled"
+        ? token.colorTextDisabled
+        : "#EF4444";
 
   const auditColumns = [
     {
@@ -216,7 +226,7 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("MCP 服务进程", "MCP Daemon Process")}
+              {tt("MCP 服务状态", "MCP Service Status")}
             </Text>
             <Flex align="center" gap={6} style={{ marginTop: 4 }}>
               <div
@@ -224,11 +234,11 @@ export function McpDashboard() {
                   width: 8,
                   height: 8,
                   borderRadius: "50%",
-                  background: status?.online ? "#10B981" : "#EF4444",
+                  background: runtimeColor,
                 }}
               />
               <Text strong style={{ fontSize: 16 }}>
-                {status?.online ? tt("正常在线", "Online") : tt("已离线", "Offline")}
+                {runtimeLabel}
               </Text>
             </Flex>
           </div>
@@ -237,10 +247,10 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("进程 PID", "Process PID")}
+              {tt("传输方式", "Transport")}
             </Text>
             <Title level={4} style={{ margin: "4px 0 0", fontSize: 16 }}>
-                  {status?.heartbeat?.pid ?? "—"}
+              {status?.transport || "—"}
             </Title>
           </div>
         </Col>
@@ -248,10 +258,10 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("持续运行时间", "Uptime")}
+              {tt("可用工具", "Available Tools")}
             </Text>
             <Title level={4} style={{ margin: "4px 0 0", fontSize: 16 }}>
-              {status?.heartbeat?.uptimeMs != null ? formatDuration(status.heartbeat.uptimeMs) : "—"}
+              {tools.length}
             </Title>
           </div>
         </Col>
@@ -259,10 +269,10 @@ export function McpDashboard() {
         <Col xs={12} sm={6}>
           <div className={styles.statCard}>
             <Text type="secondary" style={{ fontSize: 11 }}>
-              {tt("心跳响应延时", "Heartbeat Latency")}
+              {tt("最近调用", "Last Invocation")}
             </Text>
-            <Title level={4} style={{ margin: "4px 0 0", fontSize: 16, color: "#10B981" }}>
-              {status?.heartbeat?.heartbeatAgeMs != null ? formatDuration(status.heartbeat.heartbeatAgeMs) : "—"}
+            <Title level={4} style={{ margin: "4px 0 0", fontSize: 16 }}>
+              {status?.activity?.lastCallAt ? new Date(status.activity.lastCallAt).toLocaleString() : "—"}
             </Title>
           </div>
         </Col>
@@ -287,7 +297,7 @@ export function McpDashboard() {
                   {tt("调用成功率", "Success Rate")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", fontSize: 20, color: "#10B981" }}>
-                  {status?.activity?.successRate != null ? `${(status.activity.successRate * 100).toFixed(1)}%` : "—"}
+                  {hasActivity && status?.activity?.successRate != null ? `${(status.activity.successRate * 100).toFixed(1)}%` : "—"}
                 </Title>
               </div>
 
@@ -296,7 +306,7 @@ export function McpDashboard() {
                   {tt("平均执行耗时", "Avg Execution Latency")}
                 </Text>
                 <Title level={3} style={{ margin: "4px 0 0", fontSize: 20 }}>
-                  {status?.activity?.avgDurationMs != null ? `${status.activity.avgDurationMs} ms` : "—"}
+                  {hasActivity && status?.activity?.avgDurationMs != null ? `${status.activity.avgDurationMs} ms` : "—"}
                 </Title>
               </div>
             </Flex>
@@ -316,6 +326,11 @@ export function McpDashboard() {
                     <Tag color="blue">{t.count} {tt("次", "calls")}</Tag>
                   </Flex>
                 ))}
+                {!hasActivity && (
+                  <Text type="secondary" style={{ fontSize: 12 }}>
+                    {tt("暂无 MCP 调用记录", "No MCP invocations yet")}
+                  </Text>
+                )}
               </Flex>
             </div>
           </Col>
@@ -332,18 +347,20 @@ export function McpDashboard() {
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary" style={{ fontSize: 12 }}>{tt("权限范围审计:", "Scope Enforcement:")}</Text>
-                  <Tag color="success">{tt("已强制校验", "Enforced")}</Tag>
+                  <Tag color={status?.scopesEnforced ? "success" : "default"}>
+                    {status?.scopesEnforced ? tt("已强制校验", "Enforced") : tt("未启用", "Disabled")}
+                  </Tag>
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary" style={{ fontSize: 12 }}>{tt("最近调用工具:", "Last Tool Called:")}</Text>
                   <Text code style={{ fontSize: 12 }}>{status?.activity?.lastCallTool || "—"}</Text>
                 </Flex>
-                <div>
-                  <Text type="secondary" style={{ fontSize: 11, display: "block" }}>{tt("心跳管道路径:", "Heartbeat Socket:")}</Text>
-                  <Text code style={{ fontSize: 11, wordBreak: "break-all" }}>
-                    {status?.heartbeatPath || "—"}
-                  </Text>
-                </div>
+                {status?.transport === "stdio" && status?.heartbeat && (
+                  <Flex justify="space-between">
+                    <Text type="secondary" style={{ fontSize: 12 }}>{tt("活动进程 PID:", "Active Process PID:")}</Text>
+                    <Text code style={{ fontSize: 12 }}>{status.heartbeat.pid}</Text>
+                  </Flex>
+                )}
               </Flex>
             </div>
           </Col>

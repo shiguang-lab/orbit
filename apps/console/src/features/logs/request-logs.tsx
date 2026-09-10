@@ -639,7 +639,7 @@ export function RequestLogsPage() {
                   <span style={{ color: "#34d399", fontWeight: 600 }}>{outTok.toLocaleString()}</span>
                   {Boolean(cr && cr > 0) && (
                     <span style={{ color: "#38bdf8", marginLeft: 4 }} title="Prompt Cache Read">
-                      (CR:{cr})
+                      (CR:{cr} · {inTok > 0 ? Math.min(100, Math.round((cr! / inTok) * 100)) : 0}%)
                     </span>
                   )}
                   {Boolean(cw && cw > 0) && (
@@ -750,9 +750,11 @@ export function RequestLogsPage() {
               const tag = record.sessionTag || (record as unknown as { conversationId?: string }).conversationId;
               if (!tag) return <span style={{ color: "rgba(255,255,255,0.3)" }}>—</span>;
               return (
-                <Tag color="default" style={{ margin: 0, fontFamily: "monospace", fontSize: 10 }} title={tag}>
-                  {tag.slice(0, 8)}…
-                </Tag>
+                <a href={`/dashboard/conversations?session=${encodeURIComponent(tag)}`} title={tt("打开所属会话", "Open owning conversation")}>
+                  <Tag color="default" style={{ margin: 0, fontFamily: "monospace", fontSize: 10, cursor: "pointer" }} title={tag}>
+                    {tag.slice(0, 8)}…
+                  </Tag>
+                </a>
               );
             },
           },

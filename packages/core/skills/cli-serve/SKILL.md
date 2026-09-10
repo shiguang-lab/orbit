@@ -86,7 +86,7 @@ npm install -g orbit          # npm registry
 # or: use the binary bundled with the desktop app
 ```
 
-Requires Node.js ≥22.22.2 or ≥24.
+Requires Node.js 24.20.0+ on the 24.x LTS line.
 
 Verify:
 

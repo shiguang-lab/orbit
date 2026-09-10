@@ -246,7 +246,6 @@ export default function EndpointsPage() {
 
   // Compute addresses
   const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "8787");
-  const localBaseUrl = networkQuery.data?.localUrl || "http://127.0.0.1:8787/v1";
   const lanUrls = networkQuery.data?.lanUrls || [];
   const currentPublicBaseUrl = getCurrentPublicBaseUrl();
 
@@ -295,7 +294,7 @@ export default function EndpointsPage() {
     return "";
   }, [networkQuery.data, tailscaleStatusQuery.data, tailscaleQuery.data, clientTailscaleUrl, port]);
 
-  const effectiveBaseUrl = publicBaseUrl || localBaseUrl;
+  const effectiveBaseUrl = publicBaseUrl || lanUrls[0] || effectiveTailscaleUrl || "";
 
   if (networkQuery.isLoading && !networkQuery.data) {
     return <PageSkeleton />;
@@ -332,10 +331,10 @@ export default function EndpointsPage() {
         </Button>
       </Flex>
 
-      {/* Network Access Cards (4 Cards Grid) */}
+      {/* Network Access Cards */}
       <Row gutter={[12, 12]}>
         {/* 1. Public Endpoint */}
-        <Col xs={24} sm={12} lg={6}>
+        <Col xs={24} md={8}>
           <Card size="small" className={styles.networkCard}>
             <Flex vertical gap={8}>
               <Flex align="center" justify="space-between">
@@ -387,38 +386,8 @@ export default function EndpointsPage() {
           </Card>
         </Col>
 
-        {/* 2. Localhost */}
-        <Col xs={24} sm={12} lg={6}>
-          <Card size="small" className={styles.networkCard}>
-            <Flex vertical gap={8}>
-              <Flex align="center" justify="space-between">
-                <Flex align="center" gap={6}>
-                  <MaterialIcon name="computer" size={16} style={{ color: "#10B981" }} />
-                  <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                    {tt("本地访问基址", "Local Base URL")}
-                  </Text>
-                </Flex>
-                <Tag color="success" style={{ margin: 0, fontSize: 10 }}>
-                  {tt("在线", "Online")}
-                </Tag>
-              </Flex>
-              <div className={styles.urlCodeBox}>
-                <Text ellipsis code strong style={{ fontSize: 12 }}>
-                  {localBaseUrl}
-                </Text>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<MaterialIcon name="content_copy" size={14} />}
-                  onClick={() => copyToClipboard(localBaseUrl, tt("已复制本地基址", "Copied local URL"))}
-                />
-              </div>
-            </Flex>
-          </Card>
-        </Col>
-
-        {/* 3. LAN Access */}
-        <Col xs={24} sm={12} lg={6}>
+        {/* 2. LAN Access */}
+        <Col xs={24} md={8}>
           <Card size="small" className={styles.networkCard}>
             <Flex vertical gap={8}>
               <Flex align="center" justify="space-between">
@@ -452,8 +421,8 @@ export default function EndpointsPage() {
           </Card>
         </Col>
 
-        {/* 4. Tailscale / VPN */}
-        <Col xs={24} sm={12} lg={6}>
+        {/* 3. Tailscale / VPN */}
+        <Col xs={24} md={8}>
           <Card size="small" className={styles.networkCard}>
             <Flex vertical gap={8}>
               <Flex align="center" justify="space-between">

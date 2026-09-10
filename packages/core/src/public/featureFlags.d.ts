@@ -25,6 +25,7 @@ export function areContextWindowChecksDisabled(): boolean;
 export function isApiKeyRevealEnabledFlag(): boolean;
 export function isModelCatalogNamesEnabled(): boolean;
 export function getModelsCatalogPrefixMode(): "dual" | "alias" | "canonical";
+export function isDisableThinkingLevelVariantsEnabled(): boolean;
 export function isArenaEloSyncEnabled(): boolean;
 export function isControlPlaneProxyDirectFallbackEnabled(): boolean;
 export function isNetworkRotationSharedEgressGuardEnabled(): boolean;

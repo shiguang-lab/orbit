@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 
-FROM node:22-bookworm-slim AS source
+FROM node:24.20.0-bookworm-slim AS source
 WORKDIR /workspace
 RUN apt-get update \
     && apt-get install -y --no-install-recommends python3 make g++ \
@@ -48,7 +48,7 @@ RUN pnpm build --filter @orbit/worker...
 RUN --mount=type=cache,id=orbit-pnpm-store,target=/root/.local/share/pnpm/store \
     pnpm deploy --legacy --filter @orbit/worker --prod /runtime
 
-FROM node:22-bookworm-slim AS runtime-base
+FROM node:24.20.0-bookworm-slim AS runtime-base
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app

@@ -27,7 +27,7 @@ without inventing new modules.
 | ------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Web framework | **Next.js 16** (App Router, standalone output, no global middleware)                                                     |
 | Language      | **TypeScript 6.0+** — target `ES2022`, `module: esnext`, `moduleResolution: bundler`, `strict: false`                    |
-| Runtime       | **Node.js** `>=22.22.2 <23` or `>=24.0.0 <27` (enforced via `engines` + `SUPPORTED_NODE_RANGE`)                          |
+| Runtime       | **Node.js** `>=24.20.0 <25` (enforced via `engines` + `SUPPORTED_NODE_RANGE`)                                             |
 | Database      | **SQLite** via `better-sqlite3` (singleton, WAL journaling)                                                              |
 | Desktop       | **Electron 41** + `electron-builder` 26.10 (separate workspace at `electron/`)                                           |
 | Tests         | **Node native test runner** (unit/integration), **Vitest** (MCP, autoCombo, cache), **Playwright** (e2e + protocols-e2e) |

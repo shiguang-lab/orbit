@@ -93,9 +93,10 @@ export function FreeProviderRankingsPage() {
   const [availableOnly, setAvailableOnly] = useState(false);
   const [typeFilter, setTypeFilter] = useState<ProviderAuthType | "">("");
   const [groupByType, setGroupByType] = useState(false);
+  const [sortBy, setSortBy] = useState<"elo" | "reliability">("elo");
 
   const rankingsQuery = useQuery({
-    queryKey: ["free-provider-rankings", category, configuredOnly, availableOnly],
+    queryKey: ["free-provider-rankings", category, configuredOnly, availableOnly, sortBy],
     queryFn: () =>
       freeProviderRankingsApi.getRankings({
         category: category || undefined,
@@ -103,6 +104,7 @@ export function FreeProviderRankingsPage() {
         availableOnly,
         withUsage: true,
         usageRange: "24h",
+        sortBy,
       }),
   });
 
@@ -199,6 +201,17 @@ export function FreeProviderRankingsPage() {
                 { label: tt("代码审查", "Review"), value: "review" },
                 { label: tt("文档编写", "Documentation"), value: "documentation" },
                 { label: tt("问题排查", "Debugging"), value: "debugging" },
+              ]}
+            />
+            <Text type="secondary" style={{ fontSize: 12 }}>
+              {tt("排序:", "Sort:")}
+            </Text>
+            <Segmented
+              value={sortBy}
+              onChange={(value) => setSortBy(value as "elo" | "reliability")}
+              options={[
+                { label: tt("模型能力", "Model quality"), value: "elo" },
+                { label: tt("实测可靠度", "Measured reliability"), value: "reliability" },
               ]}
             />
           </Flex>

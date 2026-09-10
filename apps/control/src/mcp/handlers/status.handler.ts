@@ -30,6 +30,13 @@ export async function getStatus(request: Request): Promise<Response> {
     const httpTransport = getMcpHttpStatus();
     const stdioOnline = isMcpHeartbeatOnline(heartbeat, { requireLivePid: true });
     const online = transport === "stdio" ? enabled && stdioOnline : isMcpHttpTransportReady(enabled, transport);
+    const runtimeState = !enabled
+      ? "disabled"
+      : online
+        ? "online"
+        : transport === "stdio"
+          ? "idle"
+          : "offline";
     const scopesEnforced = process.env.ORBIT_MCP_ENFORCE_SCOPES === "true";
     const lastCall = lastCallPage.entries[0] || null;
     const now = Date.now();
@@ -38,7 +45,7 @@ export async function getStatus(request: Request): Promise<Response> {
     const heartbeatAgeMs = typeof heartbeatAt === "number" && Number.isFinite(heartbeatAt) ? Math.max(0, now - heartbeatAt) : null;
     const uptimeMs = typeof startedAt === "number" && Number.isFinite(startedAt) ? Math.max(0, now - startedAt) : null;
     return Response.json({
-      status: online ? "online" : "offline", online, enabled, transport, scopesEnforced,
+      status: runtimeState, runtimeState, online, enabled, transport, scopesEnforced,
       heartbeatPath: resolveMcpHeartbeatPath(),
       heartbeat: heartbeat ? { ...heartbeat, pidAlive: isProcessAlive(heartbeat.pid), heartbeatAgeMs, uptimeMs } : null,
       httpTransport,

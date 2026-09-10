@@ -1,0 +1,69 @@
+{
+  "name": "@orbit/opencode-plugin-v2",
+  "version": "0.1.0",
+  "description": "Orbit OpenCode plugin (v2 Promise API): catalog transform with models, combos, enrichment, and naming.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "test": "node --import tsx/esm --test tests/*.test.ts",
+    "prepublishOnly": "npm run clean && npm run build && npm test"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@ai-sdk/provider": "3.0.8",
+    "@opencode-ai/plugin": "1.18.29",
+    "@opencode-ai/sdk": "1.18.29",
+    "@types/node": "^22.19.19",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.3",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=24.20.0 <25"
+  },
+  "license": "MIT",
+  "author": "Orbit contributors",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/diegosouzapw/Orbit.git",
+    "directory": "@orbit/opencode-plugin-v2"
+  },
+  "homepage": "https://github.com/diegosouzapw/Orbit/tree/main/%40Orbit/opencode-plugin-v2#readme",
+  "bugs": {
+    "url": "https://github.com/diegosouzapw/Orbit/issues"
+  },
+  "keywords": [
+    "Orbit",
+    "opencode",
+    "opencode-plugin",
+    "opencode-v2",
+    "ai-sdk",
+    "openai-compatible",
+    "provider",
+    "catalog",
+    "combos",
+    "gemini"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@opencode-ai/plugin": ">=1.18.29 <2"
+  }
+}

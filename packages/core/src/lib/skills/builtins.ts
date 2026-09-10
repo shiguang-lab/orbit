@@ -19,7 +19,7 @@ const SANDBOX_NETWORK_ENABLED =
   process.env.SKILLS_SANDBOX_NETWORK_ENABLED === "1" ||
   process.env.SKILLS_SANDBOX_NETWORK_ENABLED === "true";
 const DEFAULT_COMMAND_IMAGE = "alpine:3.20";
-const DEFAULT_JS_IMAGE = "node:22-alpine";
+const DEFAULT_JS_IMAGE = "node:24.20.0-alpine";
 const DEFAULT_PYTHON_IMAGE = "python:3.12-alpine";
 const ALLOWED_SANDBOX_IMAGES = new Set(
   (process.env.SKILLS_ALLOWED_SANDBOX_IMAGES || "")

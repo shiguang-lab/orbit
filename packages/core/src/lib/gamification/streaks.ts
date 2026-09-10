@@ -23,6 +23,20 @@ export interface StreakData {
   streakStartDate: string;
 }
 
+export async function getAggregateStreak(): Promise<Pick<StreakData, "currentStreak" | "longestStreak">> {
+  const aggregate = { currentStreak: 0, longestStreak: 0 };
+  if (isBuildPhase || isCloud) return aggregate;
+  const rows = (getDbInstance() as unknown as DbLike)
+    .prepare("SELECT value FROM key_value WHERE namespace = ?")
+    .all(NAMESPACE) as KeyValueRow[];
+  for (const row of rows) {
+    const streak = parseStreakJson(row.value);
+    aggregate.currentStreak = Math.max(aggregate.currentStreak, streak.currentStreak);
+    aggregate.longestStreak = Math.max(aggregate.longestStreak, streak.longestStreak);
+  }
+  return aggregate;
+}
+
 interface StatementLike<TRow = unknown> {
   get: (...params: unknown[]) => TRow | undefined;
   run: (...params: unknown[]) => { changes?: number };

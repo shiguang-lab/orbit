@@ -845,6 +845,10 @@
       "types": "./dist/types/services/codexResetCredits.d.ts",
       "import": "./src/services/codexResetCredits.ts"
     },
+    "./services/grokResetCredits": {
+      "types": "./src/public/grokResetCredits.d.ts",
+      "import": "./src/services/grokResetCredits.ts"
+    },
     "./services/internalUsageCommand": {
       "types": "./dist/types/services/internalUsageCommand.d.ts",
       "import": "./src/services/internalUsageCommand.ts"

@@ -25,6 +25,7 @@
  */
 
 import { Buffer } from "node:buffer";
+import { connectObscuraBrowser } from "./obscura.ts";
 
 type Browser = import("playwright").Browser;
 type BrowserContext = import("playwright").BrowserContext;
@@ -98,6 +99,7 @@ interface PoolState {
   cloakLaunch: ((opts: unknown) => Promise<Browser>) | null;
   cloakLaunchResolved: boolean;
   metrics: BrowserPoolMetrics;
+  engine: "obscura" | "cloakbrowser" | "chromium" | null;
 }
 
 const POOL_IDLE_TIMEOUT_MS = 5 * 60 * 1000;
@@ -121,6 +123,7 @@ const state: PoolState = {
   cloakLaunch: null,
   cloakLaunchResolved: false,
   metrics: createBrowserPoolMetrics(),
+  engine: null,
 };
 
 function getCloakbrowserModuleId(): string {
@@ -277,14 +280,22 @@ async function launchBrowserInstance(
     const { chromium } = await import("playwright");
     return chromium.launch(resolvePlainBrowserLaunchOptions(options));
   }
+
+  const obscura = await connectObscuraBrowser();
+  if (obscura) {
+    state.engine = "obscura";
+    return obscura.browser;
+  }
   const cloakLaunch = await resolveCloakLaunch();
   if (cloakLaunch) {
+    state.engine = "cloakbrowser";
     return cloakLaunch({
       headless: true,
       args: ["--no-sandbox", "--disable-dev-shm-usage"],
     });
   }
   const { chromium } = await import("playwright");
+  state.engine = "chromium";
   return chromium.launch(resolvePlainBrowserLaunchOptions(options));
 }
 
@@ -434,7 +445,7 @@ export async function acquireBrowserContext(
       launchBrowser(options),
       resolveBrowserContextProxy(key, options),
     ]);
-    const isStealth = headless && state.cloakLaunch !== null;
+    const isStealth = headless && (state.engine === "obscura" || state.cloakLaunch !== null);
     const context = await browser.newContext({
       userAgent: options.userAgent || DEFAULT_USER_AGENT,
       locale: options.locale || "en-US",

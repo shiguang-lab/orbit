@@ -79,6 +79,58 @@ interface ProviderGroup {
   upstreamProxyStatus?: { running: boolean; accountCount?: number; label: string };
 }
 
+const PROVIDER_IMPORT_CSV_TEMPLATE = `provider,name,apiKey,baseUrl,priority\nopenai,Primary OpenAI,sk-your-key,,1\n`;
+
+function parseCsvRow(line: string): string[] {
+  const values: string[] = [];
+  let value = "";
+  let quoted = false;
+  for (let index = 0; index < line.length; index += 1) {
+    const char = line[index];
+    if (char === '"') {
+      if (quoted && line[index + 1] === '"') { value += '"'; index += 1; }
+      else quoted = !quoted;
+    } else if (char === "," && !quoted) {
+      values.push(value.trim()); value = "";
+    } else value += char;
+  }
+  if (quoted) throw new Error("CSV 包含未闭合的引号");
+  values.push(value.trim());
+  return values;
+}
+
+function parseProviderImport(text: string): Array<Record<string, unknown>> {
+  const trimmed = text.trim();
+  if (!trimmed) throw new Error("导入内容不能为空");
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+    const parsed = JSON.parse(trimmed) as unknown;
+    const rows = Array.isArray(parsed) ? parsed : parsed && typeof parsed === "object" && Array.isArray((parsed as { providers?: unknown }).providers) ? (parsed as { providers: unknown[] }).providers : null;
+    if (!rows) throw new Error("JSON 必须是 Provider 对象数组，或 { providers: [...] }");
+    return rows as Array<Record<string, unknown>>;
+  }
+  const lines = trimmed.split(/\r?\n/).filter((line) => line.trim() && !line.trimStart().startsWith("#"));
+  if (lines.length < 2) throw new Error("CSV 必须包含表头和至少一行数据");
+  const headers = parseCsvRow(lines[0]).map((header) => header.trim());
+  const required = ["provider", "name", "apiKey"];
+  if (required.some((header) => !headers.includes(header))) throw new Error("CSV 缺少 provider、name 或 apiKey 表头");
+  return lines.slice(1).map((line, rowIndex) => {
+    const cells = parseCsvRow(line);
+    if (cells.length > headers.length) throw new Error(`CSV 第 ${rowIndex + 2} 行列数超过表头`);
+    const row: Record<string, unknown> = Object.fromEntries(headers.map((header, index) => [header, cells[index] ?? ""]));
+    if (row.priority) row.priority = Number(row.priority);
+    return row;
+  });
+}
+
+function downloadProviderImportTemplate(): void {
+  const url = URL.createObjectURL(new Blob([PROVIDER_IMPORT_CSV_TEMPLATE], { type: "text/csv;charset=utf-8" }));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "orbit-provider-import-template.csv";
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
 type DisplayMode = "all" | "configured" | "compact";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -458,20 +510,25 @@ export default function ProvidersPage() {
 
   const importMutation = useMutation({
     mutationFn: async (text: string) => {
-      let parsed: unknown;
-      try { parsed = JSON.parse(text); } catch { throw new Error("导入内容必须是有效 JSON"); }
-      const providers = Array.isArray(parsed) ? parsed : (parsed && typeof parsed === "object" && Array.isArray((parsed as { providers?: unknown }).providers) ? (parsed as { providers: unknown[] }).providers : null);
+      let providers: Array<Record<string, unknown>>;
+      try { providers = parseProviderImport(text); } catch (error) { throw new Error(error instanceof Error ? error.message : "无法解析导入内容"); }
       if (!providers || providers.length === 0 || providers.some((item) => !item || typeof item !== "object" || Array.isArray(item))) {
-        throw new Error("JSON 必须是 Provider 对象数组，或 { providers: [...] }");
+        throw new Error("导入内容中没有有效的 Provider 记录");
       }
-      return providersApi.import(providers as Array<Record<string, unknown>>);
+      return providersApi.import(providers);
     },
     onSuccess: (result) => {
       void queryClient.invalidateQueries({ queryKey: ["providers"] });
-      if (result.errors.length > 0) messageApi.warning(`已导入 ${result.importedCount} 个，${result.errors.length} 个失败`);
-      else messageApi.success(`已导入 ${result.importedCount} 个 Provider`);
-      setImportOpen(false);
-      setImportText("");
+      if (result.errors.length > 0) {
+        Modal.warning({
+          title: `已导入 ${result.success} 个，${result.failed} 个失败`,
+          content: <div>{result.errors.slice(0, 10).map((error) => <div key={`${error.index}-${error.message}`}>{error.name || error.provider || `第 ${error.index + 1} 行`}: {error.message}</div>)}</div>,
+        });
+      } else {
+        messageApi.success(`已导入 ${result.success} 个 Provider`);
+        setImportOpen(false);
+        setImportText("");
+      }
     },
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "导入失败"),
   });
@@ -727,7 +784,7 @@ export default function ProvidersPage() {
       >
         <Typography.Paragraph type="secondary">{t("providersPage.importDescription")}</Typography.Paragraph>
         <Upload
-          accept=".json,application/json"
+          accept=".json,.csv,application/json,text/csv"
           maxCount={1}
           showUploadList={false}
           beforeUpload={(file) => {
@@ -737,7 +794,8 @@ export default function ProvidersPage() {
         >
           <Button icon={<MaterialIcon name="upload_file" />}>{t("providersPage.chooseJson")}</Button>
         </Upload>
-        <Input.TextArea value={importText} onChange={(event) => setImportText(event.target.value)} autoSize={{ minRows: 10, maxRows: 20 }} placeholder={'[{"provider":"openai","name":"Primary","apiKey":"..."}]'} />
+        <Button type="link" onClick={downloadProviderImportTemplate}>{t("providersPage.downloadCsvTemplate", "下载 CSV 模板")}</Button>
+        <Input.TextArea value={importText} onChange={(event) => setImportText(event.target.value)} autoSize={{ minRows: 10, maxRows: 20 }} placeholder={'[{"provider":"openai","name":"Primary","apiKey":"..."}] 或 CSV'} />
       </Modal>
     </>
   );

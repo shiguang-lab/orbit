@@ -242,9 +242,11 @@ export interface BatchTestResponse {
 }
 
 export interface ProviderImportResponse {
-  imported: ProviderConnection[];
-  importedCount: number;
-  errors: Array<{ index: number; message: string }>;
+  success: number;
+  failed: number;
+  total: number;
+  created: ProviderConnection[];
+  errors: Array<{ index: number; name?: string; provider?: string; message: string }>;
 }
 
 export interface ProviderModelsResponse {
@@ -1825,6 +1827,13 @@ export interface CompressionConfig {
   ultraEngine?: "heuristic" | "slm";
   ultraSlmPrewarm?: boolean;
   liveZone?: { enabled: boolean };
+  contextBudget?: {
+    mode?: "floor" | "replace-autotrigger" | "off";
+    policy?: "reserve-output" | "percentage" | "absolute";
+    reserveOutputTokens?: number;
+    percentage?: number;
+    absoluteTokens?: number;
+  };
 }
 
 export interface CompressionAnalyticsSummary {
@@ -3418,6 +3427,7 @@ export const freeProviderRankingsApi = {
     availableOnly?: boolean;
     withUsage?: boolean;
     usageRange?: string;
+    sortBy?: "elo" | "reliability";
   }): Promise<FreeProviderRankingItem[]> => {
     const sp = new URLSearchParams();
     if (params?.category) sp.set("category", params.category);
@@ -3426,10 +3436,19 @@ export const freeProviderRankingsApi = {
     if (params?.availableOnly) sp.set("availableOnly", "1");
     if (params?.withUsage ?? true) sp.set("withUsage", "1");
     if (params?.usageRange) sp.set("usageRange", params.usageRange);
+    if (params?.sortBy) sp.set("sortBy", params.sortBy);
     const qs = sp.toString();
     const res = await api<{ rankings?: FreeProviderRankingItem[] }>(`/free-provider-rankings${qs ? `?${qs}` : ""}`);
     return Array.isArray(res?.rankings) ? res.rankings : [];
   },
+};
+
+export const resetCreditsApi = {
+  list: (connectionId: string) => api<{ ok: boolean; availableCount: number; credits: Array<{ selectionToken: string; expiresAt?: string | null }> }>(`/usage/codex-reset-credit?connectionId=${encodeURIComponent(connectionId)}`),
+  consume: (connectionId: string, creditId?: string) => api<{ ok: boolean; outcome: "reset" | "alreadyRedeemed"; usage: Record<string, unknown> }>("/usage/codex-reset-credit", {
+    method: "POST",
+    body: JSON.stringify({ connectionId, idempotencyKey: crypto.randomUUID(), ...(creditId ? { creditId } : {}) }),
+  }),
 };
 
 export interface RadarModelRanking {
@@ -4070,6 +4089,7 @@ export const batchApi = {
 
 export interface LeaderboardEntry {
   apiKeyId: string;
+  name?: string | null;
   score: number;
 }
 
@@ -4128,7 +4148,7 @@ export const gamificationApi = {
   getLeaderboard: async (scope: string = "global", limit: number = 50): Promise<{ scope: string; entries: LeaderboardEntry[]; myRank?: number }> => {
     return api(`/gamification/leaderboard?scope=${encodeURIComponent(scope)}&limit=${limit}`);
   },
-  getLevel: async (): Promise<{ level: UserLevelInfo }> => {
+  getLevel: async (): Promise<{ level: UserLevelInfo; streak?: { current: number; longest: number } }> => {
     return api("/gamification/level");
   },
   getBadges: async (): Promise<{ badges: BadgeItem[] }> => {

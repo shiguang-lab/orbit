@@ -16,4 +16,5 @@ export const freeProviderRankingsQuerySchema = z.object({
   availableOnly: booleanQueryParameter,
   withUsage: booleanQueryParameter,
   usageRange: z.enum(["1h", "24h", "7d", "30d"]).optional(),
+  sortBy: z.enum(["elo", "reliability"]).optional(),
 });

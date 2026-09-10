@@ -470,6 +470,40 @@ export function CompressionSettingsPage() {
         </Space>
       </Card>
 
+      <Card title={tt("自适应上下文预算", "Adaptive Context Budget")} className={styles.sectionCard}>
+        <Space orientation="vertical" size={12} style={{ width: "100%" }}>
+          <Text type="secondary">
+            {tt("根据模型上下文窗口动态保留输出空间，避免压缩阈值固定导致截断。", "Reserve output space dynamically from each model's context window to avoid truncation at a fixed compression threshold.")}
+          </Text>
+          <Radio.Group
+            value={localConfig.contextBudget?.mode ?? "off"}
+            onChange={(event) => {
+              const contextBudget = { ...localConfig.contextBudget, mode: event.target.value };
+              setLocalConfig({ ...localConfig, contextBudget });
+              updateMutation.mutate({ contextBudget });
+            }}
+          >
+            <Radio.Button value="off">{tt("关闭", "Off")}</Radio.Button>
+            <Radio.Button value="floor">{tt("预算下限", "Budget Floor")}</Radio.Button>
+            <Radio.Button value="replace-autotrigger">{tt("替代固定阈值", "Replace Threshold")}</Radio.Button>
+          </Radio.Group>
+          <div>
+            <Text>{tt("预留输出 Token", "Reserved output tokens")}: {localConfig.contextBudget?.reserveOutputTokens ?? 4096}</Text>
+            <Slider
+              min={512}
+              max={32768}
+              step={512}
+              value={localConfig.contextBudget?.reserveOutputTokens ?? 4096}
+              onChangeComplete={(reserveOutputTokens) => {
+                const contextBudget = { ...localConfig.contextBudget, reserveOutputTokens };
+                setLocalConfig({ ...localConfig, contextBudget });
+                updateMutation.mutate({ contextBudget });
+              }}
+            />
+          </div>
+        </Space>
+      </Card>
+
       {/* 5. Caveman Output & Ultra Advanced Settings */}
       <Row gutter={[10, 10]}>
         <Col xs={24} md={12}>

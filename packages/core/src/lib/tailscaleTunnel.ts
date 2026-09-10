@@ -568,7 +568,8 @@ export async function detectTailscaleNode(
   // Layer 1: Check environment variables (Explicit NAS Docker configuration)
   const envUrl = process.env.TAILSCALE_URL?.trim();
   const envIp = process.env.TAILSCALE_IP?.trim();
-  const envDomain = (process.env.TAILSCALE_HOSTNAME || process.env.TS_DOMAIN || process.env.MAGIC_DNS)?.trim();
+  const envHostname = process.env.TAILSCALE_HOSTNAME?.trim();
+  const envDomain = (process.env.TS_DOMAIN || process.env.MAGIC_DNS || envHostname)?.trim();
 
   if (envUrl || envIp || envDomain) {
     let parsedIp = envIp || null;
@@ -589,7 +590,7 @@ export async function detectTailscaleNode(
       Self: {
         DNSName: parsedDns ? `${parsedDns}.` : "",
         TailscaleIPs: parsedIp ? [parsedIp] : [],
-        HostName: envDomain || os.hostname(),
+        HostName: envHostname || os.hostname(),
       },
     };
     return {
@@ -598,7 +599,7 @@ export async function detectTailscaleNode(
       daemonRunning: true,
       ip: parsedIp,
       ipv6: null,
-      hostname: envDomain || null,
+      hostname: envHostname || envDomain || null,
       magicDns: parsedDns,
       tailscaleUrl,
       apiUrl: `${tailscaleUrl.replace(/\/$/, "")}/v1`,

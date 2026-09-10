@@ -4,6 +4,37 @@
 > **目标系统**：重构独立部署版 **智枢 Orbit (`orbiot`)**（包含 `apps/*` 与 `packages/*`）
 > **最后更新**：2026-09-10
 
+> **功能类全量同步结论**：上游 79 个 `feat` 提交已按分布顺序完成逐项审计，`79 / 79` 均已处理（迁移、按 Orbit 架构等效实现、确认已由重构快照吸收或判定不适用），无 `🚧`、`⚠️` 遗留。统一构建与部署仍按约定暂停。
+>
+> **Node.js 运行时统一升级**：开发版本文件、根 `engines`、Docker 构建/运行镜像、GitHub Actions、OpenCode 插件、Skills 沙箱、运行时兼容检测及中英文提示均已统一到可复现的 Node.js `24.20.0` LTS；本机 nvm 默认版本及 Homebrew `node@24` 同步完成。
+
+### 后续 Agent 交接摘要（2026-09-10）
+
+- **已完成**：179 个提交，包括全部 79 个 `feat`、99 个 `fix`、1 个 `perf`。
+- **待执行的代码类提交**：134 个，包括 127 个 `fix`（126 个 `⚠️`、1 个 `🚧`）以及 7 个 `perf/refactor`（标记为 `⚡`）。
+- **参考类提交**：94 个 `ci/docs/test/chore/other` 已完成分类，默认只审计适用性；只有能落到 Orbit 当前架构且带来实际价值时才迁移。
+- **首要续作**：先完成进行中的 `d6f315018`（server-owned tool follow-up），再严格按照本文表格中的全局分布顺序处理其余 `⚠️` 和 `⚡` 项。
+- **工作区状态**：当前包含本轮功能同步与 Node 24.20.0 升级的未提交改动。后续 Agent 必须保留并基于这些改动继续，不得 reset、checkout 或覆盖已有实现。
+- **验证边界**：同步期间只运行定向测试、typecheck、lint 和架构审计；禁止执行 `pnpm build`、Docker build/push、部署、发布、Tag 或 NAS 操作。全部 407 个提交处理完成后再统一构建部署。
+
+#### 可直接交给后续 Agent 的提示词
+
+```text
+在仓库 /Users/yanxianliang/shiguang/OmniRoute/orbiot 中，以 global 模式继续完成 UPSTREAM_SYNC_ANALYSIS.md 记录的 OmniRoute release/v3.8.51 全量同步。
+
+当前状态：407 个上游提交中已完成 179 个代码提交，包括 feat 79/79、fix 99/226、perf 1/4；剩余可执行代码项为 134 个：fix 127 个（126 个 ⚠️、1 个 🚧）以及 perf/refactor 7 个（⚡）。另有 94 个 ci/docs/test/chore/other 参考项已分类，仍需逐项确认适用性，但不要机械搬运。
+
+执行要求：
+1. 先完成 🚧 的 d6f315018（server-owned tool follow-up），然后严格按文档表格的全局分布顺序逐项处理所有 ⚠️ 和 ⚡ 提交，不要只处理高优先级，也不要中途停在分析阶段。
+2. 每个提交都必须对照上游官方提交与当前 Orbit 实现：确有缺陷/缺失则按 apps/*、packages/* 分层架构迁移；当前实现已等效或更优则保留，但必须写出具体代码和测试证据；不适用则说明结构性原因。不要仅凭提交标题判断。
+3. 当前工作区有上一轮 79 个功能同步和 Node 24.20.0 升级的未提交改动，必须保留。禁止 git reset、git checkout --、覆盖或回退现有改动，也不要擅自提交、推送或创建 Tag。
+4. 每完成一项立即更新 UPSTREAM_SYNC_ANALYSIS.md：将 🚧/⚠️/⚡ 改为 ✅，记录迁移位置、实现差异、验证命令和结果；同时维护顶部完成/剩余统计，避免文档与代码脱节。
+5. 修复根因，不引入旧单体目录、兼容垫片、双实现、mock/fallback 假数据或与请求无关的重构。所有用户文案走 useI18n()/tt()，Ant Design 控件保持默认尺寸。
+6. 同步期间只允许定向测试、typecheck、lint、静态检查和架构审计。绝对不要执行 pnpm build、Docker build/push、部署、发布、Tag、NAS 验证或任何构建部署动作。等 407 个提交全部处理完成后才统一构建部署。
+7. 遇到上游路径与 Orbit 架构不一致时迁移语义，不要 cherry-pick 或整库 merge。验证失败要修复后再把文档标记完成。
+8. 持续执行直到 134 个代码类剩余项全部处理完；最终确认文档中 feat/fix/perf/refactor 不再有 🚧、⚠️、⚡，再输出按领域分组的完整报告，包括迁移、等效保留、不适用、验证结果和明确的未构建/未部署声明。
+```
+
 ---
 
 ## 📋 同步任务跟踪进度看板 (Sync Task Board)
@@ -191,7 +222,7 @@
 | 243 | `9629d78ec` | fix(translator): strip neutral tool_choice when tools absent in Responses-to-Chat (#12141) (#12166) | `fix` | ✅ 已吸收：Responses→Chat 转换在 tools 为空/缺失时移除无意义的 `tool_choice: auto/none`，避免 vLLM 等严格端点因缺少 tools 返回 400；有工具时保留中性选择，无工具的 required/强制选择仍保留并交由上游明确报错。新增 3 项定向测试通过，inference typecheck 通过 | 已迁移并验证（未构建/部署） |
 | 244 | `0ff164701` | fix(sse): trust finish_reason over reasoning-ratio heuristic in response quality validation (#12262) | `fix` | ✅ 已吸收：当最终 content 为空但存在 reasoning 且无 tool call 时，明确的 `finish_reason: length/max_tokens` 会直接判为 token 上限截断，不再依赖 reasoning token 达到 90% 的启发式阈值；缺失 finish_reason 或 stop 的既有判断保持不变。新增 4 项定向测试通过，inference typecheck 通过 | 已迁移并验证（未构建/部署） |
 | 260 | `2e17161ea` | feat(sse): wire the PROVIDER_PROFILES window gate into the global provider cooldown (#12247) | `feat` | ✅ 已按 Orbit 架构同步：可选全局 Provider Cooldown 的 provider 级记录按 oauth/apikey profile 的失败阈值、滑动窗口与固定冷却时长生效，阈值以下不再误封整个 provider；连接级记录继续沿用既有指数退避，成功请求同时清空 provider 窗口，时间戳数组有界 | 已完成；6 项窗口/过期/成功清理/连接隔离测试、Inference typecheck 与 diff check 通过；未构建、未部署 |
-| 271 | `8d388912a` | feat(providers): refresh vendored ChatGPT Web connector to v4.0.7 (#12181) | `feat` | 🚧 迁移中：已按官方最终状态导入 46 个 v4.0.7 vendor 文件并移除旧 synthetic web-search，完成 Orbit 连接器名称/数据目录适配；已补充 `ajv`、`ajv-formats`、`tiktoken` 依赖声明，并开始适配 doctor/provider validation 的 sol/pro 能力与新版 browser-login 接口 | 未完成：依赖安装因网络下载停滞已终止；执行器主链路、环境变量/文档、定向测试与最终 typecheck 尚待继续；未构建、未部署 |
+| 271 | `8d388912a` | feat(providers): refresh vendored ChatGPT Web connector to v4.0.7 (#12181) | `feat` | ✅ 已吸收：按官方最终状态导入 46 个 v4.0.7 clean-room vendor 文件并移除旧 synthetic web-search，完成 Orbit 名称、数据目录、doctor/provider validation、sol/pro 能力与新版 browser-login/执行器主链路适配；补齐 `ajv`、`ajv-formats`、`tiktoken` 依赖。inference typecheck 通过，handshake、browser session、executor adapter、delta-v1 与 provider 共 42 项定向测试全部通过 | 已迁移并验证（未构建、未部署） |
 | 277 | `3383adbbd` | perf(sse): defer cloneLogPayload until after SSE collector cap check (#12243) | `perf` | ⚡ 未同步该重构/优化 | 建议同步优化 |
 | 279 | `18dd83cd8` | fix(sse): sort injected tools deterministically for prompt caching (#12234) | `fix` | ✅ 已吸收：memory/skills 注入链返回前按 Chat `function.name` 或 Anthropic 顶层 `name` 对 tools 做稳定字典序排列，避免相同工具集合因注入顺序变化破坏 provider prompt cache；排序复制数组，不改写调用方原数组。新增 2 项定向测试通过，inference typecheck 通过 | 已迁移并验证（未构建/部署） |
 | 283 | `ba200b8d2` | fix(chat-admission): clarify local 503 source (#12223) | `fix` | ✅ 已吸收：结构型重请求被 admission 拒绝时，503 明确说明容量来自本地 admission 且尚未尝试上游 provider 路由，避免用户将 `chat_admission_busy` 误判为 provider 故障；状态码、错误码、reason 和 Retry-After 契约不变。相关 3 项测试通过，core typecheck 通过 | 已迁移并验证（未构建/部署） |
@@ -237,7 +268,7 @@
 | 74 | `11e1c79e6` | fix(combos): clear LKGP pins on delete (#12425) | `fix` | ✅ 已吸收：combo 删除与其名称命名空间下全部持久 LKGP pin 在同一事务中清理，随后逐 key 失效读缓存；名称前缀及 `%`/`_` LIKE 通配均不会误删 sibling，未知 combo 不触碰状态。新增 3 项真实 SQLite 回归测试通过，core typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 76 | `16b0d4e3a` | fix(catalog): re-audit free-tier quotas against official pages (#12649) | `fix` | ✅ 已吸收：按上游 2026-09-02 官方来源复核事实更新 Orbit 的双层免费额度目录、可路由模型注册和说明文档。Gemini/Ollama Cloud 因无公开 token 数字改为 uncapped 且不计入 headline；Groq 改为 5 个现役模型各自 200K TPD（每模型 6M/月、无共享 pool），淘汰旧 ID并补 qwen3.8；Nara 改为 8 个计划模型共享 7M/day（210M/月），同步 Telegram 绑定提示；Mistral 1B 池补充带日期的控制台证据，Cerebras 从 legacy recurring map 移除。新增 4 项定向测试通过，providers/inference/core typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 101 | `4866f927a` | fix(combo): universal-handoff fixes — bare-fallback note, same-request scoping, silent-failure logging (#12338) | `fix` | ✅ 已吸收：universal handoff 仅在当前请求首个 target 上注入或生成，same-request fallback 保留原始消息而不会被无上下文交接说明替换；fallback 成功仍无条件记录实际服务模型，供下一请求判断。无摘要的 bare note 明确禁止臆造缺失上下文，旧/新摘要生成器对空历史、非 2xx 与不可解析响应均记录可诊断 outcome（测试环境静默）。新增 2 项定向测试通过，inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
-| 110 | `831ea040c` | feat(quota): Moonshot Open Platform balance and TPD lock for custom nodes (#12590) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 110 | `831ea040c` | feat(quota): Moonshot Open Platform balance and TPD lock for custom nodes (#12590) | `feat` | ✅ 已吸收：识别 Moonshot 官方域名与自定义 baseUrl，查询账户余额并写入统一 quota；现有 quota preflight/429 分类负责 TPD 锁定 | 已迁移到 usage 分包架构 |
 | 112 | `40c80756e` | fix(quota): keep Antigravity Gemini usable when Claude weekly is empty (#12566) | `fix` | ✅ 已吸收：Antigravity/agy 配额预检、auto 与其他 combo 策略均按 Gemini/Claude 模型族筛选 quota windows，族级窗口存在时不再让全局 `limitReached` 串扰另一族；执行器、core-owned 错误与账号 fallback 将 quota exhaustion 写为族级模型锁和 `providerSpecificData.antigravityFamilyRateLimitedUntil`，启动选号时恢复双 provider alias 锁，RPM/QPM/普通错误仍不扩大为族级或整连接冷却。Orbit 的 core quota cache 已有同等模型族判定，无需引入 core→inference 反向依赖。新增 7 项定向测试通过，core/inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 114 | `35caeb31f` | feat(settings): persist headroomUrl for the Headroom proxy (#12487) | `feat` | ✅ 已吸收：设置 PATCH schema 新增经 trim、限长 500 且仅允许 HTTP(S) 的 `headroomUrl`，空值保留以启用回退；Headroom 状态与启动统一按“持久设置 > `HEADROOM_URL` > localhost:8787”解析，外部地址继续只探测不由 Orbit 启停。高级设置页新增地址保存、状态展示和本地启停入口。新增 3 项定向测试通过，core/control/console typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 129 | `3740839e2` | fix(combo): fall back to full pool when collapsed sole survivor is context-too-small (#12278) | `fix` | ✅ 已吸收：请求兼容性过滤若只剩一个候选且其已知 context window 仍小于请求需求，会恢复原候选池供后续较大窗口模型尝试；vision 请求仍只恢复确认支持视觉的目标，未知 context 的幸存者不会复活因 tools/output 等硬能力淘汰的目标。大型池压缩至 1–2 个时将拒绝原因提升至 info 便于诊断。新增 3 项定向测试通过，inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
@@ -246,10 +277,10 @@
 | 182 | `8d16a50df` | fix(api): keep the images wrapper on combo routes and default Codex to b64_json (#12362) | `fix` | ✅ 已吸收：Codex 图像生成和编辑在未传 `response_format` 时默认返回 `b64_json`，仅显式请求 `url` 才生成 data URL；image combo 成功路径不再剥掉 handler 已生成的 OpenAI `{created, data}` 外层结构，若兼容旧 handler 返回裸数组则补回该结构，图像数量计费也改为读取正确层级。新增 3 项定向测试通过，inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 189 | `290f723ec` | fix(guardrails): keep auto combos exempt from the vision bridge credential guard (#12373) | `fix` | ✅ 已吸收：Vision Bridge 将 `auto`/`auto/*` 识别为虚拟组合，不再用不存在的 `auto` provider 凭据行将其误判为不可用；仍扫描实际 vision pool，只有至少一个成员可用时才原样返回虚拟组合并交由下游轮转，缓存命中也重新验证真实成员凭据；整个 pool 不可用及具体 fixedModel 无凭据时继续 fail closed。新增 5 项定向测试通过，core typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 193 | `e7b144828` | fix(combo): name output_tokens as the exclusion reason instead of structured output (#12374) | `fix` | ✅ 已吸收：当 `max_tokens` 超过 combo 全部候选的已知输出上限时，capability exhaustion 不再误报为“不支持 structured output”，而是明确报告请求 token 数与池内最高已知 ceiling；按 Orbit 完整 `provider/model` 的 target 结构解析能力，避免重复限定导致 ceiling 误算为 0。新增定向测试通过，inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
-| 212 | `5a0a131bc` | feat(usage): devin-cli agentic quota + openrouter credits in Provider Limits (#12256) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 214 | `cf53b9220` | feat(combos): add universal handoff feature flag (#12167) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 222 | `a86b9019a` | feat(auto-combo): declare observed reliability as a scoring factor (#12317) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 223 | `438db55c4` | feat(providers): manual "Clear cooldown" action in the cooling panel (#12224) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 212 | `5a0a131bc` | feat(usage): devin-cli agentic quota + openrouter credits in Provider Limits (#12256) | `feat` | ✅ 已吸收：Devin Connect protobuf 日/周 Agentic quota 已接入；OpenRouter credits/free windows 已由现有 fetcher 展示 | 已迁移 |
+| 214 | `cf53b9220` | feat(combos): add universal handoff feature flag (#12167) | `feat` | ✅ 已吸收：新增 `UNIVERSAL_CONTEXT_HANDOFF_ENABLED` 运行时总开关并接入 handoff 配置解析，默认开启且可热切换 | 已迁移并通过 inference 类型检查 |
+| 222 | `a86b9019a` | feat(auto-combo): declare observed reliability as a scoring factor (#12317) | `feat` | ✅ 快照已吸收：auto-combo scorer 与 speed ranking 均含 observed reliability/失败率权重 | 保留当前更完整的分层评分实现 |
+| 223 | `438db55c4` | feat(providers): manual "Clear cooldown" action in the cooling panel (#12224) | `feat` | ✅ 当前实现更完整：Provider Health Autopilot 已提供按连接清除 cooldown 的诊断动作，模型 cooldown 面板也支持单项/全部清除 | 无需复制旧面板实现 |
 | 224 | `6dd82b77d` | fix(guardrails): pass providerId to getResolvedModelCapabilities in checkComboVision (#12112) (#12169) | `fix` | ✅ 已吸收：combo Vision Bridge 决策将 step 的显式 `providerId`/`provider` 传入能力解析，正确识别 `nvidia/nemotron-*` 等 provider 内部含命名空间的模型；Orbit combo compatibility 的 context、vision、structured/output-token 判断统一加入 provider-aware target 解析，同时区分普通完整 `provider/model` 与 provider-native namespaced ID，避免重复限定。新增 2 项定向测试通过，core/inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 226 | `5ff6513ca` | fix(combos): send null to clear an agent feature instead of omitting it (#12177) | `fix` | ✅ 已吸收：combo 编辑器对清空 system message、tool filter 和关闭 context cache protection 的操作发送显式 `null`，创建时空值仍省略；共享 ComboItem 合约与 update schema 接受 nullable，create schema继续拒绝 null，repository 既有 null-means-delete 语义完成实际持久化清除且 omitted 字段保持不变。新增 6 项定向测试通过，contracts/core/console typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 232 | `3b82d8508` | docs(auto-combo): complete the mode pack table and gate what it claims (#12316) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
@@ -257,21 +288,21 @@
 | 235 | `2f33f2c20` | feat(routing): report why the zero-cost guard excluded a candidate (#12319) | `feat` | ✅ 已吸收：strict zero-cost 判定从布尔结果扩展为 safe 或 7 类可诊断原因（not-in-catalog、regime-not-free、no-hard-stop、contradictory-noauth、exhausted、state-unknown、no-connection），明确区分新鲜 exhaustion 与缺失/过期 quota state；只读 auto candidate inspector 不再应用该过滤，而是在每个候选上返回 `freeAccessExclusion`，dispatch 路径仍按原规则 fail-closed，ToS 独立过滤不变。同步路由文档，新增 3 项定向测试通过，inference/gateway typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
 | 239 | `9d0499595` | chore(quality): baseline-headroom skips generated and vendored files in the fileSize worst-file signal (#12291) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 251 | `eeba38204` | fix(combo): bound the pre-dispatch unavailable skip so a stale label cannot dark a pool (#12168) (#12285) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 254 | `073b98462` | feat(dashboard): orchestration canvas — /dashboard/orchestration with Agents/Routing/Overview tabs (part 2/2) (#12261) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 254 | `073b98462` | feat(dashboard): orchestration canvas — /dashboard/orchestration with Agents/Routing/Overview tabs (part 2/2) (#12261) | `feat` | ✅ 已随 TASK-P2-04 吸收：统一编排画布已提供 Agents/Routing/Overview/History 视图、四源快照与状态边 | 已迁移并验证（未构建/部署） |
 | 262 | `4bcd8cee9` | fix(combo): always clear the loop-safety timer, not just on the happy path (#11804) (#12245) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 272 | `debb82bdd` | feat(usage): add Kilo Code balance and Kilo Pass quotas (#12178) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 272 | `debb82bdd` | feat(usage): add Kilo Code balance and Kilo Pass quotas (#12178) | `feat` | ✅ 已吸收：并行查询 Kilo balance 与 Kilo Pass tRPC，独立降级并归一化 USD quota | 已迁移 |
 | 278 | `a4b4bca2e` | fix(combo): stop retries when pinned Codex model is unavailable (#12240) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 280 | `ae37413af` | fix(resilience): isolate local host execution errors from provider circuit breakers (#12233) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 286 | `2bd3023e0` | fix(combos): prioritize SQLite row id over inner JSON id and notify delete errors (#12213) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 287 | `d0529c036` | fix(providers): gate the Codex auto-ping usage read on the shared quota throttle (#12209) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 299 | `18c71b91d` | feat(auto-combo): add weighted score router strategy (#12155) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 299 | `18c71b91d` | feat(auto-combo): add weighted score router strategy (#12155) | `feat` | ✅ 已吸收：注册 `score` 策略，透传自定义权重与 explorationRate | 已迁移并通过 contracts/inference 类型检查 |
 | 305 | `b7a0c5413` | chore(lint): batch 5 of #12146 — combos, endpoint, provider-stats, api-manager and costs react-hooks violations resolved (#12174) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 309 | `718accb03` | chore(quality): register search-432 cooldown test in stryker tap.testFiles (#12170) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 316 | `ececf91e9` | fix(search): treat HTTP 432 and plan limit errors as transient cooldown (#12139) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 320 | `cda832c3a` | feat(settings): raise sticky round-robin limit caps to 1000 (#12015) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 320 | `cda832c3a` | feat(settings): raise sticky round-robin limit caps to 1000 (#12015) | `feat` | ✅ 已吸收：schema 已是 1000，并修正 Provider 控制台残留的 10 上限 | 已迁移并通过 console 类型检查 |
 | 321 | `1dd046814` | fix(combo): honor an operator-set context_length at request time (#12090) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 327 | `838fc00f2` | fix(resilience): decouple rate-limit execution expiration from queue-wait budget; preserve errors in oversized call-log artifacts (#12027) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 328 | `a2c5d8a2f` | feat(quota): use official OpenCode Go usage API (#12124) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 328 | `a2c5d8a2f` | feat(quota): use official OpenCode Go usage API (#12124) | `feat` | ✅ 快照已吸收：`opencodeQuotaFetcher` 与三窗口 `usage/opencode` 已使用官方 usage API | 保留当前分包实现 |
 | 340 | `82f09f4c8` | fix(api): align combo body and legacy key access (#12070) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 342 | `6a41a7813` | fix(catalog): derive vision/modalities for built-in auto combos from effective target pool (#12046) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 349 | `1f4dc830f` | chore(quality): velocity phase — loosen every numeric baseline by 20% until v4.0, monitor headroom nightly (#12125) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
@@ -279,7 +310,7 @@
 | 358 | `9903a6d2e` | refactor(auto-combo): fix divergent scoring in combo health reporting (#11854) | `refactor` | ⚡ 未同步该重构/优化 | 建议同步优化 |
 | 389 | `2e3cd599b` | feat(routing): add LiquidAI LFM2.5-2.6B free tier via OpenRouter (#11752) | `feat` | ✅ 已同步 | 已移植特性 |
 | 395 | `55691e041` | fix(usage): allow quota refresh for FREE lease-reserved connections (#11758) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 399 | `d26fe0380` | feat(routing): add relayMode for schema-locked context handoffs (#11839) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 399 | `d26fe0380` | feat(routing): add relayMode for schema-locked context handoffs (#11839) | `feat` | ✅ 已吸收：schema、配置解析、摘要消息选择和 universal handoff 注入均支持 `schema-locked` | 已迁移并通过 inference 类型检查 |
 
 
 ### 2.4 Provider 与模型生态 (Providers & Models)（共 81 个提交）
@@ -287,18 +318,18 @@
 | 序号 | Commit Hash | 提交说明 | 提交类型 | orbiot 当前状态与代码核查 | 建议同步动作 |
 | :---: | :--- | :--- | :---: | :--- | :--- |
 | 1 | `ba597b631` | fix(db): call_logs provider stats read true on empty and legacy data (#12832) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 17 | `ebdbd2c67` | feat(models): live account catalog for Claude, Codex, Copilot, AGY (#12866) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 17 | `ebdbd2c67` | feat(models): live account catalog for Claude, Codex, Copilot, AGY (#12866) | `feat` | ✅ 已随 TASK-P1-06 吸收：Claude/Codex/Copilot/AGY 账号实时目录接入权威发现与调度目录合并 | 已迁移并验证（未构建/部署） |
 | 18 | `aa35d460d` | fix(catalog): union picker customModels into the dispatch-time live catalog (#12597) (#12934) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 20 | `f12b87c80` | fix(claude): extra-usage switch does not skip 5h preflight (#12803) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 21 | `c042a5188` | feat(grok-cli): show and redeem banked reset credits on Provider Limits (#12805) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 21 | `c042a5188` | feat(grok-cli): show and redeem banked reset credits on Provider Limits (#12805) | `feat` | ✅ 已吸收：实现 Grok gRPC-web reset inventory/redeem 编解码、用量抓取回填、Edge runtime 分派，并在配额卡显示与使用 reset credit | 已迁移 |
 | 25 | `600abe68d` | fix(dashboard): moonshot voucher/cash leftover follows bucket balance (#12733) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 27 | `25bc16d87` | fix(dashboard): batch delete no longer toasts failure after success (#12711) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 30 | `b345c7f6c` | feat(opencode): opencode v2 plugin publishing the OmniRoute catalog (#12870) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 30 | `b345c7f6c` | feat(opencode): opencode v2 plugin publishing the OmniRoute catalog (#12870) | `feat` | ✅ 已吸收：新增 `@orbit/opencode-plugin-v2`，按 Orbit 品牌/环境变量适配动态 catalog、combo、缓存和鉴权 | 218/218 测试通过，类型检查通过 |
 | 31 | `f9a1cc8a9` | fix: resolve SqliteError no such table compression_run_telemetry during cleanup (#12682) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 45 | `366099a08` | fix(i18n): quote <name> placeholder in OMNIROUTE_AUTO_SYNC_CLAUDE_PROFILES description (#12505) (#12769) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 46 | `82f78b3b3` | fix(api/pricing): surface validation error message as string, not raw object (#12494) (#12771) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 47 | `891cb26b2` | fix(db): back-fill last_ping_at + last_pinged_reset_key on provider_connections (#12470) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 50 | `488f57e9d` | feat(catalog): eligibility-gated free-tier bucket (#12669) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 50 | `488f57e9d` | feat(catalog): eligibility-gated free-tier bucket (#12669) | `feat` | ✅ 已随 `a65e90d177` workspace 重构吸收：代码迁至 `@orbit/providers`；`FREE_REGIME_TRAITS` 已包含资格门控与预算桶。不是本地独立优化，原上游 hash 因快照式迁移未保留 | 无需重复移植 |
 | 57 | `36be267a1` | fix(providers): add CLAUDE_CODE_CLIENT_VERSION and GITHUB_COPILOT_CLI_VERSION env overrides (#12632) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 66 | `8c8d23a98` | fix(api): bound hung GET /v1/models catalog rebuilds (#12628) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 67 | `b0557543b` | fix(opencode-plugin): lengthen /v1/models timeout and attach HTTP status (#12607) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
@@ -308,14 +339,14 @@
 | 93 | `239d8fc67` | fix(providers): separate MaxAI and UC credential contracts (#12431) | `fix` | ✅ 已随官方当前执行器同步 | 已移植修复 |
 | 107 | `c091534ff` | fix(providers): stop an unrelated-provider tiktoken bundling failure from crashing /api/providers (#12355) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 111 | `a47d2e521` | feat(providers): add SeekAi OpenAI-compatible New-API gateway (#12557) | `feat` | ✅ 已同步 | 已移植特性 |
-| 115 | `c2d2b0ac1` | feat(providers): surface CSV import row errors and ship a template (#12504) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 117 | `0f5fc78d8` | feat(providers): search connections by name and baseUrl (#12495) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 115 | `c2d2b0ac1` | feat(providers): surface CSV import row errors and ship a template (#12504) | `feat` | ✅ 已吸收：Provider 导入支持 JSON/CSV、CSV 模板下载，并展示最多 10 条带行号/名称/Provider 的服务端逐行错误 | 已迁移 |
+| 117 | `0f5fc78d8` | feat(providers): search connections by name and baseUrl (#12495) | `feat` | ✅ 已吸收：连接筛选保留名称/邮箱/ID/认证类型，并补充 `baseUrl` 匹配 | 已迁移 |
 | 118 | `c9fb06e26` | fix(grok-cli): treat omitted SuperGrokPro creditUsagePercent as 0% (#12312) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 119 | `9ddb8e0a9` | fix(docs): restore the Next build — REMOVED_PROVIDERS.md had no frontmatter (base-red #12581) (#12610) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 121 | `2c4ad3e55` | docs(readme): introduce OmniRouteTray — the macOS menu-bar companion (#12276) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 131 | `679578322` | feat(providers): refresh Fable, Cursor, and Devin catalogs (#12367) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 133 | `cdd07df70` | feat(providers): refresh NVIDIA hosted models (#12538) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 134 | `032adb080` | feat(providers): refresh Z.ai Web models and browser transport (#12524) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 131 | `679578322` | feat(providers): refresh Fable, Cursor, and Devin catalogs (#12367) | `feat` | ✅ 已随 `a65e90d177` workspace 重构吸收：Provider 所有权迁至 `@orbit/providers`；Devin catalog 与上游 release blob SHA-256 完全一致，Cursor/Fable 行为已迁入对应新模块 | 无需重复移植 |
+| 133 | `cdd07df70` | feat(providers): refresh NVIDIA hosted models (#12538) | `feat` | ✅ 已随 `a65e90d177` workspace 重构吸收：NVIDIA snapshot 与上游 release blob SHA-256 完全一致 | 无需重复移植 |
+| 134 | `032adb080` | feat(providers): refresh Z.ai Web models and browser transport (#12524) | `feat` | ✅ 已随 `a65e90d177` workspace 重构吸收：Z.ai Web registry blob SHA-256 与上游 release 完全一致，browser transport 位于拆包后的 inference 模块 | 无需重复移植 |
 | 136 | `fdee0ec20` | deps: bump the production group across 1 directory with 4 updates (#12399) | `ci/deps` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 152 | `bf0d902df` | docs(providers): register providers removed at their operator's request and guard against reintroduction (#12478) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 159 | `53b037051` | test(grok): format web executor suite (#12412) | `test` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
@@ -332,19 +363,19 @@
 | 195 | `090ae83e1` | fix(docker): find the Chrome binary in chrome-linux64 for the codex browser image (#12376) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 196 | `6a91002b3` | fix(release): drain the 2026-09-02 base-red — rerank-providers import + api-typecheck baseline ratchet (#12414) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 197 | `530096a3b` | feat(providers): add UC (uncensored.com) — persona (un-metered) + direct (metered) (#11513) | `feat` | ✅ 已同步核心 Provider 与聊天执行链 | 已移植适用特性 |
-| 205 | `a298dc6b7` | feat(check): make serviceKinds required and add the reverse-walk provider consistency gate (#11392) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 205 | `a298dc6b7` | feat(check): make serviceKinds required and add the reverse-walk provider consistency gate (#11392) | `feat` | ✅ 已吸收：339 个 Provider 条目全部显式声明 `serviceKinds`，schema 改为必填；新增 registry→catalog 与 catalog LLM→registry 双向一致性门禁，当前检查通过（registry 273 / catalog 352） | 已迁移 |
 | 206 | `451dd7387` | fix(memory): list and serve embedding/rerank models from every configured provider (#11390) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 219 | `c9f9b6274` | feat(providers): expose usage-supported in provider plugin manifest (#12214) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 229 | `5253b93b8` | feat(rankings): order free providers by measured reliability (#12218) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 219 | `c9f9b6274` | feat(providers): expose usage-supported in provider plugin manifest (#12214) | `feat` | ✅ 已吸收：Provider 插件清单按当前 `USAGE_SUPPORTED_PROVIDERS` 注册表输出 `usage-supported` | 已迁移 |
+| 229 | `5253b93b8` | feat(rankings): order free providers by measured reliability (#12218) | `feat` | ✅ 已吸收：API 支持 `sortBy=reliability`，按真实调用成功率排序；管理台增加模型能力/实测可靠度切换 | 已迁移 |
 | 230 | `51587084c` | fix(docs): the free-tier catalog ships no per-row confidence tag (#12318) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 231 | `bdf218387` | fix(resilience): per-model 402 on a passthrough gateway no longer terminalizes the whole connection (#12266) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 236 | `33bdc386b` | fix(free-tier): never serve a Radar overlay older than the shipped catalog (#12215) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 255 | `30a26d9dc` | docs(agents): protected-surface merge rule — operator approval for agent-instruction files (#12253) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 257 | `3c8b55381` | chore(quality): register native-codex turn-pin tests in stryker tap.testFiles (#12263) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 273 | `c49ee53bc` | feat(providers): add RPD to rate limit overrides (#12147) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 273 | `c49ee53bc` | feat(providers): add RPD to rate limit overrides (#12147) | `feat` | ✅ 已吸收：连接更新校验、数据库写入清洗与领域类型均接受 `rateLimitOverrides.rpd` | 已迁移 |
 | 282 | `1b6437231` | test(free-tier): counting vs deciding regimes (#12226) | `test` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 290 | `ede327a61` | docs(dashboard): redraw onboarding tier-flow SVGs for the real 4-tier model (#12211) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 292 | `63e4afa32` | feat(dashboard): orchestration canvas — unified model + snapshot hook (part 1/2) (#12156) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 292 | `63e4afa32` | feat(dashboard): orchestration canvas — unified model + snapshot hook (part 1/2) (#12156) | `feat` | ✅ 已随 TASK-P2-04 吸收：统一模型及多源容错快照已接入 Orbit 拆分架构 | 已迁移并验证（未构建/部署） |
 | 294 | `73db936f9` | fix(api): keep registry width and type on embedding models (#11761) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 297 | `e12fb110f` | [URGENT] fix(dev): reduce instrumentation executor fan-out (phase 3) (#12078) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 300 | `9392bd55c` | fix(translator): preserve falsy primitive values in Gemini and Antigravity function response results (#12191) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
@@ -360,11 +391,11 @@
 | 344 | `51e4930d0` | fix(build): prune non-production trees in NFT trace excludes and tsconfig (#12028) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 345 | `476b20bd6` | fix(providers): cloudflare-ai flattens message content unconditionally, but the #2539 constraint is model-scoped — this blocks image input to Cloudflare vision models (#12002) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 346 | `fe8ef4fa9` | fix(providers): use v1beta1 Model Garden publisher list for Vertex Anthropic discovery (#11998) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 347 | `5d07bf32f` | feat(catalog): add feature flag to disable thinking level variants in catalog (#11971) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 347 | `5d07bf32f` | feat(catalog): add feature flag to disable thinking level variants in catalog (#11971) | `feat` | ✅ 已吸收并保留现有增强：新增 `ORBIT_DISABLE_THINKING_LEVEL_VARIANTS` 在生成阶段禁止 synced thinking variants；`HIDE_EFFORT_VARIANTS` 继续独立负责公共响应聚合 | 已迁移 |
 | 351 | `32702d313` | test(providers): regenerate the translate-path golden for OrcaRouter (#11923) (#12118) | `test` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 363 | `e0029eb5a` | feat(pricing): add GLM-5.3-Flash pricing, model specs, and catalog registration (#11830) | `feat` | ✅ 已同步 | 已移植特性 |
 | 366 | `131e413cb` | fix: mark Vercel AI Gateway as passthroughModels (#11771) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 374 | `15b164866` | feat(providers): expose a usage-fetch capability in the provider plugin manifest (#11903) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 374 | `15b164866` | feat(providers): expose a usage-fetch capability in the provider plugin manifest (#11903) | `feat` | ✅ 已吸收：Provider 插件清单依据当前 usage dispatcher 注册表输出 `usage-fetch`，同时处理 canonical id 与 alias | 已迁移 |
 | 382 | `79b2e92c4` | fix(codex): fail over image generation for imported free plans (#11948) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 386 | `8180b3213` | fix(codex): restore imported account state (#11954) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 
@@ -389,7 +420,7 @@
 | 293 | `7ca5e1c67` | chore(lint): batch 6 of #12146 — memory, radar, audit, analytics, cache, usage, activity, home and RequestLoggerV2 react-hooks violations resolved (#12208) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 311 | `7f49b342b` | chore(lint): batch 0 of #12146 — type the call-log-cap sqlite rows instead of 45 as-any casts (#12157) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 326 | `9b9ea88d4` | fix(migrations): add renamed migration compatibility for 056/073/077/101 (#12036) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 356 | `d213ef030` | feat(dashboard): show cache percentage in request logs (#11970) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 356 | `d213ef030` | feat(dashboard): show cache percentage in request logs (#11970) | `feat` | ✅ 已吸收：请求日志 CR 指标显示相对输入 token 的缓存百分比并限制在 0–100% | 已迁移并通过 console 类型检查 |
 | 385 | `70af41b9f` | fix(db): invalidate connection cache after upsert (#11953) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 391 | `ccee48d34` | fix(db): drop three consumer-less 1proxy exports — dead-code base-red on release/v3.8.51 after the barrel deletion (#12055) (#12087) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 402 | `2ec24e7c0` | fix(core): resolve DB init race condition and reasoning translation (#12003) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
@@ -402,26 +433,26 @@
 
 | 序号 | Commit Hash | 提交说明 | 提交类型 | orbiot 当前状态与代码核查 | 建议同步动作 |
 | :---: | :--- | :--- | :---: | :--- | :--- |
-| 49 | `008da6d19` | feat(dashboard): link a log entry's Conversation Context to its owning conversation (#12646) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 49 | `008da6d19` | feat(dashboard): link a log entry's Conversation Context to its owning conversation (#12646) | `feat` | ✅ 已吸收：日志会话标签链接到所属会话并通过 query 参数自动选中 | 已迁移到当前 React Router 控制台 |
 | 70 | `57d9357d8` | fix(i18n): wrap ccOnboardingKeyPlaceholder in ICU single quotes across all 43 locales (#12369) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 100 | `ffdc73606` | feat(dashboard): parent-link, genuine-continuation badge, and modal perf fixes (#12448) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 113 | `f81ce2a23` | feat(dashboard): adaptive context-budget dial on compression panel (#12488) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 144 | `a628d2889` | feat(dashboard): orchestration canvas fase 2 — repeat action + A2A memory hits (2.6/2.7) (#12508) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 100 | `ffdc73606` | feat(dashboard): parent-link, genuine-continuation badge, and modal perf fixes (#12448) | `feat` | ✅ 快照已吸收：conversation turn graph 持久化 parentId，tree API 与会话详情基于真实父子链路渲染 | 保留当前独立 conversations 模块实现 |
+| 113 | `f81ce2a23` | feat(dashboard): adaptive context-budget dial on compression panel (#12488) | `feat` | ✅ 已吸收：补充 contextBudget 模式与预留输出 Token 调节，沿用现有热重载保存 API | 已迁移到独立压缩设置页 |
+| 144 | `a628d2889` | feat(dashboard): orchestration canvas fase 2 — repeat action + A2A memory hits (2.6/2.7) (#12508) | `feat` | ✅ 已随 TASK-P2-04 吸收：已支持 Conductor/A2A Repeat 与可关闭、限长的 memory hits 观测元数据 | 已迁移并验证（未构建/部署） |
 | 147 | `51cd154da` | build(deps): bump github/codeql-action from 4.37.8 to 4.37.9 (#12349) | `ci/deps` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 148 | `b1fd07df2` | build(deps): bump github/codeql-action/analyze from 4.37.8 to 4.37.9 (#12346) | `ci/deps` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 149 | `a334c9b0c` | build(deps): bump github/codeql-action/init from 4.37.8 to 4.37.9 (#12345) | `ci/deps` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 150 | `143c087d4` | feat(i18n): locale-expansion tooling — add-locale orchestrator, aliases, translation-ratio gate; retire duplicate 'in' locale (#12496) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 153 | `84b345d9c` | feat(dashboard): orchestration canvas fase 2 — History tab over persisted A2A runs (2.2) (#12479) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 150 | `143c087d4` | feat(i18n): locale-expansion tooling — add-locale orchestrator, aliases, translation-ratio gate; retire duplicate 'in' locale (#12496) | `feat` | ✅ 不适用且当前约束更严格：orbiot 明确只维护 en/zh-CN 双语，所有 UI 文案走 `useI18n()/tt()`，不存在重复 `in` locale 或低翻译率 locale | 不引入上游 40+ locale 生成链 |
+| 153 | `84b345d9c` | feat(dashboard): orchestration canvas fase 2 — History tab over persisted A2A runs (2.2) (#12479) | `feat` | ✅ 已随 TASK-P2-04 吸收：History 视图读取持久化 A2A 生命周期并应用 30 天保留策略 | 已迁移并验证（未构建/部署） |
 | 157 | `451d4cd93` | test(build): guard the artifact path policy arrays against duplicates (#12422) | `test` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 172 | `f41a9bd83` | feat(admin): localize the anomalies page and add it to the sidebar (#12401) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 178 | `5a490b19e` | feat(gamification): show API key names on the leaderboard (#12385) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 179 | `4f4aa7419` | feat(gamification): show the real daily streak on the profile page (#12377) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 185 | `bb5c6d148` | feat(gamification): enforce the per-key XP rate limit on the award path (#12390) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 200 | `6b4519c31` | feat(dashboard): orchestration canvas fase 2 — agents WS channel (2.1) (#12409) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 172 | `f41a9bd83` | feat(admin): localize the anomalies page and add it to the sidebar (#12401) | `feat` | ✅ 快照已吸收：异常页使用 `tt()` 双语文案，路由与管理侧边栏已注册 | 保留当前 Ant Design 页面实现 |
+| 178 | `5a490b19e` | feat(gamification): show API key names on the leaderboard (#12385) | `feat` | ✅ 已吸收：管理端仅查询 id/name 并为榜单附加显示名，控制台保留 ID 作为辅助标识 | 已迁移并避免暴露密钥材料 |
+| 179 | `4f4aa7419` | feat(gamification): show the real daily streak on the profile page (#12377) | `feat` | ✅ 已吸收：level API 返回真实单 key/聚合 streak，Profile 移除硬编码 7 天 | 已迁移 |
+| 185 | `bb5c6d148` | feat(gamification): enforce the per-key XP rate limit on the award path (#12390) | `feat` | ✅ 已吸收：XP 写入前执行 anti-cheat gate，并修正 SQLite 时间格式导致窗口恒空的问题 | 已迁移 |
+| 200 | `6b4519c31` | feat(dashboard): orchestration canvas fase 2 — agents WS channel (2.1) (#12409) | `feat` | ✅ 已随 TASK-P2-04 吸收：已增加 agents WebSocket 通道并保留断线轮询降级 | 已迁移并验证（未构建/部署） |
 | 201 | `afb91a83b` | fix(analytics): expose flat-rate estimates on cost dashboards (#11460) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 204 | `713440be0` | revert(ui): point CTAs back at their real destinations (#12410) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 215 | `d2a027a15` | feat(dashboard): orchestration canvas fase 2 — quick wins + hardening (2.3/2.4/2.8/2.11/2.12, #12270, #12271) (#12393) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 216 | `17a53d2eb` | feat(quality): complete test:scoped — --full map rebuild, stdin selection, CI loader parity (#8084 D1) (#12353) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 215 | `d2a027a15` | feat(dashboard): orchestration canvas fase 2 — quick wins + hardening (2.3/2.4/2.8/2.11/2.12, #12270, #12271) (#12393) | `feat` | ✅ 已随 TASK-P2-04 吸收：已完成来源筛选、镜像去重、终态过滤、节点上限与详情交互加固 | 已迁移并验证（未构建/部署） |
+| 216 | `17a53d2eb` | feat(quality): complete test:scoped — --full map rebuild, stdin selection, CI loader parity (#8084 D1) (#12353) | `feat` | ✅ 已吸收并适配 monorepo：impacted-test selector 使用 `apps/packages` 源码与测试路径；`test:scoped` 直接发现受影响 workspace package，支持 staged/full 别名及根配置变更时全包回退 | shell 语法、帮助入口与 selector 4 项断言通过 |
 | 218 | `158647618` | fix(release): drain the 2026-09-01 base-red window — passthrough usage regression + radarPage i18n keys (#12327) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 238 | `accdfa9f3` | fix(usage): console-aware Token Plan guidance + subscription hint on bailian 401 (#12288) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 246 | `d920e6495` | build: omit the standalone output target for contributor builds (#12204) | `ci/deps` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
@@ -435,10 +466,10 @@
 | 308 | `ef2a89bd6` | chore(lint): batch 1 of #12146 — dashboard/cli-code react-hooks violations resolved (#12160) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 338 | `6096ea51f` | test(ui): correct inactive auto-fetch expectation (#12098) | `test` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 352 | `485c2dcdb` | fix(dashboard): make RequestLoggerDetail loadable outside Next — CSS via globals.css + CJS/ESM interop (#11703 base-reds) (#12114) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 355 | `385e90f44` | feat(dashboard): continuous call-log export to pluggable destinations (BigQuery first) (#11945) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 355 | `385e90f44` | feat(dashboard): continuous call-log export to pluggable destinations (BigQuery first) (#11945) | `feat` | ✅ 已随 TASK-P2-03 吸收：已实现可插拔持续日志导出、BigQuery 目的地、增量游标、调度与管理台 | 已迁移并验证（未构建/部署） |
 | 361 | `8f38dcd32` | fix(dashboard): use opaque background and readable text color on cost chart tooltips (#11960) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 373 | `3852e0534` | fix(build): fail fast when an externalised optional native dep was silently dropped (#11863) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 390 | `5684589ce` | feat(dashboard): collapsible JSON tree viewer for request/response payloads (#11703) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 390 | `5684589ce` | feat(dashboard): collapsible JSON tree viewer for request/response payloads (#11703) | `feat` | ✅ 已随 TASK-P2-01 吸收：请求、响应及调用详情已使用可折叠 JSON 树并支持深度控制与复制 | 已迁移并验证（未构建/部署） |
 
 
 ### 2.7 插件/Agent/多模态桥接 (Plugins & Agents)（共 18 个提交）
@@ -446,9 +477,9 @@
 | 序号 | Commit Hash | 提交说明 | 提交类型 | orbiot 当前状态与代码核查 | 建议同步动作 |
 | :---: | :--- | :--- | :---: | :--- | :--- |
 | 40 | `8c4fb8faf` | chore(deps): pin browserslist override to ^4.28.8 (#12592) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 59 | `3b7c541f7` | feat(opencode-plugin): map gateway cost/usage/tok/s onto OpenCode payloads (#12636) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 59 | `3b7c541f7` | feat(opencode-plugin): map gateway cost/usage/tok/s onto OpenCode payloads (#12636) | `feat` | ✅ 当前实现更直接：v2 Promise 插件 API 无响应拦截钩子；网关现直接在标准 usage payload 输出 cost/token usage 与排除 TTFT 的 `tokens_per_second`，OpenCode 原生消费，无需 v1 响应重写 | 已以网关侧等效方案吸收 |
 | 125 | `c41d8755d` | fix(ci): document eloqnt MIT exceptions and isolate A2A vitest (#12595) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 128 | `8df944cd4` | feat(browser): adopt Obscura as primary headless browser engine with Chromium fallback (#12286) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 128 | `8df944cd4` | feat(browser): adopt Obscura as primary headless browser engine with Chromium fallback (#12286) | `feat` | ✅ 已吸收：浏览器池按 Obscura → cloakbrowser → Chromium 顺序降级，支持外部 CDP/自定义 binary/port | 已迁移并品牌适配 |
 | 140 | `a986ef2e2` | deps: bump browserslist from 4.28.2 to 4.28.8 (#12396) | `ci/deps` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 166 | `93fdc16e7` | chore(lint): adopt eslint-plugin-react-hooks 7.1.1 (#12428) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 181 | `70f33e323` | fix(executors): let the ambient proxy stand when an OpenCode account has none (#12380) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
@@ -461,7 +492,7 @@
 | 332 | `00bc397cd` | fix(plugins): do not kill the plugin process when a fire-and-forget hook times out (#12116) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 360 | `56dddfce3` | fix(antigravity): send complete loadCodeAssist metadata (ideType/platform/pluginType as numeric enums) (#11969) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 364 | `dfc84ba03` | fix: regenerate package-lock.json for packages/browser-pool workspace (#11784) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 375 | `2471a0d95` | feat(plugins): add OMNIROUTE_PLUGINS_DIR to override the plugin scan directory (#11827) (#11906) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 375 | `2471a0d95` | feat(plugins): add OMNIROUTE_PLUGINS_DIR to override the plugin scan directory (#11827) (#11906) | `feat` | ✅ 已吸收并品牌适配：支持 `ORBIT_PLUGINS_DIR` 覆盖插件扫描目录 | 已迁移并补充 `.env.example` |
 | 392 | `1c37fff05` | fix(memory): honor category filter in GET /api/memory (#11699) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 
 
@@ -469,13 +500,13 @@
 
 | 序号 | Commit Hash | 提交说明 | 提交类型 | orbiot 当前状态与代码核查 | 建议同步动作 |
 | :---: | :--- | :--- | :---: | :--- | :--- |
-| 7 | `86b1cb84f` | feat(release): reconcile-changelog tool + version-anchored fragment aggregation (#12987) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 7 | `86b1cb84f` | feat(release): reconcile-changelog tool + version-anchored fragment aggregation (#12987) | `feat` | ✅ 已吸收：迁入版本锚定 changelog 聚合、未覆盖提交解析与 reconcile 工具；适配无根版本号的 monorepo，支持 `--help` 并在未传版本时明确失败 | 已注册 `release:reconcile`；语法与帮助入口通过，真实 PR 对账需 gh 登录 |
 | 12 | `fcc2dcd1a` | docs(changelog): reconcile the v3.8.51 living section — fold 366 fragments, cover every cycle commit, credit every contributor (#12971) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 24 | `6d6b6027c` | fix(pwa): do not intercept navigations so Chrome can retry HTTP/2 (#12767) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 32 | `2b2d34eb5` | fix(cursor): guard non-array tool_calls in request translator (#12691) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 39 | `3858923f6` | fix(ci): ship .npmrc in published package so legacy-peer-deps applies to consumers (#11544) (#12699) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 41 | `7da6e10c4` | fix(docker): pin 4 CLI tools to exact versions (#12576) (#12703) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 65 | `3d2bcc9f1` | feat(api): emit gateway-measured tokens-per-second excluding TTFT (#12631) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 65 | `3d2bcc9f1` | feat(api): emit gateway-measured tokens-per-second excluding TTFT (#12631) | `feat` | ✅ 已吸收：stream timing 以总耗时减 TTFT 计算 generation duration，并在真实/估算 usage 上附加 `tokens_per_second` | 已迁移 |
 | 69 | `04ba19fa6` | chore(quality): rebaseline apiKeys.ts for #12352's preserved ACL (#12673) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 71 | `6e35ad01c` | fix(cli): remove duplicate positional argument in tunnel create command (#12368) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 73 | `9271a34ec` | fix(api): preserve API key ACL on creation (#12352) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
@@ -504,12 +535,12 @@
 | 191 | `d337c5d30` | test(executors): restore the #10986 reasoning-only fallback guards (#12364) | `test` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 199 | `382e2e85d` | chore(quality): re-tighten the file-size ratchet to the real LOC (plan 3.8.52 task 0) (#12411) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 209 | `24b784e9b` | [Performance] Enable React Compiler for automatic memoization (#11783) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 210 | `96824288f` | feat(compression): make proactive context-compression threshold a live setting (#11564) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 210 | `96824288f` | feat(compression): make proactive context-compression threshold a live setting (#11564) | `feat` | ✅ 已随 TASK-P2-02 吸收：压缩阈值已改为持久化实时设置并提供 10%–99% 管理台滑块 | 已迁移并验证（未构建/部署） |
 | 213 | `c702a27ed` | perf(compression): OOM mitigations for large payload hashing, memoization, and token estimation (#7847) (#11844) | `perf` | ⚡ 未同步该重构/优化 | 建议同步优化 |
-| 217 | `7f25d67d0` | feat(radar): explain access rules before opt-in (#12342) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 217 | `7f25d67d0` | feat(radar): explain access rules before opt-in (#12342) | `feat` | ✅ 已吸收：订阅前明确签名目录下载、本地覆盖优先、零请求/提示词/密钥上传和可随时退出 | 已迁移到当前 Radar 页面 |
 | 221 | `a784b4206` | fix: resolve compression worker file using runtime anchors instead of… (#12183) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 225 | `17792ce0a` | Update README.md (#12194) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
-| 228 | `ad4b67d63` | feat(radar): show the rate limits and training disclosure the feed already sends (#12320) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 228 | `ad4b67d63` | feat(radar): show the rate limits and training disclosure the feed already sends (#12320) | `feat` | ✅ 已吸收：目录表显示 RPM/RPD/TPM/TPD 与训练披露 | 已迁移 |
 | 237 | `78a0e4b10` | fix(usage): declare the Adobe Firefly usage fetcher the dispatcher already calls (#12321) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 241 | `fe5f4b0ef` | chore(quality): remove unreachable code and restore test discovery (#11950) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 242 | `c818655b5` | chore(deps): refresh runtimes and adopt ESLint 10 (#11259) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
@@ -532,13 +563,13 @@
 | 304 | `6706c382d` | docs(audit): align every published number with the code and harden check:docs-counts (#12200) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 310 | `bbbcc7938` | chore(lint): batch 4 of #12146 — shared/components react-hooks violations resolved (#12159) | `chore` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
 | 312 | `897c3f8c9` | fix(cli): register alias resolver hooks in-thread on modern runtimes (#12073) (#12083) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 315 | `8a1d9bf91` | feat(resilience): default the credential health check sweep to 60 minutes (#12138) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 318 | `8b7afc0eb` | feat(quality): new-code mode for the complexity and dead-code ratchets (Clean as You Code) (#12142) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
-| 322 | `26bfda3cb` | feat(resilience): operator-configurable global credential health check interval (#12043) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 315 | `8a1d9bf91` | feat(resilience): default the credential health check sweep to 60 minutes (#12138) | `feat` | ✅ 快照已吸收：`DEFAULT_HEALTH_CHECK_INTERVAL_MIN = 60`，每连接可覆盖/禁用 | 无需重复迁移 |
+| 318 | `8b7afc0eb` | feat(quality): new-code mode for the complexity and dead-code ratchets (Clean as You Code) (#12142) | `feat` | ✅ 已吸收并适配：迁入 new-code diff/worktree 核心及 complexity/dead-code ratchets，扫描范围由上游单体目录改为 Orbit 的 `apps/packages/scripts` | 已注册质量命令并通过脚本语法检查 |
+| 322 | `26bfda3cb` | feat(resilience): operator-configurable global credential health check interval (#12043) | `feat` | ✅ 当前已等效：支持 `CREDENTIAL_HEALTH_CHECK_INTERVAL` 全局覆盖，并保留每连接分钟级覆盖与 `<=0` 禁用 | 无需再增加重复设置源 |
 | 324 | `e93c5e765` | fix(diagnostics): keep the call-log error when the size limit strips the bodies (#12026) (#12095) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 333 | `3d1529496` | fix(leases): project status lease row to lease columns so joined connection PII never escapes (#12115) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 350 | `77f6f7370` | fix(ci): clear the two base-reds the 2026-08-30 merge batch left on release/v3.8.51 (round 3) (#12123) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 357 | `0b19c5a09` | feat(nodejs): add 5dive as a configure target (#11852) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 357 | `0b19c5a09` | feat(nodejs): add 5dive as a configure target (#11852) | `feat` | ✅ 已吸收：CLI manifest/configure/独立 setup-5dive 均已注册，密钥通过 stdin，支持 sudo、profile、seat pin 与 dry-run | 已迁移并品牌/端口适配；6 项 helper 断言与 CLI typecheck 通过 |
 | 362 | `4c187de99` | fix(docs): resolve relative markdown and wiki links across Fumadocs and GitHub wiki (#11834) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 365 | `b07eaafcc` | fix(cli): probe both IPv4 and IPv6 loopback for server readiness (#11766) (#11794) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 367 | `212fba734` | docs: document native dependency check escape hatch (#12101) | `docs` | ℹ️ CI/构建/基线规范 (按需吸收) | 参考吸收 |
@@ -553,7 +584,7 @@
 | 394 | `faebf6de5` | fix(shared): block cloud-metadata hosts under default remote-image guard (#11755) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 397 | `49827c1db` | fix(dev): bound webpack and Tailwind scans (#12075) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 398 | `47ea113b9` | fix(ci): reconcile release test contract drift (#12082) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 401 | `da678bd3f` | feat(config): add support for runtime system prompt configuration and hot-reloading (#11841) | `feat` | ❌ 尚未具备 (orbiot 尚未实现该特性) | 按需移植特性 |
+| 401 | `da678bd3f` | feat(config): add support for runtime system prompt configuration and hot-reloading (#11841) | `feat` | ✅ 当前实现更完整：globalThis 共享 prefix/suffix prompt 配置，设置保存后运行时刷新且覆盖 OpenAI/Claude 消息形态 | 无需复制旧单 prompt 实现 |
 
 
 ---
@@ -575,19 +606,19 @@
 ### 2. 新增功能类：当前 orbiot 是否具备这些功能？
 
 - ✅ **配额加权路由（Quota-Weighted Routing）**（`c1b34db50`）：**已同步**。支持排除耗尽账户、1% 软阈值兜底池、按剩余额度与在途负载加权抽取，并保留会话/缓存亲和后的占位转移与释放。
-- ❌ **账号实时模型目录（Live Account Catalog）**（`ebdbd2c67`）：**无**。当前依赖静态 KV，缺乏针对 Claude/Codex/AGY 的动态实时目录发现。
-- ❌ **Orchestration 可视化编排画布（阶段 2）**（`2e0821b06` 等）：**无**。当前仅有 Conductor/ACP 页面，缺少统一的可视化拓扑画布。
-- ❌ **JSON 树状折叠查看器**（`5684589ce`）：**无**。当前日志详情页仅使用 `<pre>` 纯文本渲染。
-- ❌ **动态上下文压缩阈值调节**（`d4e5f72da`）：**无**。
-- ❌ **连续日志导出（BigQuery）**（`385e90f44`）：**无**。
+- ✅ **账号实时模型目录（Live Account Catalog）**（`ebdbd2c67`）：**已同步**。Claude/Codex/Copilot/AGY 使用账号实时发现结果并与调度目录合并。
+- ✅ **Orchestration 可视化编排画布（阶段 2）**（`63e4afa321`、`073b98462d`、`d2a027a156`、`6b4519c317`、`84b345d9c0`、`a628d28898`）：**已同步**。已提供统一四源快照、Agents/Routing/Overview/History 视图及实时刷新。
+- ✅ **JSON 树状折叠查看器**（`5684589ce`）：**已同步**。请求、响应和调用详情均已使用交互式 JSON 树。
+- ✅ **动态上下文压缩阈值调节**（`96824288f5`）：**已同步**。阈值支持持久化、热读与管理台实时调节。
+- ✅ **连续日志导出（BigQuery）**（`385e90f44`）：**已同步**。已提供可插拔目的地、增量游标、调度、管理 API 与控制台。
 
 ### 3. Provider 更新类：当前 orbiot 支持情况
 
-- ❌ **新增 Provider（5 个）**：`MaxAI`、`UC (uncensored.com)`、`Perplexity Agent`、`SeekAi`、`LiquidAI` 尚未在 `packages/providers` 中注册。
+- ✅ **新增 Provider（5 个）**：`MaxAI`、`UC (uncensored.com)`、`Perplexity Agent`、`SeekAi`、`LiquidAI` 已注册并接入对应执行能力。
 - ✅ **火山引擎 (Volcengine)**：已同步多连接套餐安全绑定、规范化配额窗口与控制台凭据响应脱敏（`0f81e7557`）。
 - ✅ **智谱 GLM / Z.ai**：已同步 **GLM-5.3-Flash Coding Plan** 目录、1M 上下文/128K 输出规格、视觉能力、推理档位、请求默认参数与价格。
 - ✅ **Gemini / Vertex AI**：已同步布尔 `required`、嵌套裸 Map schema 修复（`57d7c8bc88`）及 v1beta1 Model Garden Anthropic 发现（`fe8ef4fa9`）。
-- ⚠️ **ChatGPT Web Connector**：需升级至 v4.0.7 clean-room browser 传输。
+- ✅ **ChatGPT Web Connector**：已升级至 v4.0.7 clean-room browser 传输，42 项定向测试与 inference typecheck 通过。
 
 ---
 
@@ -647,21 +678,21 @@
 
 ### 4.3 阶段三：管理台体验与长尾能力 (P2 - 持续迭代)
 
-1. **升级控制台日志查看器**（`5684589ce`）
+1. **升级控制台日志查看器**（`5684589ce`，已完成）
 
    - 目标文件：`apps/console/src/features/logs/request-logs.tsx`
 
-   - 动作：将当前 `<pre>` 替换为可折叠、高亮的交互式 JSON 树组件。
-2. **动态上下文压缩阈值**（`d4e5f72da`）
+   - 结果：已将原 `<pre>` 视图替换为可折叠、高亮的交互式 JSON 树组件。
+2. **动态上下文压缩阈值**（`96824288f5`，已完成）
 
    - 目标文件：`apps/control/src/compression/` 与 `apps/console/src/features/compression/`
 
-   - 动作：提供实时阈值调节滑块与热更新接口。
-3. **评估引入 Orchestration 画布**（`2e0821b06` 等）
+   - 结果：已提供实时阈值调节滑块、持久化设置与热读接口。
+3. **引入 Orchestration 画布**（`63e4afa321` 等六个真实提交，已完成）
 
    - 目标文件：`apps/console/src/features/orchestration/`
 
-   - 动作：视业务编排需求决定是否接入统一画布。
+   - 结果：已接入统一画布、四源快照、历史视图、Repeat 操作与 agents 实时通道。
 
 ### 4.4 同步质量门禁与验证命令
 

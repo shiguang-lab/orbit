@@ -44,6 +44,12 @@ export async function emitGamificationEvent(params: {
     // 1. Award XP
     const xpAmount = getXpForAction(action);
     if (xpAmount > 0) {
+      const { validateScoreChange } = await import("./antiCheat");
+      const verdict = await validateScoreChange(apiKeyId, action, xpAmount);
+      if (!verdict.allowed) {
+        log.warn("events.award_rejected", { apiKeyId, action, xpAmount, reason: verdict.reason });
+        return;
+      }
       const { addXp } = await import("../db/gamification");
       addXp(apiKeyId, action, xpAmount, metadata ? JSON.stringify(metadata) : undefined);
 

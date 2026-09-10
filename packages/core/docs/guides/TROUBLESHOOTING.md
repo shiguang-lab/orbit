@@ -204,7 +204,7 @@ until it lands, new releases can repeat this.
 3. Reinstall Orbit: `npm install -g orbit`
 4. Restart: `orbit`
 
-> **Supported secure versions:** `>=22.22.2 <23` or `>=24.0.0 <27`. Node.js 24.x LTS (Krypton) and Node.js 26 are fully supported.
+> **Supported secure version:** `>=24.20.0 <25`. Node.js 24.x LTS (Krypton) is the production baseline.
 
 ### npm v11+: `better-sqlite3` not installed (Cannot find module)
 
@@ -249,7 +249,7 @@ and requires native compilation (`node-gyp rebuild`), npm silently skips it.
 - Full example:
 
 ```
-dlopen(/Users/<user>/.nvm/versions/node/v24.14.1/lib/node_modules/orbit/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
+dlopen(/Users/<user>/.nvm/versions/node/v24.20.0/lib/node_modules/orbit/app/node_modules/better-sqlite3/build/Release/better_sqlite3.node, 0x0001): tried: '...' (slice is not valid mach-o file)
 ```
 
 **Fix — rebuild for your local environment (no Node.js downgrade required):**
@@ -260,7 +260,7 @@ npm rebuild better-sqlite3
 orbit
 ```
 
-> **Note:** This recompiles the native binding against your local Node.js version and CPU architecture, resolving the binary mismatch. The officially supported runtime range is **`>=22.22.2 <23` or `>=24.0.0 <27`** (`SUPPORTED_NODE_RANGE` in `apps/cli/src/nodeRuntimeSupport.mjs`, aligned with the `package.json` `engines` field). Node.js 24.x LTS (Krypton) and Node.js 26 are fully supported with `better-sqlite3` v12.x.
+> **Note:** This recompiles the native binding against your local Node.js version and CPU architecture, resolving the binary mismatch. The officially supported runtime range is **`>=24.20.0 <25`** (`SUPPORTED_NODE_RANGE` in `apps/cli/src/nodeRuntimeSupport.mjs`, aligned with the root `package.json` `engines` field).
 
 ---
 

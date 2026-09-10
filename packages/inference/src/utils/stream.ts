@@ -1035,11 +1035,11 @@ export function createSSEStream(options: StreamOptions = {}) {
       totalContentLength > 0
     ) {
       const estimated = estimateUsage(body, totalContentLength, sourceFormat);
-      itemSanitized.usage = filterUsageForFormat(estimated, sourceFormat);
+      itemSanitized.usage = timing.withTps(filterUsageForFormat(estimated, sourceFormat));
       state.usage = estimated;
     } else if (state?.finishReason && isFinishChunk && state.usage) {
       const buffered = addBufferToUsage(state.usage);
-      itemSanitized.usage = filterUsageForFormat(buffered, sourceFormat);
+      itemSanitized.usage = timing.withTps(filterUsageForFormat(buffered, sourceFormat));
     }
 
     if (
@@ -2000,10 +2000,10 @@ export function createSSEStream(options: StreamOptions = {}) {
                       sourceFormat || FORMATS.OPENAI
                     );
                     if (hasValidUsage(estimated)) {
-                      parsed.usage = filterUsageForFormat(
+                      parsed.usage = timing.withTps(filterUsageForFormat(
                         estimated,
                         sourceFormat || FORMATS.OPENAI
-                      );
+                      ));
                       output = `data: ${JSON.stringify(parsed)}\n\n`;
                       usage = estimated;
                       passthroughForwardedUsage = true;
@@ -2015,10 +2015,10 @@ export function createSSEStream(options: StreamOptions = {}) {
                     !passthroughForwardedUsage
                   ) {
                     const buffered = addBufferToUsage(usage);
-                    parsed.usage = filterUsageForFormat(
+                    parsed.usage = timing.withTps(filterUsageForFormat(
                       buffered,
                       sourceFormat || FORMATS.OPENAI
-                    );
+                    ));
                     output = `data: ${JSON.stringify(parsed)}\n\n`;
                     passthroughForwardedUsage = true;
                     injectedUsage = true;

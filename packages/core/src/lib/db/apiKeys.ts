@@ -1631,3 +1631,17 @@ export function resetApiKeyState() {
 }
 
 registerDbStateResetter(resetApiKeyState);
+
+export function getApiKeyDisplayNames(ids: readonly string[]): Map<string, string> {
+  const names = new Map<string, string>();
+  const unique = [...new Set(ids.map((id) => id.trim()).filter(Boolean))];
+  for (let start = 0; start < unique.length; start += 200) {
+    const chunk = unique.slice(start, start + 200);
+    const placeholders = chunk.map(() => "?").join(", ");
+    const rows = getDbInstance()
+      .prepare(`SELECT id, name FROM api_keys WHERE id IN (${placeholders})`)
+      .all(...chunk) as Array<{ id: string; name: string | null }>;
+    for (const row of rows) if (row.name?.trim()) names.set(row.id, row.name);
+  }
+  return names;
+}
