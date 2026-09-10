@@ -4,11 +4,28 @@
 > **目标系统**：重构独立部署版 **智枢 Orbit (`orbiot`)**（包含 `apps/*` 与 `packages/*`）
 > **最后更新**：2026-09-11
 
+## 上游增量同步游标
+
+> **最后已处理的上游 Commit ID（不是 Orbit 本地提交）**：`ba597b631d22d85e56db6982f24b7d1ebe238df9`
+>
+> **上游分支**：`upstream/release/v3.8.51`
+>
+> **提交标题**：`fix(db): call_logs provider stats read true on empty and legacy data (#12832)`
+>
+> **游标含义**：该提交是本轮 407 个上游提交中最后、最新且已经完成处理的提交。下次同步先更新上游引用，再使用范围 `ba597b631d22d85e56db6982f24b7d1ebe238df9..upstream/release/v3.8.51` 获取游标之后的全部新提交；不要把 Orbit 本地最新提交当作同步游标。
+
+机器读取值：
+
+```text
+UPSTREAM_SYNC_CURSOR=ba597b631d22d85e56db6982f24b7d1ebe238df9
+UPSTREAM_SYNC_BRANCH=upstream/release/v3.8.51
+```
+
 > **功能类全量同步结论**：上游 79 个 `feat` 提交已按分布顺序完成逐项审计，`79 / 79` 均已处理（迁移、按 Orbit 架构等效实现、确认已由重构快照吸收或判定不适用），无 `🚧`、`⚠️` 遗留。统一构建与部署仍按约定暂停。
 >
 > **Node.js 运行时统一升级**：开发版本文件、根 `engines`、Docker 构建/运行镜像、GitHub Actions、OpenCode 插件、Skills 沙箱、运行时兼容检测及中英文提示均已统一到可复现的 Node.js `24.20.0` LTS；本机 nvm 默认版本及 Homebrew `node@24` 同步完成。
 >
-> **代码类同步进度**：截至 2026-09-11，表格 403 行已全部终态化 —— `288` 项 ✅（迁移/等效/吸收/不适用），`115` 项 ⏭️ 排除，**无 `⚠️`、无 `🚧` 遗留**（末项 `afb91a83b` flat-rate 估算已于 2026-09-11 完成移植，见该行说明）。2026-09-10/11 两轮完成 Batch A/B/C 共 30+ 项移植（含 codex 导入状态保护、memory 向量测量宽度/FTS5 诚实探测、插件 manifest 刷新与 hook 超时隔离、SSRF block-metadata 补齐等），全部通过定向 typecheck 与回归测试，未构建/未部署。
+> **全量同步进度**：截至 2026-09-11，表格 407 行已全部终态化 —— `292` 项 ✅（迁移/等效/吸收/不适用），`115` 项 ⏭️ 排除，**无 `⚠️`、无 `⚡`、无 `🚧` 遗留**。2026-09-10/11 两轮完成 Batch A/B/C 共 30+ 项移植（含 codex 导入状态保护、memory 向量测量宽度/FTS5 诚实探测、插件 manifest 刷新与 hook 超时隔离、SSRF block-metadata 补齐等），全部通过定向 typecheck 与回归测试，未构建/未部署。
 
 ### 后续 Agent 交接摘要（2026-09-10）
 
