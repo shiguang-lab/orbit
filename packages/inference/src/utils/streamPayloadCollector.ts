@@ -1,5 +1,6 @@
 import { cloneLogPayload } from "./logPayload.ts";
 import { FORMATS } from "../translator/formats.ts";
+import { jsonLength } from "./jsonSize.ts";
 
 type StructuredSSEEvent = {
   index: number;
@@ -931,7 +932,7 @@ export function createStructuredSSECollector(options: CollectorOptions = {}) {
 
       // Size the event against the as-pushed payload (the clone below is structurally
       // identical) so a dropped event never pays the structuredClone cost.
-      const serializedSize = JSON.stringify(event).length;
+      const serializedSize = jsonLength(event);
       if (events.length >= maxEvents || usedBytes + serializedSize > maxBytes) {
         droppedEvents += 1;
         return;

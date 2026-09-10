@@ -1,10 +1,37 @@
 import crypto from "node:crypto";
 import type { CompressionConfig, CompressionMode, CompressionResult } from "./types.ts";
+import { jsonSha256 } from "../../utils/jsonHash.ts";
 
 export const MEMO_CAP = 5_000;
 
 const memoMap = new Map<string, CompressionResult>();
 let lookupCountForTests = 0;
+let memoHits = 0;
+let memoMisses = 0;
+const RING_CAP = 10_000;
+const ring: Array<{ ts: number; hit: boolean } | undefined> = new Array(RING_CAP);
+let ringHead = 0;
+let ringCount = 0;
+
+function recordLookup(hit: boolean): void {
+  ring[ringHead] = { ts: Date.now(), hit };
+  ringHead = (ringHead + 1) % RING_CAP;
+  if (ringCount < RING_CAP) ringCount++;
+}
+
+function windowStats(windowMs: number): { hits: number; misses: number; hitRate: number } {
+  const cutoff = Date.now() - windowMs;
+  let hits = 0;
+  let misses = 0;
+  for (let offset = 0; offset < ringCount; offset++) {
+    const entry = ring[(ringHead - 1 - offset + RING_CAP) % RING_CAP];
+    if (!entry || entry.ts < cutoff) break;
+    if (entry.hit) hits++;
+    else misses++;
+  }
+  const total = hits + misses;
+  return { hits, misses, hitRate: total > 0 ? Math.round((hits / total) * 10_000) / 100 : 0 };
+}
 
 // Opt-IN whitelist (NOT opt-out): cache only engines proven pure + STATELESS across
 // requests. Excluded on purpose: `ccr` and `session-dedup` write to the cross-request
@@ -41,7 +68,7 @@ export function makeMemoKey(
   model?: string,
   supportsVision?: boolean | null
 ): string {
-  const bodyHash = sha256hex(JSON.stringify(body));
+  const bodyHash = jsonSha256(body);
 
   // #8137: Only include model + supportsVision in the cache key when the compression
   // result actually depends on them. The `lite` engine strips data:image URLs only when
@@ -97,22 +124,46 @@ function boundedSet(key: string, value: CompressionResult): void {
 export function memoLookup(key: string): CompressionResult | null {
   lookupCountForTests++;
   const hit = memoMap.get(key);
-  if (!hit) return null;
+  if (!hit) {
+    memoMisses++;
+    recordLookup(false);
+    return null;
+  }
+  memoHits++;
+  recordLookup(true);
   // Return a clone so downstream mutation cannot corrupt the cached value.
-  return structuredClone(hit);
+  const cloned = structuredClone(hit);
+  if (cloned.stats) cloned.stats.memoHit = true;
+  return cloned;
 }
 
-export function memoStore(key: string, result: CompressionResult): void {
+export function getMemoStats() {
+  const total = memoHits + memoMisses;
+  return {
+    size: memoMap.size, capacity: MEMO_CAP, hits: memoHits, misses: memoMisses,
+    hitRate: total > 0 ? Math.round((memoHits / total) * 10_000) / 100 : 0,
+    windows: { "1m": windowStats(60_000), "5m": windowStats(300_000), "15m": windowStats(900_000), "1h": windowStats(3_600_000) },
+  };
+}
+
+export function memoStore(key: string, result: CompressionResult): CompressionResult {
   // Clone on STORE too (memoLookup already clones on read). Storing the caller's live
   // object would let a later mutation of it (e.g. an async engine holding a sub-ref)
   // corrupt the cached entry. Both ends isolated ⇒ the cache is immutable once stored.
-  boundedSet(key, structuredClone(result));
+  const stored = structuredClone(result);
+  boundedSet(key, stored);
+  return stored;
 }
 
 /** For tests only — clears the in-process memo store. */
 export function clearMemoStore(): void {
   memoMap.clear();
   lookupCountForTests = 0;
+  memoHits = 0;
+  memoMisses = 0;
+  ring.fill(undefined);
+  ringHead = 0;
+  ringCount = 0;
 }
 export const resultMemoForTests = {
   get lookupCount(): number {

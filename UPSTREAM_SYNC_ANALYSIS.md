@@ -7,13 +7,15 @@
 > **功能类全量同步结论**：上游 79 个 `feat` 提交已按分布顺序完成逐项审计，`79 / 79` 均已处理（迁移、按 Orbit 架构等效实现、确认已由重构快照吸收或判定不适用），无 `🚧`、`⚠️` 遗留。统一构建与部署仍按约定暂停。
 >
 > **Node.js 运行时统一升级**：开发版本文件、根 `engines`、Docker 构建/运行镜像、GitHub Actions、OpenCode 插件、Skills 沙箱、运行时兼容检测及中英文提示均已统一到可复现的 Node.js `24.20.0` LTS；本机 nvm 默认版本及 Homebrew `node@24` 同步完成。
+>
+> **代码类同步进度**：313 个 `feat/fix/perf/refactor` 提交中，`197` 个已同步或确认等效，`2` 个经用户确认排除，`114` 个仍待分析处理；当前已处理 `199 / 313`（63.6%）。本轮完成 `9903a6d2e`、`c1ac943c7`、`c702a27ed`，排除 `6b587d004`、`e26a649d2`。
 
 ### 后续 Agent 交接摘要（2026-09-10）
 
 - **执行范围**：仅处理 313 个 `feat/fix/perf/refactor` 代码类提交；完成数和剩余数以本文表格的实时 `✅/⚠️/⚡` 标记为准。
-- **明确排除**：94 个 `ci/docs/test/chore/other` 已由用户确认不需要，不再审计或迁移，统一标记为 `⏭️`，也不计入完成率分母。
-- **续作顺序**：`🚧 d6f315018`（server-owned tool follow-up）已完成，其余 `⚠️` 和 `⚡` 项继续严格按照本文表格中的全局分布顺序逐项处理。
-- **工作区状态**：当前包含本轮功能同步与 Node 24.20.0 升级的未提交改动。后续 Agent 必须保留并基于这些改动继续，不得 reset、checkout 或覆盖已有实现。
+- **明确排除**：94 个 `ci/docs/test/chore/other`，以及用户指定的 2 个代码类提交 `6b587d004`、`e26a649d2`，均不再审计或迁移，统一标记为 `⏭️`。
+- **续作顺序**：当前无 `🚧`、`⚡` 项；剩余 114 个 `⚠️` 项继续严格按照本文表格中的全局分布顺序逐项处理。
+- **工作区状态**：本轮代码、测试和文档已统一提交；后续 Agent 从该提交继续，不得 reset、checkout 或覆盖已有实现。
 - **验证边界**：同步期间只运行定向测试、typecheck、lint 和架构审计；禁止执行 `pnpm build`、Docker build/push、部署、发布、Tag 或 NAS 操作。全部 407 个提交处理完成后再统一构建部署。
 
 #### 可直接交给后续 Agent 的提示词
@@ -21,17 +23,17 @@
 ```text
 在仓库 /Users/yanxianliang/shiguang/OmniRoute/orbiot 中，以 global 模式继续完成 UPSTREAM_SYNC_ANALYSIS.md 记录的 OmniRoute release/v3.8.51 全量同步。
 
-当前执行范围只包含 313 个 feat/fix/perf/refactor 代码类提交。94 个 ci/docs/test/chore/other 提交已经用户明确确认排除，不需要审计、迁移或计入完成率。实际完成和剩余数量以文档表格最新的 ✅/⚠️/⚡ 标记为准。
+当前执行范围只包含 313 个 feat/fix/perf/refactor 代码类提交。94 个 ci/docs/test/chore/other 提交，以及 6b587d004、e26a649d2，已经用户明确确认排除。当前 197 项完成、2 项排除、114 项待处理；实际数量以文档表格最新标记为准。
 
 执行要求：
-1. 先完成 🚧 的 d6f315018（server-owned tool follow-up），然后严格按文档表格的全局分布顺序逐项处理所有 ⚠️ 和 ⚡ 提交，不要只处理高优先级，也不要中途停在分析阶段。
+1. 当前无 🚧、⚡ 项；严格按文档表格的全局分布顺序逐项处理剩余 114 个 ⚠️ 提交，不要只处理高优先级，也不要中途停在分析阶段。
 2. 每个提交都必须对照上游官方提交与当前 Orbit 实现：确有缺陷/缺失则按 apps/*、packages/* 分层架构迁移；当前实现已等效或更优则保留，但必须写出具体代码和测试证据；不适用则说明结构性原因。不要仅凭提交标题判断。
-3. 当前工作区有上一轮 79 个功能同步和 Node 24.20.0 升级的未提交改动，必须保留。禁止 git reset、git checkout --、覆盖或回退现有改动，也不要擅自提交、推送或创建 Tag。
+3. 从当前已提交基线继续；禁止 git reset、git checkout --、覆盖或回退现有实现，也不要擅自推送、创建 Tag。
 4. 每完成一项立即更新 UPSTREAM_SYNC_ANALYSIS.md：将 🚧/⚠️/⚡ 改为 ✅，记录迁移位置、实现差异、验证命令和结果；同时维护顶部完成/剩余统计，避免文档与代码脱节。
 5. 修复根因，不引入旧单体目录、兼容垫片、双实现、mock/fallback 假数据或与请求无关的重构。所有用户文案走 useI18n()/tt()，Ant Design 控件保持默认尺寸。
 6. 同步期间只允许定向测试、typecheck、lint、静态检查和架构审计。绝对不要执行 pnpm build、Docker build/push、部署、发布、Tag、NAS 验证或任何构建部署动作。等 407 个提交全部处理完成后才统一构建部署。
 7. 遇到上游路径与 Orbit 架构不一致时迁移语义，不要 cherry-pick 或整库 merge。验证失败要修复后再把文档标记完成。
-8. 持续执行直到全部 313 个代码类提交处理完；最终确认 feat/fix/perf/refactor 不再有 🚧、⚠️、⚡。94 个 ⏭️ 项不要处理。完成后再输出按领域分组的完整报告，包括迁移、等效保留、不适用、验证结果和明确的未构建/未部署声明。
+8. 持续执行直到全部 313 个代码类提交处理完；最终确认 feat/fix/perf/refactor 不再有 🚧、⚠️、⚡。96 个 ⏭️ 项不要处理。完成后再输出按领域分组的完整报告，包括迁移、等效保留、不适用、验证结果和明确的未构建/未部署声明。
 ```
 
 ---
@@ -253,7 +255,7 @@
 | :---: | :--- | :--- | :---: | :--- | :--- |
 | 3 | `0f81e7557` | feat(volcengine): canonical quota window mapping and safe multi-connection plan binding (#12950) | `feat` | ✅ 已吸收：Coding/Agent Plan 统一映射 5h、7d、日、月窗口并修复零额度误判；套餐绑定按显式连接、API Key、Key ID、默认名称、安全单连接顺序匹配，多连接歧义时新建且不覆盖，自定义名称/扩展数据保留，管理响应剥离 Cookie/CSRF。5 个回归用例及 core/inference/control typecheck 已通过 | 已迁移并验证（未构建/部署） |
 | 14 | `ce49d969c` | refactor(combo): move handleRoundRobinCombo into roundRobinCombo.ts (#12811) | `refactor` | ✅ 已按 Orbit 架构同步：`handleRoundRobinCombo` 连同其私有 `resolveTargetTokenLimit`（原先夹在 `combo.ts` 的 import 块之间）整体 lift-as-is 到新模块 `packages/inference/src/services/combo/roundRobinCombo.ts`（`export async function handleRoundRobinCombo`），`combo.ts` 改为 `import { handleRoundRobinCombo } from "./combo/roundRobinCombo.ts"`，从 4028 行降到 2939 行；新模块只回引 `combo.ts` 已导出的 `releaseStickyPinOnFailure`、`clearStaleLKGP` 两个 hoisted 函数（无求值期循环依赖），其余依赖全部来自既有 combo/ 子模块与包内公共契约 | 已完成；移植 4 项源码契约守卫用例（定义位置/私有 helper 位置/finally 清理 rrLoopSafetyTimer/保留 sticky pin 释放）全部通过，inference typecheck 通过；未构建/部署 |
-| 15 | `6b587d004` | refactor(combo): split executeTarget into gates, attempt, and loop (#12746) | `refactor` | ⚡ 已评估并延后（需独立验证）：上游把 `handleComboChatInner` 内的 `executeTarget` 拆成 `attemptLoopTypes.ts`（`AttemptLoopState` 可变环状态 + `AttemptLoopDeps` 只读依赖两个显式契约）、`executeTargetGates.ts`（lift-as-is 门禁）、`executeTargetAttempt.ts`、`comboAttemptLoop.ts`、`executeTargetClassify.ts` 五个模块（+3087/−2205）。Orbit 现状：`executeTarget` 仍为 `combo.ts:1213-2552` 的 1340 行箭头函数闭包，捕获父作用域 53 个只读符号与 11 个可变出参（`fallbackCount`/`recordedAttempts`/`lastError`/`lastStatus`/`earliestRetryAfter`/`earliestCircuitOpenRetryMs`/`skippedForCircuitOpen`/`globalAttempts`/`timer`/`latencyMs`/`rawModel`），并非机械 lift。这是一次带接口设计的可读性重构（零行为变更）而非缺陷修复，改动落在最热的调度路径且无法用定向单测覆盖其语义；按“验证失败前不得标记完成”原则，延后到独立、可完整验证的专项中执行 | 待独立专项吸收（本轮不标记完成） |
+| 15 | `6b587d004` | refactor(combo): split executeTarget into gates, attempt, and loop (#12746) | `refactor` | ⏭️ 用户确认排除：当前项目已经完成整体结构重构；该提交仅重排核心执行路径，迁移风险大且不提供新增行为 | 不同步 |
 | 16 | `c1b34db50` | feat(combo): quota-weighted routing — skip empty accounts, draw by leftover (#12789) | `feat` | ✅ 已同步 | 已移植特性 |
 | 19 | `1b97f42ba` | fix(combo): treat a pin-only step as implicit connection allowlist (#12697) | `fix` | ✅ 已吸收：combo step 有 connectionId 而无/空 allowedConnectionIds 时隐式生成仅含该 pin 的硬 allowlist，失败后释放临时 forcedConnectionId 也不会扫描 sibling；fingerprint composite pin 展开时同步重写全部 allowlist ID，输入 schema 允许显式列表。新增 2 项定向测试通过，core/inference typecheck 通过 | 已迁移并验证（未构建/部署） |
 | 22 | `d7721559a` | fix(combo): restricted keys listing a combo name no longer skip every member (#12899) | `fix` | ✅ 已吸收：请求级策略已允许 combo 名称时，组合预检不再用该名称 allowlist 错误淘汰全部内部 target；provider 通配 allowlist 仍逐 target 过滤，且 Orbit 扩展的 blockedModels/disableNonPublicModels 不会被组合名豁免绕过，reasoning effort 继续透传权限检查。新增 4 项定向测试通过，inference typecheck 与 diff check 通过 | 已迁移并验证（未构建/部署） |
@@ -306,7 +308,7 @@
 | 342 | `6a41a7813` | fix(catalog): derive vision/modalities for built-in auto combos from effective target pool (#12046) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 349 | `1f4dc830f` | chore(quality): velocity phase — loosen every numeric baseline by 20% until v4.0, monitor headroom nightly (#12125) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 354 | `52521984d` | fix(lease): remove global static reservation and gate routing on live active lease occupancy (#11775) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 358 | `9903a6d2e` | refactor(auto-combo): fix divergent scoring in combo health reporting (#11854) | `refactor` | ⚡ 未同步该重构/优化 | 建议同步优化 |
+| 358 | `9903a6d2e` | refactor(auto-combo): fix divergent scoring in combo health reporting (#11854) | `refactor` | ✅ 已同步：抽取并复用 `evaluateAutoCandidates`，运行时评分返回完整 factors；健康评分检查器使用真实候选构建、额度过滤、缓存亲和度及同一评分结果，同时保留 Orbit 的熔断状态解释 | 已吸收 |
 | 389 | `2e3cd599b` | feat(routing): add LiquidAI LFM2.5-2.6B free tier via OpenRouter (#11752) | `feat` | ✅ 已同步 | 已移植特性 |
 | 395 | `55691e041` | fix(usage): allow quota refresh for FREE lease-reserved connections (#11758) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 399 | `d26fe0380` | feat(routing): add relayMode for schema-locked context handoffs (#11839) | `feat` | ✅ 已吸收：schema、配置解析、摘要消息选择和 universal handoff 注入均支持 `schema-locked` | 已迁移并通过 inference 类型检查 |
@@ -412,7 +414,7 @@
 | 95 | `8a95a2bce` | fix(settings): cache-config alwaysPreserveClientCache was a runtime no-op (#12304) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 154 | `450e92ecf` | chore(quality): base fixes — stryker tap.testFiles + node_modules cache key (#12482) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 184 | `c8e2cb3ff` | fix(db): install busy_timeout before the connection's first statement (#12394) | `fix` | ✅ 审计后判定已存在：主连接初始化链已在 `journal_mode = WAL` 与 `synchronous = NORMAL` 之前执行 `PRAGMA busy_timeout = 2000`（`core.ts:1247-1248`），首个语句即携带 busy handler，不会在另一进程短暂 checkpoint WAL 时因拿不到共享锁而立即失败 | 无需移植；保持现有实现 |
-| 203 | `e26a649d2` | perf(ci): cache node_modules in the npm-ci-retry composite (#8084 D3) (#12408) | `perf` | ⚡ 未同步该重构/优化 | 建议同步优化 |
+| 203 | `e26a649d2` | perf(ci): cache node_modules in the npm-ci-retry composite (#8084 D3) (#12408) | `perf` | ⏭️ 用户确认排除：纯 CI `node_modules` 缓存优化，属于已明确不需要同步的 CI 范围 | 不同步 |
 | 252 | `412298b62` | chore(proxy): purge the legacy 1proxy residue — sync/rotator modules, dead DB exports, dead settings tab and flag, docs (#12091) (#12290) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 270 | `903d1e0c5` | fix(db): use module.require for CommonJS runtime driver loading (#12230) | `fix` | ✅ 审计后判定已等效：Orbit 将运行时驱动加载统一收敛到 `adapters/runtimeRequire.ts`，优先使用可用作用域内的 `require`，否则回退 `createRequire(import.meta.url)`；`better-sqlite3`/`node:sqlite` 均走该入口（`driverFactory.ts`、`omp.ts`），不存在上游需要修复的裸 `require` 在 ESM 下失效问题 | 无需移植；保持现有实现 |
 | 291 | `ce1b14297` | docs(diagrams): rename number-carrying diagram files to stable names (#12210) | `docs` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
@@ -482,7 +484,7 @@
 | 140 | `a986ef2e2` | deps: bump browserslist from 4.28.2 to 4.28.8 (#12396) | `ci/deps` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 166 | `93fdc16e7` | chore(lint): adopt eslint-plugin-react-hooks 7.1.1 (#12428) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 181 | `70f33e323` | fix(executors): let the ambient proxy stand when an OpenCode account has none (#12380) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
-| 202 | `c1ac943c7` | refactor(video): unify the JPEG frame data-URI contract (#12322) | `refactor` | ⚡ 未同步该重构/优化 | 建议同步优化 |
+| 202 | `c1ac943c7` | refactor(video): unify the JPEG frame data-URI contract (#12322) | `refactor` | ✅ 已同步：统一 JPEG 帧 data URI 前缀、校验、解码和字节估算契约；contact sheet 在解码前执行 4 MiB 大小保护，drilldown/helpers 复用同一契约 | 已吸收 |
 | 207 | `9327990be` | fix(memory): measure the embedding width instead of waiting for a probe (#12180) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 220 | `8ef344795` | chore(deps): freeze onnxruntime-node and eslint-plugin-react-hooks out of dependabot groups (#12329) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 265 | `9058e39b6` | docs(cli): document CLI_PRIME_AGENT_BIN and correct the CLI Agents count | `docs` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
@@ -535,7 +537,7 @@
 | 199 | `382e2e85d` | chore(quality): re-tighten the file-size ratchet to the real LOC (plan 3.8.52 task 0) (#12411) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 209 | `24b784e9b` | [Performance] Enable React Compiler for automatic memoization (#11783) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |
 | 210 | `96824288f` | feat(compression): make proactive context-compression threshold a live setting (#11564) | `feat` | ✅ 已随 TASK-P2-02 吸收：压缩阈值已改为持久化实时设置并提供 10%–99% 管理台滑块 | 已迁移并验证（未构建/部署） |
-| 213 | `c702a27ed` | perf(compression): OOM mitigations for large payload hashing, memoization, and token estimation (#7847) (#11844) | `perf` | ⚡ 未同步该重构/优化 | 建议同步优化 |
+| 213 | `c702a27ed` | perf(compression): OOM mitigations for large payload hashing, memoization, and token estimation (#7847) (#11844) | `perf` | ✅ 已同步：流式 JSON SHA-256、无大字符串 JSON 长度计算、base64 图像剥离/有界 token 估算、live-zone/stream collector/hard-budget 内存优化、memo 命中统计和命中标记均已迁移，并适配 Orbit 的 structuredClone 实现 | 已吸收 |
 | 217 | `7f25d67d0` | feat(radar): explain access rules before opt-in (#12342) | `feat` | ✅ 已吸收：订阅前明确签名目录下载、本地覆盖优先、零请求/提示词/密钥上传和可随时退出 | 已迁移到当前 Radar 页面 |
 | 221 | `a784b4206` | fix: resolve compression worker file using runtime anchors instead of… (#12183) | `fix` | ⚠️ 存在该缺陷 (orbiot 尚未同步修复) | 建议移植修复 |
 | 225 | `17792ce0a` | Update README.md (#12194) | `chore` | ⏭️ 用户确认排除：不纳入本轮同步范围 | 无需审计或迁移 |

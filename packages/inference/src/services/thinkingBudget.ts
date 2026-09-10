@@ -36,6 +36,10 @@ import {
   getResolvedModelCapabilities,
   supportsReasoning,
 } from "@orbit/core/catalog/model-capabilities";
+import {
+  jsonLengthStrippingBase64DataUris,
+  rawLengthStrippingBase64DataUris,
+} from "../utils/jsonSize.ts";
 
 // Effort → budget token mapping
 export const EFFORT_BUDGETS: Record<string, number> = {
@@ -358,8 +362,8 @@ function applyAdaptiveBudget(body: unknown, cfg: Partial<ThinkingBudgetConfig>) 
     if (msgRecord.role === "user") {
       lastMsgLength =
         typeof msgRecord.content === "string"
-          ? msgRecord.content.length
-          : JSON.stringify(msgRecord.content || "").length;
+          ? rawLengthStrippingBase64DataUris(msgRecord.content)
+          : jsonLengthStrippingBase64DataUris(msgRecord.content || "");
       break;
     }
   }

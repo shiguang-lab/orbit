@@ -3,7 +3,31 @@ import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
+import { registerProviderRuntimePorts } from "@orbit/core/runtime/provider-ports";
 import { resolveComboContextLimit } from "../src/services/contextManager.ts";
+
+// `getModelContextLimit` (via `resolveTokenLimit`) canonicalises provider/model
+// through the core runtime ports. Production registers these at boot; a focused
+// unit test must register the identity implementations it exercises so a
+// perfectly valid resolution does not fail on an unwired port.
+registerProviderRuntimePorts({
+  parseModel(model) {
+    const value = typeof model === "string" ? model : "";
+    const separator = value.indexOf("/");
+    return {
+      provider: separator > 0 ? value.slice(0, separator) : null,
+      model: separator > 0 ? value.slice(separator + 1) : value || null,
+      isAlias: false,
+      providerAlias: separator > 0 ? value.slice(0, separator) : null,
+      extendedContext: false,
+    };
+  },
+  resolveCanonicalProviderModel: (provider, model) => ({
+    provider: provider ?? null,
+    model: model ?? null,
+  }),
+  getRegisteredProviderEffortBaseModelId: () => null,
+});
 
 /**
  * Regression guard for #12090: an operator-set `context_length` on a combo record

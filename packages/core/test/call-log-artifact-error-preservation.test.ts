@@ -116,7 +116,17 @@ test("a very long error is truncated, not dropped", () => {
   const longError = "E".repeat(16 * 1024);
   const artifact = buildOversizedArtifact("long-error", longError);
 
-  const written = writeCallArtifact(artifact);
+  // The 4KB truncation cap means the fallback artifact needs a budget larger
+  // than the cap for the error to survive; a 1KB cap (tested above) is only
+  // large enough for a small error. Use an 8KB budget so the truncation path —
+  // not the whole-artifact drop — is what this case exercises.
+  process.env.CALL_LOG_PIPELINE_MAX_SIZE_KB = "8";
+  let written: { relPath: string } | null = null;
+  try {
+    written = writeCallArtifact(artifact);
+  } finally {
+    process.env.CALL_LOG_PIPELINE_MAX_SIZE_KB = "1";
+  }
   assert.ok(written);
 
   const { artifact: stored } = readCallArtifact(written.relPath);

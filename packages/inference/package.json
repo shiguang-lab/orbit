@@ -465,6 +465,22 @@
       "types": "./dist/types/services/combo.d.ts",
       "import": "./src/services/combo.ts"
     },
+    "./services/combo/autoConfig": {
+      "types": "./dist/types/services/combo/autoConfig.d.ts",
+      "import": "./src/services/combo/autoConfig.ts"
+    },
+    "./services/combo/comboStructure": {
+      "types": "./dist/types/services/combo/comboStructure.d.ts",
+      "import": "./src/services/combo/comboStructure.ts"
+    },
+    "./services/combo/resolveAutoStrategy": {
+      "types": "./src/public/comboResolveAutoStrategy.d.ts",
+      "import": "./src/services/combo/resolveAutoStrategy.ts"
+    },
+    "./services/combo/types": {
+      "types": "./dist/types/services/combo/types.d.ts",
+      "import": "./src/services/combo/types.ts"
+    },
     "./services/imageCombo": {
       "types": "./dist/types/services/imageCombo.d.ts",
       "import": "./src/services/imageCombo.ts"

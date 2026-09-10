@@ -8,6 +8,11 @@ import {
   type ProviderConnectionView,
 } from "./resilienceExplain.js";
 import { executeEdgeRuntimeCommand } from "../../edge-runtime/client.js";
+import { buildAutoCandidates } from "@orbit/inference/services/combo";
+import { parseAutoConfig } from "@orbit/inference/services/combo/autoConfig";
+import { resolveComboTargets } from "@orbit/inference/services/combo/comboStructure";
+import { evaluateAutoCandidates } from "@orbit/inference/services/combo/resolveAutoStrategy";
+import type { AutoProviderCandidate, ComboLike } from "@orbit/inference/services/combo/types";
 import {
   calculateFactors,
   calculateScore,
@@ -319,6 +324,49 @@ function buildCandidate(
   };
 }
 
+function buildLiveCandidateContext(
+  candidate: AutoProviderCandidate,
+  target: TargetHealth,
+  forecastTarget: ComboForecastTarget | undefined,
+  breakerStates: Map<string, string>
+): CandidateContext {
+  const context = buildCandidate(target, forecastTarget, breakerStates).context;
+  for (const key of FACTOR_KEYS) context.sources[key] = "runtime";
+  context.notes.quota = "Current credential-level quota from live candidate evaluation.";
+  context.notes.costInv = "Current model pricing from live candidate evaluation.";
+  context.notes.latencyInv = "Current credential-level latency from live candidate evaluation.";
+  context.notes.stability = "Current credential-level stability from live candidate evaluation.";
+  context.notes.contextAffinity = "Live candidate affinity evaluated without a preview session.";
+  if (candidate.cacheAffinity !== undefined) {
+    context.notes.cacheAffinity = "Prompt-cache affinity from live candidate evaluation.";
+  }
+  return context;
+}
+
+function liveTargetHealth(
+  candidate: AutoProviderCandidate,
+  target: { executionKey: string; stepId: string; modelStr: string; provider: string; connectionId?: string | null; label?: string | null },
+  historicalTarget: TargetHealth | undefined
+): TargetHealth {
+  return {
+    executionKey: target.executionKey,
+    stepId: target.stepId,
+    model: target.modelStr,
+    provider: target.provider,
+    connectionId: target.connectionId ?? null,
+    label: target.label ?? null,
+    requests: historicalTarget?.requests ?? 0,
+    successRate: historicalTarget?.successRate ?? 0,
+    avgLatencyMs: historicalTarget?.avgLatencyMs ?? candidate.p95LatencyMs,
+    lastStatus: historicalTarget?.lastStatus ?? null,
+    lastUsedAt: historicalTarget?.lastUsedAt ?? null,
+    quotaRemainingPct: candidate.quotaTotal > 0 ? (candidate.quotaRemaining / candidate.quotaTotal) * 100 : null,
+    quotaIsExhausted: candidate.quotaCutoffBlocked === true,
+    quotaTrend: historicalTarget?.quotaTrend ?? null,
+    quotaScope: candidate.connectionId ? "connection" : "provider",
+  };
+}
+
 function factorBreakdown(
   factors: ScoringFactors,
   weights: ScoringWeights,
@@ -368,6 +416,8 @@ async function buildInspectorCombo(
   taskType: string,
   inspectorWeights: InspectorWeights,
   breakerStates: Map<string, string>,
+  configuredCombo?: ComboRecord,
+  configuredCombos: ComboRecord[] = [],
 ): Promise<ComboScoringInspectorCombo> {
   const warnings: string[] = [];
   const { weights } = inspectorWeights;
@@ -383,24 +433,32 @@ async function buildInspectorCombo(
   }
 
   const issueCounts = autopilotIssueCounts(autopilotCombo);
-  const contexts = targets.map((target) =>
-    buildCandidate(
-      target,
-      forecastTargets.get(target.executionKey) || forecastTargets.get(target.stepId),
-      breakerStates,
-    )
-  );
-  const pool = contexts.map((entry) => entry.candidate);
-
-  const scored = contexts
-    .map((entry) => {
+  let scored: Array<{ entry: { candidate: ProviderCandidate; context: CandidateContext }; factors: ScoringFactors; score: number }>;
+  if (combo.strategy === "auto" && configuredCombo?.name && Array.isArray(configuredCombo.models) && configuredCombo.models.length > 0) {
+    const comboLike = configuredCombo as ComboLike;
+    const resolvedTargets = resolveComboTargets(comboLike, configuredCombos as ComboLike[]);
+    const { resetWindowConfig } = parseAutoConfig(comboLike, resolvedTargets);
+    const evaluation = await evaluateAutoCandidates({ targets: resolvedTargets, comboName: comboLike.name, body: {}, taskType, weights, resetWindowConfig, buildAutoCandidates });
+    const candidatesByExecutionKey = new Map(evaluation.routableCandidates.map((candidate) => [candidate.executionKey, candidate]));
+    scored = evaluation.scoredTargets.map((item) => {
+      const candidate = candidatesByExecutionKey.get(item.target.executionKey);
+      if (!candidate) throw new Error(`Missing evaluated candidate for ${item.target.executionKey}`);
+      const historicalTarget = targets.find((target) => target.executionKey === item.target.executionKey || target.stepId === item.target.stepId);
+      const target = liveTargetHealth(candidate, item.target, historicalTarget);
+      const context = buildLiveCandidateContext(candidate, target, forecastTargets.get(target.executionKey) ?? forecastTargets.get(target.stepId), breakerStates);
+      context.autopilotIssueCount = issueCounts.get(target.executionKey) ?? 0;
+      return { entry: { candidate, context }, factors: item.factors, score: item.score };
+    });
+  } else {
+    const contexts = targets.map((target) => buildCandidate(target, forecastTargets.get(target.executionKey) || forecastTargets.get(target.stepId), breakerStates));
+    const pool = contexts.map((entry) => entry.candidate);
+    scored = contexts.map((entry) => {
       const factors = calculateFactors(entry.candidate, pool, taskType, getTaskFitness);
       const score = calculateScore(factors, weights);
-      const issueCount = issueCounts.get(entry.context.target.executionKey) ?? 0;
-      entry.context.autopilotIssueCount = issueCount;
+      entry.context.autopilotIssueCount = issueCounts.get(entry.context.target.executionKey) ?? 0;
       return { entry, factors, score };
-    })
-    .sort((left, right) => right.score - left.score);
+    }).sort((left, right) => right.score - left.score);
+  }
 
   const connectionsByProvider = new Map<string, ProviderConnectionView[]>();
   await Promise.allSettled(
@@ -529,18 +587,19 @@ export async function buildComboScoringInspectorResponse(
     horizon: options.horizon,
     method: "read_only_recompute",
     combos: await Promise.all(
-      health.combos.map((combo) =>
-        buildInspectorCombo(
+      health.combos.map((combo) => {
+        const configuredCombo = combosById.get(combo.comboId) ?? combosByName.get(combo.comboName);
+        return buildInspectorCombo(
           combo,
           targetForecastMap(forecastByComboId.get(combo.comboId)?.targets ?? []),
           autopilotByComboId.get(combo.comboId),
           taskType,
-          resolveInspectorWeights(
-            combosById.get(combo.comboId) ?? combosByName.get(combo.comboName)
-          ),
+          resolveInspectorWeights(configuredCombo),
           breakerStates,
-        )
-      )
+          configuredCombo,
+          configuredCombos,
+        );
+      })
     ),
   };
 }

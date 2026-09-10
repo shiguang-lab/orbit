@@ -62,9 +62,11 @@ test("normalizeRequestQueueSettings keeps the two budgets mutually independent",
   assert.equal(execOnly.executionMaxWaitMs, 900_000);
   assert.equal(execOnly.maxWaitMs, fallback.maxWaitMs);
 
-  // Out-of-range values clamp rather than corrupt the shape.
+  // Out-of-range values clamp to the shared floor rather than corrupting the shape.
   const clamped = normalizeRequestQueueSettings({ executionMaxWaitMs: -5 }, fallback);
-  assert.equal(clamped.executionMaxWaitMs, fallback.executionMaxWaitMs);
+  assert.equal(clamped.executionMaxWaitMs, 1);
+  // ...and clamping the backstop never leaks into the queue-wait budget.
+  assert.equal(clamped.maxWaitMs, fallback.maxWaitMs);
 });
 
 test("updateResilienceSchema accepts requestQueue.executionMaxWaitMs", () => {
