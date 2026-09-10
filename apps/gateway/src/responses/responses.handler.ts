@@ -23,7 +23,7 @@ import {
 import { OPENAI_RESPONSES_IN_PROGRESS_FRAME } from "@orbit/inference/utils/sseHeartbeat";
 import { resolveKeepaliveThreshold } from "@orbit/inference/utils/keepaliveThreshold";
 
-const injectionGuard = createInjectionGuard();
+const injectionGuard = createInjectionGuard({ logger: null });
 
 export function OPTIONS(): Response {
   return new Response(null, {

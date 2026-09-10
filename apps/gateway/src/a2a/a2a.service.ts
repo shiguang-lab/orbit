@@ -4,6 +4,7 @@ import * as tasksRoute from "./legacy/tasks.js";
 import * as taskByIdRoute from "./legacy/task-by-id.js";
 import * as taskCancelRoute from "./legacy/task-cancel.js";
 import * as statusRoute from "./legacy/status.js";
+import * as historyRoute from "./legacy/history.js";
 
 /**
  * Edge-owned A2A application service.
@@ -36,4 +37,5 @@ export class A2aService {
   async status(request: Request): Promise<Response> {
     return statusRoute.GET(request);
   }
+  async history(request:Request):Promise<Response>{return historyRoute.GET(request);}
 }

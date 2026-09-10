@@ -745,6 +745,14 @@ export async function validateResponseQuality(
   // tokens or falls back to a non-reasoning model.
   const contentIsEmpty = content === null || content === undefined || content === "";
   if (contentIsEmpty && hasReasoningContent && !hasToolCalls) {
+    const finishReason =
+      typeof firstChoice.finish_reason === "string" ? firstChoice.finish_reason : "";
+    if (finishReason === "length" || finishReason === "max_tokens") {
+      return {
+        valid: false,
+        reason: `reasoning truncated at token limit (finish_reason: ${finishReason}) — no content output`,
+      };
+    }
     const usage = json?.usage as Record<string, unknown> | undefined;
     if (usage) {
       const completionTokens = Number(usage.completion_tokens) || 0;

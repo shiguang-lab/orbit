@@ -274,6 +274,28 @@ function selectBestModel(
   return scored[0];
 }
 
+function resolveVirtualCombo(fixedModel: string | undefined): string | undefined {
+  return fixedModel === "auto" || fixedModel?.startsWith("auto/") ? fixedModel : undefined;
+}
+
+async function resolveCachedSelection(
+  cacheKey: string,
+  virtualCombo: string | undefined,
+  deps: VisionBridgeRouterDeps
+): Promise<string | null> {
+  const cached = selectionCache.get(cacheKey);
+  if (!cached || cached.expiresAt <= Date.now()) return null;
+
+  if (await cachedModelRemainsAvailable(cached.modelId, deps)) {
+    if (!virtualCombo) return cached.modelId;
+    const checkCreds = deps.hasUsableCredentials ?? hasUsableCredentialsForModel;
+    if ((await checkCreds(cached.modelId)) !== false) return virtualCombo;
+  }
+
+  selectionCache.delete(cacheKey);
+  return null;
+}
+
 /**
  * Get the best vision model for image description.
  * Respects fixed model override if configured, but validates it has usable
@@ -286,12 +308,13 @@ export async function getBestVisionModel(
   deps: VisionBridgeRouterDeps = {}
 ): Promise<string | null> {
   const fullConfig = { ...DEFAULT_ROUTER_CONFIG, ...config };
+  const virtualCombo = resolveVirtualCombo(fullConfig.fixedModel);
 
   // If fixed model is configured, validate it has usable credentials first.
   // (#8430) An unreachable fixedModel (e.g. the default "openai/gpt-4o-mini"
   // on an instance with no OpenAI connection/key) must not short-circuit the
   // credential check — fall through to auto-selection instead.
-  if (fullConfig.fixedModel) {
+  if (fullConfig.fixedModel && !virtualCombo) {
     const checkCreds = deps.hasUsableCredentials ?? hasUsableCredentialsForModel;
     const usable = await checkCreds(fullConfig.fixedModel);
     // Only skip credential validation when the check is indeterminate (null).
@@ -307,13 +330,8 @@ export async function getBestVisionModel(
     fullConfig.excludedModels.length > 0
       ? `excl:${[...fullConfig.excludedModels].sort().join(",")}`
       : "default";
-  const cached = selectionCache.get(cacheKey);
-  if (cached && cached.expiresAt > Date.now()) {
-    if (await cachedModelRemainsAvailable(cached.modelId, deps)) {
-      return cached.modelId;
-    }
-    selectionCache.delete(cacheKey);
-  }
+  const cachedPick = await resolveCachedSelection(cacheKey, virtualCombo, deps);
+  if (cachedPick) return cachedPick;
 
   // Get all vision-capable candidates
   const candidates = await getVisionCapableModels(deps);
@@ -332,7 +350,9 @@ export async function getBestVisionModel(
     expiresAt: Date.now() + fullConfig.selectionCacheTtlMs,
   });
 
-  return best.fullName;
+  // Virtual auto combos rotate and enforce member credentials downstream. The
+  // pool scan above still proves at least one usable vision target exists.
+  return virtualCombo ?? best.fullName;
 }
 
 /**

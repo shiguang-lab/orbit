@@ -87,6 +87,7 @@ test("resolves the canonical provider-data and authz route contracts", () => {
   assert.equal(isAlwaysProtectedPath("/api/shutdown"), false);
   assert.deepEqual(Object.keys(authzRoutePolicy).sort(), [
     "ALWAYS_PROTECTED_API_PATHS",
+    "ALWAYS_PROTECTED_API_PATTERNS",
     "LOCAL_ONLY_API_GET_EXEMPTIONS",
     "LOCAL_ONLY_API_PATTERNS",
     "LOCAL_ONLY_API_PREFIXES",
@@ -100,6 +101,31 @@ test("resolves the canonical provider-data and authz route contracts", () => {
     "isLoopbackHost",
     "isPrivateLanHost",
   ]);
+});
+
+test("hard-gates credential exports and host CLI-config writes", () => {
+  for (const path of [
+    "/api/providers/connection-id/claude-auth/export",
+    "/api/providers/connection-id/codex-auth/export/",
+    "/api/providers/connection-id/claude-auth/apply-local",
+    "/api/providers/connection-id/codex-auth/apply-local/",
+    "/api/providers/agy-auth/apply-local",
+    "/api/logs/export",
+    "/api/cli-tools/codex-profiles",
+  ]) {
+    assert.equal(isAlwaysProtectedPath(path), true, path);
+  }
+
+  for (const path of [
+    "/api/providers",
+    "/api/providers/connection-id/models",
+    "/api/providers/connection-id/claude-auth",
+    "/api/providers/connection-id/codex-auth/apply",
+    "/api/logs",
+    "/api/cli-tools",
+  ]) {
+    assert.equal(isAlwaysProtectedPath(path), false, path);
+  }
 });
 
 test("resolves the canonical shared and runtime utility contracts", () => {

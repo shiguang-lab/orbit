@@ -49,6 +49,16 @@ const localApiExtensions = new Set([
   "services/cliproxy/instances/[id]/route.ts",
   "services/cliproxy/instances/[id]/probe/route.ts",
   "services/cliproxy/model-mappings/route.ts",
+  // Upstream v3.8.51 log-export management surface, migrated into control.
+  "log-export/types/route.ts",
+  "log-export/status/route.ts",
+  "log-export/destinations/route.ts",
+  "log-export/destinations/[id]/route.ts",
+  "log-export/destinations/[id]/test/route.ts",
+  "log-export/destinations/[id]/run/route.ts",
+  "log-export/destinations/[id]/reset/route.ts",
+  "a2a/tasks/history/route.ts",
+  "conductor/tasks/route.ts",
 ]);
 // Whole-runtime lifecycle belongs to the external CLI supervisor. The former
 // control routes terminated only the control process while claiming to stop or

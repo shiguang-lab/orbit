@@ -52,6 +52,7 @@ export async function runPluginOnResponseHook(args: {
  */
 export type PluginOnStreamCompletePayload = {
   status: number;
+  requestId?: string;
   usage?: {
     prompt_tokens?: number;
     completion_tokens?: number;
@@ -81,11 +82,13 @@ export async function runPluginOnStreamCompleteHook(args: {
   provider: string | null | undefined;
   errorCode?: string | null | undefined;
   startTime: number;
+  requestId?: string;
 }): Promise<void> {
   try {
     const { runOnStreamComplete } = await import("@orbit/core/edge/plugins-runtime");
     runOnStreamComplete({
       status: args.status,
+      requestId: args.requestId,
       usage: args.usage as PluginOnStreamCompletePayload["usage"],
       timing: {
         latencyMs: Date.now() - args.startTime,

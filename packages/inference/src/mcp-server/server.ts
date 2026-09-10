@@ -91,7 +91,7 @@ import {
 import { getDbInstance } from "@orbit/core/db/connection";
 import { normalizeQuotaResponse } from "@orbit/core/shared/quota-contract";
 import { resolveGatewayBaseUrl } from "@orbit/core/shared/utils/resolveGatewayBaseUrl";
-import { sanitizeErrorMessage } from "../utils/error.ts";
+import { toSafeMcpErrorMessage } from "./errorMessage.ts";
 import { mcpFetchTimeoutSignal } from "./fetchTimeout.ts";
 import { getMcpModelsCatalog } from "./catalog.ts";
 import { registerRadarCatalogTool } from "./radarCatalog.ts";
@@ -326,8 +326,9 @@ async function handleGetHealth() {
       .filter(({ settled }) => settled.status === "rejected")
       .map(({ source, settled }) => ({
         source,
-        error: sanitizeErrorMessage(
-          settled.status === "rejected" ? (settled as PromiseRejectedResult).reason : undefined
+        error: toSafeMcpErrorMessage(
+          settled.status === "rejected" ? (settled as PromiseRejectedResult).reason : undefined,
+          ""
         ),
       }));
 
@@ -376,7 +377,7 @@ async function handleGetHealth() {
     await logToolCall("orbit_get_health", {}, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_get_health", {}, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -418,7 +419,7 @@ async function handleListCombos(args: { includeMetrics?: boolean }) {
     await logToolCall("orbit_list_combos", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_list_combos", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -433,7 +434,7 @@ async function handleGetComboMetrics(args: { comboId: string }) {
     await logToolCall("orbit_get_combo_metrics", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_get_combo_metrics", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -449,7 +450,7 @@ async function handleSwitchCombo(args: { comboId: string; active: boolean }) {
     await logToolCall("orbit_switch_combo", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_switch_combo", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -470,7 +471,7 @@ async function handleCreateCombo(args: {
     await logToolCall("orbit_create_combo", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_create_combo", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -491,7 +492,7 @@ async function handleCheckQuota(args: { provider?: string; connectionId?: string
     await logToolCall("orbit_check_quota", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_check_quota", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -560,7 +561,7 @@ async function handleRouteRequest(args: {
     );
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall(
       "orbit_route_request",
       { model: args.model },
@@ -609,7 +610,7 @@ async function handleCostReport(args: { period?: string }) {
     await logToolCall("orbit_cost_report", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_cost_report", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -629,7 +630,7 @@ async function handleListModelsCatalog(args: { provider?: string; capability?: s
     );
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_list_models_catalog", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -658,7 +659,7 @@ async function handleWebSearch(args: {
     await logToolCall("orbit_web_search", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_web_search", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -684,7 +685,7 @@ async function handleXSearch(args: {
     await logToolCall("orbit_x_search", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_x_search", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -724,7 +725,7 @@ async function handleWebFetch(args: {
     await logToolCall("orbit_web_fetch", args, result, Date.now() - start, true);
     return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
   } catch (err) {
-    const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
     await logToolCall("orbit_web_fetch", args, null, Date.now() - start, false, msg);
     return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
   }
@@ -1189,7 +1190,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1216,7 +1217,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1241,7 +1242,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
           const result = await toolDef.handler(parsedArgs, extra);
           return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
         } catch (err) {
-          const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
           return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
         }
       })
@@ -1266,7 +1267,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1293,7 +1294,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1320,7 +1321,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1357,7 +1358,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
                 content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }],
               };
             } catch (err) {
-              const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
               return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
             }
           },
@@ -1385,7 +1386,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1412,7 +1413,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1440,7 +1441,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (error) {
             return {
-              content: [{ type: "text" as const, text: `Error: ${sanitizeErrorMessage(error)}` }],
+              content: [{ type: "text" as const, text: `Error: ${toSafeMcpErrorMessage(error)}` }],
               isError: true,
             };
           }
@@ -1468,7 +1469,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
             const result = await toolDef.handler(parsedArgs, extra);
             return { content: [{ type: "text" as const, text: JSON.stringify(result, null, 2) }] };
           } catch (err) {
-            const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
             return { content: [{ type: "text" as const, text: `Error: ${msg}` }], isError: true };
           }
         },
@@ -1509,7 +1510,7 @@ export function createMcpServer(options?: CreateMcpServerOptions): McpServer {
                 ],
               };
             } catch (err) {
-              const msg = err instanceof Error ? err.message : String(err);
+    const msg = toSafeMcpErrorMessage(err);
               return {
                 content: [{ type: "text" as const, text: `Error: ${msg}` }],
                 isError: true,

@@ -28,11 +28,23 @@ import {
 import { createStyles } from "antd-style";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import { keysApi, modelsApi, type ApiKeyView, type ApiKeyCreateInput } from "@/entities/api";
+import {
+  combosApi,
+  keysApi,
+  modelsApi,
+  type ApiKeyView,
+  type ApiKeyCreateInput,
+} from "@/entities/api";
 import { MaterialIcon } from "@/app/nav";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import dayjs from "dayjs";
 import { useI18n } from "@/i18n";
+import {
+  ALL_COMBOS_ACCESS_RULE,
+  comboAccessSaveValue,
+  editableComboAccessRules,
+  listUnrenderableComboAccessRules,
+} from "./combo-access";
 
 const { Text, Title, Paragraph } = Typography;
 
@@ -103,6 +115,19 @@ export default function ApiManagerPage() {
   const keys = keysQuery.data?.keys ?? [];
   const allowReveal = keysQuery.data?.allowKeyReveal ?? true;
   const modelCatalogQuery = useQuery({ queryKey: ["api-key-model-catalog"], queryFn: modelsApi.catalog, staleTime: 60_000 });
+  const combosQuery = useQuery({
+    queryKey: ["api-key-combos"],
+    queryFn: combosApi.list,
+    staleTime: 60_000,
+  });
+  const comboOptions = useMemo(
+    () =>
+      (combosQuery.data?.combos ?? [])
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((combo) => ({ value: combo.name, label: combo.name })),
+    [combosQuery.data]
+  );
   const modelOptions = useMemo(() => {
     const unique = new Map<string, string>();
     for (const group of Object.values(modelCatalogQuery.data?.catalog ?? {})) {
@@ -338,6 +363,10 @@ export default function ApiManagerPage() {
       modelAccessMode,
       allowedModels: k.allowedModels ?? [],
       blockedModels: k.blockedModels ?? [],
+      comboAccessMode: k.allowedCombos?.includes(ALL_COMBOS_ACCESS_RULE)
+        ? "all"
+        : "restricted",
+      allowedCombos: editableComboAccessRules(k.allowedCombos),
       maxSessions: k.maxSessions ?? null,
       throttleDelayMs: k.throttleDelayMs ?? null,
       usageLimitEnabled: Boolean(k.usageLimitEnabled),
@@ -1039,6 +1068,10 @@ export default function ApiManagerPage() {
               modelAccessMode: isAllowlist ? "restricted" : "all",
               allowedModels: isAllowlist ? values.allowedModels ?? [] : [],
               blockedModels: isBlocklist ? values.blockedModels ?? [] : [],
+              allowedCombos: comboAccessSaveValue(
+                values.comboAccessMode === "restricted" ? "restricted" : "all",
+                values.allowedCombos ?? []
+              ),
               maxSessions: values.maxSessions ?? null,
               throttleDelayMs: values.throttleDelayMs ?? null,
               usageLimitEnabled: Boolean(values.usageLimitEnabled),
@@ -1324,6 +1357,77 @@ export default function ApiManagerPage() {
               }}
             </Form.Item>
           </div>
+          </div>
+
+          <div
+            style={{
+              padding: 14,
+              borderRadius: 8,
+              background: token.colorFillQuaternary,
+              border: `1px solid ${token.colorBorderSecondary}`,
+              marginBottom: 16,
+            }}
+          >
+            <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+              <MaterialIcon name="route" size={16} style={{ color: "#8B5CF6" }} />
+              <Text strong style={{ fontSize: 13 }}>
+                {tt("组合访问控制", "Combo Access Control")}
+              </Text>
+            </Flex>
+            <Form.Item name="comboAccessMode" style={{ marginBottom: 12 }}>
+              <Radio.Group>
+                <Radio.Button value="all">{tt("允许全部组合", "Allow all combos")}</Radio.Button>
+                <Radio.Button value="restricted">{tt("限定组合", "Restrict combos")}</Radio.Button>
+              </Radio.Group>
+            </Form.Item>
+            <Form.Item
+              noStyle
+              shouldUpdate={(prev, curr) =>
+                prev.comboAccessMode !== curr.comboAccessMode ||
+                prev.allowedCombos !== curr.allowedCombos
+              }
+            >
+              {({ getFieldValue, setFieldsValue }) => {
+                if (getFieldValue("comboAccessMode") !== "restricted") return null;
+                const selected = (getFieldValue("allowedCombos") ?? []) as string[];
+                const loaded = combosQuery.data?.combos ?? [];
+                const preserved = listUnrenderableComboAccessRules(selected, loaded);
+                const preservedSet = new Set(preserved);
+                const renderableSelected = selected.filter((name) => !preservedSet.has(name));
+                return (
+                  <Flex vertical gap={8}>
+                    <Select
+                      mode="multiple"
+                      showSearch
+                      value={renderableSelected}
+                      options={comboOptions}
+                      loading={combosQuery.isLoading}
+                      placeholder={tt("选择允许的组合", "Select allowed combos")}
+                      onChange={(next) =>
+                        setFieldsValue({ allowedCombos: [...next, ...preserved] })
+                      }
+                    />
+                    {preserved.length > 0 && (
+                      <Alert
+                        type="info"
+                        showIcon
+                        message={tt(
+                          `另有 ${preserved.length} 个已保存规则不在组合列表中，将原样保留`,
+                          `${preserved.length} stored rules are not in the combo list and will be preserved`
+                        )}
+                        description={
+                          <Space wrap size={[4, 4]}>
+                            {preserved.map((rule) => (
+                              <Tag key={rule}>{rule}</Tag>
+                            ))}
+                          </Space>
+                        }
+                      />
+                    )}
+                  </Flex>
+                );
+              }}
+            </Form.Item>
           </div>
 
           <Collapse

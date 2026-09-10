@@ -116,6 +116,26 @@ no waiting out the TTL after a 402/403/quota-exhausted response.
 `freeAccessPolicy`: a candidate can be economically `SAFE` and still excluded here for
 contractual reasons, or left in when this guard is off even with `freeAccessPolicy: "strict"` on.
 
+## Inspecting exclusions
+
+`GET /v1/auto-combo/{channel}/candidates` remains a read-only, unfiltered inspector. When
+`freeAccessPolicy` is `strict`, every row includes `freeAccessExclusion`: `null` when it would
+pass, otherwise one of these reasons:
+
+| Reason | Meaning |
+| --- | --- |
+| `not-in-catalog` | Provider/model is absent from the curated free catalog. |
+| `regime-not-free` | Catalog entry does not grant recurring or initial free access. |
+| `no-hard-stop` | Exceeding the allowance is not documented to stop before billing. |
+| `contradictory-noauth` | A synthetic no-auth candidate conflicts with non-keyless metadata. |
+| `exhausted` | A fresh quota reading says the allowance is exhausted. |
+| `state-unknown` | The quota reading is missing, invalid, or stale. |
+| `no-connection` | No account exists for the guard to inspect. |
+
+The listing reports these verdicts but never enforces them; dispatch continues to apply the
+strict filter. `excludeTosAvoid` is still a separate earlier filter and excluded rows are not
+annotated here.
+
 ## What passes today
 
 Run `npx tsx scripts/ad-hoc/dry-run-strict-zero-cost.ts` against a live instance's

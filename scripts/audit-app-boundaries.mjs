@@ -372,6 +372,7 @@ allowedCoreDomainSubpaths["apps/gateway"].push(
   "shared/public-safe-error",
 );
 allowedCoreDomainSubpaths["apps/control"].push("control/jobs");
+allowedCoreDomainSubpaths["apps/control"].push("control/log-export", "control/model-test-routing");
 allowedCoreDomainSubpaths["apps/gateway"].push(
   "validation/translator",
   "catalog/provider-models",

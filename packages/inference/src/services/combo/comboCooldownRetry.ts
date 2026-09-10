@@ -56,6 +56,7 @@ export const COMBO_COOLDOWN_RETRYABLE_REASONS: ReadonlySet<string> = new Set([
   "transient",
   "overloaded",
   "server_error",
+  "circuit_open",
 ]);
 
 export interface ComboCooldownWaitSettings {
@@ -255,4 +256,31 @@ export function resolveComboCooldownWaitDecision(
     ...decision,
     reason: typeof best.reason === "string" ? best.reason : null,
   };
+}
+
+export interface ResolveCircuitOpenWaitInput {
+  skippedForCircuitOpen: unknown;
+  retryAfterMs: unknown;
+  attempt: number;
+  budgetLeftMs: number;
+  settings: ComboCooldownWaitSettings;
+}
+
+/** Wait out a short provider-breaker reset when all targets were pre-skipped. */
+export function resolveCircuitOpenWaitDecision(
+  input: ResolveCircuitOpenWaitInput
+): ResolveComboCooldownDecisionResult {
+  if (input.settings.enabled !== true || input.skippedForCircuitOpen !== true) {
+    return { wait: false, waitMs: 0, reason: null };
+  }
+  const retryAfterMs = toFiniteWaitMs(input.retryAfterMs);
+  if (retryAfterMs <= 0) return { wait: false, waitMs: 0, reason: null };
+  const decision = shouldWaitForComboCooldown({
+    reason: "circuit_open",
+    waitMs: retryAfterMs + COMBO_COOLDOWN_WAIT_MARGIN_MS,
+    attempt: input.attempt,
+    budgetLeftMs: input.budgetLeftMs,
+    settings: input.settings,
+  });
+  return { ...decision, reason: "circuit_open" };
 }

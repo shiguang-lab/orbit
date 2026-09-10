@@ -27,6 +27,7 @@ import {
   resolveBaseUrl,
 } from "./providerValidation/urlHelpers";
 import { toValidationErrorResult } from "./providerValidation/transport";
+export { projectProviderValidationResultForPublicResponse } from "./providerValidation/transport";
 import {
   validateDeepSeekWebProvider,
   validateGrokWebProvider,
@@ -80,6 +81,7 @@ import {
   validatePoeProvider,
 } from "./providerValidation/audioMiscProviders";
 import { validateChatGptWebCodexProvider } from "./providerValidation/chatgptWebCodex";
+import { validateChatGptWebProvider } from "./providerValidation/chatgptWeb";
 import { validateZaiWebProvider } from "./providerValidation/zaiWeb";
 import { validateSearchProvider, SEARCH_VALIDATOR_CONFIGS } from "./providerValidation/searchProviders";
 import {
@@ -309,6 +311,7 @@ export async function validateProviderApiKey({ provider, apiKey, providerSpecifi
     "grok-web": validateGrokWebProvider,
     "kimi-web": validateKimiWebProvider,
     "chatgpt-web-codex": validateChatGptWebCodexProvider,
+    "chatgpt-web": validateChatGptWebProvider,
     "perplexity-web": validatePerplexityWebProvider,
     "blackbox-web": validateBlackboxWebProvider,
     "muse-spark-web": validateMuseSparkWebProvider,

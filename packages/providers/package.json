@@ -168,6 +168,10 @@
       "types": "./src/config/providers/registry/chatgpt-web-codex/index.ts",
       "import": "./src/config/providers/registry/chatgpt-web-codex/index.ts"
     },
+    "./providers/registry/chatgpt-web": {
+      "types": "./src/config/providers/registry/chatgpt-web/index.ts",
+      "import": "./src/config/providers/registry/chatgpt-web/index.ts"
+    },
     "./providers/registry/cheaperinference": {
       "types": "./src/config/providers/registry/cheaperinference/index.ts",
       "import": "./src/config/providers/registry/cheaperinference/index.ts"

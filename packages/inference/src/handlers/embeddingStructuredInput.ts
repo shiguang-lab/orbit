@@ -346,3 +346,21 @@ export async function prepareStructuredEmbeddingRequest(
   }
   throw new Error(`Provider ${provider.id} has no structured embedding input translator`);
 }
+
+export function normalizeClovaEmbeddingV2Response(
+  rawData: Record<string, unknown>
+): Record<string, unknown> {
+  const statusCode = (rawData.status as { code?: unknown } | undefined)?.code;
+  if (String(statusCode) !== "20000") {
+    throw new Error("CLOVA Studio embedding v2 returned an unsuccessful status");
+  }
+  const result = (rawData.result ?? {}) as Record<string, unknown>;
+  if (!Array.isArray(result.embedding)) {
+    throw new Error("CLOVA Studio embedding v2 response is missing an embedding vector");
+  }
+  const inputTokens = Number(result.inputTokens) || 0;
+  return {
+    data: [{ object: "embedding", index: 0, embedding: result.embedding }],
+    usage: { prompt_tokens: inputTokens, total_tokens: inputTokens },
+  };
+}

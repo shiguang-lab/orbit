@@ -26,6 +26,7 @@ import {
 } from "../services/antigravityCredits.ts";
 import { persistCreditBalance, getAllPersistedCreditBalances } from "@orbit/core/db/credit-balance";
 import { setConnectionRateLimitUntil } from "@orbit/core/db/provider-connections";
+import { markAntigravityModelQuotaExhausted } from "../services/antigravityFamilyCooldown.ts";
 import { getMitmAlias } from "@orbit/core/db/mitm-aliases";
 import {
   MAX_ANTIGRAVITY_OUTPUT_TOKENS,
@@ -247,8 +248,13 @@ export function createCreditsExtractionTransform(
  * cross-request and post-restart routing skips this connection until the
  * cooldown expires. Exported for unit testing. @internal
  */
-export function markConnectionQuotaExhausted(connectionId: string, retryAfterMs: number): void {
+export function markConnectionQuotaExhausted(
+  connectionId: string,
+  retryAfterMs: number,
+  model?: string | null
+): void {
   try {
+    if (markAntigravityModelQuotaExhausted(connectionId, retryAfterMs, model)) return;
     setConnectionRateLimitUntil(connectionId, Date.now() + retryAfterMs);
   } catch {
     // DB write failure must never crash the request path
@@ -1617,7 +1623,7 @@ export class AntigravityExecutor extends BaseExecutor {
           updateAntigravityRemainingCredits
         );
         if (creditsResult) return { kind: "return", result: creditsResult };
-        if (retryMs) markConnectionQuotaExhausted(accountId, retryMs);
+        if (retryMs) markConnectionQuotaExhausted(accountId, retryMs, ctx.model);
       }
 
       return {

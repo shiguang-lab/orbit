@@ -64,6 +64,7 @@ import {
   expandProviderWildcardsInCollection,
 } from "./providerWildcard.ts";
 import { preScreenTargets, type PreScreenResult } from "./quotaStrategies.ts";
+import { decrementInflight, incrementInflight } from "./quotaShareInflight.ts";
 import { resolveAutoStrategyOrder, type ResolveAutoStrategyDeps } from "./resolveAutoStrategy.ts";
 import {
   MAX_RR_COUNTERS,
@@ -746,7 +747,9 @@ export async function resolveComboTargetPipeline(
 
   const ordering = await orderByStrategy(deps, orderedTargets);
   if ("earlyResponse" in ordering) return ordering;
-  const { autoUsedExplicitRouter, quotaShareRelease } = ordering;
+  const { autoUsedExplicitRouter } = ordering;
+  let { quotaShareRelease } = ordering;
+  const drawnId = ordering.orderedTargets[0]?.connectionId ?? "";
 
   const continuity = await applyContinuityFilters(deps, ordering.orderedTargets);
   if ("earlyResponse" in continuity) {
@@ -762,6 +765,28 @@ export async function resolveComboTargetPipeline(
     continuity.sticky.stuck,
     autoUsedExplicitRouter
   );
+
+  if (strategy === "quota-weighted" || strategy === "quota-share") {
+    const finalId = orderedTargets[0]?.connectionId ?? "";
+    if (quotaShareRelease && drawnId && finalId && finalId !== drawnId) {
+      quotaShareRelease();
+      incrementInflight(finalId);
+      let released = false;
+      quotaShareRelease = () => {
+        if (released) return;
+        released = true;
+        decrementInflight(finalId);
+      };
+    } else if (strategy === "quota-weighted" && !quotaShareRelease && finalId) {
+      incrementInflight(finalId);
+      let released = false;
+      quotaShareRelease = () => {
+        if (released) return;
+        released = true;
+        decrementInflight(finalId);
+      };
+    }
+  }
 
   // Parallel pre-screen: check provider profiles and model availability for all targets
   // Only runs for priority strategy where sequential checking causes latency

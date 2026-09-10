@@ -97,6 +97,7 @@ export function SettingsAdvancedPage() {
   const [activeTab, setActiveTab] = useState<string>("core");
   const [coreForm] = Form.useForm();
   const [cliproxyForm] = Form.useForm();
+  const [headroomForm] = Form.useForm();
 
   const [payloadRulesText, setPayloadRulesText] = useState(
     JSON.stringify(EMPTY_PAYLOAD_RULES_TEMPLATE, null, 2)
@@ -119,6 +120,11 @@ export function SettingsAdvancedPage() {
     queryFn: () => settingsApi.getPayloadRules(),
   });
 
+  const headroomStatusQuery = useQuery({
+    queryKey: ["headroom-status"],
+    queryFn: () => settingsApi.headroomStatus(),
+  });
+
   // Sync settings
   useEffect(() => {
     if (settingsQuery.data) {
@@ -134,8 +140,11 @@ export function SettingsAdvancedPage() {
         cliproxyapi_url: s.cliproxyapi_url || "http://127.0.0.1:8317",
         cliproxyapi_fallback_codes: s.cliproxyapi_fallback_codes || "429,500,502,503,504",
       });
+      headroomForm.setFieldsValue({
+        headroomUrl: typeof s.headroomUrl === "string" ? s.headroomUrl : "",
+      });
     }
-  }, [settingsQuery.data, coreForm, cliproxyForm]);
+  }, [settingsQuery.data, coreForm, cliproxyForm, headroomForm]);
 
   useEffect(() => {
     if (thinkingBudgetQuery.data) {
@@ -241,6 +250,26 @@ export function SettingsAdvancedPage() {
       messageApi.success(tt("CLI Proxy 回退设置已保存", "CLI Proxy fallback settings saved"));
     } catch (err: any) {
       messageApi.error(err?.message || tt("保存失败", "Failed to save"));
+    }
+  };
+
+  const handleSaveHeadroom = async (values: { headroomUrl?: string }) => {
+    try {
+      await saveSettingsMutation.mutateAsync({ headroomUrl: values.headroomUrl?.trim() || "" });
+      await headroomStatusQuery.refetch();
+      messageApi.success(tt("Headroom 代理设置已保存", "Headroom proxy settings saved"));
+    } catch (err: any) {
+      messageApi.error(err?.message || tt("保存失败", "Failed to save"));
+    }
+  };
+
+  const runHeadroomAction = async (action: "start" | "stop") => {
+    try {
+      if (action === "start") await settingsApi.startHeadroom();
+      else await settingsApi.stopHeadroom();
+      await headroomStatusQuery.refetch();
+    } catch (err: any) {
+      messageApi.error(err?.message || tt("操作失败", "Operation failed"));
     }
   };
 
@@ -627,6 +656,77 @@ export function SettingsAdvancedPage() {
     </Form>
   );
 
+  const headroomStatus = headroomStatusQuery.data;
+  const tabHeadroom = (
+    <Form form={headroomForm} layout="vertical" onFinish={handleSaveHeadroom}>
+      <Card
+        title={
+          <Flex align="center" gap={8}>
+            <MaterialIcon name="compress" size={18} />
+            <span>{tt("Headroom 代理", "Headroom Proxy")}</span>
+          </Flex>
+        }
+        className={styles.sectionCard}
+        size="small"
+      >
+        <Form.Item
+          label={tt("代理地址", "Proxy URL")}
+          name="headroomUrl"
+          rules={[
+            { max: 500, message: tt("地址不能超过 500 个字符", "URL must be at most 500 characters") },
+            {
+              validator: (_, value) => {
+                const text = typeof value === "string" ? value.trim() : "";
+                if (!text) return Promise.resolve();
+                try {
+                  const protocol = new URL(text).protocol;
+                  return protocol === "http:" || protocol === "https:"
+                    ? Promise.resolve()
+                    : Promise.reject(new Error(tt("仅支持 HTTP(S) 地址", "Only HTTP(S) URLs are supported")));
+                } catch {
+                  return Promise.reject(new Error(tt("请输入有效的 URL", "Enter a valid URL")));
+                }
+              },
+            },
+          ]}
+          extra={tt(
+            "留空时依次使用 HEADROOM_URL 环境变量和 http://localhost:8787。外部代理仅探测状态，不由 Orbit 启停。",
+            "When empty, HEADROOM_URL and then http://localhost:8787 are used. External proxies are status-only."
+          )}
+        >
+          <Input placeholder="http://localhost:8787" disabled={saveSettingsMutation.isPending} />
+        </Form.Item>
+        <Flex align="center" justify="space-between" wrap gap={12}>
+          <Space>
+            <Tag color={headroomStatus?.running ? "success" : "default"}>
+              {headroomStatus?.running ? tt("运行中", "Running") : tt("未运行", "Stopped")}
+            </Tag>
+            {headroomStatus?.url && <Text type="secondary">{headroomStatus.url}</Text>}
+          </Space>
+          <Space>
+            <Button
+              onClick={() => void runHeadroomAction("start")}
+              disabled={!headroomStatus?.canStart || headroomStatus?.running}
+              loading={headroomStatusQuery.isFetching}
+            >
+              {tt("启动", "Start")}
+            </Button>
+            <Button
+              onClick={() => void runHeadroomAction("stop")}
+              disabled={!headroomStatus?.running}
+              loading={headroomStatusQuery.isFetching}
+            >
+              {tt("停止", "Stop")}
+            </Button>
+            <Button type="primary" htmlType="submit" loading={saveSettingsMutation.isPending}>
+              {tt("保存 Headroom 设置", "Save Headroom Settings")}
+            </Button>
+          </Space>
+        </Flex>
+      </Card>
+    </Form>
+  );
+
   return (
     <div className={styles.page}>
       {contextHolder}
@@ -701,6 +801,16 @@ export function SettingsAdvancedPage() {
               </Flex>
             ),
             children: tabCliproxy,
+          },
+          {
+            key: "headroom",
+            label: (
+              <Flex align="center" gap={6}>
+                <MaterialIcon name="compress" size={16} />
+                <span>{tt("Headroom 代理", "Headroom Proxy")}</span>
+              </Flex>
+            ),
+            children: tabHeadroom,
           },
         ]}
       />

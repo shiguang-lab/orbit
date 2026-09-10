@@ -9,4 +9,5 @@ export const FORMATS = {
   ANTIGRAVITY: "antigravity",
   KIRO: "kiro",
   CURSOR: "cursor",
+  CLOVA: "clova",
 };

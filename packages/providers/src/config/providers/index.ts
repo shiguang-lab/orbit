@@ -111,7 +111,12 @@ import { moonshotProvider } from "./registry/moonshot/index.ts";
 import { poeProvider } from "./registry/poe/index.ts";
 import { bazaarlinkProvider } from "./registry/bazaarlink/index.ts";
 import { perplexityProvider } from "./registry/perplexity/index.ts";
+import { maxaiProvider } from "./registry/maxai/index.ts";
+import { ucProvider } from "./registry/uc/index.ts";
+import { ucDirectProvider } from "./registry/uc-direct/index.ts";
+import { perplexityAgentProvider } from "./registry/perplexity/agent/index.ts";
 import { perplexity_webProvider } from "./registry/perplexity/web/index.ts";
+import { seekaiProvider } from "./registry/seekai/index.ts";
 import { minimaxProvider } from "./registry/minimax/index.ts";
 import { minimax_cnProvider } from "./registry/minimax/cn/index.ts";
 import { haiperProvider } from "./registry/haiper/index.ts";
@@ -121,6 +126,7 @@ import { blackbox_webProvider } from "./registry/blackbox/web/index.ts";
 import { uncloseaiProvider } from "./registry/uncloseai/index.ts";
 import { nscaleProvider } from "./registry/nscale/index.ts";
 import { chatgpt_web_codexProvider } from "./registry/chatgpt-web-codex/index.ts";
+import { chatgpt_webProvider } from "./registry/chatgpt-web/index.ts";
 import { openrouterProvider } from "./registry/openrouter/index.ts";
 import { cheaperinferenceProvider } from "./registry/cheaperinference/index.ts";
 import { openvectaProvider } from "./registry/openvecta/index.ts";
@@ -376,7 +382,12 @@ export const REGISTRY: Record<string, RegistryEntry> = {
   poe: poeProvider,
   bazaarlink: bazaarlinkProvider,
   perplexity: perplexityProvider,
+  maxai: maxaiProvider,
+  uc: ucProvider,
+  "uc-direct": ucDirectProvider,
+  "perplexity-agent": perplexityAgentProvider,
   "perplexity-web": perplexity_webProvider,
+  seekai: seekaiProvider,
   minimax: minimaxProvider,
   "minimax-cn": minimax_cnProvider,
   haiper: haiperProvider,
@@ -386,6 +397,7 @@ export const REGISTRY: Record<string, RegistryEntry> = {
   uncloseai: uncloseaiProvider,
   nscale: nscaleProvider,
   "chatgpt-web-codex": chatgpt_web_codexProvider,
+  "chatgpt-web": chatgpt_webProvider,
   openrouter: openrouterProvider,
   cheaperinference: cheaperinferenceProvider,
   openvecta: openvectaProvider,

@@ -1,4 +1,5 @@
 import { sanitizePII } from "./piiSanitizer.ts";
+import { sanitizeErrorMessage, sanitizeUpstreamDetails } from "@orbit/utils/errors";
 
 const SENSITIVE_KEYS = new Set([
   "api_key",
@@ -35,6 +36,22 @@ const SENSITIVE_KEYS = new Set([
   "runtimeKey",
 ]);
 
+const SENSITIVE_CHALLENGE_KEYS = new Set([
+  "recaptchav3token",
+  "recaptchatoken",
+  "turnstiletoken",
+  "prooftoken",
+  "resumetoken",
+  "preparetoken",
+]);
+
+function isSensitivePayloadKey(key: string): boolean {
+  return (
+    SENSITIVE_KEYS.has(key) ||
+    SENSITIVE_CHALLENGE_KEYS.has(key.replace(/[-_]/g, "").toLowerCase())
+  );
+}
+
 type JsonRecord = Record<string, unknown>;
 
 const ENCRYPTED_REASONING_KEY = "encrypted_content";
@@ -58,6 +75,112 @@ export function omitEncryptedReasoningFromLogChunks(chunks: string[]): string[] 
     return `${prefix}${encryptedReasoningOmissionMarker()}\"`;
   });
   return found ? [omitted] : chunks;
+}
+
+const ERROR_SUBTREE_KEYS = new Set([
+  "error",
+  "errors",
+  "warning",
+  "warnings",
+  "errormessage",
+  "warningmessage",
+  "errordescription",
+  "warningdescription",
+  "lasterror",
+]);
+
+function isErrorSubtreeKey(key: string): boolean {
+  return ERROR_SUBTREE_KEYS.has(key.replace(/[-_]/g, "").toLowerCase());
+}
+
+function isFailureEnvelope(value: JsonRecord): boolean {
+  try {
+    return [value.type, value.event, value.kind].some(
+      (entry) => typeof entry === "string" && entry.toLowerCase() === "response.failed"
+    ) || value.status === "failed";
+  } catch {
+    return true;
+  }
+}
+
+function projectErrorSubtreesForLog(
+  value: unknown,
+  seen = new WeakSet<object>(),
+  forceFailure = false,
+  preserveOutput = false
+): unknown {
+  if (typeof value === "string") {
+    return forceFailure && !preserveOutput ? sanitizeErrorMessage(value) || "[REDACTED]" : value;
+  }
+  if (!value || typeof value !== "object" || isOpaqueBinary(value)) return value;
+  if (seen.has(value)) return "[circular]";
+  seen.add(value);
+  try {
+    if (Array.isArray(value)) {
+      return value.map((entry) =>
+        projectErrorSubtreesForLog(entry, seen, forceFailure, preserveOutput)
+      );
+    }
+    const record = value as JsonRecord;
+    const failure = forceFailure || isFailureEnvelope(record);
+    const projected: JsonRecord = {};
+    for (const [key, entry] of Object.entries(record)) {
+      const normalized = key.replace(/[-_]/g, "").toLowerCase();
+      if (isErrorSubtreeKey(key)) {
+        projected[key] =
+          typeof entry === "string"
+            ? sanitizeErrorMessage(entry)
+            : sanitizeUpstreamDetails(entry);
+      } else {
+        projected[key] = projectErrorSubtreesForLog(
+          entry,
+          seen,
+          failure,
+          normalized === "output"
+        );
+      }
+    }
+    return projected;
+  } catch {
+    return "[REDACTED]";
+  } finally {
+    seen.delete(value);
+  }
+}
+
+export function sanitizeErrorFramesFromLogChunks(chunks: string[]): string[] {
+  const combined = chunks.map((chunk) => chunk.replace(STREAM_CHUNK_TIMESTAMP_RE, "")).join("");
+  let changed = false;
+  let errorEvent = false;
+  const lines = combined.split("\n").map((line) => {
+    const event = line.match(/^\s*event:\s*([^\s]+)\s*$/i)?.[1]?.toLowerCase();
+    if (event) {
+      errorEvent = event === "error" || event === "warning" || event === "response.failed";
+      return line;
+    }
+    if (!line.trim()) {
+      errorEvent = false;
+      return line;
+    }
+    const match = line.match(/^(\s*data:\s?)(.*)$/);
+    const raw = match ? match[2] : line.trim();
+    if (!raw || raw === "[DONE]" || (!errorEvent && !/[{[]/.test(raw[0]))) return line;
+    try {
+      const parsed = JSON.parse(raw) as unknown;
+      const projected = projectErrorSubtreesForLog(parsed, new WeakSet<object>(), errorEvent);
+      const serialized = JSON.stringify(projected);
+      if (serialized === raw) return line;
+      changed = true;
+      return match ? `${match[1]}${serialized}` : serialized;
+    } catch {
+      if (!errorEvent) return line;
+      changed = true;
+      return match
+        ? `${match[1]}${sanitizeErrorMessage(raw) || "[REDACTED]"}`
+        : sanitizeErrorMessage(line) || "[REDACTED]";
+    }
+  });
+  return changed ? [lines.join("\n")] : chunks;
 }
 
 /**
@@ -157,7 +280,7 @@ export function redactPayload(payload: unknown): unknown {
 
   const redacted: JsonRecord = {};
   for (const [key, value] of Object.entries(payload)) {
-    if (SENSITIVE_KEYS.has(key)) {
+    if (isSensitivePayloadKey(key)) {
       redacted[key] = "[REDACTED]";
     } else if (typeof value === "string" && value.startsWith("Bearer ")) {
       redacted[key] = "Bearer [REDACTED]";
@@ -194,9 +317,19 @@ export function sanitizePayloadPII(payload: unknown): unknown {
 export function protectPayloadForLog(payload: unknown): unknown {
   if (payload === null || payload === undefined) return null;
   const normalized = normalizePayloadForLog(payload);
-  const reasoningOmitted = omitEncryptedReasoningForLog(normalized);
+  const errorProjected = projectErrorSubtreesForLog(normalized);
+  const reasoningOmitted = omitEncryptedReasoningForLog(errorProjected);
   const piiSanitized = sanitizePayloadPII(reasoningOmitted);
   return redactPayload(piiSanitized);
+}
+
+export function protectErrorPayloadForLog(payload: unknown): unknown {
+  if (payload === null || payload === undefined) return null;
+  const normalized = normalizePayloadForLog(payload);
+  if (isOpaqueBinary(normalized)) return describeOpaqueBinary(normalized);
+  const errorProjected = projectErrorSubtreesForLog(normalized, new WeakSet<object>(), true);
+  const reasoningOmitted = omitEncryptedReasoningForLog(errorProjected);
+  return redactPayload(sanitizePayloadPII(reasoningOmitted));
 }
 
 export function serializePayloadForStorage(payload: unknown, maxLength = 65536): string | null {

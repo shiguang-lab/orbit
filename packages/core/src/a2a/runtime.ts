@@ -1,4 +1,5 @@
 export { getTaskManager } from "../lib/a2a/taskManager.js";
+export { listA2ATaskEvents, listA2ATaskHistory } from "../lib/db/a2aTasks.js";
 export type { TaskState } from "../lib/a2a/taskManager.js";
 export { logRoutingDecision } from "../lib/a2a/routingLogger.js";
 export { createA2AStream, SSE_HEADERS } from "../lib/a2a/streaming.js";

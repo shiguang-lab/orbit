@@ -14,12 +14,12 @@ const contracts = {
   "./control/oauth-runtime/utils/cliProxyAuthImport": {
     types: "./src/public/cliProxyAuthImport.d.ts",
     entry: "./src/control/cliProxyAuthImport.ts",
-    keys: ["scanCliProxyAuthDir", "toConnectionPayload"],
+    keys: ["parseCliProxyAuthRecord", "scanCliProxyAuthDir", "toConnectionPayload"],
   },
   "./conductor/hub-proxy": {
     types: "./src/public/hubProxy.d.ts",
     entry: "./src/conductor/hubProxy.ts",
-    keys: ["cancelConductorTask", "getConductorTaskDetail", "getFleetSnapshot"],
+    keys: ["cancelConductorTask", "createConductorTask", "getConductorTaskDetail", "getFleetSnapshot"],
   },
   "./db/obsidian-config": {
     types: "./src/public/obsidianConfigDb.d.ts",

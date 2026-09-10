@@ -111,15 +111,17 @@ function shouldBlock(detections: Detection[], threshold: "low" | "medium" | "hig
 }
 
 function getLogger(options: PromptInjectionGuardrailOptions, context: GuardrailContext) {
-  return options.logger || context.log || console;
+  if (options.logger !== undefined) return options.logger;
+  return context.log ?? null;
 }
 
 function emitGuardrailLog(
-  logger: GuardrailContext["log"] | Console,
+  logger: GuardrailContext["log"] | Console | null,
   level: "debug" | "info" | "warn",
   message: string,
   meta?: Record<string, unknown>
 ) {
+  if (!logger) return;
   if (logger === console) {
     console[level](message, meta || "");
     return;

@@ -19,14 +19,22 @@ export interface VertexAnthropicDiscoveryModel {
 
 export function parseVertexAnthropicModels(data: unknown): VertexAnthropicDiscoveryModel[] {
   if (!data || typeof data !== "object") return [];
-  const envelope = data as { models?: unknown[] };
-  const models = Array.isArray(envelope.models) ? envelope.models : [];
+  const envelope = data as { models?: unknown[]; publisherModels?: unknown[] };
+  const models = Array.isArray(envelope.publisherModels)
+    ? envelope.publisherModels
+    : Array.isArray(envelope.models)
+      ? envelope.models
+      : [];
 
   return models
     .map((m: unknown) => {
       const model = m as VertexPublisherModel;
       const rawName = typeof model.name === "string" ? model.name : "";
-      const id = rawName.replace(/^(?:projects\/[^/]+\/locations\/[^/]+\/)?publishers\/anthropic\/models\//, "") || rawName;
+      const id =
+        rawName.replace(
+          /^(?:projects\/[^/]+\/locations\/[^/]+\/)?publishers\/anthropic\/models\//,
+          ""
+        ) || rawName;
       if (!id) return null;
 
       return {

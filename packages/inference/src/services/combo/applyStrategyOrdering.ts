@@ -10,6 +10,7 @@ import {
 } from "./promptCacheAffinity.ts";
 import {
   orderTargetsByHeadroom,
+  orderTargetsByQuotaWeighted,
   orderTargetsByResetAwareQuota,
   orderTargetsByResetWindow,
 } from "./quotaStrategies.ts";
@@ -18,6 +19,7 @@ import {
   sortTargetsByCost,
   sortTargetsByUsage,
 } from "./targetSorters.ts";
+import { decrementInflight } from "./quotaShareInflight.ts";
 import type { ComboLike, ComboLogger, ResolvedComboTarget } from "./types.ts";
 
 /**
@@ -238,6 +240,27 @@ export async function applyStrategyOrdering(
     log.info(
       "COMBO",
       `Headroom ordering: ${orderedTargets[0]?.modelStr}${orderedTargets[0]?.connectionId ? ` (${orderedTargets[0].connectionId})` : ""} has most free capacity`
+    );
+  } else if (strategy === "quota-weighted") {
+    orderedTargets = await orderTargetsByQuotaWeighted(
+      orderedTargets,
+      combo.name,
+      config,
+      log,
+      apiKeyAllowedConnections
+    );
+    const winnerId = orderedTargets[0]?.connectionId ?? "";
+    if (winnerId) {
+      let released = false;
+      quotaShareRelease = () => {
+        if (released) return;
+        released = true;
+        decrementInflight(winnerId);
+      };
+    }
+    log.info(
+      "COMBO",
+      `Quota-weighted ordering: ${orderedTargets[0]?.modelStr}${winnerId ? ` (${winnerId})` : ""} first`
     );
   } else if (strategy === "quota-share") {
     // Internal quota-share combos (qtSd/): delegate to the dedicated module (DRR +

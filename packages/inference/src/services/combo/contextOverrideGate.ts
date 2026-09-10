@@ -23,6 +23,45 @@
  */
 
 import { getResolvedModelContextOverride } from "@orbit/core/catalog/model-capabilities";
+import { parseModel } from "../model.ts";
+
+const EFFORT_SUFFIXES = [
+  "minimal",
+  "medium",
+  "xhigh",
+  "none",
+  "high",
+  "max",
+  "low",
+] as const;
+
+function stripTrailingEffortSuffix(modelId: string): string | null {
+  const normalized = modelId.trim();
+  if (!normalized) return null;
+  const lowered = normalized.toLowerCase();
+  for (const suffix of EFFORT_SUFFIXES) {
+    const token = `-${suffix}`;
+    if (lowered.length > token.length && lowered.endsWith(token)) {
+      return normalized.slice(0, -token.length);
+    }
+  }
+  return null;
+}
+
+/** Exact variant overrides win; otherwise effort variants inherit the base row. */
+function lookupOverrideWithEffortInheritance(modelStr: string): number | null {
+  const exact = getResolvedModelContextOverride(modelStr);
+  if (exact != null) return exact;
+
+  const parsed = parseModel(modelStr);
+  const modelId = typeof parsed.model === "string" ? parsed.model.trim() : "";
+  const baseModelId = stripTrailingEffortSuffix(modelId);
+  if (!baseModelId || baseModelId === modelId) return null;
+
+  return parsed.provider
+    ? getResolvedModelContextOverride({ provider: parsed.provider, model: baseModelId })
+    : getResolvedModelContextOverride(baseModelId);
+}
 
 /**
  * Resolve the context-fit verdict from a persisted per-model override, if one
@@ -35,7 +74,7 @@ function resolveContextOverrideVerdict(
   requiredContextTokens: number
 ): boolean | undefined {
   if (!modelStr) return undefined;
-  const override = getResolvedModelContextOverride(modelStr);
+  const override = lookupOverrideWithEffortInheritance(modelStr);
   if (override == null) return undefined;
   return override >= requiredContextTokens;
 }

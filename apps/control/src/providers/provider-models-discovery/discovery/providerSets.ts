@@ -87,11 +87,8 @@ export const NAMED_OPENAI_STYLE_PROVIDERS = new Set([
   "sarvam",
   "writer",
   "plamo",
-  // frontier-providers-tier1 sweep: clova-studio, internlm, ant-ling each carry a
-  // live `<baseUrl>/models` endpoint confirmed 401 (exists + keyed) by curl smoke
-  // test. Live fetch keeps their catalogs fresh; the registry seed remains the
-  // offline fallback.
-  "clova-studio",
+  // InternLM and Ant Ling expose OpenAI-compatible live model catalogs. CLOVA
+  // Studio moved to its native v3 wire and uses its curated registry models.
   "internlm",
   "ant-ling",
   "nanogpt",

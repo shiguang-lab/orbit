@@ -323,19 +323,35 @@ export function resolveSearchBaseUrl(
   config: SearchProviderConfig,
   params: SearchRequestParams
 ): string {
-  const override = getProviderSettingString(params, "baseUrl");
-  if (override) {
-    // GHSA-j7j4-g9qc-q69c: the override is client-controlled (provider_options /
-    // providerSpecificData) and flows into a plain fetch() sink — validate it
-    // before any builder uses it as the server-side fetch target. Mode is
-    // block-metadata (NOT public-only): the primary searxng use case is a
-    // self-hosted instance on loopback/LAN, so private hosts keep working,
-    // while cloud-metadata endpoints (IMDS credential theft) are rejected.
-    // The catalog's own config.baseUrl is operator config and stays untouched.
-    parseAndValidateNonMetadataUrl(override);
-    return override.replace(/\/+$/, "");
+  const operatorOverride = params.providerSpecificData?.baseUrl;
+  if (typeof operatorOverride === "string" && operatorOverride.trim()) {
+    const normalized = operatorOverride.trim();
+    parseAndValidateNonMetadataUrl(normalized);
+    return normalized.replace(/\/+$/, "");
+  }
+
+  const callerOverride = params.providerOptions?.baseUrl;
+  if (typeof callerOverride === "string" && callerOverride.trim()) {
+    if (!config.allowClientBaseUrlOverride || config.authType === "apikey") {
+      throw new SearchBaseUrlOverrideError(config.id);
+    }
+    const normalized = callerOverride.trim();
+    parseAndValidateNonMetadataUrl(normalized);
+    return normalized.replace(/\/+$/, "");
   }
   return config.baseUrl.replace(/\/+$/, "");
+}
+
+export class SearchBaseUrlOverrideError extends Error {
+  readonly code = "SEARCH_BASE_URL_OVERRIDE_REFUSED";
+
+  constructor(providerId: string) {
+    super(
+      `provider_options.baseUrl is not accepted for search provider "${providerId}". ` +
+        "Set the base URL on the provider connection instead."
+    );
+    this.name = "SearchBaseUrlOverrideError";
+  }
 }
 
 function toSearchPageNumber(offset: number | undefined, maxResults: number): number | undefined {

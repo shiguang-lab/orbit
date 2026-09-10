@@ -1,5 +1,6 @@
 import { getCloudSyncScheduler } from "./cloudSyncScheduler.ts";
-import { isCloudEnabled, cleanupProviderConnections } from "../../lib/localDb.ts";
+import { isCloudEnabled } from "../../lib/db/settings.ts";
+import { cleanupProviderConnections } from "../../lib/db/providers.ts";
 
 /**
  * Initialize cloud sync scheduler

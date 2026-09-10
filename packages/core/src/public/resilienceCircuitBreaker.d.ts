@@ -60,6 +60,7 @@ export class CircuitBreakerOpenError extends Error {
 }
 
 export function isLocalStreamLifecycleError(error: unknown): boolean;
+export function isModelCapacityOverloadError(error: unknown): boolean;
 export function getAllCircuitBreakerStatuses(): CircuitBreakerStatus[];
 export function getCircuitBreaker(
   name: string,

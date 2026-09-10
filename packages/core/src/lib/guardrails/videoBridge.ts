@@ -28,6 +28,7 @@ import {
   type VideoAnalysisContext,
 } from "./videoBridgePipeline";
 import { getSharedVideoResultCacheFor } from "./videoBridgeResultCache";
+import type { VideoBridgeLogRedactionEntry } from "./videoBridgeSnapshotRedaction";
 import { type VisionModelConfig } from "./visionBridgeHelpers";
 import { getBestVisionModel } from "./visionBridgeRouter";
 
@@ -163,6 +164,7 @@ export class VideoBridgeGuardrail extends BaseGuardrail {
     };
     let samplingPolicyEffective: "uniform" | "scene_aware" | "segment_aware" = "uniform";
     let failures = 0;
+    const logRedactionEntries: VideoBridgeLogRedactionEntry[] = [];
 
     const attemptedParts = parts.slice(0, runtime.maxVideos);
     for (let index = 0; index < attemptedParts.length; index++) {
@@ -191,6 +193,15 @@ export class VideoBridgeGuardrail extends BaseGuardrail {
       }
 
       descriptions.push(result.description);
+      if (result.descriptionRedacted !== undefined) {
+        logRedactionEntries.push({
+          container: part.container,
+          messageIndex: part.messageIndex,
+          partIndex: part.partIndex,
+          fullText: result.description,
+          redactedText: result.descriptionRedacted,
+        });
+      }
       totalFramesRequested += result.framesRequested;
       totalFramesExtracted += result.framesExtracted;
       totalFramesUsed += result.framesUsed;
@@ -237,6 +248,8 @@ export class VideoBridgeGuardrail extends BaseGuardrail {
         focusWindowsApplied,
         focusHintsApplied,
         transcriptCuesApplied,
+        videoBridgeObserved: logRedactionEntries.length > 0,
+        ...(logRedactionEntries.length > 0 ? { videoBridgeLogRedaction: logRedactionEntries } : {}),
         contactSheetsUsed,
         audioFusionRuns,
         audioFusionPartials,

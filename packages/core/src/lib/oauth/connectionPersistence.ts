@@ -51,6 +51,18 @@ function isSameCodexAccount(
   return Boolean(incomingUserId) && safeEqual(existingUserId, incomingUserId);
 }
 
+function isSameClaudeAccount(
+  existingProviderData: Record<string, any> | null | undefined,
+  incomingProviderData: Record<string, any> | null | undefined
+): boolean {
+  const incomingOrganization = incomingProviderData?.organizationUUID;
+  const existingOrganization = existingProviderData?.organizationUUID;
+  if (incomingOrganization && existingOrganization) {
+    return safeEqual(existingOrganization, incomingOrganization);
+  }
+  return true;
+}
+
 /**
  * Find the existing OAuth connection (if any) that an incoming token payload
  * should be merged into, shared by every OAuth-completion call site
@@ -75,6 +87,9 @@ export function findExistingOAuthConnectionMatch(
     if (!safeEqual(c.email, tokenData.email) || c.authType !== "oauth") return false;
     if (provider === "codex") {
       return isSameCodexAccount(c.providerSpecificData, tokenData.providerSpecificData);
+    }
+    if (provider === "claude") {
+      return isSameClaudeAccount(c.providerSpecificData, tokenData.providerSpecificData);
     }
     return true;
   });
@@ -104,6 +119,14 @@ export function buildOAuthConnectionCreatePayload(
     lastError: string;
   } | null
 ) {
+  const persistStatus = degradedProject
+    ? {
+        testStatus: degradedProject.testStatus,
+        errorCode: degradedProject.errorCode,
+        lastErrorType: degradedProject.lastErrorType,
+        lastError: degradedProject.lastError,
+      }
+    : { testStatus: "active" as const, errorCode: null, lastErrorType: null, lastError: null };
   return {
     provider,
     authType: "oauth" as const,
@@ -113,14 +136,19 @@ export function buildOAuthConnectionCreatePayload(
     // #11284: degraded when Cloud Code projectId discovery failed at connect
     // time — the row is saved (refresh token stored, request-time bootstrap
     // can self-heal) but visibly NOT active.
-    testStatus: degradedProject?.testStatus ?? ("active" as const),
-    ...(degradedProject
-      ? {
-          errorCode: degradedProject.errorCode,
-          lastErrorType: degradedProject.lastErrorType,
-          lastError: degradedProject.lastError,
-        }
-      : {}),
+    ...persistStatus,
+  };
+}
+
+function antigravityDegradedState(provider: string, tokenData: Record<string, any>) {
+  if (provider !== "agy" && provider !== "antigravity") return null;
+  const projectId = tokenData.projectId || tokenData.providerSpecificData?.projectId;
+  if (typeof projectId === "string" && projectId.trim()) return null;
+  return {
+    testStatus: "degraded" as const,
+    errorCode: "missing_project_id",
+    lastErrorType: "oauth_missing_project_id",
+    lastError: "Cloud Code projectId is missing; project discovery will retry on request.",
   };
 }
 
@@ -148,6 +176,7 @@ export async function persistOAuthConnection(
   const expiresAt = tokenData.expiresIn
     ? new Date(Date.now() + tokenData.expiresIn * 1000).toISOString()
     : null;
+  const degradedProject = antigravityDegradedState(provider, tokenData);
 
   let connection: any;
   // A connectionId is an explicit "update THIS connection" signal (token refresh
@@ -163,14 +192,19 @@ export async function persistOAuthConnection(
       connection = await updateProviderConnection(matchId, {
         ...tokenData,
         expiresAt,
-        testStatus: "active",
+        ...(degradedProject ?? {
+          testStatus: "active",
+          errorCode: null,
+          lastErrorType: null,
+          lastError: null,
+        }),
         isActive: true,
       });
     }
   }
   if (!connection) {
     connection = await createProviderConnection(
-      buildOAuthConnectionCreatePayload(provider, tokenData, expiresAt)
+      buildOAuthConnectionCreatePayload(provider, tokenData, expiresAt, degradedProject)
     );
   }
 

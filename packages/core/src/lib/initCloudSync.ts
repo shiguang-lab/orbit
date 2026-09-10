@@ -3,6 +3,7 @@ import { isAutomatedTestProcess } from "@orbit/utils/process";
 import { getJobRegistry } from "./jobRegistry/index.ts";
 import { registerBudgetResetJob } from "./jobs/budgetResetJob.ts";
 import { registerTokenHealthCheck } from "./jobs/tokenHealthCheckJob.ts";
+import { registerLogExportJob } from "./jobs/logExportJob.ts";
 import { backfillVolcPlanAutoSync } from "./providers/volcPlanAutoSyncBackfill.ts";
 
 // Initialize runtime background sync services once per server process.
@@ -41,6 +42,7 @@ export async function ensureCloudSyncInitialized() {
       const registry = getJobRegistry();
       registerBudgetResetJob(registry);
       registerTokenHealthCheck(registry);
+      registerLogExportJob(registry);
       await registry.startAll();
 
       initialized = true;

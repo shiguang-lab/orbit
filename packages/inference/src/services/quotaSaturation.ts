@@ -63,6 +63,9 @@ const CACHE_TTL_MS = 30_000; // 30 seconds
 
 const _cache = new Map<string, CacheEntry>();
 
+// Concurrent misses for the same quota dimension share one upstream read.
+const _inflight = new Map<string, Promise<number>>();
+
 // ---------------------------------------------------------------------------
 // Rate-limit header cache (populated by response handlers)
 // ---------------------------------------------------------------------------
@@ -271,6 +274,7 @@ function cacheKey(connectionId: string, provider: string, dim: DimensionSpec): s
 // Exported for test reset
 export function _clearSaturationCache(): void {
   _cache.clear();
+  _inflight.clear();
 }
 
 // ---------------------------------------------------------------------------
@@ -553,34 +557,45 @@ export async function getSaturation(
     return cached.value;
   }
 
-  let value = 0;
-  try {
-    switch (provider) {
-      case "codex":
-        value = await fetchCodexSaturation(connectionId, dim, connection);
-        break;
-      case "bailian":
-        value = await fetchBailianSaturation(connectionId, dim);
-        break;
-      case "anthropic":
-      case "claude":
-        value = await fetchAnthropicSaturation(connectionId, dim);
-        break;
-      default:
-        value = await fetchGenericSaturation(connectionId, provider);
-        break;
-    }
-  } catch (err) {
-    log.warn("saturation fetch failed — failing open with 0", {
-      err: (err as Error)?.message,
-      connectionId,
-      provider,
-    });
-    value = 0;
-  }
+  const pending = _inflight.get(key);
+  if (pending) return pending;
 
-  _cache.set(key, { value, ts: Date.now() });
-  return value;
+  const task = (async (): Promise<number> => {
+    let value = 0;
+    try {
+      switch (provider) {
+        case "codex":
+          value = await fetchCodexSaturation(connectionId, dim, connection);
+          break;
+        case "bailian":
+          value = await fetchBailianSaturation(connectionId, dim);
+          break;
+        case "anthropic":
+        case "claude":
+          value = await fetchAnthropicSaturation(connectionId, dim);
+          break;
+        default:
+          value = await fetchGenericSaturation(connectionId, provider);
+          break;
+      }
+    } catch (err) {
+      log.warn("saturation fetch failed — failing open with 0", {
+        err: (err as Error)?.message,
+        connectionId,
+        provider,
+      });
+      value = 0;
+    }
+
+    _cache.set(key, { value, ts: Date.now() });
+    return value;
+  })();
+  _inflight.set(key, task);
+  try {
+    return await task;
+  } finally {
+    _inflight.delete(key);
+  }
 }
 
 let quotaSaturationRuntimePortInstalled = false;

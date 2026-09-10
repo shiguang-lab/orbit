@@ -114,6 +114,7 @@ import { isNamedOpenAIStyleProvider } from "./discovery/providerSets.js";
 import { buildStaleEncryptionKeyResponse } from "./staleEncryptionGuard.js";
 import {
   type ProviderModelsConfigEntry,
+  assembleProviderModelsHeaders,
   PROVIDER_MODELS_CONFIG,
 } from "./discovery/providerModelsConfig.js";
 import {
@@ -1298,14 +1299,6 @@ export async function getProviderModels(
       return buildApiDiscoveryResponse(normalizeSapModelsResponse(await response.json()));
     }
 
-    if (provider === "claude") {
-      return buildResponse({
-        provider,
-        connectionId,
-        models: getStaticModelsForProvider("claude") || [],
-      });
-    }
-
     if (provider === "cursor") {
       const cachedResponse = maybeReturnCachedDiscovery();
       if (cachedResponse) return cachedResponse;
@@ -1859,28 +1852,10 @@ export async function getProviderModels(
         throw error;
       }
 
-      // ponytail: Anthropic partner models via Model Garden publisher endpoint (Bearer only)
+      // Anthropic partner models use the global v1beta1 Model Garden list endpoint.
       if (bearerToken) {
-        const psd = asRecord(connection.providerSpecificData);
-        const region = (typeof psd.region === "string" && psd.region.trim()) || "us-central1";
-
-        // Extract project_id from SA JSON for project-scoped listing (mirrors executor URL pattern).
-        // Falls back to global publisher endpoint if no project available.
-        let anthropicModelsUrl: string;
-        let projectId: string | null = null;
-        if (credential) {
-          try {
-            const sa = JSON.parse(credential);
-            if (sa?.project_id) projectId = sa.project_id;
-          } catch {
-            /* not SA JSON, skip */
-          }
-        }
-        if (projectId) {
-          anthropicModelsUrl = `https://aiplatform.googleapis.com/v1/projects/${projectId}/locations/${region}/publishers/anthropic/models`;
-        } else {
-          anthropicModelsUrl = `https://aiplatform.googleapis.com/v1/publishers/anthropic/models`;
-        }
+        const anthropicModelsUrl =
+          "https://aiplatform.googleapis.com/v1beta1/publishers/anthropic/models";
 
         try {
           const anthropicResponse = await safeOutboundFetch(anthropicModelsUrl, {
@@ -1901,7 +1876,6 @@ export async function getProviderModels(
           } else {
             console.log("[models] Vertex Anthropic partner discovery failed", {
               provider,
-              region,
               status: anthropicResponse.status,
             });
           }
@@ -2267,12 +2241,11 @@ export async function getProviderModels(
     }
 
     // Build headers
-    const headers = config.buildHeaders
-      ? config.buildHeaders(token, connection)
-      : { ...config.headers };
-    if (!config.buildHeaders && config.authHeader && !config.authQuery) {
-      headers[config.authHeader] = (config.authPrefix || "") + token;
-    }
+    const headers = assembleProviderModelsHeaders(config, token, {
+      ...connection,
+      accessToken,
+      apiKey,
+    });
 
     // Make request (with pagination for providers that use nextPageToken, e.g. Gemini)
     const fetchOptions: any = {

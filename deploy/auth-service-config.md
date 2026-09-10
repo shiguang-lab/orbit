@@ -52,11 +52,11 @@ DEFAULT_ENTITLEMENTS=superagents:access,huiguang:access,platform:access,asset-hu
 说明：forward-auth 校验会话实际携带的 entitlement。`DEFAULT_ENTITLEMENTS` 用于签发会话，
 仅修改该配置不能证明已有会话已经获得新授权；真实登录验收必须覆盖这一点。
 
-### ALLOWED_RETURN_ORIGINS(追加 `https://llm-gateway.shiguanglab.com`)
+### ALLOWED_RETURN_ORIGINS(追加 `https://ai.shiguanglab.com`)
 
 ```bash
 ALLOWED_RETURN_ORIGINS=https://shiguanglab.com,https://www.shiguanglab.com,\
-https://opc.shiguanglab.com,https://llm-gateway.shiguanglab.com
+https://opc.shiguanglab.com,https://ai.shiguanglab.com
 ```
 
 说明：登录成功后回跳 `return_to` 的 origin 白名单，不加则 `safeReturnTo` 拒绝回跳。
@@ -117,4 +117,4 @@ Orbit 是单管理员系统(无 org/多用户)。接入后：
 
 1. 在 auth-service 部署 env 追加上述变量
 2. 重启 auth-service(网关 token 不变，签名密钥不变)
-3. 网关配置更新后验证：登录 shiguanglab.com → 访问 llm-gateway.shiguanglab.com → 放行
+3. 网关配置更新后验证：登录 shiguanglab.com → 访问 ai.shiguanglab.com → 放行

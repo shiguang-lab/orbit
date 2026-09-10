@@ -42,6 +42,7 @@ export function isClientAbortError(err) {
   const e = /** @type {NodeJS.ErrnoException} */ (err);
   // Node emits `Error: aborted` (no code) from http.Server#abortIncoming.
   if (e.message === "aborted" || e.message === "Aborted") return true;
+  if (e.name === "AbortError" && /abort/i.test(String(e.message))) return true;
   switch (e.code) {
     case "ERR_STREAM_PREMATURE_CLOSE":
     case "ECONNRESET":

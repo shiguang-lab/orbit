@@ -1,3 +1,5 @@
+import { pickCacheCreationTokens } from "../utils/pickCacheCreationTokens.ts";
+
 /**
  * Extract usage from non-streaming response body
  * Handles different provider response formats
@@ -16,6 +18,7 @@ export function extractUsageFromResponse(responseBody, provider) {
     typeof responseBody.usage === "object" &&
     responseBody.usage.prompt_tokens !== undefined
   ) {
+    const cacheCreationTokens = pickCacheCreationTokens(responseBody.usage);
     return {
       prompt_tokens: responseBody.usage.prompt_tokens || 0,
       completion_tokens: responseBody.usage.completion_tokens || 0,
@@ -28,6 +31,9 @@ export function extractUsageFromResponse(responseBody, provider) {
         responseBody.usage.prompt_cache_hit_tokens ??
         responseBody.usage.cached_tokens ??
         responseBody.usage.cache_read_input_tokens,
+      ...(cacheCreationTokens !== undefined
+        ? { cache_creation_input_tokens: cacheCreationTokens }
+        : {}),
       reasoning_tokens:
         responseBody.usage.completion_tokens_details?.reasoning_tokens ??
         responseBody.usage.output_tokens_details?.reasoning_tokens ??
@@ -85,7 +91,7 @@ export function extractUsageFromResponse(responseBody, provider) {
         responsesUsage.input_tokens_details?.cached_tokens ??
         responsesUsage.prompt_tokens_details?.cached_tokens ??
         responsesUsage.cache_read_input_tokens,
-      cache_creation_input_tokens: responsesUsage.cache_creation_input_tokens,
+      cache_creation_input_tokens: pickCacheCreationTokens(responsesUsage),
       reasoning_tokens:
         responsesUsage.output_tokens_details?.reasoning_tokens ??
         responsesUsage.completion_tokens_details?.reasoning_tokens ??

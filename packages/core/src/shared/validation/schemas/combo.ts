@@ -29,6 +29,7 @@ export const comboModelStepInputSchema = z.object({
   providerId: z.string().trim().min(1).max(120).optional(),
   model: z.string().trim().min(1).max(300),
   connectionId: z.string().trim().min(1).max(200).nullable().optional(),
+  allowedConnectionIds: z.array(z.string().trim().min(1).max(200)).max(50).optional(),
   tags: z.array(z.string().trim().min(1).max(100)).max(20).optional(),
   // Pipeline strategy (open-sse/services/pipeline.ts): an optional per-step
   // instruction. Steps run in `models` order — each step's output feeds the next
@@ -77,19 +78,21 @@ export const comboStrategySchema = z.enum(ROUTING_STRATEGY_VALUES);
 
 export const scoringWeightsSchema = z
   .object({
-    quota: z.number().min(0).max(1),
-    health: z.number().min(0).max(1),
-    costInv: z.number().min(0).max(1),
-    latencyInv: z.number().min(0).max(1),
-    taskFit: z.number().min(0).max(1),
-    stability: z.number().min(0).max(1),
-    tierPriority: z.number().min(0).max(1).optional().default(0.05),
-    tierAffinity: z.number().min(0).max(1).optional().default(0.05),
-    specificityMatch: z.number().min(0).max(1).optional().default(0.05),
-    contextAffinity: z.number().min(0).max(1).optional().default(0.08),
+    quota: z.number().min(0).max(1).optional().default(0.1429),
+    health: z.number().min(0).max(1).optional().default(0.1605),
+    costInv: z.number().min(0).max(1).optional().default(0.1429),
+    latencyInv: z.number().min(0).max(1).optional().default(0.1143),
+    taskFit: z.number().min(0).max(1).optional().default(0.0762),
+    stability: z.number().min(0).max(1).optional().default(0.0476),
+    tierPriority: z.number().min(0).max(1).optional().default(0.0476),
+    tierAffinity: z.number().min(0).max(1).optional().default(0.0476),
+    specificityMatch: z.number().min(0).max(1).optional().default(0.0476),
+    contextAffinity: z.number().min(0).max(1).optional().default(0.0476),
     cacheAffinity: z.number().min(0).max(1).optional().default(0),
-    sessionAvailability: z.number().min(0).max(1).optional().default(0.05),
+    sessionAvailability: z.number().min(0).max(1).optional().default(0.0476),
     resetWindowAffinity: z.number().min(0).max(1).optional().default(0),
+    connectionDensity: z.number().min(0).max(1).optional().default(0.0476),
+    quality: z.number().min(0).max(1).optional().default(0.03),
   })
   .optional();
 
@@ -217,6 +220,7 @@ export const comboRuntimeConfigSchema = z
     resetAwareWeeklyWeight: z.coerce.number().min(0).max(100).optional(),
     resetAwareTieBandPercent: z.coerce.number().min(0).max(100).optional(),
     resetAwareExhaustionGuardPercent: z.coerce.number().min(0).max(100).optional(),
+    quotaWeightedFloorPercent: z.coerce.number().min(0).max(100).optional(),
     resetAwareQuotaCacheTtlMs: z.coerce.number().int().min(0).max(300_000).optional(),
     resetAwareQuotaCacheMaxStaleMs: z.coerce.number().int().min(0).max(3_600_000).optional(),
     resetWindowWindows: z.array(z.enum(["weekly", "session", "monthly"])).optional(),
@@ -404,9 +408,9 @@ export const updateComboSchema = z
     isActive: z.boolean().optional(),
     allowedProviders: z.array(z.string().trim().min(1).max(200)).max(100).optional(),
     allowedModelFamilies: z.array(z.string().trim().min(1).max(100)).max(100).optional(),
-    system_message: z.string().max(50000).optional(),
-    tool_filter_regex: z.string().max(1000).optional(),
-    context_cache_protection: z.boolean().optional(),
+    system_message: z.string().max(50000).optional().nullable(),
+    tool_filter_regex: z.string().max(1000).optional().nullable(),
+    context_cache_protection: z.boolean().optional().nullable(),
     context_length: z.number().int().min(1000).max(2000000).optional().nullable(),
     compressionOverride: comboCompressionOverrideSchema.optional(),
     dimensions: z

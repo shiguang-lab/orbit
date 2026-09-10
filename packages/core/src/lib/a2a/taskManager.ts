@@ -12,6 +12,13 @@
  */
 
 import { randomUUID } from "crypto";
+import { appendA2ATaskEvent, purgeA2AHistory, upsertA2ATask } from "../db/a2aTasks.ts";
+import { emit } from "../events/eventBus.ts";
+
+export interface A2APersistence {upsert:typeof upsertA2ATask;appendEvent:typeof appendA2ATaskEvent;purge:typeof purgeA2AHistory}
+const defaultPersistence:A2APersistence={upsert:upsertA2ATask,appendEvent:appendA2ATaskEvent,purge:purgeA2AHistory};
+const TERMINAL_STATES=new Set<TaskState>(["completed","failed","cancelled"]);
+export function historyRetentionDays(env:NodeJS.ProcessEnv=process.env){const value=Number.parseInt(env.ORBIT_A2A_HISTORY_RETENTION_DAYS??"",10);return Number.isFinite(value)&&value>0?value:30;}
 
 // ============ Types ============
 
@@ -85,9 +92,12 @@ export class A2ATaskManager {
   private readonly ttlMs: number;
   private cleanupInterval: ReturnType<typeof setInterval>;
   private activeStreams = 0;
+  private lastPurgeAt = 0;
+  private readonly persistence:A2APersistence;
 
-  constructor(ttlMinutes: number = 5) {
+  constructor(ttlMinutes: number = 5,persistence:A2APersistence=defaultPersistence) {
     this.ttlMs = ttlMinutes * 60 * 1000;
+    this.persistence=persistence;
     this.cleanupInterval = setInterval(() => this.cleanupExpired(), 60_000);
     if (
       this.cleanupInterval &&
@@ -107,13 +117,15 @@ export class A2ATaskManager {
       input,
       artifacts: [],
       events: [{ timestamp: now.toISOString(), state: "submitted" }],
-      metadata: input.metadata || {},
+      metadata: { ...(input.metadata ?? {}) },
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
       expiresAt: new Date(now.getTime() + this.ttlMs).toISOString(),
       ...(owner !== undefined ? { owner } : {}),
     };
     this.tasks.set(task.id, task);
+    emit("agent.task.updated", { source: "a2a", taskId: task.id, state: task.state, timestamp: Date.now() });
+    this.persist(task,"state:submitted");
     return task;
   }
 
@@ -157,6 +169,8 @@ export class A2ATaskManager {
     task.updatedAt = now;
     task.events.push({ timestamp: now, state, message });
     if (artifacts) task.artifacts.push(...artifacts);
+    emit("agent.task.updated", { source: "a2a", taskId, state, timestamp: Date.now() });
+    this.persist(task,`state:${state}`,message);
 
     return task;
   }
@@ -243,6 +257,8 @@ export class A2ATaskManager {
         task.state = "failed";
         task.updatedAt = now.toISOString();
         task.events.push({ timestamp: now.toISOString(), state: "failed", message: "TTL expired" });
+        this.persist(task,"state:failed","TTL expired");
+        emit("agent.task.updated", { source: "a2a", taskId: id, state: "failed", timestamp: Date.now() });
       }
       // Remove terminal tasks older than 2x TTL
       if (
@@ -252,7 +268,10 @@ export class A2ATaskManager {
         this.tasks.delete(id);
       }
     }
+    if(Date.now()-this.lastPurgeAt>86_400_000){this.lastPurgeAt=Date.now();try{this.persistence.purge(historyRetentionDays())}catch(error){console.warn("[A2A] history purge failed",error)}}
   }
+
+  private persist(task:A2ATask,eventType:string,message?:string){try{this.persistence.upsert({id:task.id,state:task.state,skillId:task.skill,inputJson:JSON.stringify(task.input),outputJson:task.artifacts.length?JSON.stringify(task.artifacts):null,apiKeyId:task.owner??null,createdAt:task.createdAt,updatedAt:task.updatedAt,completedAt:TERMINAL_STATES.has(task.state)?task.updatedAt:null});this.persistence.appendEvent(task.id,eventType,message?JSON.stringify({message}):undefined)}catch(error){console.warn("[A2A] task history persist failed",error)}}
 
   destroy() {
     clearInterval(this.cleanupInterval);

@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import { sanitizeErrorMessage, sanitizeUpstreamDetails } from "./index.js";
 export { sanitizeErrorMessage } from "./index.js";
 
 export type ApiErrorType =
@@ -31,9 +32,11 @@ export function createErrorResponse(payload: ApiErrorPayload): Response {
   return Response.json(
     {
       error: {
-        message: payload.message,
+        message: sanitizeErrorMessage(payload.message),
         type: resolvedType,
-        details: payload.details,
+        ...(payload.details === undefined
+          ? {}
+          : { details: sanitizeUpstreamDetails(payload.details) }),
       },
       requestId,
     },
@@ -54,7 +57,9 @@ export function createErrorResponseFromUnknown(
   const status = Number(anyError?.status) || 500;
   return createErrorResponse({
     status,
-    message: typeof anyError?.message === "string" ? anyError.message : fallbackMessage,
+    message: sanitizeErrorMessage(
+      typeof anyError?.message === "string" ? anyError.message : fallbackMessage,
+    ),
     type: anyError?.type,
     details: anyError?.details,
   });

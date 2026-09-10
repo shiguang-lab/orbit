@@ -97,7 +97,8 @@ export async function resolveQuotaExhaustionCutoffForTarget(
   resilienceSettings: ResilienceSettings | null | undefined,
   resetWindowConfig: ResetWindowConfig,
   comboName: string,
-  log: { debug?: (...args: unknown[]) => void; warn?: (...args: unknown[]) => void }
+  log: { debug?: (...args: unknown[]) => void; warn?: (...args: unknown[]) => void },
+  requestedModel?: string | null
 ): Promise<{ blocked: boolean; reason?: string }> {
   const quotaCutoffEnabled =
     (resilienceSettings ?? resolveResilienceSettings(null))?.quotaPreflight?.enabled === true;
@@ -119,7 +120,7 @@ export async function resolveQuotaExhaustionCutoffForTarget(
     const quota = await fetchResetAwareQuotaWithCache({
       provider,
       connectionId,
-      connection,
+      connection: connection ? { ...connection, requestedModel } : connection,
       fetcher,
       config: resetWindowConfig,
       log,
@@ -127,7 +128,8 @@ export async function resolveQuotaExhaustionCutoffForTarget(
     });
     const cutoffDecision = evaluateQuotaCutoff(
       quota as QuotaInfo | null,
-      buildAutoQuotaThresholds(provider, connection, resilienceSettings)
+      buildAutoQuotaThresholds(provider, connection, resilienceSettings),
+      { provider, requestedModel: requestedModel ?? null }
     );
     if (!cutoffDecision.proceed) {
       return { blocked: true, reason: cutoffDecision.reason || "quota_exhausted" };

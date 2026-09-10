@@ -859,7 +859,11 @@ export function compactStructuredStreamPayload(payload: unknown): unknown {
 }
 
 export function createStructuredSSECollector(options: CollectorOptions = {}) {
-  const { maxEvents = 200, maxBytes = 49152, stage, format, fallbackModel } = options;
+  // Reasoning-heavy Responses streams can emit well over 200 small deltas
+  // before their terminal output. Keep the cap bounded, but high enough that
+  // ordinary long reasoning does not discard the completion event used by
+  // logging and continuation reconstruction.
+  const { maxEvents = 2000, maxBytes = 524288, stage, format, fallbackModel } = options;
   const events: StructuredSSEEvent[] = [];
   let usedBytes = 0;
   let droppedEvents = 0;

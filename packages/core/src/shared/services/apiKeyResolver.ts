@@ -1,4 +1,4 @@
-import { getApiKeyById, createApiKey } from "../../lib/localDb.ts";
+import { createApiKey, getApiKeyById } from "../../lib/db/apiKeys.ts";
 import { getConsistentMachineId } from "../utils/machineId.ts";
 
 export async function resolveApiKey(

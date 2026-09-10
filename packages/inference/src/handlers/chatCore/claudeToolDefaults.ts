@@ -25,3 +25,25 @@ export function defaultClaudeToolType(tools: unknown): unknown {
     return tool;
   });
 }
+
+export function stripClaudeCustomToolType(tools: unknown): unknown {
+  if (!Array.isArray(tools)) return tools;
+  return tools.map((tool) => {
+    if (
+      tool &&
+      typeof tool === "object" &&
+      !Array.isArray(tool) &&
+      (tool as UnknownRecord).type === "custom"
+    ) {
+      const { type: _stripped, ...rest } = tool as UnknownRecord;
+      return rest;
+    }
+    return tool;
+  });
+}
+
+export function normalizeClaudeToolsForDispatch(tools: unknown, provider: string): unknown {
+  return provider === "agentrouter"
+    ? stripClaudeCustomToolType(tools)
+    : defaultClaudeToolType(tools);
+}

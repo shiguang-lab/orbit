@@ -1,6 +1,6 @@
 # Orbit 生产入口与统一认证
 
-生产域名固定为 `llm-gateway.shiguanglab.com`。本文件描述待实施的切换方案，不表示 Caddy
+生产域名固定为 `ai.shiguanglab.com`。本文件描述待实施的切换方案，不表示 Caddy
 已经发布或业务流量已经切换。
 
 生产 Caddyfile：`/Users/yanxianliang/shiguang/deploy/access-gateway/Caddyfile`。
@@ -26,7 +26,7 @@
 共享会话端点仍由中央 auth-service 提供，不属于 NAS 业务 upstream。
 
 ```caddy
-@llmGateway host llm-gateway.shiguanglab.com
+@llmGateway host ai.shiguanglab.com
 handle @llmGateway {
     @gatewayPublic path /healthz /api/health /api/healthz /api/livez /api/readyz
     handle @gatewayPublic {
@@ -87,7 +87,7 @@ handle @llmGateway {
 }
 ```
 
-`wss://llm-gateway.shiguanglab.com/live-ws` 与 SSE 请求必须经同一入口进行真实连接、重连和
+`wss://ai.shiguanglab.com/live-ws` 与 SSE 请求必须经同一入口进行真实连接、重连和
 流式验收。不能仅以 HTML、健康检查或普通 JSON 请求成功替代验收。
 
 ## 统一认证上线门禁
@@ -104,7 +104,7 @@ handle @llmGateway {
 部署环境设置 `SG_IDENTITY_AUDIENCE=omniroute-api` 和
 `SG_IDENTITY_ENTITLEMENT=omniroute:access`，使新服务校验现有 auth-service 签发的断言。
 
-登录回跳白名单必须包含 `https://llm-gateway.shiguanglab.com`。登录成功后还需验证
+登录回跳白名单必须包含 `https://ai.shiguanglab.com`。登录成功后还需验证
 `X-SG-Identity` 的签名、issuer、audience、entitlement 与 control 配置一致。缺少产品策略、
 授权项、回跳白名单或真实鉴权验证结果时，阻塞上线；不得开启
 `SG_DEV_IDENTITY` / `SG_LOCAL_BROKER_ENABLED` 绕过验证。

@@ -4,6 +4,24 @@
 
 import { getDbInstance } from "../core";
 
+function escapeLikePattern(value: string): string {
+  return value.replace(/[\\%_]/g, (character) => `\\${character}`);
+}
+
+/** Delete persisted rows for exactly one combo name; caller owns cache invalidation. */
+export function deleteLKGPRowsByComboName(comboName: string): string[] {
+  if (!comboName) return [];
+  const db = getDbInstance();
+  const prefix = `${comboName}:`;
+  const rows = db
+    .prepare("SELECT key FROM key_value WHERE namespace = 'lkgp' AND key LIKE ? ESCAPE '\\'")
+    .all(`${escapeLikePattern(prefix)}%`) as Array<{ key?: string }>;
+  const keys = rows.map((row) => row.key).filter((key): key is string => Boolean(key));
+  const remove = db.prepare("DELETE FROM key_value WHERE namespace = 'lkgp' AND key = ?");
+  for (const key of keys) remove.run(key);
+  return keys;
+}
+
 export interface LKGPRecord {
   provider: string;
   connectionId?: string;
@@ -65,6 +83,14 @@ export async function clearLKGP(comboName: string, modelId: string): Promise<voi
   db.prepare("DELETE FROM key_value WHERE namespace = 'lkgp' AND key = ?").run(key);
   const { invalidateCachedLKGP } = await import("../readCache");
   invalidateCachedLKGP(key);
+}
+
+export async function deleteLKGPByComboName(comboName: string): Promise<number> {
+  const keys = deleteLKGPRowsByComboName(comboName);
+  if (keys.length === 0) return 0;
+  const { invalidateCachedLKGP } = await import("../readCache");
+  for (const key of keys) invalidateCachedLKGP(key);
+  return keys.length;
 }
 
 /**

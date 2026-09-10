@@ -264,6 +264,8 @@ export interface Plugin {
 
 export type PluginOnStreamCompletePayload = {
   status: number;
+  /** Correlates this notification with onRequest/onResponse for the request. */
+  requestId?: string;
   usage?: {
     prompt_tokens?: number;
     completion_tokens?: number;

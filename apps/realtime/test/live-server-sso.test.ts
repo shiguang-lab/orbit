@@ -14,7 +14,7 @@ test("WebSocket verifies configured SSO assertions and the public origin", async
   Object.assign(process.env, {
     DATA_DIR: root, SQLITE_FILE: join(root, "storage.sqlite"), JWT_SECRET: "live-sso-test-secret",
     SG_IDENTITY_AUDIENCE: "omniroute-api", SG_IDENTITY_ENTITLEMENT: "omniroute:access",
-    SG_IDENTITY_JWKS_FILE: jwksFile, PUBLIC_BASE_URL: "https://llm-gateway.shiguanglab.com",
+    SG_IDENTITY_JWKS_FILE: jwksFile, PUBLIC_BASE_URL: "https://ai.shiguanglab.com",
   });
   const { startLiveDashboardServer } = await import("../src/live-ws/live-server.js");
   const runtime = await startLiveDashboardServer(0, "127.0.0.1");
@@ -26,7 +26,7 @@ test("WebSocket verifies configured SSO assertions and the public origin", async
       .setIssuer("https://shiguanglab.com").setAudience(audience).setSubject("user")
       .setIssuedAt().setNotBefore("0s").setExpirationTime("2m").sign(privateKey);
   }
-  function connect(identity: string, origin = "https://llm-gateway.shiguanglab.com"): Promise<{ type: string; code?: string }> {
+  function connect(identity: string, origin = "https://ai.shiguanglab.com"): Promise<{ type: string; code?: string }> {
     return new Promise((resolve, reject) => {
       const ws = new WebSocket(`ws://127.0.0.1:${address.port}/live-ws`, { origin, headers: { "x-sg-identity": identity } });
       const timer = setTimeout(() => { ws.terminate(); reject(new Error("WS auth timeout")); }, 5000);

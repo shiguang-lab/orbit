@@ -1,3 +1,10 @@
+export const RAW_CREDENTIAL_PATTERNS: ReadonlyArray<RegExp>;
 export function redactSensitiveErrorText(value: string): string;
 export function sanitizeErrorMessage(message: unknown): string;
 export function sanitizeUpstreamDetails(value: unknown, depth?: number): unknown;
+export function sanitizePassthroughUpstreamDetails(value: unknown, depth?: number): unknown;
+export function containsStrongCredentialToken(value: string): boolean;
+export function containsSensitiveErrorCredential(value: string): boolean;
+export function redactErrorPaths(value: string): string;
+export function stripErrorStackTail(value: string): string;
+export function stripRecognizedErrorStackTail(value: string): string;

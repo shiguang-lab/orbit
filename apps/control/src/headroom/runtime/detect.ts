@@ -79,6 +79,16 @@ const LOOPBACK_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]", "0.0.0
 
 export const DEFAULT_HEADROOM_URL = process.env.HEADROOM_URL || "http://localhost:8787";
 
+export function resolveHeadroomUrl(
+  persistedUrl: unknown,
+  env: EnvLike = process.env
+): string {
+  if (typeof persistedUrl === "string" && persistedUrl.trim()) {
+    return persistedUrl.trim();
+  }
+  return env.HEADROOM_URL?.trim() || "http://localhost:8787";
+}
+
 export interface HeadroomStatus {
   installed: boolean;
   path: string | null;

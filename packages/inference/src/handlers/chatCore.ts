@@ -117,9 +117,8 @@ export {
   stripStaleForwardingHeaders,
 };
 import {
-  extractMemoryTextFromResponse,
-  extractMemoryTextFromRequestBody,
   resolveMemoryOwnerId,
+  runMemoryExtractionGate,
 } from "./chatCore/memoryExtraction.ts";
 import { CORS_HEADERS } from "../utils/cors.ts";
 import { checkResourcePressureGuard } from "../utils/resourcePressure.ts";
@@ -128,7 +127,7 @@ import { resolveChatCoreRequestFormat } from "./chatCore/requestFormat.ts";
 import { resolveChatCoreTargetFormat } from "./chatCore/targetFormat.ts";
 import { resolveOmniGlyphTransport } from "../services/compression/imageTransportPolicy.ts";
 import { stripStore, usesClaudeBridge } from "./chatCore/agentRouterProtocol.ts";
-import { defaultClaudeToolType } from "./chatCore/claudeToolDefaults.ts";
+import { normalizeClaudeToolsForDispatch } from "./chatCore/claudeToolDefaults.ts";
 import { injectSystemPrompt, injectCustomSystemPrompt } from "../services/systemPrompt.ts";
 import { translateRequest, needsTranslation } from "../translator/index.ts";
 import { FORMATS } from "../translator/formats.ts";
@@ -382,6 +381,7 @@ import { sanitizeOpenAITool } from "../services/toolSchemaSanitizer.ts";
 import { isCompactResponsesEndpoint } from "../executors/codex.ts";
 import { persistCodexChildQuotaResponse } from "../services/codexAccount/index.ts";
 import { invalidateCodexQuotaCache } from "../services/codexQuotaFetcher.ts";
+import { invalidateGenericQuotaCacheOnStatus } from "../services/genericQuotaFetcher.ts";
 import { translateNonStreamingResponse } from "./responseTranslator.ts";
 import { extractToolSchemaMap } from "../translator/response/openai-responses/toolSchemas.ts";
 import { unwrapClineNonStreamingEnvelope } from "./chatCore/clineResponseEnvelope.ts";
@@ -928,6 +928,13 @@ export async function handleChatCore({
     });
   if (webSearchFallbackPlan.enabled) {
     body = bodyWithWebSearchFallback as typeof body;
+    if (
+      sourceFormat === FORMATS.OPENAI_RESPONSES &&
+      (body as Record<string, unknown>).stream === true
+    ) {
+      (body as Record<string, unknown>).stream = false;
+      log?.info?.("TOOLS", `web_search fallback forced non-streaming response for ${provider}`);
+    }
     log?.info?.(
       "TOOLS",
       `Converted ${webSearchFallbackPlan.convertedToolCount} web_search tool(s) to Orbit fallback for ${provider}`
@@ -1046,6 +1053,8 @@ export async function handleChatCore({
       // client explicitly sent x-orbit-session-id. The raw header remains a
       // fallback for any caller that somehow bypassed conversationId resolution.
       sessionTag: conversationId || explicitSessionIdHeader,
+      videoContentRemoved: clientRawRequest?.videoContentRemoved === true,
+      videoBridgeLogRedaction: clientRawRequest?.videoBridgeLogRedaction,
     });
 
   // Primary path: merge client model id + alias target so config on either key applies; resolved
@@ -1171,7 +1180,8 @@ export async function handleChatCore({
     reqLogger.logClientRawRequest(
       clientRawRequest.endpoint,
       clientRawRequest.body,
-      clientRawRequest.headers
+      clientRawRequest.headers,
+      clientRawRequest.effectiveInput
     );
   }
   const reasoningRouteDecision =
@@ -1306,9 +1316,12 @@ export async function handleChatCore({
     const compressionSettings: CompressionConfig | null = compressionSettingsResult.settings;
     // #8034 — operator-named model/endpoint exclusions bypass the whole pipeline, exactly
     // like compression being globally disabled, so the body is provably byte-identical.
-    const compressionExcluded =
-      nativeCodexPassthrough ||
-      isCompressionExcluded({ provider, model: effectiveModel }, compressionSettings?.exclusions);
+    // Native Codex Responses passthrough remains eligible for prompt-only
+    // compression. Reactive context rewriting below still explicitly excludes it.
+    const compressionExcluded = isCompressionExcluded(
+      { provider, model: effectiveModel },
+      compressionSettings?.exclusions
+    );
     // A per-key opt-out is a request-scoped hard kill for prompt compression. It
     // deliberately does not disable the independent reactive context-fit safety
     // passes, matching the existing x-orbit-compression: off contract.
@@ -1564,12 +1577,12 @@ export async function handleChatCore({
             await import("../services/compression/outputStyles/backCompat.ts");
           const selection = resolveOutputStyleSelection(config);
           if (selection.length > 0) {
-            const { applyOutputStyles } =
+            const { applyOutputStyles, resolveOutputStyleLanguage } =
               await import("../services/compression/outputStyles/apply.ts");
-            const outputStyleLanguage =
-              config.languageConfig?.enabled === true
-                ? config.languageConfig.defaultLanguage
-                : "en";
+            const outputStyleLanguage = resolveOutputStyleLanguage(
+              config.languageConfig,
+              body as Parameters<typeof resolveOutputStyleLanguage>[1]
+            );
             outputStyleResult = applyOutputStyles(
               body as Parameters<typeof applyOutputStyles>[0],
               selection,
@@ -1960,19 +1973,22 @@ export async function handleChatCore({
       }
     }
 
-    const COMPRESSION_THRESHOLD = 0.7;
+    const { getProactiveCompressionRatio } = await import(
+      "@orbit/core/control/compression-settings"
+    );
+    const compressionThreshold = getProactiveCompressionRatio();
     let reservedTokens = 0;
     if (Array.isArray(body.tools)) {
       reservedTokens = estimateTokens(body.tools);
     }
     const threshold = Math.max(
       1,
-      Math.floor((Math.max(1, contextLimit) - reservedTokens) * COMPRESSION_THRESHOLD)
+      Math.floor((Math.max(1, contextLimit) - reservedTokens) * compressionThreshold)
     );
 
     log?.debug?.(
       "CONTEXT",
-      `Checking compression: ${estimatedTokens} tokens vs ${threshold} threshold (${contextLimit} limit, ${reservedTokens} reserved)`
+      `Checking compression: ${estimatedTokens} tokens vs ${threshold} threshold (${contextLimit} limit, ${reservedTokens} reserved, ratio=${compressionThreshold})`
     );
 
     // Capture pre-compression body so translators can access original message
@@ -2589,8 +2605,9 @@ export async function handleChatCore({
   // a missing `type` to "custom" before dispatch, mirroring Anthropic's own
   // inference, so legacy Claude-format tool payloads survive strict gateways (#2195).
   if (targetFormat === FORMATS.CLAUDE && Array.isArray(translatedBody.tools)) {
-    translatedBody.tools = defaultClaudeToolType(
-      translatedBody.tools
+    translatedBody.tools = normalizeClaudeToolsForDispatch(
+      translatedBody.tools,
+      provider
     ) as typeof translatedBody.tools;
   }
 
@@ -3201,6 +3218,13 @@ export async function handleChatCore({
                   const errMessage = err instanceof Error ? err.message : String(err);
                   log?.debug?.("CODEX", `Failed to persist codex quota state: ${errMessage}`);
                 }
+              } else if (attemptConnectionId && res.response.status === 429) {
+                invalidateGenericQuotaCacheOnStatus({
+                  provider,
+                  connectionId: String(attemptConnectionId),
+                  status: res.response.status,
+                  isolateProbe: await shouldIsolateProbeFailures(),
+                });
               }
 
               // Track Gemini RPM + RPD request counts for 429 classification
@@ -3868,8 +3892,9 @@ export async function handleChatCore({
       // actually delivered. Logging it as `clientResponse` is misleading (the
       // dashboard reads that field as "what the client received"), so omit it
       // for this case; `error` above already records the failure reason.
-      clientResponse:
-        error.name === "AbortError" ? undefined : buildErrorBody(failureStatus, failureMessage),
+      clientResponse: isRequestAborted
+        ? undefined
+        : buildErrorBody(failureStatus, failureMessage),
       claudeCacheMeta: claudePromptCacheLogMeta,
       cacheSource: "upstream",
     });
@@ -5120,17 +5145,15 @@ export async function handleChatCore({
       }
     );
 
-    if (memoryOwnerId && memorySettings?.enabled && memorySettings.maxTokens > 0) {
-      const requestMemoryText = extractMemoryTextFromRequestBody(body as Record<string, unknown>);
-      if (requestMemoryText) {
-        extractFacts(requestMemoryText, memoryOwnerId, pipelineSessionId);
-      }
-
-      const memoryText = extractMemoryTextFromResponse(memoryExtractionResponse);
-      if (memoryText) {
-        extractFacts(memoryText, memoryOwnerId, pipelineSessionId);
-      }
-    }
+    runMemoryExtractionGate({
+      memoryOwnerId,
+      memorySettings,
+      videoBridgeObserved: clientRawRequest?.videoContentRemoved === true,
+      pipelineSessionId,
+      requestBody: body as Record<string, unknown>,
+      responseBody: memoryExtractionResponse,
+      extractFacts,
+    });
 
     const customSkillExecutionEnabled =
       Boolean(memoryOwnerId) && memorySettings?.skillsEnabled === true;
@@ -5747,23 +5770,16 @@ export async function handleChatCore({
     });
     // === /Quota Share POST-hook streaming ===
 
-    if (
-      memoryOwnerId &&
-      memorySettings?.enabled &&
-      memorySettings.maxTokens > 0 &&
-      streamStatus === 200
-    ) {
-      const requestMemoryText = extractMemoryTextFromRequestBody(body as Record<string, unknown>);
-      if (requestMemoryText) {
-        extractFacts(requestMemoryText, memoryOwnerId, pipelineSessionId);
-      }
-
-      const streamedMemoryText = extractMemoryTextFromResponse(
-        (streamResponseBody ?? null) as Record<string, unknown> | null
-      );
-      if (streamedMemoryText) {
-        extractFacts(streamedMemoryText, memoryOwnerId, pipelineSessionId);
-      }
+    if (streamStatus === 200) {
+      runMemoryExtractionGate({
+        memoryOwnerId,
+        memorySettings,
+        videoBridgeObserved: clientRawRequest?.videoContentRemoved === true,
+        pipelineSessionId,
+        requestBody: body as Record<string, unknown>,
+        responseBody: (streamResponseBody ?? null) as Record<string, unknown> | null,
+        extractFacts,
+      });
     }
 
     // Semantic cache: store assembled streaming response for future cache hits
@@ -5788,6 +5804,7 @@ export async function handleChatCore({
       provider,
       errorCode: streamErrorCode,
       startTime,
+      requestId: traceId,
     });
   };
 

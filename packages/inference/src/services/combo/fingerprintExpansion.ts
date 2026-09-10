@@ -79,6 +79,22 @@ export function buildFingerprintExecutionKey(
   return `${originalKey}@fp:${fingerprint}`;
 }
 
+function rewriteAllowlistIds(
+  allowlist: string[] | null | undefined,
+  fromId: string,
+  toId: string
+): string[] | null {
+  if (!Array.isArray(allowlist) || allowlist.length === 0) return null;
+  return [
+    ...new Set(
+      allowlist.map((id) => {
+        if (id === fromId) return toId;
+        return splitFingerprintPin(id)?.realConnectionId ?? id;
+      })
+    ),
+  ];
+}
+
 /**
  * Expand `expandedTargets` by splitting targets whose connection carries
  * multiple fingerprints into one target per fingerprint.
@@ -116,6 +132,11 @@ export function expandTargetsByFingerprints(
     // find the connection at all.
     const pin = splitFingerprintPin(connectionId);
     if (pin) {
+      const allowedConnectionIds = rewriteAllowlistIds(
+        target.allowedConnectionIds,
+        connectionId,
+        pin.realConnectionId
+      );
       result.push({
         ...target,
         connectionId: pin.realConnectionId,
@@ -125,6 +146,7 @@ export function expandTargetsByFingerprints(
           pin.pinnedFingerprint,
           false
         ),
+        ...(allowedConnectionIds ? { allowedConnectionIds } : {}),
       });
       continue;
     }

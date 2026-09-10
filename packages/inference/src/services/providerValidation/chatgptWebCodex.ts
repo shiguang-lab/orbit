@@ -1,11 +1,13 @@
 import { randomBytes } from "node:crypto";
+import { rmSync } from "node:fs";
 
 import { inspectBrowserLoginCapabilities } from "../../vendor/codex-chatgpt-web/browser-login.ts";
+import { CHATGPT_CONNECTOR_NAME } from "../../vendor/codex-chatgpt-web/config.ts";
 import { decodeChatGptWebCodexSecrets } from "../../executors/chatgpt-web-codex/credentials.ts";
-import { detectChromeExecutable } from "../../executors/chatgpt-web-codex.ts";
 import {
   connectionRuntimePaths,
   ensureConnectionStorageState,
+  ensureConnectionStorageStateFromCredential,
 } from "../../executors/chatgpt-web-codex/storageState.ts";
 import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
@@ -18,10 +20,11 @@ export async function validateChatGptWebCodexProvider({
 }) {
   try {
     const secrets = decodeChatGptWebCodexSecrets(String(apiKey || ""));
-    if (!secrets.cookie) {
+    if (!secrets.cookie && !secrets.storageState) {
       return {
         valid: false,
-        error: "Für die Browserprüfung ist ein frischer vollständiger ChatGPT-Cookie erforderlich.",
+        error:
+          "Für die Browserprüfung ist ein frischer ChatGPT-Cookie oder ein gespeicherter Browserzustand erforderlich.",
       };
     }
     const runtimeKey =
@@ -35,7 +38,7 @@ export async function validateChatGptWebCodexProvider({
     const connectorName =
       typeof providerSpecificData.connectorName === "string"
         ? providerSpecificData.connectorName.trim()
-        : process.env.CHATGPT_WEB_CODEX_CONNECTOR_NAME?.trim() || "";
+        : process.env.CHATGPT_WEB_CODEX_CONNECTOR_NAME?.trim() || CHATGPT_CONNECTOR_NAME;
     if (!connectorName) {
       return {
         valid: false,
@@ -50,6 +53,7 @@ export async function validateChatGptWebCodexProvider({
       };
     }
     const cdpEndpoint = process.env.CHATGPT_WEB_CODEX_CDP_URL?.trim();
+    const { detectChromeExecutable } = await import("../../executors/chatgpt-web-codex.ts");
     const chromeExecutablePath = detectChromeExecutable(
       typeof providerSpecificData.chromeExecutablePath === "string"
         ? providerSpecificData.chromeExecutablePath
@@ -64,18 +68,25 @@ export async function validateChatGptWebCodexProvider({
     }
     const validationId = `validation-${randomBytes(12).toString("hex")}`;
     const paths = connectionRuntimePaths(validationId);
-    ensureConnectionStorageState(validationId, secrets.cookie);
-    const capabilities = await inspectBrowserLoginCapabilities({
-      mode: "browser-only",
-      appName: "Orbit Codex",
+    const freshCookie = Boolean(secrets.cookie);
+    if (secrets.cookie) ensureConnectionStorageState(validationId, secrets.cookie);
+    else ensureConnectionStorageStateFromCredential(validationId, secrets);
+    let capabilities;
+    try {
+      capabilities = await inspectBrowserLoginCapabilities({
+      appName: connectorName,
       ...(chromeExecutablePath ? { chromeExecutablePath } : {}),
       ...(cdpEndpoint ? { cdpEndpoint } : {}),
       storageStatePath: paths.storageStatePath,
-      brokerSocketPath: paths.brokerSocketPath,
       headed: false,
       proAvailable: false,
       autoApproveToolCalls: false,
-    });
+      });
+    } catch (error) {
+      rmSync(paths.root, { recursive: true, force: true });
+      throw error;
+    }
+    if (!freshCookie) rmSync(paths.root, { recursive: true, force: true });
     return {
       valid: true,
       error: null,
@@ -85,11 +96,14 @@ export async function validateChatGptWebCodexProvider({
         storageState: "verified",
         login: "authenticated",
         temporaryChats: "ready",
+        solAvailable: capabilities.solAvailable,
         proAvailable: capabilities.proAvailable,
       },
       providerSpecificData: {
+        solAvailable: capabilities.solAvailable,
         proAvailable: capabilities.proAvailable,
         browserVerified: true,
+        connectorName,
         ...(chromeExecutablePath ? { chromeExecutablePath } : {}),
         ...(typeof providerSpecificData.tunnelId === "string" &&
         providerSpecificData.tunnelId.trim()
@@ -99,7 +113,7 @@ export async function validateChatGptWebCodexProvider({
         providerSpecificData.connectorName.trim()
           ? { connectorName: providerSpecificData.connectorName.trim() }
           : {}),
-        validationId,
+        ...(freshCookie ? { validationId } : {}),
       },
     };
   } catch (error) {

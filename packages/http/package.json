@@ -19,6 +19,7 @@
     "test": "node --import tsx --test test/*.test.ts"
   },
   "dependencies": {
+    "@orbit/utils": "workspace:*",
     "@nestjs/common": "^11.2.3",
     "@nestjs/core": "^11.2.3",
     "rxjs": "^7.8.2",

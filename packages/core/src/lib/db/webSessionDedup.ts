@@ -72,6 +72,14 @@ function fieldMatch(incoming: string | null, existing: string | null): boolean |
   return undefined;
 }
 
+function bothSidesFieldMatch(
+  incoming: string | null,
+  existing: string | null
+): boolean | undefined {
+  if (incoming && existing) return incoming === existing;
+  return undefined;
+}
+
 /**
  * Decide whether `row` (an existing `provider_connections` record) is the
  * same OAuth identity as an incoming connection carrying `incomingUsername`
@@ -87,11 +95,18 @@ function fieldMatch(incoming: string | null, existing: string | null): boolean |
 export function isMatchingOauthIdentity(
   row: { provider_specific_data?: unknown },
   incomingUsername: string | null,
-  incomingProfileArn: string | null
+  incomingProfileArn: string | null,
+  incomingOrganizationUuid: string | null = null
 ): boolean {
   const existingPsd = parseProviderSpecificData(row.provider_specific_data);
   const usernameMatch = fieldMatch(incomingUsername, nonEmptyString(existingPsd?.username));
   const profileArnMatch = fieldMatch(incomingProfileArn, nonEmptyString(existingPsd?.profileArn));
-  if (usernameMatch === false || profileArnMatch === false) return false;
+  const organizationMatch = bothSidesFieldMatch(
+    incomingOrganizationUuid,
+    nonEmptyString(existingPsd?.organizationUUID)
+  );
+  if (usernameMatch === false || profileArnMatch === false || organizationMatch === false) {
+    return false;
+  }
   return true;
 }

@@ -191,9 +191,9 @@ export interface ComboItem {
   isActive?: boolean;
   isHidden?: boolean;
   description?: string;
-  system_message?: string;
-  tool_filter_regex?: string;
-  context_cache_protection?: boolean;
+  system_message?: string | null;
+  tool_filter_regex?: string | null;
+  context_cache_protection?: boolean | null;
   context_length?: number | null;
   computed_context_length?: number | null;
   sort_order?: number;

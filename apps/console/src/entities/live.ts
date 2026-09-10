@@ -8,7 +8,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { buildDashboardLiveUrl } from "./live-url";
 
-export type LiveChannel = "requests" | "combo" | "credentials" | "compression";
+export type LiveChannel = "requests" | "combo" | "credentials" | "compression" | "agents";
 
 export interface LiveEvent {
   channel: string;

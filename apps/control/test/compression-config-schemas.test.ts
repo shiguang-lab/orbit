@@ -14,6 +14,14 @@ test("keeps optional defaults, strictness, non-coercion, and numeric boundaries"
   assert.strictEqual(compressionPreviewConfigSchema, compressionSettingsUpdateSchema);
   assert.equal(compressionSettingsUpdateSchema.safeParse({ unknown: true }).success, false);
   assert.equal(compressionSettingsUpdateSchema.safeParse({ autoTriggerTokens: "10" }).success, false);
+  assert.equal(
+    compressionSettingsUpdateSchema.safeParse({ proactiveConfig: { thresholdRatio: 0.85 } }).success,
+    true
+  );
+  assert.equal(
+    compressionSettingsUpdateSchema.safeParse({ proactiveConfig: { thresholdRatio: 1 } }).success,
+    false
+  );
   assert.equal(compressionSettingsUpdateSchema.safeParse({ cacheMinutes: 1 }).success, true);
   assert.equal(compressionSettingsUpdateSchema.safeParse({ cacheMinutes: 60 }).success, true);
   assert.equal(compressionSettingsUpdateSchema.safeParse({ cacheMinutes: 0 }).success, false);

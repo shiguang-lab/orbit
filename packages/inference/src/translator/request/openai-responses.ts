@@ -768,6 +768,17 @@ export function openaiResponsesToOpenAIRequest(
     }
   }
 
+  // Neutral choices are meaningless without tools and strict Chat endpoints
+  // reject the otherwise valid translated request. Preserve contradictory
+  // required/forced choices so the upstream can still report them explicitly.
+  const finalChatTools = Array.isArray(result.tools) ? result.tools : [];
+  if (
+    finalChatTools.length === 0 &&
+    (result.tool_choice === "auto" || result.tool_choice === "none")
+  ) {
+    delete result.tool_choice;
+  }
+
   // Cleanup Responses API specific fields
   // Note: prompt_cache_key is intentionally preserved for OpenAI destinations — it is
   // used by Codex as a cache-affinity signal and stripping it unconditionally broke

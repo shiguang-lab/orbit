@@ -87,19 +87,21 @@ export async function getLatestVersionFromNpmCli(
  * Latest published version via the npm registry HTTP API. Needs only network access — no
  * `npm` binary — so it works in Docker / desktop / locked-down installs.
  */
-async function readBoundedJson(response: Response): Promise<unknown> {
-  const declaredLength = Number(response.headers.get("Content-Length"));
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_VERSION_RESPONSE_BYTES) {
-    await response.body?.cancel();
-    throw new Error("Version metadata response is too large");
-  }
-
-  if (!response.body) return response.json();
-  const reader = response.body.getReader();
+async function readStreamChunks(
+  reader: ReadableStreamDefaultReader<Uint8Array>,
+  signal?: AbortSignal
+): Promise<{ chunks: Uint8Array[]; totalBytes: number }> {
   const chunks: Uint8Array[] = [];
   let totalBytes = 0;
+
+  const onAbort = () => {
+    reader.cancel().catch(() => {});
+  };
+  signal?.addEventListener("abort", onAbort, { once: true });
+
   try {
     while (true) {
+      if (signal?.aborted) throw new Error("Version metadata request aborted");
       const { done, value } = await reader.read();
       if (done) break;
       totalBytes += value.byteLength;
@@ -110,8 +112,14 @@ async function readBoundedJson(response: Response): Promise<unknown> {
       chunks.push(value);
     }
   } finally {
+    signal?.removeEventListener("abort", onAbort);
     reader.releaseLock();
   }
+
+  return { chunks, totalBytes };
+}
+
+function parseJsonFromChunks(chunks: Uint8Array[], totalBytes: number): unknown {
   const body = new Uint8Array(totalBytes);
   let offset = 0;
   for (const chunk of chunks) {
@@ -121,19 +129,41 @@ async function readBoundedJson(response: Response): Promise<unknown> {
   return JSON.parse(new TextDecoder().decode(body));
 }
 
+async function readBoundedJson(response: Response, signal?: AbortSignal): Promise<unknown> {
+  const declaredLength = Number(response.headers.get("Content-Length"));
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_VERSION_RESPONSE_BYTES) {
+    await response.body?.cancel();
+    throw new Error("Version metadata response is too large");
+  }
+
+  if (signal?.aborted) {
+    await response.body?.cancel();
+    throw new Error("Version metadata request aborted");
+  }
+  if (!response.body) return response.json();
+
+  const reader = response.body.getReader();
+  const { chunks, totalBytes } = await readStreamChunks(reader, signal);
+  return parseJsonFromChunks(chunks, totalBytes);
+}
+
 export async function getLatestVersionFromRegistry(
   fetchImpl: typeof fetch = fetch
 ): Promise<string | null> {
   if (!NPM_REGISTRY_LATEST_URL) return null;
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), LOOKUP_TIMEOUT_MS);
   try {
     const res = await fetchImpl(NPM_REGISTRY_LATEST_URL, {
-      signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
+      signal: controller.signal,
     });
     if (!res.ok) return null;
-    const data = (await readBoundedJson(res)) as { version?: unknown };
+    const data = (await readBoundedJson(res, controller.signal)) as { version?: unknown };
     return typeof data?.version === "string" && data.version ? data.version : null;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 
@@ -143,21 +173,28 @@ export async function getLatestVersionFromRegistry(
 export async function getLatestVersionFromReleaseEndpoint(
   fetchImpl: typeof fetch = fetch
 ): Promise<string | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), LOOKUP_TIMEOUT_MS);
   try {
     if (!RELEASES_LATEST_URL) return null;
     const res = await fetchImpl(RELEASES_LATEST_URL, {
-      signal: AbortSignal.timeout(LOOKUP_TIMEOUT_MS),
+      signal: controller.signal,
       headers: {
         "User-Agent": "orbit-independent-version-check",
         Accept: "application/json",
       },
     });
     if (!res.ok) return null;
-    const data = (await readBoundedJson(res)) as { version?: unknown; tag_name?: unknown };
+    const data = (await readBoundedJson(res, controller.signal)) as {
+      version?: unknown;
+      tag_name?: unknown;
+    };
     const version = data?.version ?? data?.tag_name;
     return typeof version === "string" && version ? version : null;
   } catch {
     return null;
+  } finally {
+    clearTimeout(timer);
   }
 }
 

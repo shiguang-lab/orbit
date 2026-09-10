@@ -9,6 +9,7 @@
 
 import { getDbInstance } from "../db/core.js";
 import { protectPayloadForLog } from "../logPayloads.js";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import {
   resolveOrphanedUsageAccountIdentity,
   resolveUsageAccountIdentity,
@@ -127,7 +128,7 @@ function normalizePendingMetadata(metadata?: PendingRequestMetadata): PendingReq
     normalized.status = Number.isFinite(status) ? status : null;
   }
   if (metadata.error !== undefined) {
-    normalized.error = toStringOrNull(metadata.error) || null;
+    normalized.error = sanitizeErrorMessage(toStringOrNull(metadata.error)) || null;
   }
   if (metadata.errorCode !== undefined) {
     normalized.errorCode = toStringOrNull(metadata.errorCode) || null;
@@ -153,6 +154,7 @@ declare global {
           details: Record<string, Record<string, PendingRequestDetail[]>>;
         };
         pendingById: Map<string, PendingRequestDetail>;
+        pendingIdByCorrelation: Map<string, { id: string; touchedAt: number }>;
       }
     | undefined;
 }
@@ -172,6 +174,7 @@ const pendingState = (globalThis.__orbitUsageHistoryPendingState ??= {
     details: Object.create(null) as Record<string, Record<string, PendingRequestDetail[]>>,
   },
   pendingById: new Map<string, PendingRequestDetail>(),
+  pendingIdByCorrelation: new Map<string, { id: string; touchedAt: number }>(),
 });
 
 const pendingRequests = pendingState.pendingRequests;
@@ -181,6 +184,9 @@ const pendingRequests = pendingState.pendingRequests;
  * Populated when a detail is created and cleaned up when it is removed/finalized.
  */
 const pendingById = pendingState.pendingById;
+// Backfill dev-HMR state created by an older module instance.
+const pendingIdByCorrelation =
+  (pendingState.pendingIdByCorrelation ??= new Map<string, { id: string; touchedAt: number }>());
 
 const DEFAULT_MAX_PENDING_REQUEST_AGE_MS = 60 * 60 * 1000;
 const MAX_PENDING_DETAILS = 5000;
@@ -248,6 +254,17 @@ export function sweepStalePendingRequests(
     for (const detail of oldest) remove(detail);
   }
 
+  for (const [correlationId, entry] of pendingIdByCorrelation) {
+    if (now - entry.touchedAt > maxAgeMs) pendingIdByCorrelation.delete(correlationId);
+  }
+  if (pendingIdByCorrelation.size > MAX_PENDING_DETAILS) {
+    const overflow = pendingIdByCorrelation.size - MAX_PENDING_DETAILS;
+    const oldest = [...pendingIdByCorrelation.entries()]
+      .sort((a, b) => a[1].touchedAt - b[1].touchedAt)
+      .slice(0, overflow);
+    for (const [correlationId] of oldest) pendingIdByCorrelation.delete(correlationId);
+  }
+
   return removed;
 }
 
@@ -307,11 +324,14 @@ export function trackPendingRequest(
         pendingRequests.details[connectionId][modelKey] = [];
       }
       const now = Date.now();
+      const reusableId = normalizedMetadata.correlationId
+        ? pendingIdByCorrelation.get(normalizedMetadata.correlationId)?.id
+        : undefined;
       const newDetail = {
         // crypto RNG (not Math.random) to satisfy CodeQL js/insecure-randomness —
         // this pending-request id flows into attempt logging; it's a correlation
         // id, not a security secret.
-        id: `${now}-${globalThis.crypto.randomUUID().slice(0, 6)}`,
+        id: reusableId ?? `${now}-${globalThis.crypto.randomUUID().slice(0, 6)}`,
         model,
         provider,
         connectionId,
@@ -320,6 +340,12 @@ export function trackPendingRequest(
       };
       pendingRequests.details[connectionId][modelKey].push(newDetail);
       pendingById.set(newDetail.id, newDetail);
+      if (normalizedMetadata.correlationId) {
+        pendingIdByCorrelation.set(normalizedMetadata.correlationId, {
+          id: newDetail.id,
+          touchedAt: now,
+        });
+      }
       return newDetail.id;
     } else if (!started && nextCount >= 0) {
       if (pendingRequests.details[connectionId]?.[modelKey]?.length) {
@@ -492,6 +518,17 @@ export function getPendingById(): Map<string, PendingRequestDetail> {
  * Clear all pending request counts.
  * Used for admin reset when counts leak due to uncaught timeouts or process-level errors.
  */
+export function clearPendingRequests(): void {
+  pendingRequests.byModel = Object.create(null) as Record<string, number>;
+  pendingRequests.byAccount = Object.create(null) as Record<string, Record<string, number>>;
+  pendingRequests.details = Object.create(null) as Record<
+    string,
+    Record<string, PendingRequestDetail[]>
+  >;
+  pendingById.clear();
+  pendingIdByCorrelation.clear();
+}
+
 // ──────────────── Save Request Usage ────────────────
 
 /**

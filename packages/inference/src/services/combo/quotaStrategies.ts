@@ -41,12 +41,16 @@ import {
   resolveResetWindowConfig,
   getResetAwareProvider,
   scoreResetAwareQuota,
+  getResetAwareRemainingPercent,
   getResetWindowRemainingMs,
   type QuotaFetchCacheConfig,
 } from "./quotaScoring.ts";
+import { secureRandomFloat, secureRandomInt } from "@orbit/utils/random";
 import { rankByHeadroom, type HeadroomSaturation } from "./headroomRanking.ts";
+import { getInflight, incrementInflight } from "./quotaShareInflight.ts";
 import { preferAntigravityConnectionsWithStoredProject } from "../antigravityProjectPersist.ts";
 import { isQuotaExhaustedForRequest } from "@orbit/core/quota/cache";
+import { getQuotaFetchScope } from "../antigravityQuotaFamily.ts";
 
 const RESET_AWARE_CONNECTION_CACHE_TTL_MS = 30_000;
 const RESET_AWARE_QUOTA_FETCH_CONCURRENCY = 5;
@@ -173,7 +177,8 @@ export async function expandTargetsByQuotaAwareConnections(
   targets: ResolvedComboTarget[],
   comboName: string,
   log: { warn?: (...args: unknown[]) => void },
-  apiKeyAllowedConnectionIds?: string[] | null
+  apiKeyAllowedConnectionIds?: string[] | null,
+  opts?: { skipExhaustionFilter?: boolean }
 ): Promise<{
   connectionById: Map<string, Record<string, unknown>>;
   expandedTargets: ResolvedComboTarget[];
@@ -227,7 +232,11 @@ export async function expandTargetsByQuotaAwareConnections(
       ) {
         continue;
       }
-      if (provider && isQuotaExhaustedForRequest(connectionId, provider, target.modelStr || null)) {
+      if (
+        !opts?.skipExhaustionFilter &&
+        provider &&
+        isQuotaExhaustedForRequest(connectionId, provider, target.modelStr || null)
+      ) {
         continue;
       }
       expandedTargets.push({
@@ -269,14 +278,15 @@ async function scoreQuotaAwareTargets<TScore extends object>({
       const provider = getResetAwareProvider(target);
       const fetcher = provider ? getQuotaFetcher(provider) : null;
       if (fetcher && provider && target.connectionId) {
-        const quotaKey = `${provider}:${target.connectionId}`;
+        const quotaKey = `${provider}:${target.connectionId}:${getQuotaFetchScope(provider, target.modelStr)}`;
         if (!quotaPromises.has(quotaKey)) {
+          const connection = connectionById.get(target.connectionId);
           quotaPromises.set(
             quotaKey,
             fetchResetAwareQuotaWithCache({
               provider,
               connectionId: target.connectionId,
-              connection: connectionById.get(target.connectionId),
+              connection: connection ? { ...connection, requestedModel: target.modelStr } : connection,
               fetcher,
               config,
               log,
@@ -354,7 +364,9 @@ export async function fetchResetAwareQuotaWithCache({
   log: { debug?: (...args: unknown[]) => void; warn?: (...args: unknown[]) => void };
   comboName: string;
 }): Promise<unknown> {
-  const cacheKey = `${provider}:${connectionId}`;
+  const requestedModel =
+    typeof connection?.requestedModel === "string" ? connection.requestedModel : null;
+  const cacheKey = `${provider}:${connectionId}:${getQuotaFetchScope(provider, requestedModel)}`;
   const ttlMs = config.quotaCacheTtlMs;
   const maxStaleMs = config.quotaCacheMaxStaleMs;
   const now = Date.now();
@@ -691,4 +703,108 @@ export async function orderTargetsByHeadroom(
     );
     return targets;
   }
+}
+
+type QuotaWeightedScored = {
+  target: ResolvedComboTarget;
+  index: number;
+  score: number;
+  remainingPercent: number;
+};
+
+export function pickWeightedIndex(weights: number[], randomOffset: number): number | null {
+  const positive: Array<{ index: number; weight: number }> = [];
+  let total = 0;
+  for (let index = 0; index < weights.length; index++) {
+    const weight = weights[index];
+    if (weight > 0) {
+      positive.push({ index, weight });
+      total += weight;
+    }
+  }
+  if (positive.length === 0 || total === 0) return null;
+  let accumulated = 0;
+  for (const entry of positive) {
+    accumulated += entry.weight;
+    if (accumulated > randomOffset) return entry.index;
+  }
+  return positive[positive.length - 1].index;
+}
+
+function sortQuotaWeighted(a: QuotaWeightedScored, b: QuotaWeightedScored): number {
+  return b.score !== a.score ? b.score - a.score : a.index - b.index;
+}
+
+function resolveQuotaWeightedFloor(config: Record<string, unknown> | null | undefined): number {
+  const configured = config?.quotaWeightedFloorPercent;
+  const value =
+    typeof configured === "number" ||
+    (typeof configured === "string" && configured.trim() !== "")
+      ? Number(configured)
+      : Number.NaN;
+  return Number.isFinite(value) ? Math.max(0, Math.min(100, value)) : 1;
+}
+
+export async function orderTargetsByQuotaWeighted(
+  targets: ResolvedComboTarget[],
+  comboName: string,
+  configSource: Record<string, unknown> | null | undefined,
+  log: { warn?: (...args: unknown[]) => void },
+  apiKeyAllowedConnectionIds?: string[] | null
+): Promise<ResolvedComboTarget[]> {
+  if (targets.length === 0) return targets;
+
+  const config = resolveResetAwareConfig(configSource);
+  const { connectionById, expandedTargets } = await expandTargetsByQuotaAwareConnections(
+    targets,
+    comboName,
+    log,
+    apiKeyAllowedConnectionIds,
+    { skipExhaustionFilter: true }
+  );
+  const liveTargets = expandedTargets.filter(
+    (target) => getCircuitBreaker(target.provider).getStatus().state !== "OPEN"
+  );
+  const scoredTargets = await scoreQuotaAwareTargets({
+    comboName,
+    config,
+    connectionById,
+    expandedTargets: liveTargets,
+    log,
+    scoreQuota: (quota) => ({
+      score: scoreResetAwareQuota(quota, config).score,
+      remainingPercent: getResetAwareRemainingPercent(quota),
+    }),
+  });
+
+  const eligible = scoredTargets.filter((entry) => entry.remainingPercent > 0);
+  const floor = resolveQuotaWeightedFloor(configSource);
+  const primary =
+    floor === 0 ? eligible : eligible.filter((entry) => entry.remainingPercent > floor);
+  const reserve =
+    floor === 0
+      ? []
+      : eligible.filter(
+          (entry) => entry.remainingPercent > 0 && entry.remainingPercent <= floor
+        );
+  const pool = primary.length > 0 ? primary : reserve;
+  if (pool.length === 0) return [];
+
+  const weights = pool.map(
+    (entry) => Math.max(0, entry.score) / (1 + getInflight(entry.target.connectionId ?? ""))
+  );
+  const total = weights.reduce((sum, weight) => sum + weight, 0);
+  const picked =
+    (total > 0 ? pickWeightedIndex(weights, secureRandomFloat() * total) : null) ??
+    secureRandomInt(pool.length);
+  const winner = pool[picked];
+  const winnerId = winner.target.connectionId ?? "";
+  if (winnerId) incrementInflight(winnerId);
+
+  const remaining = pool
+    .filter((_, index) => index !== picked)
+    .slice()
+    .sort(sortQuotaWeighted);
+  const fallback = primary.length > 0 ? reserve.slice().sort(sortQuotaWeighted) : [];
+  return [winner, ...remaining, ...fallback].map((entry) => entry.target);
 }

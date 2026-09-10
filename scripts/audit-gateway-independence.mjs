@@ -57,6 +57,16 @@ const localApiExtensions = new Set([
   "services/cliproxy/instances/[id]/route.ts",
   "services/cliproxy/instances/[id]/probe/route.ts",
   "services/cliproxy/model-mappings/route.ts",
+  // Upstream v3.8.51 log-export management surface, migrated into control.
+  "log-export/types/route.ts",
+  "log-export/status/route.ts",
+  "log-export/destinations/route.ts",
+  "log-export/destinations/[id]/route.ts",
+  "log-export/destinations/[id]/test/route.ts",
+  "log-export/destinations/[id]/run/route.ts",
+  "log-export/destinations/[id]/reset/route.ts",
+  "a2a/tasks/history/route.ts",
+  "conductor/tasks/route.ts",
 ]);
 // These upstream control-process routes are intentionally retired. In the
 // split runtime they could only terminate control, not the gateway stack;

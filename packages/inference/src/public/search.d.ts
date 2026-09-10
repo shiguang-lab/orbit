@@ -27,4 +27,7 @@ export interface SearchResponse {
   metrics: Record<string, unknown>;
   errors: unknown[];
 }
+export class SearchBaseUrlOverrideError extends Error {
+  readonly code: "SEARCH_BASE_URL_OVERRIDE_REFUSED";
+}
 export function handleSearch(options: SearchHandlerOptions): Promise<{ success: boolean; status?: number; error?: string; data?: SearchResponse }>;

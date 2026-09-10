@@ -6,10 +6,10 @@
 ## 全链路
 
 ```
-用户访问 llm-gateway.shiguanglab.com
+用户访问 ai.shiguanglab.com
   → 网关 forward-auth 无会话 → 302 https://shiguanglab.com/login?return_to=...
   → 用户在 shiguang website 登录(拾光) → 种父域 cookie __Secure-sg_session
-  → 回跳 llm-gateway.shiguanglab.com
+  → 回跳 ai.shiguanglab.com
   → 前端 fetch /api/auth/session (网关→auth-service 共享会话)
   → 前端调 /api/* → 网关注入 X-SG-Identity(RS256 JWT) → control JWKS 校验
   → control 校验当前配置的产品授权 → 返回统一会话/放行管理操作

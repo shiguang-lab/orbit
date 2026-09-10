@@ -33,6 +33,8 @@ export interface SearchProviderConfig {
    */
   fallbackOnly?: boolean;
   disabled?: boolean;
+  /** Allow a caller-selected base URL only for explicitly opted-in keyless providers. */
+  allowClientBaseUrlOverride?: boolean;
 }
 
 export const SEARCH_PROVIDERS: Record<string, SearchProviderConfig> = {
@@ -223,6 +225,7 @@ export const SEARCH_PROVIDERS: Record<string, SearchProviderConfig> = {
     baseUrl: "http://localhost:8888/search",
     method: "GET",
     authType: "none",
+    allowClientBaseUrlOverride: true,
     authHeader: "none",
     costPerQuery: 0,
     freeMonthlyQuota: 999999,

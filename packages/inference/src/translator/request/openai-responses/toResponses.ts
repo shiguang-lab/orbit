@@ -55,6 +55,14 @@ function mapChatResponseFormatToResponsesText(body: JsonRecord, result: JsonReco
   result.text = { ...existingText, format };
 }
 
+function buildInstructionsText(content: unknown): string {
+  if (typeof content === "string") return content;
+  return buildResponsesTextParts(content)
+    .map((part) => toString(toRecord(part).text))
+    .filter((text) => text.length > 0)
+    .join("\n\n");
+}
+
 // Convert a Chat-Completions content block (string or text-part array) into the
 // Responses API `input_text` part array used by message input items.
 function buildResponsesTextParts(content: unknown): unknown[] {
@@ -113,7 +121,7 @@ export function openaiToOpenAIResponsesRequest(
 
     if (role === "system" || role === "developer") {
       if (!hasSystemMessage) {
-        result.instructions = typeof msg.content === "string" ? msg.content : "";
+        result.instructions = buildInstructionsText(msg.content);
         hasSystemMessage = true;
         continue;
       }

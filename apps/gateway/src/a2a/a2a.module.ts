@@ -7,6 +7,7 @@ import { A2aTaskCancelController } from "./a2a-task-cancel.controller.js";
 import { A2aTaskController } from "./a2a-task.controller.js";
 import { A2aTasksController } from "./a2a-tasks.controller.js";
 import { A2aService } from "./a2a.service.js";
+import { A2aHistoryController } from "./a2a-history.controller.js";
 
 @Module({
   imports: [CommonModule],
@@ -17,6 +18,7 @@ import { A2aService } from "./a2a.service.js";
     A2aTaskController,
     A2aTaskCancelController,
     A2aStatusController,
+    A2aHistoryController,
   ],
   providers: [A2aService],
 })

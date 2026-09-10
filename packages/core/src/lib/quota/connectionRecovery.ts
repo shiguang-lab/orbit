@@ -62,7 +62,16 @@ export interface RecoverableConnectionInput {
   testStatus?: string | null;
   rateLimitedUntil?: string | null;
   lastErrorAt?: string | null;
+  lastErrorType?: string | null;
 }
+
+const EXPIRED_REPROBE_BLOCKLIST = new Set([
+  "account_deactivated",
+  "invalid_grant",
+  "unrecoverable_refresh_error",
+  "provider_deprecated",
+  "no_refresh_token",
+]);
 
 function normalizeStatus(value: string | null | undefined): string {
   return (value || "").trim().toLowerCase();
@@ -174,6 +183,20 @@ export function isCreditsExhaustedReprobeCandidate(
   return nowMs - sinceMs >= reprobeMs;
 }
 
+export function isExpiredReprobeCandidate(
+  connection: RecoverableConnectionInput | null | undefined,
+  nowMs: number,
+  reprobeMs: number = DEFAULT_CREDITS_REPROBE_MS
+): boolean {
+  if (!connection || typeof connection.id !== "string" || connection.id.length === 0) return false;
+  if (normalizeStatus(connection.testStatus) !== "expired") return false;
+  const errorType = normalizeStatus(connection.lastErrorType);
+  if (EXPIRED_REPROBE_BLOCKLIST.has(errorType)) return false;
+  const sinceMs = cooldownUntilMs(connection.lastErrorAt || connection.rateLimitedUntil || "");
+  if (!Number.isFinite(sinceMs) || sinceMs <= 0) return true;
+  return nowMs - sinceMs >= reprobeMs;
+}
+
 /**
  * From a list of connections, return only those whose transient cooldown has
  * elapsed OR whose credits_exhausted status is due for a re-probe.
@@ -187,7 +210,8 @@ export function selectRecoverableConnections<T extends RecoverableConnectionInpu
   return connections.filter(
     (connection) =>
       isRecoverableCooldownConnection(connection, nowMs) ||
-      isCreditsExhaustedReprobeCandidate(connection, nowMs)
+      isCreditsExhaustedReprobeCandidate(connection, nowMs) ||
+      isExpiredReprobeCandidate(connection, nowMs)
   );
 }
 
@@ -244,6 +268,7 @@ export async function runConnectionRecoveryTick(
           testStatus: typeof row.testStatus === "string" ? row.testStatus : null,
           rateLimitedUntil: typeof row.rateLimitedUntil === "string" ? row.rateLimitedUntil : null,
           lastErrorAt: typeof row.lastErrorAt === "string" ? row.lastErrorAt : null,
+          lastErrorType: typeof row.lastErrorType === "string" ? row.lastErrorType : null,
         }));
       });
     connections = await load();

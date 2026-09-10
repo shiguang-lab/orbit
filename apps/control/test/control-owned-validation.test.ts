@@ -44,4 +44,25 @@ test("dynamically loads the app-owned Vertex Anthropic parser and preserves proj
   ]);
   assert.deepEqual(parseVertexAnthropicModels(null), []);
   assert.deepEqual(parseVertexAnthropicModels({ models: "invalid" }), []);
+  assert.deepEqual(
+    parseVertexAnthropicModels({
+      publisherModels: [{ name: "publishers/anthropic/models/claude-opus-4-8" }],
+    }).map((model) => model.id),
+    ["claude-opus-4-8"]
+  );
+});
+
+test("Claude live discovery uses account-appropriate authentication headers", async () => {
+  const { assembleProviderModelsHeaders, PROVIDER_MODELS_CONFIG } = await import(
+    "../src/providers/provider-models-discovery/discovery/providerModelsConfig.js"
+  );
+  const config = PROVIDER_MODELS_CONFIG.claude;
+  assert.equal(
+    assembleProviderModelsHeaders(config, "oauth", { accessToken: "oauth" }).Authorization,
+    "Bearer oauth"
+  );
+  assert.equal(
+    assembleProviderModelsHeaders(config, "key", { apiKey: "key" })["x-api-key"],
+    "key"
+  );
 });

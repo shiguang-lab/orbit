@@ -34,6 +34,13 @@ type ImageGenerationResult =
   | { success: true; data?: unknown; status?: number; error?: string }
   | { success: false; data?: unknown; status?: number; error?: string };
 
+export function normalizeImageComboResponsePayload(
+  payload: { created?: number; data?: unknown[] } | unknown[],
+  created = Math.floor(Date.now() / 1000)
+): { created?: number; data?: unknown[] } {
+  return Array.isArray(payload) ? { created, data: payload } : payload;
+}
+
 /**
  * Execute a full combo strategy for an image generation request.
  *
@@ -166,12 +173,13 @@ export async function executeImageCombo(
 
   // 4. Build response
   if (successResult) {
-    const n = Math.max(
-      Number(body.n) || 1,
-      (
-        successResult.data as { data?: { data?: unknown[] } }
-      ).data?.data?.length || 0
-    );
+    // The image handler already returns the public OpenAI payload
+    // `{ created, data: [...] }`; count and return that level unchanged.
+    const payload = successResult.data as
+      | { created?: number; data?: unknown[] }
+      | unknown[];
+    const images = Array.isArray(payload) ? payload : payload.data;
+    const n = Math.max(Number(body.n) || 1, images?.length || 0);
     const costUsd = await calculateModalCost(
       "image",
       selectedProvider,
@@ -190,10 +198,8 @@ export async function executeImageCombo(
       fallbackAttempts: fallbackCount,
     });
 
-    return new Response(
-      JSON.stringify((successResult.data as { data: unknown }).data),
-      { status: 200, headers }
-    );
+    const responseBody = normalizeImageComboResponsePayload(payload);
+    return new Response(JSON.stringify(responseBody), { status: 200, headers });
   }
 
   // All targets failed — return the last error

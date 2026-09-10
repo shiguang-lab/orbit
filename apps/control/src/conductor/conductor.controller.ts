@@ -19,6 +19,8 @@ export class ConductorController {
   fleet(@Req() req: FastifyRequest, @Res() reply: FastifyReply) {
     return this.routes.dispatch(req, reply, (request) => this.conductor.fleet(request));
   }
+  @Post("tasks")
+  create(@Req() req:FastifyRequest,@Res() reply:FastifyReply){return this.routes.dispatch(req,reply,request=>this.conductor.create(request));}
 
   @Get("tasks/:id")
   task(@Param("id") id: string, @Req() req: FastifyRequest, @Res() reply: FastifyReply) {

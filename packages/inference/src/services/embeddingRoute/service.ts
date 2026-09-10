@@ -308,9 +308,11 @@ export async function createEmbeddingResponse(
       );
     }
     if ("allExpired" in credentials && credentials.allExpired) {
+      const expiredStatus = credentials.expiredStatus;
+      const quotaExhausted = expiredStatus === "credits_exhausted";
       return errorResponse(
-        HTTP_STATUS.UNAUTHORIZED,
-        `[${provider}] All ${credentials.expiredCount || 1} connection(s) authentication expired — please reconnect in the dashboard`
+        quotaExhausted ? HTTP_STATUS.PAYMENT_REQUIRED : HTTP_STATUS.UNAUTHORIZED,
+        `[${provider}] All ${credentials.expiredCount || 1} connection(s) ${quotaExhausted ? "credits exhausted" : "authentication expired"} — please reconnect in the dashboard`
       );
     }
   } else if (provider === "ollama-local" || provider === "lmstudio") {

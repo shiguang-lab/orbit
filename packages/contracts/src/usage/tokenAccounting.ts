@@ -33,11 +33,16 @@ export function getPromptCacheReadTokens(tokens: unknown): number {
 
 export function getPromptCacheCreationTokens(tokens: unknown): number {
   const tokenRecord = asRecord(tokens);
-  const promptDetails = getPromptTokenDetails(tokenRecord);
+  const promptDetails = asRecord(tokenRecord.prompt_tokens_details);
+  const inputDetails = asRecord(tokenRecord.input_tokens_details);
   return toFiniteNumber(
     tokenRecord.cacheCreation ??
       tokenRecord.cache_creation_input_tokens ??
-      promptDetails.cache_creation_tokens
+      tokenRecord.cache_write_tokens ??
+      promptDetails.cache_creation_tokens ??
+      inputDetails.cache_creation_tokens ??
+      promptDetails.cache_write_tokens ??
+      inputDetails.cache_write_tokens
   );
 }
 
@@ -165,10 +170,12 @@ export function getPromptCacheReadTokensOrNull(tokens: unknown): number | null {
  */
 export function getPromptCacheCreationTokensOrNull(tokens: unknown): number | null {
   const tokenRecord = asRecord(tokens);
-  const promptDetails = getPromptTokenDetails(tokenRecord);
+  const promptDetails = asRecord(tokenRecord.prompt_tokens_details);
+  const inputDetails = asRecord(tokenRecord.input_tokens_details);
   if (
-    hasAnyKey(tokenRecord, ["cacheCreation", "cache_creation_input_tokens"]) ||
-    hasAnyKey(promptDetails, ["cache_creation_tokens"])
+    hasAnyKey(tokenRecord, ["cacheCreation", "cache_creation_input_tokens", "cache_write_tokens"]) ||
+    hasAnyKey(promptDetails, ["cache_creation_tokens", "cache_write_tokens"]) ||
+    hasAnyKey(inputDetails, ["cache_creation_tokens", "cache_write_tokens"])
   ) {
     return getPromptCacheCreationTokens(tokens);
   }

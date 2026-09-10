@@ -456,7 +456,7 @@ export const APIKEY_PROVIDERS_REGIONAL = {
     textIcon: "CS",
     website: "https://api.ncloud-docs.com/docs/en/ai-naver-clovastudio-summary",
     apiHint:
-      "CLOVA Studio (HyperCLOVA X) is OpenAI-compatible on /v1/openai. Orbit probes /v1/openai/models and routes chat traffic to /v1/openai/chat/completions. Uses the current clovastudio.stream.ntruss.com host — the legacy clovastudio.apigw.ntruss.com endpoint is being deprecated.",
+      "Orbit routes chat traffic to CLOVA Studio's native v3 API. HCX-007 supports reasoning, HCX-005 supports public and inline-base64 images, and HCX-DASH-002 is the lightweight text model. Non-streaming clients are accumulated from the native upstream stream.",
   },
   internlm: {
     id: "internlm",

@@ -203,6 +203,8 @@ export interface CompressionConfig {
   defaultMode: CompressionMode;
   autoTriggerMode?: CompressionMode;
   autoTriggerTokens: number;
+  /** Fraction of usable context at which proactive compression starts. */
+  proactiveConfig?: { thresholdRatio: number };
   cacheMinutes: number;
   /**
    * Effective, engine-facing boolean: when truthy the system prompt is skipped
@@ -419,6 +421,7 @@ export const DEFAULT_COMPRESSION_CONFIG: CompressionConfig = {
   defaultMode: "off",
   autoTriggerMode: "lite",
   autoTriggerTokens: 0,
+  proactiveConfig: { thresholdRatio: 0.7 },
   cacheMinutes: 5,
   preserveSystemPrompt: true,
   preserveSystemPromptMode: "always",

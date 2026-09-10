@@ -19,6 +19,7 @@
  */
 import { saveCallLog } from "@orbit/core/usage/call-logs";
 import { saveRequestUsage } from "@orbit/core/usage/history";
+import { redactRejectedRequestBodyForLog } from "./rejectedRequestRedaction.ts";
 
 export interface RejectedRequestUsageInput {
   status: number;
@@ -83,7 +84,7 @@ export async function recordRejectedRequestUsage(input: RejectedRequestUsageInpu
     duration,
     tokens: {},
     error: error || null,
-    requestBody,
+    requestBody: redactRejectedRequestBodyForLog(requestBody),
     comboName,
     comboStepId,
     comboExecutionKey,

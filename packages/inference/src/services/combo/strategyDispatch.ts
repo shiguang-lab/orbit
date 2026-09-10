@@ -57,6 +57,7 @@ export const HANDLED_COMBO_STRATEGIES: readonly string[] = [
   "reset-aware",
   "reset-window",
   "headroom",
+  "quota-weighted",
   "strict-random",
   "auto",
   "lkgp",

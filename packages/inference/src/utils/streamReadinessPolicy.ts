@@ -95,6 +95,11 @@ function isHighReasoningEffort(
   return effort.toLowerCase() === "high";
 }
 
+/** Match the explicit `-thinking` model alias, including qualified variants. */
+function isExtendedThinkingModel(model?: string | null): boolean {
+  return typeof model === "string" && /-thinking(?:-|$)/.test(model.toLowerCase());
+}
+
 export function resolveStreamReadinessTimeout(
   input: StreamReadinessPolicyInput
 ): StreamReadinessPolicyResult {
@@ -114,6 +119,7 @@ export function resolveStreamReadinessTimeout(
   const estimatedChars = estimateBodyChars(input.body);
   const codexGpt5x = isCodexGpt5x(input.provider, input.model);
   const codexHighReasoning = codexGpt5x && isHighReasoningEffort(input.model, input.body);
+  const extendedThinking = isExtendedThinkingModel(input.model);
 
   if (itemCount > VERY_LARGE_ITEM_THRESHOLD) {
     timeoutMs += 45_000;
@@ -157,7 +163,15 @@ export function resolveStreamReadinessTimeout(
   // first SSE event — enough that the default 80s readiness window 504s before
   // the upstream speaks. Mirror the codex_gpt_5_5_high_reasoning bump so this
   // class of provider cannot be misidentified as a stalled connection.
-  if (isClaudeFormatReasoningProvider(input.provider) && !codexHighReasoning) {
+  // Providers such as Kiro and Devin publish extended-thinking aliases while
+  // using non-Claude wire formats. Their pre-first-event reasoning warm-up
+  // needs the same one-off allowance, independently of translator format.
+  if (extendedThinking && !codexHighReasoning) {
+    timeoutMs += 30_000;
+    reasons.push("extended_thinking");
+  }
+
+  if (isClaudeFormatReasoningProvider(input.provider) && !codexHighReasoning && !extendedThinking) {
     timeoutMs += 30_000;
     reasons.push("claude_format_heavy_reasoning");
   }

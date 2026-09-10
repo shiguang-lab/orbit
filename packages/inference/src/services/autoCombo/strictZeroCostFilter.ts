@@ -129,25 +129,40 @@ export function findBudgetEntry(
   return catalog.find((m) => m.provider === candidate.provider && m.modelId === candidate.model);
 }
 
-function isConnectionStateSafe(
+export type StrictZeroCostExclusionReason =
+  | "not-in-catalog"
+  | "regime-not-free"
+  | "no-hard-stop"
+  | "contradictory-noauth"
+  | "exhausted"
+  | "state-unknown"
+  | "no-connection";
+
+export type StrictZeroCostVerdict =
+  | { outcome: "safe"; safeConnectionIds: string[] }
+  | { outcome: StrictZeroCostExclusionReason };
+
+export function classifyConnectionState(
   provider: string,
   connectionId: string,
   resolveFreeAccessState: StrictZeroCostOptions["resolveFreeAccessState"],
   options: Pick<StrictZeroCostOptions, "minRemainingAllowance" | "maxStateAgeMs" | "now">
-): boolean {
+): "safe" | "exhausted" | "state-unknown" {
   const state = resolveFreeAccessState(provider, connectionId);
-  if (!state) return false; // no usage adapter for this provider, or lookup never ran/is stale
-  if (state.status !== "SAFE") return false;
+  if (!state) return "state-unknown";
 
   const now = (options.now ?? Date.now)();
   const checkedAtMs = Date.parse(state.checkedAt);
-  if (!Number.isFinite(checkedAtMs) || now - checkedAtMs > options.maxStateAgeMs) return false;
+  if (!Number.isFinite(checkedAtMs) || now - checkedAtMs > options.maxStateAgeMs) {
+    return "state-unknown";
+  }
 
-  if (state.remainingFreeAllowance === null) return false;
+  if (state.status === "EXHAUSTED") return "exhausted";
+  if (state.status !== "SAFE" || state.remainingFreeAllowance === null) return "state-unknown";
   // A negative threshold would let a negative/garbage reading pass; a caller
   // that genuinely wants "any allowance greater than zero" should pass 0.
-  if (options.minRemainingAllowance < 0) return false;
-  return state.remainingFreeAllowance > options.minRemainingAllowance;
+  if (options.minRemainingAllowance < 0) return "state-unknown";
+  return state.remainingFreeAllowance > options.minRemainingAllowance ? "safe" : "exhausted";
 }
 
 /**
@@ -168,7 +183,22 @@ export function evaluateCandidateConnections(
   resolveFreeAccessState: StrictZeroCostOptions["resolveFreeAccessState"],
   options: Pick<StrictZeroCostOptions, "minRemainingAllowance" | "maxStateAgeMs" | "now">
 ): string[] {
-  if (!budgetEntry) return []; // not in the catalog at all → paid, or genuinely unknown
+  const verdict = classifyStrictZeroCostCandidate(
+    candidate,
+    budgetEntry,
+    resolveFreeAccessState,
+    options
+  );
+  return verdict.outcome === "safe" ? verdict.safeConnectionIds : [];
+}
+
+export function classifyStrictZeroCostCandidate(
+  candidate: StrictZeroCostCandidate,
+  budgetEntry: FreeModelBudget | undefined,
+  resolveFreeAccessState: StrictZeroCostOptions["resolveFreeAccessState"],
+  options: Pick<StrictZeroCostOptions, "minRemainingAllowance" | "maxStateAgeMs" | "now">
+): StrictZeroCostVerdict {
+  if (!budgetEntry) return { outcome: "not-in-catalog" };
 
   const isGenuineNoAuthCandidate = candidate.connectionId === SYNTHETIC_NOAUTH_CONNECTION_ID;
   if (allowsNoAuthShortcut(budgetEntry.freeType)) {
@@ -180,30 +210,41 @@ export function evaluateCandidateConnections(
     // any other freeType, and is excluded there unless hardStopGuaranteed is
     // also set for it (which the curated catalog does not do for keyless
     // entries today, so it will correctly exclude).
-    if (isGenuineNoAuthCandidate) return [SYNTHETIC_NOAUTH_CONNECTION_ID];
+    if (isGenuineNoAuthCandidate) {
+      return { outcome: "safe", safeConnectionIds: [SYNTHETIC_NOAUTH_CONNECTION_ID] };
+    }
   }
-  if (!grantsFreeAccess(budgetEntry.freeType)) return [];
-  if (isGenuineNoAuthCandidate) return []; // no-auth path but a non-keyless catalog entry: contradictory metadata, fail closed
+  if (!grantsFreeAccess(budgetEntry.freeType)) return { outcome: "regime-not-free" };
+  if (isGenuineNoAuthCandidate) return { outcome: "contradictory-noauth" };
 
   // Every remaining freeType (recurring-*, one-time-initial, a keyless entry
   // reached via a real connection, and any future type this module doesn't
   // special-case) requires a documented hard stop before any live check even
   // runs — no point burning a quota lookup on a connection we could never
   // trust regardless of its answer.
-  if (budgetEntry.hardStopGuaranteed !== true) return [];
+  if (budgetEntry.hardStopGuaranteed !== true) return { outcome: "no-hard-stop" };
 
   const candidateConnectionIds = candidate.connectionId
     ? [candidate.connectionId]
     : (candidate.allowedConnectionIds ?? []);
 
+  if (candidateConnectionIds.length === 0) return { outcome: "no-connection" };
+
   const safe: string[] = [];
+  let sawExhausted = false;
   for (const connectionId of candidateConnectionIds) {
     if (connectionId === SYNTHETIC_NOAUTH_CONNECTION_ID) continue; // never reachable here, defensive
-    if (isConnectionStateSafe(candidate.provider, connectionId, resolveFreeAccessState, options)) {
-      safe.push(connectionId);
-    }
+    const state = classifyConnectionState(
+      candidate.provider,
+      connectionId,
+      resolveFreeAccessState,
+      options
+    );
+    if (state === "safe") safe.push(connectionId);
+    else if (state === "exhausted") sawExhausted = true;
   }
-  return safe;
+  if (safe.length > 0) return { outcome: "safe", safeConnectionIds: safe };
+  return { outcome: sawExhausted ? "exhausted" : "state-unknown" };
 }
 
 /**

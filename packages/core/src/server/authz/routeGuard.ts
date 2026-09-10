@@ -139,6 +139,19 @@ export const ALWAYS_PROTECTED_API_PATHS: ReadonlyArray<string> = [
   // which is false under requireLogin=false. (GHSA-v7g9-7f55-5g46)
   "/api/settings/export-json",
   "/api/settings/import-json",
+  // Bulk log exports can contain prompts, responses, client IPs, and provider
+  // metadata. They must never fall through to anonymous access when login is
+  // disabled. (GHSA-5926-2w35-7h4q)
+  "/api/logs/export",
+  // Codex profile writes replace the operator's local auth.json/config.toml.
+  "/api/cli-tools/codex-profiles",
+  // Writes a stored AGY credential into the operator's local CLI config.
+  "/api/providers/agy-auth/apply-local",
+];
+
+/** Dynamic credential export and host CLI-config write routes. */
+export const ALWAYS_PROTECTED_API_PATTERNS: ReadonlyArray<RegExp> = [
+  /^\/api\/providers\/[^/]+\/(claude|codex)-auth\/(export|apply-local)\/?$/,
 ];
 
 export function isLoopbackHost(hostHeader: string | null): boolean {
@@ -294,5 +307,8 @@ export function isLocalOnlyBypassableByManageScope(path: string): boolean {
 }
 
 export function isAlwaysProtectedPath(path: string): boolean {
-  return ALWAYS_PROTECTED_API_PATHS.some((p) => path === p || path.startsWith(p));
+  return (
+    ALWAYS_PROTECTED_API_PATHS.some((p) => path === p || path.startsWith(p)) ||
+    ALWAYS_PROTECTED_API_PATTERNS.some((pattern) => pattern.test(path))
+  );
 }

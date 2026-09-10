@@ -1,5 +1,5 @@
 import { getConsistentMachineId } from "../utils/machineId.ts";
-import { isCloudEnabled } from "../../lib/localDb.ts";
+import { isCloudEnabled } from "../../lib/db/settings.ts";
 import { getRuntimePorts } from "../../lib/runtime/ports.ts";
 
 const { dashboardPort } = getRuntimePorts();

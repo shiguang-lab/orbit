@@ -575,3 +575,25 @@ export function resolveForcedConnectionForCredentialPool(
 
   return forced;
 }
+
+/**
+ * Distinguish an operator-forced connection that disappeared from the active,
+ * policy-filtered pool from the intentional pin-release cases handled above.
+ *
+ * A failed attempt adds the forced id to `excludedConnectionIds`; cooldown and
+ * quota checks still release a present pin through
+ * `resolveForcedConnectionForCredentialPool`. Only an unexcluded id that is
+ * absent altogether must fail closed so another account from the same provider
+ * cannot silently replace the explicitly selected connection.
+ */
+export function isForcedConnectionMissingFromPool(
+  forcedConnectionId: string | null,
+  excludedConnectionIds: ReadonlySet<string>,
+  connections: AffinityPinConnection[]
+): boolean {
+  return (
+    forcedConnectionId !== null &&
+    !excludedConnectionIds.has(forcedConnectionId) &&
+    !connections.some((connection) => connection.id === forcedConnectionId)
+  );
+}

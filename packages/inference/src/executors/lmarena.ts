@@ -2,7 +2,7 @@
  * LMArenaExecutor — Arena (formerly LMArena) web-session provider.
  *
  * Routes requests through arena.ai create-evaluation with session cookies.
- * Upstream sits behind Cloudflare; traffic goes through tls-client-node Chrome
+ * Upstream sits behind Cloudflare; traffic goes through pinned wreq-js Chrome
  * impersonation (see services/lmarenaTlsClient.ts).
  *
  * Helpers: open-sse/executors/lmarena/{cookie,models,stream,response}.ts

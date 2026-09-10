@@ -19,6 +19,8 @@ import {
 } from "../utils/error.ts";
 import { inheritTrustedLocalRateLimitResponse } from "../services/rateLimitManager/errors.ts";
 import { HTTP_STATUS } from "@orbit/contracts/http-status";
+import { getRegistryEntry } from "../config/providerRegistry.ts";
+import { getCachedProviderNodes } from "@orbit/core/db/read-cache";
 import {
   runWithProxyContext,
   runWithAppliedProxyCapture,
@@ -393,6 +395,10 @@ export function checkResourcePressureBeforeProviderWork(): ResourcePressureGuard
   }
 }
 
+// The chat call site has the request context needed to distinguish single-model,
+// combo, probe, and request-scoped outcomes, so it owns resolved-result accounting.
+const chatPathOwnsBreakerAccounting = () => "ignore" as const;
+
 export async function executeChatWithBreaker({
   bypassCircuitBreaker,
   breaker,
@@ -586,13 +592,16 @@ export async function executeChatWithBreaker({
     }
 
     if (tlsFingerprintActive) {
-      const tracked = await breaker.execute(async () =>
-        runWithTlsTracking(tlsTrackingIdentity, chatFn)
+      const tracked = await breaker.execute(
+        async () => runWithTlsTracking(tlsTrackingIdentity, chatFn),
+        { classifyResult: chatPathOwnsBreakerAccounting }
       );
       return { result: tracked.result, tlsFingerprintUsed: tracked.tlsFingerprintUsed };
     }
 
-    const result = await breaker.execute(chatFn);
+    const result = await breaker.execute(chatFn, {
+      classifyResult: chatPathOwnsBreakerAccounting,
+    });
     return { result, tlsFingerprintUsed: false };
   } catch (cbErr: any) {
     if (cbErr instanceof CircuitBreakerOpenError) {
@@ -625,6 +634,70 @@ export async function executeChatWithBreaker({
   }
 }
 
+/** A compatible provider node whose prefix is reserved by a built-in provider. */
+export interface ShadowedProviderNode {
+  id: string;
+  name: string | null;
+  prefix: string;
+}
+
+const SHADOWABLE_NODE_TYPES: ReadonlySet<unknown> = new Set([
+  "openai-compatible",
+  "anthropic-compatible",
+]);
+
+function reservedPrefixesOf(provider: unknown): ReadonlySet<string> | null {
+  if (typeof provider !== "string" || provider.trim().length === 0) return null;
+  const entry = getRegistryEntry(provider) as { id?: unknown; alias?: unknown } | null;
+  if (!entry) return null;
+
+  const reserved = new Set<string>();
+  for (const value of [entry.id, entry.alias]) {
+    if (typeof value === "string" && value.length > 0) reserved.add(value);
+  }
+  return reserved.size > 0 ? reserved : null;
+}
+
+function trimmedString(value: unknown): string {
+  return typeof value === "string" ? value.trim() : "";
+}
+
+function asShadowedCompatibleNode(
+  node: unknown,
+  reserved: ReadonlySet<string>
+): ShadowedProviderNode | null {
+  if (!node || typeof node !== "object") return null;
+  const record = node as { type?: unknown; prefix?: unknown; id?: unknown; name?: unknown };
+  if (!SHADOWABLE_NODE_TYPES.has(record.type)) return null;
+
+  const prefix = trimmedString(record.prefix);
+  const id = trimmedString(record.id);
+  if (!id || !prefix || !reserved.has(prefix)) return null;
+  return { id, name: trimmedString(record.name) || null, prefix };
+}
+
+/**
+ * Finds a historical compatible node made unreachable by a newly reserved
+ * built-in provider id or alias. This is diagnostic-only and fails open.
+ */
+export async function findShadowedCompatibleNode(
+  provider: unknown
+): Promise<ShadowedProviderNode | null> {
+  const reserved = reservedPrefixesOf(provider);
+  if (!reserved) return null;
+
+  try {
+    const nodes = await getCachedProviderNodes();
+    for (const node of Array.isArray(nodes) ? nodes : []) {
+      const shadowed = asShadowedCompatibleNode(node, reserved);
+      if (shadowed) return shadowed;
+    }
+  } catch {
+    // Never let a best-effort diagnostic alter the credential error path.
+  }
+  return null;
+}
+
 export function handleNoCredentials(
   credentials: any,
   excludeConnectionId: string | null,
@@ -633,7 +706,8 @@ export function handleNoCredentials(
   lastError: string | null,
   lastStatus: number | null,
   candidateAliases?: readonly string[],
-  isCombo: boolean = false
+  isCombo: boolean = false,
+  shadowedNode: ShadowedProviderNode | null = null
 ) {
   if (credentials?.allRateLimited) {
     const errorMsg = lastError || credentials.lastError || "Unavailable";
@@ -692,7 +766,10 @@ export function handleNoCredentials(
           : "authentication expired";
     const message = `[${provider}] All ${count} connection(s) ${reason} — please reconnect in the dashboard`;
     log.warn("CHAT", message);
-    return errorResponse(HTTP_STATUS.UNAUTHORIZED, message);
+    return errorResponse(
+      status === "credits_exhausted" ? HTTP_STATUS.PAYMENT_REQUIRED : HTTP_STATUS.UNAUTHORIZED,
+      message
+    );
   }
   if (!excludeConnectionId) {
     // Ported from upstream decolua/9router#336 (Ibrahim Ryan): surface as 404
@@ -711,13 +788,26 @@ export function handleNoCredentials(
     // Without this, "No active credentials for provider: byNara" leaves the
     // user staring at a wall — most bugs in this area are actually "wrong
     // provider was picked", not "the provider is broken".
-    const hint =
+    const aliasHint =
       Array.isArray(candidateAliases) && candidateAliases.length > 0
         ? ` Try one of: ${candidateAliases
             .slice(0, 3)
             .map((a) => `${a}/${model}`)
             .join(", ")}.`
         : "";
+
+    let shadowHint = "";
+    if (shadowedNode) {
+      const nodeLabel = shadowedNode.name
+        ? `"${shadowedNode.name}" (${shadowedNode.id})`
+        : shadowedNode.id;
+      log.warn(
+        "AUTH",
+        `Custom provider node ${nodeLabel} is shadowed: its prefix "${shadowedNode.prefix}" is reserved by built-in provider "${provider}", so "${shadowedNode.prefix}/${model}" routed to the built-in instead of the node`
+      );
+      shadowHint = ` The prefix "${shadowedNode.prefix}" is reserved by the built-in provider "${provider}", so requests using it (e.g. "${shadowedNode.prefix}/${model}") route to that built-in and never reach your custom provider node ${nodeLabel}. Rename that node's prefix to an unreserved value and update your model ids.`;
+    }
+    const hint = `${aliasHint}${shadowHint}`;
 
     // Issue #2: for single-model (non-combo) requests, a 404 leaks a misleading
     // "No active credentials" status to a direct API client (e.g. OpenCode) that

@@ -1,5 +1,8 @@
 export type TaskState = "submitted" | "working" | "completed" | "failed" | "cancelled";
 export declare function getTaskManager(): any;
+export interface A2ATaskHistoryRow { id:string;state:string;skill_id:string|null;input_json:string|null;output_json:string|null;api_key_id:string|null;created_at:string;updated_at:string;completed_at:string|null }
+export declare function listA2ATaskHistory(filter:{from?:string;to?:string;skill?:string;state?:string;owner?:string;limit:number;offset:number}):{rows:A2ATaskHistoryRow[];total:number};
+export declare function listA2ATaskEvents(taskId:string):Array<{event_type:string;data_json:string|null;created_at:string}>;
 export declare function logRoutingDecision(decision: Record<string, unknown>): void;
 export declare function createA2AStream(
   task: any,

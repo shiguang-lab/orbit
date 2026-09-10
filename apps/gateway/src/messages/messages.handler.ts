@@ -78,4 +78,4 @@ async function postHandler(
   return handleChat(request, null, body);
 }
 
-export const POST = withChatAdmission(withInjectionGuard(postHandler));
+export const POST = withChatAdmission(withInjectionGuard(postHandler, { logger: null }));

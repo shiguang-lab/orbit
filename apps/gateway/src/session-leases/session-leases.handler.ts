@@ -5,6 +5,7 @@ import { isCommonChatGptWebRetirementError } from "@orbit/contracts/chatgpt-web-
 const generation = z.number().int().positive().safe();
 const actionSchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("acquire"), model: z.string().trim().min(1).max(512) }),
+  z.object({ action: z.literal("status"), generation }),
   z.object({ action: z.literal("renew"), generation }),
   z.object({
     action: z.literal("release"),
@@ -56,7 +57,11 @@ export async function POST(request: Request): Promise<Response> {
     parseLeaseOwnerHeader,
     validateExclusiveLeaseKeyConfiguration,
   } = leaseContext;
-  const { releaseExclusiveConnectionLease, renewExclusiveConnectionLease } = localDb;
+  const {
+    getExclusiveConnectionLeaseStatus,
+    releaseExclusiveConnectionLease,
+    renewExclusiveConnectionLease,
+  } = localDb;
   const { getModelInfo } = modelApi;
   const { buildErrorBody } = errorApi;
 
@@ -98,6 +103,19 @@ export async function POST(request: Request): Promise<Response> {
     const leaseOwnerId = parseLeaseOwnerHeader(request.headers);
     if (parsed.data.action !== "acquire") {
       const input = { leaseOwnerId, generation: parsed.data.generation, apiKeyId: policy.apiKeyInfo.id };
+      if (parsed.data.action === "status") {
+        const status = getExclusiveConnectionLeaseStatus(input);
+        return status
+          ? json(
+              200,
+              {
+                ...lifecycle(status.lease),
+                connection: { displayName: status.connectionName, provider: status.provider },
+              },
+              corsHeaders
+            )
+          : fail(409, "LEASE_FENCE_STALE", "The lease generation is stale");
+      }
       const result = parsed.data.action === "renew"
         ? renewExclusiveConnectionLease(input)
         : releaseExclusiveConnectionLease({ ...input, reason: parsed.data.reason });

@@ -44,6 +44,8 @@ import {
   zedLlmFetch,
   type ZedCredentials,
 } from "../shared/zedAuth.ts";
+import { buildErrorBody } from "../utils/error.ts";
+import { hasUsefulStreamContent } from "../utils/streamReadiness.ts";
 import { resolveSuppressThinkClose, THINKING_MARKER_HEADER } from "../utils/thinkCloseMarker.ts";
 
 // Wire values for the `provider` field of POST /completions. These are NOT
@@ -122,14 +124,38 @@ function convertProviderEvent(
   return event;
 }
 
-function createErrorChunk(model: string, message: string): Record<string, unknown> {
-  return {
-    id: `chatcmpl-zed-error-${Date.now()}`,
-    object: "chat.completion.chunk",
-    created: Math.floor(Date.now() / 1000),
-    model,
-    choices: [{ index: 0, delta: { content: `[Zed error] ${message}` }, finish_reason: "stop" }],
-  };
+const MAX_ZED_FAILURE_MESSAGE_LENGTH = 512;
+const MAX_PENDING_ZED_OUTPUT_LENGTH = 64 * 1024;
+const ZED_STREAM_FAILURE_PUBLIC_MESSAGE = "Zed upstream stream failed";
+
+function boundedFailureText(value: unknown): string | null {
+  if (typeof value !== "string" && typeof value !== "number") return null;
+  const text = String(value).trim();
+  return text ? text.slice(0, MAX_ZED_FAILURE_MESSAGE_LENGTH) : null;
+}
+
+function extractZedFailureMessage(failed: Record<string, unknown>): string {
+  const nested = failed.error && typeof failed.error === "object" && !Array.isArray(failed.error)
+    ? failed.error as Record<string, unknown>
+    : null;
+  for (const candidate of [
+    failed.message,
+    nested?.message,
+    typeof failed.error === "object" ? undefined : failed.error,
+    failed.code,
+    nested?.code,
+  ]) {
+    const text = boundedFailureText(candidate);
+    if (text) return text;
+  }
+  return "request failed";
+}
+
+function createErrorChunk(message: string): ReturnType<typeof buildErrorBody> {
+  return buildErrorBody(502, `Zed stream failed: ${message}`, undefined, {
+    type: "upstream_error",
+    code: "ZED_STREAM_FAILED",
+  });
 }
 
 /**
@@ -141,18 +167,24 @@ function createErrorChunk(model: string, message: string): Record<string, unknow
  * has no `close()`.
  */
 type SseEnqueueTarget = Pick<ReadableStreamDefaultController<Uint8Array>, "enqueue">;
+type SseProcessTarget = Pick<TransformStreamDefaultController<Uint8Array>, "enqueue" | "terminate">;
+
+function serializeSseObject(chunk: unknown): string {
+  if (!chunk) return "";
+  let serialized = "";
+  for (const item of Array.isArray(chunk) ? chunk : [chunk]) {
+    if (item) serialized += `data: ${JSON.stringify(item)}\n\n`;
+  }
+  return serialized;
+}
 
 function enqueueSseObject(
   controller: SseEnqueueTarget,
   encoder: TextEncoder,
   chunk: unknown
 ): void {
-  if (!chunk) return;
-  const items = Array.isArray(chunk) ? chunk : [chunk];
-  for (const item of items) {
-    if (!item) continue;
-    controller.enqueue(encoder.encode(`data: ${JSON.stringify(item)}\n\n`));
-  }
+  const serialized = serializeSseObject(chunk);
+  if (serialized) controller.enqueue(encoder.encode(serialized));
 }
 
 type ZedLine = { done?: true; status?: unknown; event?: unknown } | null;
@@ -226,16 +258,40 @@ function wrapZedCompletionStream(
   }
   let buffer = "";
   let done = false;
+  let providerOutputForwarded = false;
+  let pendingProviderOutput = "";
+  let pendingFailure: (Error & { statusCode: number }) | null = null;
+
+  const forwardProviderOutput = (controller: SseEnqueueTarget, chunk: unknown) => {
+    const serialized = serializeSseObject(chunk);
+    if (!serialized) return;
+    if (providerOutputForwarded) {
+      controller.enqueue(encoder.encode(serialized));
+      return;
+    }
+    const candidate = pendingProviderOutput + serialized;
+    if (!hasUsefulStreamContent(candidate)) {
+      pendingProviderOutput = candidate.length <= MAX_PENDING_ZED_OUTPUT_LENGTH
+        ? candidate
+        : serialized.length <= MAX_PENDING_ZED_OUTPUT_LENGTH ? serialized : "";
+      return;
+    }
+    controller.enqueue(encoder.encode(candidate));
+    pendingProviderOutput = "";
+    providerOutputForwarded = true;
+  };
 
   const finish = (controller: SseEnqueueTarget) => {
     if (done) return;
     const finalChunk = convertProviderEvent(provider, null, state);
-    enqueueSseObject(controller, encoder, finalChunk);
-    controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+    controller.enqueue(encoder.encode(
+      `${pendingProviderOutput}${serializeSseObject(finalChunk)}data: [DONE]\n\n`,
+    ));
+    pendingProviderOutput = "";
     done = true;
   };
 
-  const processLine = (line: string, controller: SseEnqueueTarget) => {
+  const processLine = (line: string, controller: SseProcessTarget) => {
     if (done) return;
     const payload = unwrapZedLine(line);
     if (!payload) return;
@@ -246,17 +302,28 @@ function wrapZedCompletionStream(
     if (payload.status) {
       const status = normalizeStatus(payload.status);
       if (status?.type === "failed" || status?.failed) {
-        const failed = (status.failed as Record<string, unknown>) || status;
-        const message = String(failed.message || failed.error || failed.code || "request failed");
-        enqueueSseObject(controller, encoder, createErrorChunk(model, message));
-        finish(controller);
+        const failed = status.failed && typeof status.failed === "object" && !Array.isArray(status.failed)
+          ? status.failed as Record<string, unknown>
+          : status;
+        if (providerOutputForwarded) {
+          pendingFailure = Object.assign(new Error(ZED_STREAM_FAILURE_PUBLIC_MESSAGE), {
+            statusCode: 502,
+          });
+          done = true;
+          controller.terminate();
+          return;
+        }
+        pendingProviderOutput = "";
+        enqueueSseObject(controller, encoder, createErrorChunk(extractZedFailureMessage(failed)));
+        done = true;
+        controller.terminate();
       } else if (status?.type === "stream_ended" || status === ("stream_ended" as unknown)) {
         finish(controller);
       }
       return;
     }
     const converted = convertProviderEvent(provider, payload.event, state);
-    enqueueSseObject(controller, encoder, converted);
+    forwardProviderOutput(controller, converted);
   };
 
   const transformed = response.body.pipeThrough(
@@ -281,7 +348,34 @@ function wrapZedCompletionStream(
     })
   );
 
-  return new Response(transformed, {
+  const transformedReader = transformed.getReader();
+  let cancelled = false;
+  const cancelTransformedReader = (reason: unknown) => {
+    if (cancelled) return;
+    cancelled = true;
+    void transformedReader.cancel(reason).catch(() => {});
+  };
+  const guarded = new ReadableStream<Uint8Array>({
+    async pull(controller) {
+      try {
+        const next = await transformedReader.read();
+        if (cancelled) return;
+        if (!next.done) {
+          controller.enqueue(next.value);
+          return;
+        }
+        if (pendingFailure) controller.error(pendingFailure);
+        else controller.close();
+      } catch (error) {
+        if (!cancelled) controller.error(error);
+      }
+    },
+    cancel(reason) {
+      cancelTransformedReader(reason);
+    },
+  });
+
+  return new Response(guarded, {
     status: response.status,
     statusText: response.statusText,
     headers: {

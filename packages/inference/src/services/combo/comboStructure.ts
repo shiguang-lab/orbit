@@ -15,8 +15,13 @@
 
 import { getModelContextLimit } from "@orbit/core/catalog/model-capabilities";
 import { getHiddenModelsByProvider } from "@orbit/core/db/hidden-models";
-import { getComboModelString, normalizeComboStep } from "@orbit/core/routing/combo-steps";
+import {
+  getComboModelString,
+  implicitPinAllowlist,
+  normalizeComboStep,
+} from "@orbit/core/routing/combo-steps";
 import { getProviderByAlias, getProviderById } from "@orbit/providers/catalog";
+import { PROVIDER_MODELS } from "@orbit/providers/provider-models";
 import { estimateTokens } from "../contextManager.ts";
 import { containsMediaKind } from "../../utils/mediaParts.ts";
 import { getResolvedModelCapabilities } from "../modelCapabilities.ts";
@@ -126,6 +131,8 @@ function normalizeRuntimeStep(
 
   const modelStr = getComboModelString(step);
   if (!modelStr) return null;
+  const connectionId = typeof step.connectionId === "string" ? step.connectionId.trim() : null;
+  const allowedConnectionIds = implicitPinAllowlist(connectionId, step.allowedConnectionIds);
 
   return {
     kind: "model",
@@ -134,13 +141,13 @@ function normalizeRuntimeStep(
     modelStr,
     provider: getTargetProvider(modelStr, step.providerId),
     providerId: step.providerId || null,
-    connectionId: step.connectionId || null,
+    connectionId,
     // #3266: a per-step account allowlist scopes round-robin/weighted selection
     // to a subset of the provider's connections. This is the second writer of
     // `allowedConnectionIds` (tag routing is the first); both feed the existing
     // credential-selection filter in auth.ts.
-    ...(Array.isArray(step.allowedConnectionIds) && step.allowedConnectionIds.length > 0
-      ? { allowedConnectionIds: step.allowedConnectionIds }
+    ...(allowedConnectionIds && allowedConnectionIds.length > 0
+      ? { allowedConnectionIds }
       : {}),
     weight,
     label,
@@ -537,7 +544,7 @@ function hasKnownCompatibleContextLimit(
   requirements: RequestCompatibilityRequirements
 ): boolean {
   if (requirements.requiredContextTokens <= 0) return false;
-  const capabilities = getResolvedModelCapabilities(target.modelStr);
+  const capabilities = getResolvedModelCapabilities(targetCapabilityInput(target));
   return evaluateContextLimit(capabilities, requirements, target.modelStr) === true;
 }
 
@@ -554,7 +561,7 @@ export function isVisionIncompatibleTarget(
   requirements: RequestCompatibilityRequirements
 ): boolean {
   if (!requirements.requiresVision) return false;
-  const capabilities = getResolvedModelCapabilities(target.modelStr);
+  const capabilities = getResolvedModelCapabilities(targetCapabilityInput(target));
   return capabilities.supportsVision !== true;
 }
 
@@ -579,7 +586,7 @@ function getTargetCompatibilityFailures(
   target: ResolvedComboTarget,
   requirements: RequestCompatibilityRequirements
 ): string[] {
-  const capabilities = getResolvedModelCapabilities(target.modelStr);
+  const capabilities = getResolvedModelCapabilities(targetCapabilityInput(target));
   const failures: string[] = [];
 
   if (
@@ -626,6 +633,47 @@ export type CompatFilterOptions = {
   failOpen?: boolean;
 };
 
+/**
+ * Orbit stores ordinary combo targets as full `provider/model` strings, while
+ * some provider-native model ids contain a slash themselves. Preserve ordinary
+ * parsing, but keep an explicit provider for namespaced registry/custom ids.
+ */
+function targetCapabilityInput(target: ResolvedComboTarget):
+  | string
+  | { provider: string | null; model: string } {
+  const providerId = target.providerId || target.provider || null;
+  if (!providerId) return target.modelStr;
+
+  const providerDefinition = getProviderById(providerId) || getProviderByAlias(providerId);
+  const providerAlias =
+    typeof providerDefinition?.alias === "string"
+      ? providerDefinition.alias
+      : typeof providerDefinition?.id === "string"
+        ? providerDefinition.id
+        : providerId;
+  const registryModels = PROVIDER_MODELS[providerAlias];
+  if (registryModels?.some((model) => model.id === target.modelStr)) {
+    return { provider: providerId, model: target.modelStr };
+  }
+
+  if (
+    target.modelStr.startsWith(`${providerId}/`) ||
+    target.modelStr.startsWith(`${providerAlias}/`)
+  ) {
+    return target.modelStr;
+  }
+  return { provider: providerId, model: target.modelStr };
+}
+
+function highestKnownOutputLimit(targets: ResolvedComboTarget[]): number {
+  let ceiling = 0;
+  for (const target of targets) {
+    const limit = getResolvedModelCapabilities(targetCapabilityInput(target)).maxOutputTokens;
+    if (typeof limit === "number" && limit > ceiling) ceiling = limit;
+  }
+  return ceiling;
+}
+
 export function hasHardCapabilityFailure(reasons: string[]): boolean {
   return reasons.some((reason) => HARD_COMPAT_REASONS.has(reason));
 }
@@ -667,6 +715,15 @@ export function describeCapabilityFilterExhaustion(
     message = `No target in combo ${name} supports tool calling; request carried ${toolCount} tools`;
   } else if (primary === "vision") {
     message = `No target in combo ${name} has confirmed vision support for this image request`;
+  } else if (primary === "output_tokens") {
+    const ceiling = highestKnownOutputLimit(
+      rejected
+        .filter((entry) => entry.reasons.includes("output_tokens"))
+        .map((entry) => entry.target)
+    );
+    message =
+      `No target in combo ${name} can produce the requested max_tokens=${requirements.requestedOutputTokens}; ` +
+      `the highest known output limit in the pool is ${ceiling}`;
   } else {
     message = `No target in combo ${name} supports structured output for this request`;
   }
@@ -784,16 +841,37 @@ export function filterTargetsByRequestCompatibility(
     return [];
   }
 
+  // A single survivor that is itself known to be too small guarantees a
+  // context-length failure. Restore the remaining pool so a larger-context
+  // target can still be tried; keep vision fail-closed.
+  if (
+    compatible.length === 1 &&
+    (targetReasons.get(compatible[0]) || []).includes("context_window")
+  ) {
+    const restored = requirements.requiresVision
+      ? targets.filter((target) => !isVisionIncompatibleTarget(target, requirements))
+      : targets;
+    if (restored.length > compatible.length) {
+      log.warn(
+        "COMBO",
+        `${label}: single compatible target ${compatible[0].modelStr} has known context too small for ${requirements.requiredContextTokens} token request; falling back to full pool`
+      );
+      return restored;
+    }
+  }
+
   log.info(
     "COMBO",
     `${label}: kept ${compatible.length}/${targets.length} targets for request requirements`
   );
-  log.debug?.(
-    "COMBO",
-    `${label}: rejected targets ${rejected
-      .map((entry) => `${entry.target.modelStr}(${entry.reasons.join("+")})`)
-      .join(", ")}`
-  );
+  const rejectedSummary = `${label}: rejected targets ${rejected
+    .map((entry) => `${entry.target.modelStr}(${entry.reasons.join("+")})`)
+    .join(", ")}`;
+  if (compatible.length <= 2 && targets.length > 4) {
+    log.info("COMBO", rejectedSummary);
+  } else {
+    log.debug?.("COMBO", rejectedSummary);
+  }
   return compatible;
 }
 

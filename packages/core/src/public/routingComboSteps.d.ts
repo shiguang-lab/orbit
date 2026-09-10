@@ -45,6 +45,15 @@ interface NormalizeComboStepOptions {
 export function getComboStepWeight(value: unknown): number;
 export function getComboModelString(value: unknown): string | null;
 export function getComboModelProvider(value: unknown): string | null;
+export function implicitPinAllowlist(
+  connectionId: string | null | undefined,
+  allowedConnectionIds: string[] | null | undefined,
+): string[] | null;
+export function comboPinAllowlist(
+  isCombo: boolean,
+  forcedConnectionId: string | null | undefined,
+  allowedConnectionIds: string[] | null | undefined,
+): string[] | null;
 export function getComboStepTarget(
   value: unknown,
   options?: NormalizeComboStepOptions,

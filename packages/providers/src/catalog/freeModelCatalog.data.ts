@@ -173,20 +173,23 @@ export const FREE_MODEL_BUDGETS: FreeModelBudget[] = [
   { provider: "freemodel-dev", modelId: "gpt-5.3-codex", displayName: "GPT-5.3 Codex", monthlyTokens: 0, creditTokens: 0, freeType: "one-time-initial", poolKey: "freemodel-dev", tos: "unknown" },
   { provider: "friendliai", modelId: "meta-llama-3.1-70b-instruct", displayName: "meta-llama-3.1-70b-instruct", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "friendliai", tos: "avoid" },
   { provider: "friendliai", modelId: "meta-llama-3.1-8b-instruct", displayName: "meta-llama-3.1-8b-instruct", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "friendliai", tos: "avoid" },
-  { provider: "gemini", modelId: "gemini-2.5-flash", displayName: "Gemini 2.5 Flash", monthlyTokens: 60000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "gemini-free", tos: "caution" },
-  { provider: "gemini", modelId: "gemini-2.5-flash-lite", displayName: "Gemini 2.5 Flash-Lite", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "gemini-free", tos: "caution" },
-  { provider: "gemini", modelId: "gemini-3-flash-preview", displayName: "Gemini 3 Flash Preview", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "gemini-free", tos: "caution" },
-  { provider: "gemini", modelId: "gemini-3.1-flash-lite", displayName: "Gemini 3.1 Flash-Lite", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "gemini-free", tos: "caution" },
+  // evidence: public-page https://ai.google.dev/gemini-api/docs/rate-limits (2026-09-02) — free-tier
+  // limits are visible only inside AI Studio and vary by model/account; no public token figure remains.
+  { provider: "gemini", modelId: "gemini-2.5-flash", displayName: "Gemini 2.5 Flash", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "gemini-free", tos: "caution" },
+  { provider: "gemini", modelId: "gemini-2.5-flash-lite", displayName: "Gemini 2.5 Flash-Lite", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "gemini-free", tos: "caution" },
+  { provider: "gemini", modelId: "gemini-3-flash-preview", displayName: "Gemini 3 Flash Preview", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "gemini-free", tos: "caution" },
+  { provider: "gemini", modelId: "gemini-3.1-flash-lite", displayName: "Gemini 3.1 Flash-Lite", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "gemini-free", tos: "caution" },
   { provider: "glm-cn", modelId: "glm-4-flash", displayName: "GLM-4-Flash", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "zhipu-flash-free", tos: "ok" },
   { provider: "glm-cn", modelId: "glm-4.5-flash", displayName: "GLM-4.5-Flash", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "zhipu-flash-free", tos: "ok" },
   { provider: "glm-cn", modelId: "glm-4.7-flash", displayName: "GLM-4.7-Flash", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "zhipu-flash-free", tos: "ok" },
   { provider: "glm-cn", modelId: "glm-signup-bonus", displayName: "Z.AI — 20M signup bonus", monthlyTokens: 0, creditTokens: 20000000, freeType: "one-time-initial", poolKey: "zhipu-signup", tos: "ok" },
-  // hardStopGuaranteed: Groq pricing page states "Free tier: 30 RPM / 14.4K RPD — no credit card" (open-sse/services/../providers/apikey/frontier-labs.ts:71-81).
-  { provider: "groq", modelId: "meta-llama/llama-4-scout-17b-16e-instruct", displayName: "Llama 4 Scout", monthlyTokens: 15000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "groq", tos: "caution", hardStopGuaranteed: true },
-  { provider: "groq", modelId: "llama-3.3-70b-versatile", displayName: "Llama 3.3 70B", monthlyTokens: 15000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "groq", tos: "caution", hardStopGuaranteed: true },
-  { provider: "groq", modelId: "openai/gpt-oss-120b", displayName: "GPT-OSS 120B", monthlyTokens: 15000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "groq", tos: "caution", hardStopGuaranteed: true },
-  { provider: "groq", modelId: "openai/gpt-oss-20b", displayName: "GPT-OSS 20B", monthlyTokens: 15000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "groq", tos: "caution", hardStopGuaranteed: true },
-  { provider: "groq", modelId: "qwen/qwen3-32b", displayName: "Qwen3 32B", monthlyTokens: 15000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "groq", tos: "caution", hardStopGuaranteed: true },
+  // evidence: public-page https://console.groq.com/docs/rate-limits (2026-09-02) — 200K TPD
+  // per chat model. Each cap is independent, so rows deliberately have no shared poolKey.
+  { provider: "groq", modelId: "openai/gpt-oss-120b", displayName: "GPT-OSS 120B", monthlyTokens: 6000000, creditTokens: 0, freeType: "recurring-daily", poolKey: null, tos: "caution", hardStopGuaranteed: true },
+  { provider: "groq", modelId: "openai/gpt-oss-20b", displayName: "GPT-OSS 20B", monthlyTokens: 6000000, creditTokens: 0, freeType: "recurring-daily", poolKey: null, tos: "caution", hardStopGuaranteed: true },
+  { provider: "groq", modelId: "openai/gpt-oss-safeguard-20b", displayName: "GPT-OSS Safeguard 20B", monthlyTokens: 6000000, creditTokens: 0, freeType: "recurring-daily", poolKey: null, tos: "caution", hardStopGuaranteed: true },
+  { provider: "groq", modelId: "qwen/qwen3.6-27b", displayName: "Qwen3.6 27B", monthlyTokens: 6000000, creditTokens: 0, freeType: "recurring-daily", poolKey: null, tos: "caution", hardStopGuaranteed: true },
+  { provider: "groq", modelId: "qwen/qwen3.8-27b", displayName: "Qwen3.8 27B", monthlyTokens: 6000000, creditTokens: 0, freeType: "recurring-daily", poolKey: null, tos: "caution", hardStopGuaranteed: true },
   { provider: "huggingchat", modelId: "baidu/ERNIE-4.5-VL-424B-A47B-Base-PT", displayName: "ERNIE 4.5 VL 424B A47B Base PT", monthlyTokens: 500000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "huggingchat", tos: "caution" },
   { provider: "huggingchat", modelId: "CohereLabs/c4ai-command-r7b-12-2024", displayName: "Command R7B 12-2024", monthlyTokens: 500000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "huggingchat", tos: "caution" },
   { provider: "huggingchat", modelId: "CohereLabs/command-a-reasoning-08-2025", displayName: "Command A Reasoning 08-2025", monthlyTokens: 500000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "huggingchat", tos: "caution" },
@@ -255,6 +258,10 @@ export const FREE_MODEL_BUDGETS: FreeModelBudget[] = [
   { provider: "llm7", modelId: "deepseek-r1-0528", displayName: "DeepSeek R1 (LLM7)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "llm7-free", tos: "caution" },
   { provider: "llm7", modelId: "qwen2.5-coder-32b-instruct", displayName: "Qwen2.5 Coder 32B (LLM7)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "llm7-free", tos: "caution" },
   { provider: "longcat", modelId: "LongCat-2.0", displayName: "LongCat-2.0", monthlyTokens: 0, creditTokens: 10000000, freeType: "one-time-initial", poolKey: "longcat-free", tos: "caution" },
+  // evidence: console-verified 2026-09-02 by upstream maintainer diegosouzapw
+  // (https://console.mistral.ai, Limits → Free mode: 1,000,000,000 tokens/month).
+  // Public confirmation that free-mode caps live on the Limits page:
+  // https://docs.mistral.ai/admin/billing-usage/usage-limits
   { provider: "mistral", modelId: "mistral-large-latest", displayName: "Mistral Large 3", monthlyTokens: 1000000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "mistral", tos: "caution" },
   { provider: "mistral", modelId: "mistral-medium-3-5", displayName: "Mistral Medium 3.5", monthlyTokens: 1000000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "mistral", tos: "caution" },
   { provider: "mistral", modelId: "mistral-small-latest", displayName: "Mistral Small 4", monthlyTokens: 1000000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "mistral", tos: "caution" },
@@ -289,14 +296,16 @@ export const FREE_MODEL_BUDGETS: FreeModelBudget[] = [
   { provider: "nvidia", modelId: "openai/gpt-oss-120b", displayName: "GPT OSS 120B", monthlyTokens: 0, creditTokens: 0, freeType: "one-time-initial", poolKey: "nvidia", tos: "caution" },
   { provider: "nvidia", modelId: "openai/gpt-oss-20b", displayName: "GPT OSS 20B", monthlyTokens: 0, creditTokens: 0, freeType: "one-time-initial", poolKey: "nvidia", tos: "caution" },
   { provider: "nvidia", modelId: "nvidia/nemotron-3-super-120b-a12b", displayName: "Nemotron 3 Super 120B A12B", monthlyTokens: 0, creditTokens: 0, freeType: "one-time-initial", poolKey: "nvidia", tos: "caution" },
-  { provider: "ollama-cloud", modelId: "deepseek-v4-pro", displayName: "DeepSeek V4 Pro", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "deepseek-v4-flash", displayName: "DeepSeek V4 Flash", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "kimi-k2.6", displayName: "Kimi K2.6", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "glm-5.1", displayName: "GLM 5.1", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "minimax-m2.7", displayName: "MiniMax M2.7", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "gemma4:31b", displayName: "Gemma 4 31B", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "nemotron-3-super", displayName: "NVIDIA Nemotron 3 Super", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
-  { provider: "ollama-cloud", modelId: "qwen3.5:397b", displayName: "Qwen 3.5 397B", monthlyTokens: 20000000, creditTokens: 0, freeType: "recurring-monthly", poolKey: "ollama-cloud", tos: "ambiguous" },
+  // evidence: public-page https://ollama.com/pricing (2026-09-02) — starter usage credits are
+  // included and reset monthly, but no token figure is published; do not inflate the headline.
+  { provider: "ollama-cloud", modelId: "deepseek-v4-pro", displayName: "DeepSeek V4 Pro", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "deepseek-v4-flash", displayName: "DeepSeek V4 Flash", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "kimi-k2.6", displayName: "Kimi K2.6", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "glm-5.1", displayName: "GLM 5.1", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "minimax-m2.7", displayName: "MiniMax M2.7", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "gemma4:31b", displayName: "Gemma 4 31B", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "nemotron-3-super", displayName: "NVIDIA Nemotron 3 Super", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
+  { provider: "ollama-cloud", modelId: "qwen3.5:397b", displayName: "Qwen 3.5 397B", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "ollama-cloud", tos: "ambiguous" },
   { provider: "opencode", modelId: "big-pickle", displayName: "Big Pickle", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "opencode", tos: "avoid" },
   { provider: "opencode", modelId: "deepseek-v4-flash-free", displayName: "DeepSeek V4 Flash Free", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "opencode", tos: "avoid" },
   { provider: "opencode", modelId: "minimax-m2.5-free", displayName: "MiniMax M2.5 Free", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "opencode", tos: "avoid" },
@@ -312,6 +321,7 @@ export const FREE_MODEL_BUDGETS: FreeModelBudget[] = [
   { provider: "opencode-zen", modelId: "opencode/nemotron-3-ultra-free", displayName: "Nemotron 3 Ultra (free)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "opencode-zen-free", tos: "caution" },
   { provider: "openrouter", modelId: "auto", displayName: "Auto (Best Available)", monthlyTokens: 1200000, creditTokens: 0, freeType: "recurring-daily", poolKey: "openrouter-free", tos: "caution" },
   { provider: "openrouter", modelId: "stealth/ox-alpha", displayName: "Stealth Ox Alpha (free)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "openrouter-free", tos: "caution" },
+  { provider: "openrouter", modelId: "liquid/lfm-2.5-2.6b:free", displayName: "LiquidAI: LFM2.5-2.6B (free)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-daily", poolKey: "openrouter-free", tos: "caution" },
   { provider: "pollinations", modelId: "openai", displayName: "OpenAI (Pollinations)", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "pollinations", tos: "caution" },
   { provider: "pollinations", modelId: "openai-fast", displayName: "OpenAI Fast (Pollinations)", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "pollinations", tos: "caution" },
   { provider: "pollinations", modelId: "openai-large", displayName: "OpenAI Large (Pollinations)", monthlyTokens: 0, creditTokens: 0, freeType: "keyless", poolKey: "pollinations", tos: "caution" },
@@ -464,7 +474,14 @@ export const FREE_MODEL_BUDGETS: FreeModelBudget[] = [
   { provider: "routeway", modelId: "laguna-m.1:free", displayName: "Laguna M.1 (free)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "routeway-free", tos: "caution" },
   { provider: "routeway", modelId: "laguna-xs.2:free", displayName: "Laguna XS.2 (free)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "routeway-free", tos: "caution" },
   { provider: "routeway", modelId: "llama-3.2-3b-instruct:free", displayName: "Llama 3.2 3B Instruct (free)", monthlyTokens: 0, creditTokens: 0, freeType: "recurring-uncapped", poolKey: "routeway-free", tos: "caution" },
-  { provider: "nara", modelId: "tencent-hy3", displayName: "Tencent Hy3", monthlyTokens: 150000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
-  { provider: "nara", modelId: "mistral-large", displayName: "Mistral Large", monthlyTokens: 150000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
-  { provider: "nara", modelId: "mistral-medium-3-5", displayName: "Mistral Medium 3.5", monthlyTokens: 150000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  // evidence: api-public https://router.bynara.id/api/plans (2026-09-02) — one 7M-token/day
+  // account bucket across these eight free-plan models (210M/month, one shared pool).
+  { provider: "nara", modelId: "agnes-2.0-flash", displayName: "Agnes 2.0 Flash", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "agnes-2.5-flash", displayName: "Agnes 2.5 Flash", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "laguna-s-2.1", displayName: "Laguna S 2.1", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "minimax-m3-free", displayName: "MiniMax M3 Free", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "mistral-large", displayName: "Mistral Large", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "mistral-medium-3-5", displayName: "Mistral Medium 3.5", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "qwen3.8-27b", displayName: "Qwen3.8 27B", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
+  { provider: "nara", modelId: "stepfun-3.7-flash", displayName: "StepFun 3.7 Flash", monthlyTokens: 210000000, creditTokens: 0, freeType: "recurring-daily", poolKey: "nara-free", tos: "caution" },
 ];

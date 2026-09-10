@@ -1,4 +1,5 @@
-import { getSettings, updateSettings } from "../../lib/localDb.js";
+import { getSettings, updateSettings } from "../../lib/db/settings.js";
+import { getProviderConnections } from "../../lib/db/providers.js";
 import { isConnectionUnavailableToAuxiliaryActivity } from "../../lib/exclusiveLeaseIsolation.js";
 import {
   buildModelSyncInternalHeaders,
@@ -20,7 +21,6 @@ let isRunning = false;
 
 async function getAutoSyncConnections(): Promise<AutoSyncConnection[]> {
   try {
-    const { getProviderConnections } = await import("../../lib/localDb.js");
     const connections = await getProviderConnections();
     const autoSyncConnections: AutoSyncConnection[] = [];
     for (const conn of connections) {

@@ -14,6 +14,7 @@ import {
 } from "../domain/api.js";
 import { z } from "zod";
 import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { emit } from "@orbit/core/events/eventBus";
 
 let _tableInit = false;
 function ensureTable() {
@@ -86,6 +87,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
                 ? new Date().toISOString()
                 : null,
           });
+          emit("agent.task.updated", { source: "cloud-agent", taskId: id, state: statusResult.status, timestamp: Date.now() });
         }
       } catch (err) {
         console.error("Failed to sync task status", err);
@@ -93,6 +95,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const updatedTask = getCloudAgentTaskById(id);
+    if (updatedTask) emit("agent.task.updated", { source: "cloud-agent", taskId: id, state: updatedTask.status, timestamp: Date.now() });
 
     return NextResponse.json(
       {
@@ -175,6 +178,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     }
 
     const updatedTask = getCloudAgentTaskById(id);
+    if (updatedTask) emit("agent.task.updated", { source: "cloud-agent", taskId: id, state: updatedTask.status, timestamp: Date.now() });
     return NextResponse.json(
       { success: true, data: updatedTask ? serializeCloudAgentTask(updatedTask) : null },
       { headers: getCloudAgentCorsHeaders(request) }
@@ -211,6 +215,7 @@ export async function DELETE(
     }
 
     deleteCloudAgentTask(id);
+    emit("agent.task.updated", { source: "cloud-agent", taskId: id, state: "cancelled", timestamp: Date.now() });
     return NextResponse.json({ success: true }, { headers: getCloudAgentCorsHeaders(request) });
   } catch (error) {
     return NextResponse.json(

@@ -3,6 +3,7 @@ export {
   LEASE_OWNER_PATTERN,
   acquireExclusiveConnectionLease,
   getActiveExclusiveConnectionLease,
+  getExclusiveConnectionLeaseStatus,
   getExclusiveLeaseOccupancy,
   hashLeaseOwnerId,
   invalidateExclusiveConnectionLease,

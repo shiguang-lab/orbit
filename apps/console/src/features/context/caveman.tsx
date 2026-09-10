@@ -7,6 +7,7 @@ import {
   Input,
   Radio,
   Row,
+  Select,
   Space,
   Switch,
   Tag,
@@ -22,6 +23,7 @@ import {
   COMPRESSION_ENGINE_CATALOG,
 } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { useI18n } from "@/i18n";
 
 const { Title, Text } = Typography;
 
@@ -65,9 +67,11 @@ const useStyles = createStyles(({ token }) => ({
 }));
 
 const SAMPLE_CAVEMAN_INPUT = `你好！关于您刚刚询问的代码重构建议，经过我对整个项目代码库的深入仔细分析，我认为我们非常推荐您将当前的认证模块改为使用标准的 JWT 令牌校验机制，这样可以显著提升系统的安全性与整体性能。另外需要注意的是，相关的数据库迁移脚本也需要同步执行完毕。`;
+const OUTPUT_STYLE_LANGUAGES = ["de", "en", "es", "fr", "id", "it", "ja", "pt-BR", "ru", "vi", "zh"];
 
 export function CavemanContextPage() {
   const { styles } = useStyles();
+  const { tt } = useI18n();
   const queryClient = useQueryClient();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -292,6 +296,67 @@ export function CavemanContextPage() {
                     });
                   }}
                 />
+              </Flex>
+
+              <Flex justify="space-between" align="center" gap={12}>
+                <div>
+                  <Text strong style={{ fontSize: 13 }}>
+                    {tt("输出风格语言", "Output style language")}
+                  </Text>
+                  <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                    {tt("自动检测最后一条用户消息，或使用指定默认语言", "Detect the latest user message or use the selected default")}
+                  </div>
+                </div>
+                <Flex align="center" gap={8}>
+                  <Switch
+                    checked={config.languageConfig?.enabled ?? false}
+                    onChange={(enabled) =>
+                      updateMutation.mutate({
+                        languageConfig: {
+                          enabled,
+                          defaultLanguage: config.languageConfig?.defaultLanguage ?? "en",
+                          autoDetect: config.languageConfig?.autoDetect ?? true,
+                          enabledPacks: config.languageConfig?.enabledPacks ?? ["en"],
+                        },
+                      })
+                    }
+                  />
+                  <Switch
+                    checkedChildren={tt("自动", "Auto")}
+                    unCheckedChildren={tt("固定", "Fixed")}
+                    checked={config.languageConfig?.autoDetect ?? true}
+                    disabled={config.languageConfig?.enabled !== true}
+                    onChange={(autoDetect) =>
+                      updateMutation.mutate({
+                        languageConfig: {
+                          enabled: config.languageConfig?.enabled ?? true,
+                          defaultLanguage: config.languageConfig?.defaultLanguage ?? "en",
+                          autoDetect,
+                          enabledPacks: config.languageConfig?.enabledPacks ?? ["en"],
+                        },
+                      })
+                    }
+                  />
+                  <Select
+                    value={config.languageConfig?.defaultLanguage ?? "en"}
+                    disabled={config.languageConfig?.enabled !== true}
+                    style={{ width: 110 }}
+                    options={OUTPUT_STYLE_LANGUAGES.map((language) => ({
+                      label: language,
+                      value: language,
+                    }))}
+                    onChange={(defaultLanguage) =>
+                      updateMutation.mutate({
+                        languageConfig: {
+                          enabled: config.languageConfig?.enabled ?? true,
+                          defaultLanguage,
+                          autoDetect: config.languageConfig?.autoDetect ?? true,
+                          enabledPacks: config.languageConfig?.enabledPacks ?? ["en"],
+                        },
+                      })
+                    }
+                  />
+                </Flex>
               </Flex>
             </Space>
           </Col>

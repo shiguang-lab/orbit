@@ -1,3 +1,5 @@
+import { RAW_CREDENTIAL_PATTERNS } from "@orbit/utils/errors";
+
 /**
  * Selective upstream 4xx error passthrough (Claude Code auto-recover contract).
  *
@@ -24,8 +26,16 @@ const INTERNAL_LEAK_RE = /\sat\s\/|node_modules|orbit\//i;
 // caller fall back to the sanitized buildErrorBody path. Bodies without a
 // secret (the overwhelming majority, carrying capability/quota wording) still
 // relay verbatim. Mirrors the vocabulary of redactSensitiveErrorText in error.ts.
-const CREDENTIAL_LEAK_RE =
-  /\b(?:Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}|\bsk-[A-Za-z0-9._-]{8,}|(?:api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|cookie|secret)\\?["']?\s*[:=]\s*\\?["']?[^"'\\,\s}]{6,}/i;
+const LABELLED_CREDENTIAL_RE =
+  /\b(?:Bearer|Basic)\s+[A-Za-z0-9._~+/=-]{8,}|(?:api[_-]?key|access[_-]?token|refresh[_-]?token|authorization|cookie|secret)\\?["']?\s*[:=]\s*\\?["']?[^"'\\,\s}]{6,}/i;
+
+function containsCredential(text: string): boolean {
+  if (LABELLED_CREDENTIAL_RE.test(text)) return true;
+  return RAW_CREDENTIAL_PATTERNS.some((pattern) => {
+    pattern.lastIndex = 0;
+    return pattern.test(text);
+  });
+}
 
 export function shouldPassthroughUpstreamError(statusCode: number, upstreamBody: unknown): boolean {
   if (statusCode < PASSTHROUGH_MIN || statusCode > PASSTHROUGH_MAX) return false;
@@ -34,7 +44,7 @@ export function shouldPassthroughUpstreamError(statusCode: number, upstreamBody:
   const text = JSON.stringify(upstreamBody);
   if (INTERNAL_LEAK_RE.test(text)) return false;
   // Refuse passthrough when the provider echoed a credential back to us.
-  if (CREDENTIAL_LEAK_RE.test(text)) return false;
+  if (containsCredential(text)) return false;
   return true;
 }
 

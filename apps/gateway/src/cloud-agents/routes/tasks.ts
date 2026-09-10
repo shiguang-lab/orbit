@@ -17,6 +17,7 @@ import {
 } from "../domain/api.js";
 import { CreateCloudAgentTaskSchema } from "../domain/types.js";
 import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
+import { emit } from "@orbit/core/events/eventBus";
 
 function getLimit(value: string | null): number {
   const parsed = Number.parseInt(value || "50", 10);
@@ -126,6 +127,7 @@ export async function POST(request: NextRequest) {
       updated_at: task.updatedAt,
       completed_at: null,
     });
+    emit("agent.task.updated", { source: "cloud-agent", taskId: task.id, state: task.status, timestamp: Date.now() });
 
     return NextResponse.json(
       {
@@ -173,6 +175,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     deleteCloudAgentTask(taskId);
+    emit("agent.task.updated", { source: "cloud-agent", taskId, state: "cancelled", timestamp: Date.now() });
 
     return NextResponse.json({ success: true }, { headers: getCloudAgentCorsHeaders(request) });
   } catch (error) {

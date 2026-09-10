@@ -32,6 +32,7 @@ import { isModelLocked } from "../services/accountFallback.ts";
 import { parseModel } from "../services/model.ts";
 import { getProviderConnectionById } from "@orbit/core/db/provider-connections";
 import { getExcludedConnectionIds } from "@orbit/core/db/auto-candidate-overrides";
+import type { StrictZeroCostExclusionReason } from "../services/autoCombo/strictZeroCostFilter.ts";
 
 /**
  * One row of the unfiltered, reason-annotated candidate pool (#9133): every
@@ -51,6 +52,8 @@ export interface AutoComboCandidateView {
   breakerState: string;
   connectionCooldown: boolean;
   modelLocked: boolean;
+  /** Why strict zero-cost routing would exclude this row; listing only. */
+  freeAccessExclusion: StrictZeroCostExclusionReason | null;
 }
 
 export interface AutoComboCandidatesResult {
@@ -69,6 +72,7 @@ async function decorateCandidate(candidate: {
   connectionId: string;
   model: string;
   modelStr: string;
+  freeAccessExclusion?: StrictZeroCostExclusionReason | null;
 }): Promise<AutoComboCandidateView> {
   const breaker = getCircuitBreaker(candidate.provider);
   const breakerStatus = breaker.getStatus();
@@ -111,6 +115,7 @@ async function decorateCandidate(candidate: {
     breakerState: String(breakerStatus.state),
     connectionCooldown,
     modelLocked,
+    freeAccessExclusion: candidate.freeAccessExclusion ?? null,
   };
 }
 
@@ -160,6 +165,7 @@ export async function getAutoComboCandidates(
     connectionId: string | null;
     allowedConnectionIds?: string[];
     model: string;
+    freeAccessExclusion?: StrictZeroCostExclusionReason | null;
   }> = Array.isArray(virtualCombo?.models) ? virtualCombo.models : [];
   // Routing keeps one logical provider/model candidate, but the management API
   // remains account-oriented so operators can inspect and toggle each fallback.
@@ -178,6 +184,7 @@ export async function getAutoComboCandidates(
         connectionId: candidate.connectionId,
         model: candidate.model,
         modelStr: candidate.model,
+        freeAccessExclusion: candidate.freeAccessExclusion,
       });
       return { ...decorated, excluded: excludedConnectionIds.has(candidate.connectionId) };
     })

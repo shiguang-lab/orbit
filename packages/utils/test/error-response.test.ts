@@ -7,6 +7,12 @@ import {
   providerCircuitOpenResponse,
   unavailableResponse,
 } from "../src/errors/error-response.js";
+import {
+  RAW_CREDENTIAL_PATTERNS,
+  redactSensitiveErrorText,
+  sanitizeErrorMessage,
+} from "../src/errors/index.js";
+import { createErrorResponse } from "../src/errors/api-response.js";
 
 test("buildErrorBody preserves the OpenAI-compatible envelope and classification", () => {
   assert.deepEqual(buildErrorBody(404, "missing"), {
@@ -25,6 +31,37 @@ test("buildErrorBody preserves the OpenAI-compatible envelope and classification
       reason: undefined,
     },
   });
+});
+
+test("redacts raw OpenAI, Google, and JWT credential shapes", () => {
+  const values = [
+    "Incorrect API key: sk-proj-AbCdEfGhIjKlMnOpQrStUv",
+    "Rejected AIza12345678901234567890123456789012345",
+    "Bad eyJabcdefgh.abcdefghijklmnop.abcdefghijklmnop",
+  ];
+  for (const value of values) {
+    const redacted = redactSensitiveErrorText(value);
+    assert.notEqual(redacted, value);
+    assert.match(redacted, /\[REDACTED/);
+  }
+  assert.equal(RAW_CREDENTIAL_PATTERNS.length, 3);
+  assert.equal(sanitizeErrorMessage("task sk failed"), "task sk failed");
+});
+
+test("sanitizes messages and nested details at the shared API response boundary", async () => {
+  const response = createErrorResponse({
+    status: 500,
+    message: "failed for sk-proj-AbCdEfGhIjKlMnOpQrStUv",
+    details: {
+      diagnostic: "key AIza12345678901234567890123456789012345",
+      accessToken: "secret",
+    },
+  });
+  const body = await response.json() as {
+    error: { message: string; details: Record<string, unknown> };
+  };
+  assert.doesNotMatch(body.error.message, /sk-proj-/);
+  assert.deepEqual(body.error.details, { diagnostic: "key [REDACTED]" });
 });
 
 test("errorResponse preserves status, content type, and sanitized body", async () => {

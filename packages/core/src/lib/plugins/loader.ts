@@ -330,15 +330,16 @@ export async function loadPlugin(
     };
     registeredHooks.push("onError");
   }
-  // ── Lifecycle hooks (fire-and-forget, errors logged but don't block) ──
+  // ── Lifecycle + notification hooks (fire-and-forget) ──
   const lifecycleHooks: Array<{
-    key: "onInstall" | "onActivate" | "onDeactivate" | "onUninstall";
+    key: "onInstall" | "onActivate" | "onDeactivate" | "onUninstall" | "onStreamComplete";
     manifestFlag: boolean;
   }> = [
     { key: "onInstall", manifestFlag: manifest.hooks.onInstall },
     { key: "onActivate", manifestFlag: manifest.hooks.onActivate },
     { key: "onDeactivate", manifestFlag: manifest.hooks.onDeactivate },
     { key: "onUninstall", manifestFlag: manifest.hooks.onUninstall },
+    { key: "onStreamComplete", manifestFlag: manifest.hooks.onStreamComplete },
   ];
 
   for (const { key, manifestFlag } of lifecycleHooks) {

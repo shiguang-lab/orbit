@@ -10,6 +10,7 @@
 
 export type EmbeddingModality = "text" | "image" | "audio" | "video" | "document";
 export type StructuredEmbeddingProtocol = "jina-v1" | "gemini-embed-content";
+export type SingleTextEmbeddingProtocol = "clova-v2";
 
 export interface EmbeddingModel {
   id: string;
@@ -34,6 +35,8 @@ export interface EmbeddingProvider {
   models: EmbeddingModel[];
   /** Provider-native serializer required for canonical structured input. */
   structuredInputProtocol?: StructuredEmbeddingProtocol;
+  /** Provider endpoint accepts exactly one `{ text }` input per request. */
+  singleTextProtocol?: SingleTextEmbeddingProtocol;
 }
 
 export interface EmbeddingProviderNodeRow {
@@ -66,6 +69,14 @@ export function buildDynamicEmbeddingProvider(node: EmbeddingProviderNodeRow): E
 }
 
 export const EMBEDDING_PROVIDERS: Record<string, EmbeddingProvider> = {
+  "clova-studio": {
+    id: "clova-studio",
+    baseUrl: "https://clovastudio.stream.ntruss.com/v1/api-tools/embedding/v2",
+    authType: "apikey",
+    authHeader: "bearer",
+    singleTextProtocol: "clova-v2",
+    models: [{ id: "clova-embedding-v2", name: "CLOVA Embedding v2", dimensions: 1024 }],
+  },
   cohere: {
     id: "cohere",
     baseUrl: "https://api.cohere.com/v2/embed",

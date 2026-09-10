@@ -5,6 +5,7 @@ import {
   buildHeadroomStatus,
   isLoopbackHeadroomUrl,
   parsePortFromHeadroomUrl,
+  resolveHeadroomUrl,
 } from "../src/headroom/runtime/detect.ts";
 
 test("control-owned Headroom runtime accepts only loopback lifecycle URLs", () => {
@@ -24,4 +25,18 @@ test("control-owned Headroom runtime accepts only loopback lifecycle URLs", () =
     localUrl: true,
     canStart: true,
   });
+});
+
+test("Headroom URL precedence is persisted setting, environment, then localhost", () => {
+  assert.equal(
+    resolveHeadroomUrl("  http://headroom.internal:9090  ", {
+      HEADROOM_URL: "http://env.internal:8787",
+    }),
+    "http://headroom.internal:9090"
+  );
+  assert.equal(
+    resolveHeadroomUrl("", { HEADROOM_URL: "  http://env.internal:8787  " }),
+    "http://env.internal:8787"
+  );
+  assert.equal(resolveHeadroomUrl(undefined, {}), "http://localhost:8787");
 });

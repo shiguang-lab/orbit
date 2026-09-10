@@ -24,6 +24,7 @@ import {
   type RuntimeConnectionItem,
 } from "@/entities/api";
 import { useI18n } from "@/i18n";
+import { partitionQuotaMonitors } from "./quota-monitors";
 
 const { Title, Text } = Typography;
 
@@ -307,9 +308,11 @@ export function RuntimePage() {
   }, [feed, feedFilter]);
 
   const monitors = health.quotaMonitor?.monitors || [];
-  const exhaustedMonitors = monitors.filter((m) => m.status === "exhausted");
-  const alertingMonitors = monitors.filter((m) => m.status === "alerting");
-  const errorMonitors = monitors.filter((m) => m.status === "error");
+  const {
+    exhausted: exhaustedMonitors,
+    alerting: alertingMonitors,
+    errors: errorMonitors,
+  } = partitionQuotaMonitors(monitors);
 
   return (
     <div className={styles.page}>
@@ -925,6 +928,24 @@ export function RuntimePage() {
                     <Flex justify="space-between" align="center">
                       <Text strong style={{ fontSize: 12 }}>{m.accountId || m.provider} ({m.window})</Text>
                       <Tag color="warning">{tt(`仅剩 ${Math.round(m.remainingPercent || 0)}%`, `${Math.round(m.remainingPercent || 0)}% left`)}</Tag>
+                    </Flex>
+                  </div>
+                ))}
+                {errorMonitors.map((m, i) => (
+                  <div
+                    key={`err-${i}`}
+                    style={{
+                      padding: "8px 10px",
+                      borderRadius: 6,
+                      background: "rgba(249, 115, 22, 0.08)",
+                      border: "1px solid rgba(249, 115, 22, 0.2)",
+                    }}
+                  >
+                    <Flex justify="space-between" align="center">
+                      <Text strong style={{ fontSize: 12 }}>
+                        {m.accountId || m.provider} ({m.window})
+                      </Text>
+                      <Tag color="orange">{tt("监控错误", "Error")}</Tag>
                     </Flex>
                   </div>
                 ))}

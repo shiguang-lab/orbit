@@ -26,3 +26,4 @@ export interface DatabaseConnection {
 }
 
 export function getDbInstance(): DatabaseConnection;
+export function resetDbInstance(): void;

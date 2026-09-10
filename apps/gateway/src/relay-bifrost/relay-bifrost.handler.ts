@@ -8,8 +8,13 @@ import {
   getRelayTokenByHash,
   recordRelayUsage,
 } from "@orbit/core/db/relayProxies";
-import { buildErrorBody } from "@orbit/inference/utils/error";
+import {
+  buildErrorBody,
+  parseUpstreamError,
+  sanitizeErrorMessage,
+} from "@orbit/inference/utils/error";
 import { getProviderPluginManifestHeader } from "@orbit/inference/config/providerPluginManifestUrl";
+import { stripSensitiveResponseHeaders } from "@orbit/inference/utils/upstreamResponseHeaders";
 
 const BifrostRequestSchema = z.object({
   model: z.string().min(1, "model is required"),
@@ -81,7 +86,19 @@ export async function POST(request: Request): Promise<Response> {
     const ac = new AbortController(); let timedOut = false; const tid = setTimeout(() => { timedOut = true; ac.abort(); }, BIFROST_TIMEOUT_MS);
     let upstream: Response; try { upstream = await fetch(`${BIFROST_BASE_URL}/v1/chat/completions`, { method: "POST", headers: upstreamHeaders, body: JSON.stringify(body), signal: ac.signal }); } catch (error) { clearTimeout(tid); throw error; }
     const recordUsage = (status: "success" | "error", statusCode: number) => recordRelayUsage(token.id, { requestId: request.headers.get("x-request-id") || undefined, status, statusCode, latencyMs: Date.now() - started, clientIp: ip, userAgent });
-    const headers = new Headers(upstream.headers); headers.set("X-Routed-By", "bifrost"); headers.set("X-Relay-Token", token.tokenPrefix + "..."); if (!wantsStream) headers.set("Content-Type", upstream.headers.get("Content-Type") ?? "application/json");
+    const headers = stripSensitiveResponseHeaders(upstream.headers); headers.set("X-Routed-By", "bifrost"); headers.set("X-Relay-Token", token.tokenPrefix + "..."); if (!wantsStream) headers.set("Content-Type", upstream.headers.get("Content-Type") ?? "application/json");
+    if (!upstream.ok) {
+      const parsedError = await parseUpstreamError(upstream, null);
+      const errorBody = buildErrorBody(
+        parsedError.statusCode,
+        sanitizeErrorMessage(parsedError.message),
+        parsedError.responseBody
+      );
+      headers.set("Content-Type", "application/json");
+      if (parsedError.retryAfterMs && parsedError.retryAfterMs > 0) headers.set("Retry-After", String(Math.ceil(parsedError.retryAfterMs / 1000)));
+      clearTimeout(tid); recordUsage("error", parsedError.statusCode);
+      return new Response(JSON.stringify(errorBody), { status: parsedError.statusCode, headers });
+    }
     if (wantsStream && upstream.body) return new Response(finalizeReadableStream(upstream.body, (error) => { clearTimeout(tid); const statusCode = timedOut ? 504 : upstream.status; recordUsage(error || statusCode >= 500 ? "error" : "success", statusCode); }), { status: upstream.status, headers });
     clearTimeout(tid); recordUsage(upstream.status < 500 ? "success" : "error", upstream.status); return new Response(upstream.body, { status: upstream.status, headers });
   } catch (error) {

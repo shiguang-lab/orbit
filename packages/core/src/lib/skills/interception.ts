@@ -1,4 +1,4 @@
-import { skillExecutor } from "./executor";
+import { projectSkillOutputForBoundary, skillExecutor } from "./executor";
 import { skillRegistry } from "./registry";
 import { builtinSkills } from "./builtins";
 import { memoryBuiltinHandlers, MEMORY_BUILTIN_TOOL_NAMES } from "./memoryBuiltins";
@@ -8,8 +8,23 @@ import {
   ORBIT_WEB_SEARCH_FALLBACK_TOOL_NAME,
 } from "@orbit/contracts/gateway-tool-names";
 import { logger } from "@orbit/utils/logging";
+import { sanitizeErrorMessage } from "@orbit/utils/errors";
 
 const log = logger("SKILLS_INTERCEPTION");
+
+function toSafeSkillErrorMessage(value: unknown): string {
+  try {
+    const raw = value instanceof Error ? value.message : value;
+    return sanitizeErrorMessage(raw) || "Skill execution failed";
+  } catch {
+    return "Skill execution failed";
+  }
+}
+
+function projectSkillResultForPublicResponse(result: unknown): unknown {
+  if (!result || typeof result !== "object" || Array.isArray(result)) return result;
+  return projectSkillOutputForBoundary(result as Record<string, unknown>);
+}
 
 interface ToolCall {
   id: string;
@@ -133,7 +148,7 @@ export async function interceptToolCalls(
 
           return {
             id: call.id,
-            result,
+            result: projectSkillResultForPublicResponse(result),
           };
         }
 
@@ -154,11 +169,12 @@ export async function interceptToolCalls(
           sessionId: context.sessionId,
         });
 
-        const result =
+        const result = projectSkillResultForPublicResponse(
           execution.output ??
-          (execution.errorMessage
-            ? { error: execution.errorMessage }
-            : { error: "Skill execution returned no output" });
+            (execution.errorMessage
+              ? { error: toSafeSkillErrorMessage(execution.errorMessage) }
+              : { error: "Skill execution returned no output" })
+        );
 
         log.info("skills.interception.execution_complete", {
           toolName: call.name,
@@ -170,14 +186,15 @@ export async function interceptToolCalls(
           result,
         };
       } catch (err) {
+        const safeError = toSafeSkillErrorMessage(err);
         log.error("skills.interception.execution_failed", {
           toolName: call.name,
           callId: call.id,
-          err: err instanceof Error ? err.message : String(err),
+          err: safeError,
         });
         return {
           id: call.id,
-          result: { error: err instanceof Error ? err.message : String(err) },
+          result: { error: safeError },
         };
       }
     })
@@ -259,6 +276,46 @@ function isRegisteredCustomSkill(toolName: string, apiKeyId: string): boolean {
   return skillRegistry.getSkill(identifier, apiKeyId) != null;
 }
 
+export function buildWebSearchCallItem(
+  call: ToolCall,
+  result: unknown
+): Record<string, unknown> | null {
+  if (call.name !== ORBIT_WEB_SEARCH_FALLBACK_TOOL_NAME) return null;
+  const record = result && typeof result === "object" ? (result as Record<string, unknown>) : null;
+  if (!record || record.success !== true) return null;
+
+  const results = Array.isArray(record.results) ? record.results : [];
+  const sources = results
+    .map((entry) => {
+      if (!entry || typeof entry !== "object") return null;
+      const source = entry as Record<string, unknown>;
+      const url = typeof source.url === "string" ? source.url : "";
+      if (!url) return null;
+      const title = typeof source.title === "string" ? source.title : url;
+      const caption =
+        typeof source.snippet === "string" && source.snippet
+          ? source.snippet
+          : typeof source.display_url === "string"
+            ? source.display_url
+            : "";
+      return { title, url, caption };
+    })
+    .filter(
+      (source): source is { title: string; url: string; caption: string } => source !== null
+    );
+
+  return {
+    id: `ws_${call.id}`,
+    type: "web_search_call",
+    status: "completed",
+    action: {
+      type: "web_search",
+      query: typeof record.query === "string" ? record.query : "",
+      sources,
+    },
+  };
+}
+
 export async function handleToolCallExecution(
   response: any,
   modelId: string,
@@ -301,11 +358,15 @@ export async function handleToolCallExecution(
           call_id: result.id,
           output: JSON.stringify(result.result),
         }));
+        const resultById = new Map(results.map((result) => [result.id, result.result]));
+        const webSearchCalls = toolCalls
+          .map((call) => buildWebSearchCallItem(call, resultById.get(call.id)))
+          .filter((item): item is Record<string, unknown> => item !== null);
 
         if (responsesOutput.root === responsesOutput.responseRoot) {
           return {
             ...response,
-            output: [...responsesOutput.output, ...functionOutputs],
+            output: [...responsesOutput.output, ...functionOutputs, ...webSearchCalls],
           };
         }
 
@@ -313,7 +374,7 @@ export async function handleToolCallExecution(
           ...response,
           response: {
             ...responsesOutput.responseRoot,
-            output: [...responsesOutput.output, ...functionOutputs],
+            output: [...responsesOutput.output, ...functionOutputs, ...webSearchCalls],
           },
         };
       }

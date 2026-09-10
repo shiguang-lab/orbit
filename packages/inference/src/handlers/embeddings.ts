@@ -32,6 +32,7 @@ import { stripTrailingSlashes } from "../utils/urlSanitize.ts";
 import { fetchRemoteImage } from "@orbit/core/network/remote-image-fetch";
 import {
   hasStructuredEmbeddingInput,
+  normalizeClovaEmbeddingV2Response,
   prepareJinaMixedEmbeddingInput,
   prepareStructuredEmbeddingRequest,
 } from "./embeddingStructuredInput.ts";
@@ -76,6 +77,65 @@ function flattenSingleRowEmbedding(item: unknown): void {
   ) {
     record.embedding = embedding[0];
   }
+}
+
+function resolveSingleTextInputs(
+  provider: EmbeddingProvider,
+  body: Record<string, unknown>
+): { texts: string[] } | { error: string } | null {
+  if (provider.singleTextProtocol !== "clova-v2") return null;
+  const input = Array.isArray(body.input) ? body.input : [body.input];
+  if (
+    input.length === 0 ||
+    input.some((item) => typeof item !== "string" || item.trim().length === 0)
+  ) {
+    return { error: "CLOVA Studio embedding v2 accepts non-empty text strings only" };
+  }
+  if (body.encoding_format === "base64") {
+    return { error: "CLOVA Studio embedding v2 supports float encoding only" };
+  }
+  if (body.dimensions !== undefined && Number(body.dimensions) !== 1024) {
+    return { error: "CLOVA Studio embedding v2 has a fixed dimension of 1024" };
+  }
+  return { texts: input as string[] };
+}
+
+async function fetchSingleTextEmbeddings(
+  url: string,
+  headers: Record<string, string>,
+  texts: string[],
+  reqLogger: Awaited<ReturnType<typeof createRequestLogger>>
+): Promise<Response> {
+  const data: Array<Record<string, unknown>> = [];
+  const usage = { prompt_tokens: 0, total_tokens: 0 };
+  let responseHeaders = new Headers();
+  for (const text of texts) {
+    const requestBody = { text };
+    reqLogger.logTargetRequest(url, headers, requestBody);
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(requestBody),
+    });
+    responseHeaders = response.headers;
+    if (!response.ok) return response;
+    const normalized = normalizeClovaEmbeddingV2Response(
+      (await response.json()) as Record<string, unknown>
+    ) as {
+      data: Array<Record<string, unknown>>;
+      usage: { prompt_tokens: number; total_tokens: number };
+    };
+    for (const item of normalized.data) {
+      item.index = data.length;
+      data.push(item);
+    }
+    usage.prompt_tokens += normalized.usage.prompt_tokens;
+    usage.total_tokens += normalized.usage.total_tokens;
+  }
+  return new Response(JSON.stringify({ data, usage }), {
+    status: 200,
+    headers: responseHeaders,
+  });
 }
 
 /**
@@ -173,6 +233,11 @@ export async function handleEmbedding({
       status: 400,
       error: `Unknown embedding provider: ${provider}`,
     };
+  }
+
+  const singleTextInputs = resolveSingleTextInputs(providerConfig, body);
+  if (singleTextInputs && "error" in singleTextInputs) {
+    return { success: false, status: 400, error: singleTextInputs.error };
   }
 
   const structuredItems = Array.isArray(body.input)
@@ -409,14 +474,22 @@ export async function handleEmbedding({
       }
     }
 
-    // Log provider request
-    reqLogger.logTargetRequest(upstreamUrl, headers, upstreamBody);
-
-    const response = await fetch(upstreamUrl, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(upstreamBody),
-    });
+    let response: Response;
+    if (singleTextInputs && "texts" in singleTextInputs) {
+      response = await fetchSingleTextEmbeddings(
+        upstreamUrl,
+        headers,
+        singleTextInputs.texts,
+        reqLogger
+      );
+    } else {
+      reqLogger.logTargetRequest(upstreamUrl, headers, upstreamBody);
+      response = await fetch(upstreamUrl, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(upstreamBody),
+      });
+    }
 
     if (!response.ok) {
       const errorText = await response.text();

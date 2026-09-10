@@ -604,6 +604,9 @@ importers:
       '@nestjs/core':
         specifier: ^11.2.3
         version: 11.2.3(@nestjs/common@11.2.3(reflect-metadata@0.2.2)(rxjs@7.8.2))(reflect-metadata@0.2.2)(rxjs@7.8.2)
+      '@orbit/utils':
+        specifier: workspace:*
+        version: link:../utils
       fastify:
         specifier: 5.12.1
         version: 5.12.1
@@ -721,9 +724,9 @@ importers:
       better-sqlite3:
         specifier: ^13.0.2
         version: 13.0.3
-      tls-client-node:
-        specifier: ^0.2.0
-        version: 0.2.0
+      wreq-js:
+        specifier: 3.2.0
+        version: 3.2.0
 
   packages/providers:
     dependencies:
@@ -3042,6 +3045,60 @@ packages:
   '@vscode/markdown-it-katex@1.1.2':
     resolution: {integrity: sha512-+4IIv5PgrmhKvW/3LpkpkGg257OViEhXkOOgCyj5KMsjsOfnRXkni8XAuuF9Ui5p3B8WnUovlDXAQNb8RJ/RaQ==}
 
+  '@wreq-js/binding-android-arm64@3.2.0':
+    resolution: {integrity: sha512-PRsy18Z+0fftLeDvFTQwpgdepihRk6oVzdQWt92hEdarI7DexhgDJvvZfDsylMp7GDfsys9sFks8nIAi4n7eKQ==}
+    engines: {node: '>=20.0.0'}
+    cpu: [arm64]
+    os: [android]
+
+  '@wreq-js/binding-darwin-arm64@3.2.0':
+    resolution: {integrity: sha512-TGbgqj7YKp6m2p79hyLtTBatKgU8SKEVL5e903KGSeSDKkLbgk8knFoZ2MakhJnlqKZhvLPCNLT7A3AStwIoHQ==}
+    engines: {node: '>=20.0.0'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@wreq-js/binding-darwin-x64@3.2.0':
+    resolution: {integrity: sha512-89JkGsik49nUcQR7HfO6M+Na3whkhAQBghVFWn+vGmz32RzTX+HVy6q7wThjN+XGT+xvn9ZQpzTie3B292S50g==}
+    engines: {node: '>=20.0.0'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@wreq-js/binding-linux-arm64-gnu@3.2.0':
+    resolution: {integrity: sha512-WXqMK7AtOxMJAdwDpnAdDq0NZqf6wuRucKCQWQSLdSTUyTEuGo2anRkUsZwqvHbLrkWCTXNfl1hAfA+wIk/4kw==}
+    engines: {node: '>=20.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@wreq-js/binding-linux-arm64-musl@3.2.0':
+    resolution: {integrity: sha512-YSMWs3BNBCNhWvIAUHWyp2K/L17qxfaRTl+t97ykOIOIKZSduNYZn/Yn3hTNtpbdfrTmNMG9pltEcbixFKS4xQ==}
+    engines: {node: '>=20.0.0'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@wreq-js/binding-linux-x64-gnu@3.2.0':
+    resolution: {integrity: sha512-6N7C1uc1qieM23rdKR5k07hfS50hVFExVHzLhHiWbmk9NyqBj0xyj2Mh5ThIrvz/or/6Pe79P8D7UWbl4aJTkw==}
+    engines: {node: '>=20.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@wreq-js/binding-linux-x64-musl@3.2.0':
+    resolution: {integrity: sha512-0h0xJsmhVlmh+vHs9dYMIp5lpkKGNZrSedkl2Mh9XmR5slBahTcHT7oEEclhV+aNcY3V2Afmmqfil5huL+yDpA==}
+    engines: {node: '>=20.0.0'}
+    cpu: [x64]
+    os: [linux]
+
+  '@wreq-js/binding-win32-arm64-msvc@3.2.0':
+    resolution: {integrity: sha512-6bfaVFfbI61s5YLgQL+43uURk/VuOu7TPlUwY1l0Q9yJdWzD+Jpdokgl5cEiY2a0FEAw8Q4LqPI+XZT3YAMnQA==}
+    engines: {node: '>=20.0.0'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@wreq-js/binding-win32-x64-msvc@3.2.0':
+    resolution: {integrity: sha512-w4aktLElPgBXkWC/v9Ti9np6jBjYOzIyqmzgT41V/zuDq/V+V7s/13f9OzcX5hObH2WOpajo0KeljTJ2aRExNQ==}
+    engines: {node: '>=20.0.0'}
+    cpu: [x64]
+    os: [win32]
+
   '@xyflow/react@12.11.5':
     resolution: {integrity: sha512-QqoryGkqEhWBuQN9bZWRKhwr3Uoj9lCGj/tg0NnIWHHEOXV+5c8cYsc7Q9TST63V92lHqcNV9P5cjvJ9ZAmblQ==}
     peerDependencies:
@@ -4529,9 +4586,6 @@ packages:
 
   khroma@2.1.0:
     resolution: {integrity: sha512-Ls993zuzfayK269Svk9hzpeGUKob/sIgZzyHYdjQoAdQetRKpOLj+k/QQQ/6Qi0Yz65mlROrfd+Ev+1+7dz9Kw==}
-
-  koffi@2.16.3:
-    resolution: {integrity: sha512-E9y1AsgYGlaxMhcZzHr8y96QF2U5XzA12GGVAfbWqIubTwPNMXQarfBzePNXHe0xtIEtNd6ifAv3GAKYGUeBAQ==}
 
   layout-base@1.0.2:
     resolution: {integrity: sha512-8h2oVEZNktL4BH2JCOI90iD1yXwL6iNW7KcCKT2QZgQJR2vbqDsldCTPRU9NifTCqHZci57XvQQ15YTu+sTYPg==}
@@ -6062,20 +6116,9 @@ packages:
   tldts-core@6.1.86:
     resolution: {integrity: sha512-Je6p7pkk+KMzMv2XXKmAE3McmolOQFdxkKw0R8EYNr7sELW46JqnNeTX8ybPiQgvg1ymCoF8LXs5fzFaZvJPTA==}
 
-  tldts-core@7.4.11:
-    resolution: {integrity: sha512-CW3WN2rIIE/Of21mulhgnGOwoDyEFNygyIBOONSdyAuSATgMMUCpLeUlB+E8sAwA5xRV9hYPl+kyZ9citHCaKg==}
-
   tldts@6.1.86:
     resolution: {integrity: sha512-WMi/OQ2axVTf/ykqCQgXiIct+mSQDFdH2fkwhPwgEwvJ1kSzZRiinb0zF2Xb8u4+OqPChmyI6MEu4EezNJz+FQ==}
     hasBin: true
-
-  tldts@7.4.11:
-    resolution: {integrity: sha512-aBiNayCfTQxuIJBm06M+xR14cYaYlDlSXZbgsnKzKNxDKUVq7KFwTjwBSsb7m9Y5xO8WfPnBc63WaYFMTGlvqw==}
-    hasBin: true
-
-  tls-client-node@0.2.0:
-    resolution: {integrity: sha512-0PHJgaGPvMK9ly7xohviOoe8Oxos43IOIdsEhibgku4ce/3/YLhxJTPPKNQZII0PdcOjlfPweB9eRs13mWaWIg==}
-    engines: {node: '>=18.17'}
 
   to-vfile@8.0.0:
     resolution: {integrity: sha512-IcmH1xB5576MJc9qcfEC/m/nQCFt3fzMHz45sSlgJyTWjRbKW1HAkJpuf3DgE57YzIlZcwcBZA5ENQbBo4aLkg==}
@@ -6097,10 +6140,6 @@ packages:
 
   tough-cookie@5.1.2:
     resolution: {integrity: sha512-FVDYdxtnj0G6Qm/DhNPSb8Ju59ULcup3tuJxkFb5K8Bv2pUXILbf0xZWU8PX8Ov19OXljbUyveOFwRMwkXzO+A==}
-    engines: {node: '>=16'}
-
-  tough-cookie@6.0.2:
-    resolution: {integrity: sha512-exgYmnmL/sJpR3upZfXG5PoatXQii55xAiXGXzY+sROLZ/Y+SLcp9PgJNI9Vz37HpQ74WvDcLT8eqm+kV3FzrA==}
     engines: {node: '>=16'}
 
   tr46@5.1.1:
@@ -6390,6 +6429,10 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
+
+  wreq-js@3.2.0:
+    resolution: {integrity: sha512-dawhEbhvd5hxivKZSvv/mAQGO3mwZYESyctOvIIZ/H3DvQJzUM2UoFQsij0fg7hIClQ/GEQgg+2259UcFwhpMQ==}
+    engines: {node: '>=20.0.0'}
 
   ws@8.21.3:
     resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
@@ -9039,6 +9082,33 @@ snapshots:
     dependencies:
       katex: 0.16.47
 
+  '@wreq-js/binding-android-arm64@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-darwin-arm64@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-darwin-x64@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-linux-arm64-gnu@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-linux-arm64-musl@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-linux-x64-gnu@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-linux-x64-musl@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-win32-arm64-msvc@3.2.0':
+    optional: true
+
+  '@wreq-js/binding-win32-x64-msvc@3.2.0':
+    optional: true
+
   '@xyflow/react@12.11.5(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(immer@11.1.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)':
     dependencies:
       '@xyflow/system': 0.0.81
@@ -10765,9 +10835,6 @@ snapshots:
     optional: true
 
   khroma@2.1.0: {}
-
-  koffi@2.16.3:
-    optional: true
 
   layout-base@1.0.2: {}
 
@@ -12843,23 +12910,9 @@ snapshots:
 
   tldts-core@6.1.86: {}
 
-  tldts-core@7.4.11:
-    optional: true
-
   tldts@6.1.86:
     dependencies:
       tldts-core: 6.1.86
-
-  tldts@7.4.11:
-    dependencies:
-      tldts-core: 7.4.11
-    optional: true
-
-  tls-client-node@0.2.0:
-    dependencies:
-      koffi: 2.16.3
-      tough-cookie: 6.0.2
-    optional: true
 
   to-vfile@8.0.0:
     dependencies:
@@ -12880,11 +12933,6 @@ snapshots:
   tough-cookie@5.1.2:
     dependencies:
       tldts: 6.1.86
-
-  tough-cookie@6.0.2:
-    dependencies:
-      tldts: 7.4.11
-    optional: true
 
   tr46@5.1.1:
     dependencies:
@@ -13138,6 +13186,19 @@ snapshots:
       strip-ansi: 6.0.1
 
   wrappy@1.0.2: {}
+
+  wreq-js@3.2.0:
+    optionalDependencies:
+      '@wreq-js/binding-android-arm64': 3.2.0
+      '@wreq-js/binding-darwin-arm64': 3.2.0
+      '@wreq-js/binding-darwin-x64': 3.2.0
+      '@wreq-js/binding-linux-arm64-gnu': 3.2.0
+      '@wreq-js/binding-linux-arm64-musl': 3.2.0
+      '@wreq-js/binding-linux-x64-gnu': 3.2.0
+      '@wreq-js/binding-linux-x64-musl': 3.2.0
+      '@wreq-js/binding-win32-arm64-msvc': 3.2.0
+      '@wreq-js/binding-win32-x64-msvc': 3.2.0
+    optional: true
 
   ws@8.21.3: {}
 

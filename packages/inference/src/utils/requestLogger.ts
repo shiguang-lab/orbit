@@ -16,7 +16,12 @@ type HeaderInput =
 
 type RequestLogger = {
   sessionPath: null;
-  logClientRawRequest: (endpoint: unknown, body: unknown, headers?: HeaderInput) => void;
+  logClientRawRequest: (
+    endpoint: unknown,
+    body: unknown,
+    headers?: HeaderInput,
+    effectiveInput?: unknown
+  ) => void;
   logRouteDecision: (decision: unknown) => void;
   logOpenAIRequest: (body: unknown) => void;
   logTargetRequest: (url: unknown, headers: HeaderInput, body: unknown) => void;
@@ -380,12 +385,15 @@ export async function createRequestLogger(
   return {
     sessionPath: null,
 
-    logClientRawRequest(endpoint, body, headers = {}) {
+    logClientRawRequest(endpoint, body, headers = {}, effectiveInput) {
       payloads.clientRawRequest = {
         timestamp: new Date().toISOString(),
         endpoint,
         headers: maskSensitiveHeaders(headers),
         body: cloneBoundedForLog(body),
+        ...(effectiveInput !== undefined
+          ? { effectiveInput: cloneBoundedForLog(effectiveInput) }
+          : {}),
       };
     },
 

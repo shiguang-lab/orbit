@@ -94,7 +94,7 @@
       "import": "./src/utils/ollamaTransform.ts"
     },
     "./utils/upstreamResponseHeaders": {
-      "types": "./dist/types/utils/upstreamResponseHeaders.d.ts",
+      "types": "./src/public/upstreamResponseHeaders.d.ts",
       "import": "./src/utils/upstreamResponseHeaders.ts"
     },
     "./utils/aiSdkCompat": {
@@ -170,7 +170,7 @@
       "import": "./src/exports/handlers/embeddings.ts"
     },
     "./services/provider-validation": {
-      "types": "./dist/types/services/providerValidation.d.ts",
+      "types": "./src/public/providerValidation.d.ts",
       "import": "./src/services/providerValidation.ts"
     },
     "./services/provider-validation/url-helpers": {
@@ -1041,6 +1041,8 @@
     "@orbit/providers": "workspace:*",
     "@orbit/utils": "workspace:*",
     "@toon-format/toon": "^4.1.1",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
     "bottleneck": "^2.19.5",
     "fflate": "^0.8.3",
     "jose": "^6.2.10",
@@ -1052,6 +1054,7 @@
     "sharp": "^0.35.4",
     "smol-toml": "^1.8.0",
     "socks": "^2.8.10",
+    "tiktoken": "^1.0.22",
     "tsx": "catalog:",
     "turndown": "^7.2.4",
     "turndown-plugin-gfm": "^1.0.2",
@@ -1063,7 +1066,7 @@
   },
   "optionalDependencies": {
     "better-sqlite3": "^13.0.2",
-    "tls-client-node": "^0.2.0"
+    "wreq-js": "3.2.0"
   },
   "devDependencies": {
     "@huggingface/transformers": "^4.2.0",

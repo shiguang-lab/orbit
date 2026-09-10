@@ -11,6 +11,7 @@ export const ownedEdgeRoutes: readonly OwnedRoute[] = [
   { path: "/.well-known/agent-card.json", methods: ["GET", "HEAD"] },
   { path: "/a2a", methods: ["OPTIONS", "POST"] },
   { path: "/a2a/tasks", methods: ["GET", "POST"] },
+  { path: "/a2a/tasks/history", methods: ["GET"] },
   { path: "/a2a/tasks/:id", methods: ["GET"] },
   { path: "/a2a/tasks/:id/cancel", methods: ["POST"] },
   { path: "/a2a/status", methods: ["GET"] },

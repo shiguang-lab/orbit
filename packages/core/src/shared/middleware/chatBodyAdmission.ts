@@ -90,6 +90,8 @@ export const CHAT_ADMISSION_MAX_QUEUED_BYTES = parsePositiveInt(
   4 * 1024 * 1024
 );
 
+export const CHAT_ADMISSION_RETRY_AFTER_MAX_SECONDS = 60;
+
 export const CHAT_HEAVY_MESSAGE_COUNT = parsePositiveInt(
   process.env.ORBIT_CHAT_HEAVY_MESSAGE_COUNT,
   200
@@ -258,6 +260,7 @@ export class ChatAdmissionController {
    * `CHAT_MAX_HEAVY_IN_FLIGHT` bound, but still a real, finite ceiling instead of
    * the unconditional bypass this replaces. */
   #activeHealthy = 0;
+  #heavyLeaseStartedAt = new Map<symbol, number>();
   /** Per-key FIFOs. A key groups one client's waiters so they are served
    * round-robin against the shared budget instead of monopolizing a strict
    * FIFO (see #dispatchFair). */
@@ -395,6 +398,8 @@ export class ChatAdmissionController {
   tryAcquireHeavy(): ChatAdmissionLease | null {
     if (this.#activeHeavy >= this.maxHeavyInFlight) return null;
     this.#activeHeavy += 1;
+    const token = Symbol("heavy-lease");
+    this.#heavyLeaseStartedAt.set(token, Date.now());
     const done = trackRequest();
     let released = false;
     return {
@@ -405,10 +410,21 @@ export class ChatAdmissionController {
         if (released) return;
         released = true;
         this.#activeHeavy = Math.max(0, this.#activeHeavy - 1);
+        this.#heavyLeaseStartedAt.delete(token);
         done();
         this.#dispatchFair();
       },
     };
+  }
+
+  retryAfterSeconds(queueMs: number, now = Date.now()): number {
+    let youngestAgeMs = Number.POSITIVE_INFINITY;
+    for (const startedAt of this.#heavyLeaseStartedAt.values()) {
+      youngestAgeMs = Math.min(youngestAgeMs, now - startedAt);
+    }
+    const occupancyMs = Number.isFinite(youngestAgeMs) ? youngestAgeMs : 0;
+    const hintSeconds = Math.ceil(Math.max(0, queueMs, occupancyMs) / 1000);
+    return Math.min(CHAT_ADMISSION_RETRY_AFTER_MAX_SECONDS, Math.max(1, hintSeconds));
   }
 
   /**
@@ -841,26 +857,33 @@ export async function admitChatStructure(
   // Structural-only waits happen on byte-light bodies (a byte-heavy body already
   // holds the byte-stage lease), so the conservative 256KB weight bounds the
   // parsed JSON the waiter keeps resident while parked.
+  const queueMs = options.queueMs ?? 0;
   const acquiredCount = await controller.acquireHeavyWithin(
-    options.queueMs ?? 0,
+    queueMs,
     options.signal,
     CHAT_LARGE_BODY_BYTES,
     options.sessionId
   );
   if (!acquiredCount) {
-    return { admit: false, response: structuralRejectionResponse(503, maxMessages) };
+    return {
+      admit: false,
+      response: structuralRejectionResponse(503, maxMessages, controller.retryAfterSeconds(queueMs)),
+    };
   }
 
   // #503-fanout: same composed count+budget gate as the fast path above.
   const acquiredBudget = await controller.acquireBudgetWithin(
     CHAT_LARGE_BODY_BYTES,
-    options.queueMs ?? 0,
+    queueMs,
     options.signal,
     options.sessionId
   );
   if (acquiredBudget.status !== "acquired") {
     acquiredCount.release();
-    return { admit: false, response: structuralRejectionResponse(503, maxMessages) };
+    return {
+      admit: false,
+      response: structuralRejectionResponse(503, maxMessages, controller.retryAfterSeconds(queueMs)),
+    };
   }
   return {
     admit: true,
@@ -1004,6 +1027,9 @@ export async function admitChatRequest(
     return true;
   };
 
+  const busyResponse = () =>
+    chatAdmissionRejectionResponse(503, hardMaxBytes, controller.retryAfterSeconds(queueMs));
+
   // A known-large declaration can reserve before ingestion. Unknown lengths are boundedly
   // sniffed below; this avoids consuming scarce heavyweight capacity for small chunked bodies.
   if (
@@ -1011,7 +1037,7 @@ export async function admitChatRequest(
     contentLength >= largeBodyBytes &&
     !(await reserve(Math.min(contentLength, hardMaxBytes)))
   ) {
-    return { admit: false, response: chatAdmissionRejectionResponse(503, hardMaxBytes) };
+    return { admit: false, response: busyResponse() };
   }
 
   const reader = request.body?.getReader();
@@ -1037,7 +1063,7 @@ export async function admitChatRequest(
       }
       if (totalBytes >= largeBodyBytes && !(await reserve(totalBytes))) {
         await reader.cancel("chat admission capacity unavailable").catch(() => undefined);
-        return { admit: false, response: chatAdmissionRejectionResponse(503, hardMaxBytes) };
+        return { admit: false, response: busyResponse() };
       }
       chunks.push(value);
     }

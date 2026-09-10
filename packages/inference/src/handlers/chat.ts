@@ -27,6 +27,8 @@ import {
 import { getCombo, getComboForModel, getModelInfo } from "@orbit/inference/services/runtimeModel";
 import { stripContextWindowSuffix } from "../services/model.ts";
 import { resolveBareModelToConnectionDefault } from "../services/model.ts";
+import { resolvePassthroughModelOverride } from "../services/passthroughModelRouting.ts";
+import { comboPinAllowlist } from "@orbit/core/routing/combo-steps";
 import { errorResponse } from "@orbit/utils/errors/error-response";
 import { getImageModelEntry } from "../config/imageRegistry.ts";
 import { acceptHeaderForcesStream } from "../utils/aiSdkCompat.ts";
@@ -66,6 +68,11 @@ import { isCommonChatGptWebRetirementError } from "@orbit/contracts/chatgpt-web-
 import { deleteHandoff, getHandoff } from "@orbit/core/db/context-handoffs";
 import { getComboByName, updateCombo } from "@orbit/core/db/combos";
 import { isModelAllowedForKey } from "@orbit/core/db/api-keys";
+import { comboTargetPassesKeyModelPolicy } from "./chat/comboTargetKeyPolicy.ts";
+import {
+  githubComboCatalogGate,
+  resolveComboCheckProvider,
+} from "./chat/githubLiveCatalogFilter.ts";
 import { promoteSuccessfulComboModel } from "@orbit/core/runtime/combo-auto-promote";
 import {
   deleteSessionAccountAffinity,
@@ -85,10 +92,15 @@ import {
   resolveDisabledGuardrails,
 } from "@orbit/core/guardrails/evaluation";
 import {
+  redactVideoTranscriptFieldsForLog,
+  reanchorVideoBridgeRedaction,
+} from "@orbit/core/guardrails/video-snapshot-redaction";
+import {
   resolveModelOrError,
   checkPipelineGates,
   checkResourcePressureBeforeProviderWork,
   executeChatWithBreaker,
+  findShadowedCompatibleNode,
   handleNoCredentials,
   safeResolveProxy,
   safeLogEvents,
@@ -102,11 +114,11 @@ import {
 } from "@orbit/inference/handlers/chatHelpers";
 import { buildModalityBridgeHeader } from "@orbit/core/guardrails/modality-bridge-stats";
 import { resolveConversationId } from "../services/conversationTracker.ts";
+import { classifyProviderBreakerResult } from "./chatPredicates.ts";
 import {
   isAntigravityMissingProjectError,
   isProviderBreakerFailureStatus,
   resolveStreamReadinessClassificationError,
-  shouldTripProviderBreakerForResult,
 } from "@orbit/inference/handlers/chatPredicates";
 import { markAntigravityMissingCloudCodeProject } from "../services/antigravityProjectPersistence.ts";
 import { connectionHasExtraKeys } from "../services/apiKeyRotator.ts";
@@ -696,6 +708,14 @@ async function handleChatImplementation(
   clientRawRequest = chatAdmission.resolveClientRawAfterAdmission(clientRawRequest, () =>
     deferredClientRawBody.withClientBody((clientBody) => buildClientRawRequest(request, clientBody))
   );
+  // Preserve the raw client body for audit, but separately retain the full
+  // Responses input actually dispatched after previous_response_id expansion.
+  if (clientRawRequest && Array.isArray((body as { input?: unknown }).input)) {
+    clientRawRequest = {
+      ...clientRawRequest,
+      effectiveInput: (body as { input: unknown[] }).input,
+    };
+  }
 
   // Guardrail pre-call pipeline — prompt injection, PII masking, and future custom rules.
   telemetry.startPhase("validate");
@@ -714,6 +734,30 @@ async function handleChatImplementation(
     signal: request.signal,
     stream: body?.stream === true,
   });
+  const videoBridgeResult = preCallGuardrails.results.find(
+    (result) => result.guardrail === "video-bridge" && result.modified
+  );
+  const videoBridgeObserved = videoBridgeResult?.meta?.videoBridgeObserved === true;
+  if (videoBridgeObserved && clientRawRequest) {
+    clientRawRequest = {
+      ...clientRawRequest,
+      body: redactVideoTranscriptFieldsForLog(clientRawRequest.body),
+      effectiveInput: redactVideoTranscriptFieldsForLog({
+        input: clientRawRequest.effectiveInput,
+      }) instanceof Object
+        ? (redactVideoTranscriptFieldsForLog({ input: clientRawRequest.effectiveInput }) as {
+            input?: unknown;
+          }).input
+        : clientRawRequest.effectiveInput,
+      videoContentRemoved: true,
+      videoBridgeLogRedaction: Array.isArray(videoBridgeResult?.meta?.videoBridgeLogRedaction)
+        ? reanchorVideoBridgeRedaction(
+            videoBridgeResult.meta.videoBridgeLogRedaction,
+            preCallGuardrails.payload
+          )
+        : undefined,
+    };
+  }
   if (preCallGuardrails.blocked) {
     log.warn("GUARDRAIL", "Request blocked during pre-call guardrails", {
       guardrail: preCallGuardrails.guardrail,
@@ -934,23 +978,21 @@ async function handleChatImplementation(
     ) => {
       if (isComboLiveTest) return true;
 
-      // #9057: for keys with model restrictions (allowlist, blocklist, or non-public-model ban),
-      // run isModelAllowedForKey even for auto/* models. The API-key policy gate
-      // (validateModelAccess in apiKeyPolicy.ts) treats auto/* as a virtual combo and
-      // skips isModelAllowedForKey, so the per-candidate check here is the only
-      // enforcement point during combo routing. Without it, a key with
-      // disableNonPublicModels=true can reach free/prohibited models through auto/*.
-      const hasModelRestrictions =
-        apiKeyInfo &&
-        (apiKeyInfo.modelAccessMode === "restricted" || Boolean(apiKeyInfo.allowedModels?.length) ||
-          Boolean(apiKeyInfo.blockedModels?.length) ||
-          apiKeyInfo.disableNonPublicModels === true);
-      if (hasModelRestrictions && apiKey) {
-        const modelAllowed = await isModelAllowedForKey(apiKey, modelString,
-          body.reasoning_effort || body.reasoning?.effort || body.output_config?.effort ||
-          (body.thinking?.type === "disabled" ? "none" : undefined));
-        if (!modelAllowed) return false;
-      }
+      // A combo name admitted by the request-level allow-list covers its inner
+      // targets. Independent block/non-public restrictions still inspect each target.
+      const targetAllowed = await comboTargetPassesKeyModelPolicy({
+        apiKey,
+        apiKeyInfo,
+        requestedModel: resolvedModelStr,
+        targetModel: modelString,
+        effort:
+          body.reasoning_effort ||
+          body.reasoning?.effort ||
+          body.output_config?.effort ||
+          (body.thinking?.type === "disabled" ? "none" : undefined),
+        isModelAllowedForKey,
+      });
+      if (!targetAllowed) return false;
 
       // Use getModelInfo to resolve custom prefixes, but prefer the combo
       // target's providerId when available — the model string's provider
@@ -971,20 +1013,18 @@ async function handleChatImplementation(
       // Apply the same prefix-override guard as handleSingleModelChat:
       // if providerId is just the prefix already in the model string, use
       // the fully-resolved modelInfo.provider for a precise credential check.
-      const provider = (() => {
-        if (!target?.providerId) return modelInfo.provider;
-        if (target.providerId === modelInfo.provider) return modelInfo.provider;
-        if (modelString.startsWith(target.providerId + "/")) return modelInfo.provider;
-        return target.providerId;
-      })();
-      if (!provider) return true; // can't determine provider, let it try
-
+      const provider = resolveComboCheckProvider(modelString, modelInfo, target?.providerId);
       const resolvedModel = modelInfo.model || modelString;
-      const hasForcedConnection =
-        typeof target?.connectionId === "string" && target.connectionId.trim().length > 0;
+      const githubCatalogVerdict = await githubComboCatalogGate(
+        comboPreselectedCredentials,
+        provider,
+        resolvedModel
+      );
+      if (githubCatalogVerdict !== null) return githubCatalogVerdict;
+
       let allowedConnections = intersectAllowedConnectionIds(
         apiKeyInfo?.allowedConnections ?? null,
-        target?.allowedConnectionIds ?? null
+        comboPinAllowlist(true, target?.connectionId ?? null, target?.allowedConnectionIds ?? null)
       );
 
       // A4: quota-exclusive keys must only use the pool's connection(s).
@@ -1075,6 +1115,7 @@ async function handleChatImplementation(
           allowedConnectionIds?: string[] | null;
           failoverBeforeRetry?: boolean;
           providerId?: string | null;
+          provider?: string | null;
           effectiveComboStrategy?: string | null;
           modelAbortSignal?: AbortSignal | null;
         }
@@ -1104,7 +1145,7 @@ async function handleChatImplementation(
               return credentials;
             })(),
             cachedSettings: settings,
-            providerId: target?.providerId ?? null,
+            providerId: target?.providerId ?? target?.provider ?? null,
             correlationId: reqId,
             conversationId,
             modelPinned: (target as any)?.modelPinned ?? false,
@@ -1395,7 +1436,7 @@ async function handleSingleModelChat(
             comboExecutionKey: null,
             skipUpstreamRetry: resolvedTarget?.failoverBeforeRetry === true,
             allowRateLimitedConnection: resolvedTarget?.allowRateLimitedConnection === true,
-            providerId: resolvedTarget?.providerId ?? null,
+            providerId: resolvedTarget?.providerId ?? resolvedTarget?.provider ?? null,
             correlationId: runtimeOptions?.correlationId ?? null,
             reasoningTransportFallback:
               redirectCombo.config?.reasoningTransportFallback === "skip" ? "skip" : "drop",
@@ -1451,12 +1492,14 @@ async function handleSingleModelChat(
   })();
   const forceLiveComboTest = runtimeOptions.forceLiveComboTest === true;
   const bypassProviderQuotaPolicy = hasProviderQuotaBypassScope(apiKeyInfo?.scopes);
-  const hasForcedConnection =
-    typeof runtimeOptions.forcedConnectionId === "string" &&
-    runtimeOptions.forcedConnectionId.trim().length > 0;
+  const forcedConnectionId =
+    typeof runtimeOptions.forcedConnectionId === "string"
+      ? runtimeOptions.forcedConnectionId.trim()
+      : "";
+  const hasForcedConnection = forcedConnectionId.length > 0;
   let effectiveAllowedConnections = intersectAllowedConnectionIds(
     apiKeyInfo?.allowedConnections ?? null,
-    runtimeOptions.allowedConnectionIds ?? null
+    comboPinAllowlist(isCombo, forcedConnectionId || null, runtimeOptions.allowedConnectionIds)
   );
 
   // A fixed manager credential remains a hard boundary across retries, even
@@ -1713,6 +1756,8 @@ async function handleSingleModelChat(
                 (candidate): candidate is string => typeof candidate === "string"
               )
             : undefined;
+        const shadowedNode =
+          excludedConnectionIds.size === 0 ? await findShadowedCompatibleNode(provider) : null;
         const noCredsRes = handleNoCredentials(
           credentials,
           excludedConnectionIds.size > 0 ? Array.from(excludedConnectionIds)[0] : null,
@@ -1721,7 +1766,8 @@ async function handleSingleModelChat(
           lastError,
           lastStatus,
           candidateAliases,
-          isCombo
+          isCombo,
+          shadowedNode
         );
         const lastFailedConnectionId =
           excludedConnectionIds.size > 0
@@ -1753,10 +1799,19 @@ async function handleSingleModelChat(
       // defaultModel, resolve the bare name to that real model ID before the
       // upstream call so the provider receives a concrete model rather than the
       // placeholder. A "/"-qualified model name is always left untouched.
-      const effectiveModel =
+      let effectiveModel =
         resolveBareModelToConnectionDefault(modelStr, model, credentials.defaultModel) ?? model;
       let requestBody =
         effectiveModel !== model ? { ...body, model: `${provider}/${effectiveModel}` } : body;
+      const passthroughModel = resolvePassthroughModelOverride({
+        provider,
+        resolvedProvider,
+        originalModel: modelStr,
+      });
+      if (passthroughModel) {
+        effectiveModel = passthroughModel;
+        requestBody = { ...body, model: passthroughModel };
+      }
       if (!runtimeOptions.reasoningDecision && runtimeOptions.reasoningIntent) {
         const connectionRouting = await applyConnectionReasoningRule({
           requestBody,
@@ -1920,7 +1975,7 @@ async function handleSingleModelChat(
 
       if (result.success) {
         clearModelLock(provider, credentials.connectionId, model);
-        if (!forceLiveComboTest) {
+        if (classifyProviderBreakerResult(result, isCombo, forceLiveComboTest) === "success") {
           breaker._onSuccess();
         }
         if (injectedHandoff && runtimeOptions.sessionId && comboName) {
@@ -2371,7 +2426,7 @@ async function handleSingleModelChat(
       // breaker for real traffic (#9817).
       if (
         !(await shouldIsolateProbeFailures()) &&
-        shouldTripProviderBreakerForResult(result, isCombo, forceLiveComboTest)
+        classifyProviderBreakerResult(result, isCombo, forceLiveComboTest) === "failure"
       ) {
         breaker._onFailure();
       }

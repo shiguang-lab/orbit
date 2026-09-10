@@ -204,6 +204,30 @@ export function getComboModelProvider(value: unknown): string | null {
   );
 }
 
+/** A combo connection pin without an explicit allowlist still fails closed. */
+export function implicitPinAllowlist(
+  connectionId: string | null | undefined,
+  allowedConnectionIds: string[] | null | undefined
+): string[] | null {
+  const pin = typeof connectionId === "string" ? connectionId.trim() : "";
+  if (Array.isArray(allowedConnectionIds) && allowedConnectionIds.length > 0) {
+    return allowedConnectionIds;
+  }
+  if (pin) return [pin];
+  return Array.isArray(allowedConnectionIds) ? [] : null;
+}
+
+/** Header forcing keeps sibling fallback; combo-step pinning does not. */
+export function comboPinAllowlist(
+  isCombo: boolean,
+  forcedConnectionId: string | null | undefined,
+  allowedConnectionIds: string[] | null | undefined
+): string[] | null {
+  return isCombo
+    ? implicitPinAllowlist(forcedConnectionId, allowedConnectionIds)
+    : (allowedConnectionIds ?? null);
+}
+
 export function getComboStepTarget(
   value: unknown,
   options: NormalizeComboStepOptions = {}

@@ -11,6 +11,9 @@ export const codexProvider: RegistryEntry = {
   alias: "cx",
   format: "openai-responses",
   executor: "codex",
+  // The Codex Responses backend streams upstream even for JSON callers. Force
+  // the upstream stream so chatCore can drain the terminal event into JSON.
+  forceStream: true,
   baseUrl: "https://chatgpt.com/backend-api/codex/responses",
   reasoningTransport: "opaque",
   authType: "oauth",

@@ -93,7 +93,8 @@ const TOPOLOGY_PROVIDER_METADATA: Record<string, { name: string; icon?: string; 
   "deepseek-web": { name: "DeepSeek Web", icon: "deepseek", color: "#4D6BFE" },
   "kimi-web": { name: "Kimi Web", icon: "kimi", color: "#2563EB" },
   qoder: { name: "Qoder", icon: "qoder", color: "#6366F1" },
-  "chatgpt-web": { name: "ChatGPT Web (Codex)", icon: "chatgpt", color: "#10A37F" },
+  "chatgpt-web": { name: "ChatGPT Web (Clean Room)", icon: "chatgpt", color: "#10A37F" },
+  "chatgpt-web-codex": { name: "ChatGPT Web (Codex)", icon: "chatgpt", color: "#10A37F" },
 };
 type TopologyProviderIcon = ComponentType<any>;
 const TOPOLOGY_PROVIDER_ICONS: Record<string, TopologyProviderIcon> = {

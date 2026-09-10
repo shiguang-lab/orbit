@@ -65,6 +65,25 @@ export function isLocalStreamLifecycleError(error: unknown): boolean {
   );
 }
 
+/**
+ * Detect model-capacity overloads that must not count as a whole-provider
+ * outage. Anthropic can surface this as HTTP 529, a structured 529 error, or a
+ * STREAM_EARLY_EOF wrapper whose message contains "Overloaded".
+ */
+export function isModelCapacityOverloadError(error: unknown): boolean {
+  if (error === 529) return true;
+  if (typeof error === "number" || !error) return false;
+  const errObj = typeof error === "object" ? (error as Record<string, unknown>) : null;
+  if (errObj && (errObj.status === 529 || errObj.statusCode === 529)) return true;
+  const message =
+    typeof error === "string"
+      ? error
+      : typeof errObj?.message === "string"
+        ? errObj.message
+        : "";
+  return message.length > 0 && /\boverloaded(?:_error)?\b/i.test(message);
+}
+
 export const STATE = {
   CLOSED: "CLOSED",
   DEGRADED: "DEGRADED",
@@ -111,6 +130,17 @@ interface CircuitBreakerOptions {
    * Default: 3.
    */
   backoffEscalationCount?: number;
+}
+
+/** How a resolved execute() result should affect the breaker. */
+export type CircuitBreakerResultOutcome = "success" | "failure" | "ignore";
+
+export interface CircuitBreakerExecuteOptions<T> {
+  /**
+   * Classify a resolved result. When omitted, resolutions keep the legacy
+   * success semantics. Use "ignore" when the call site owns accounting.
+   */
+  classifyResult?: (result: T) => CircuitBreakerResultOutcome;
 }
 
 export interface TransitionRecord {
@@ -263,7 +293,7 @@ export class CircuitBreaker {
     );
   }
 
-  async execute<T>(fn: () => Promise<T>): Promise<T> {
+  async execute<T>(fn: () => Promise<T>, options?: CircuitBreakerExecuteOptions<T>): Promise<T> {
     this._refreshOpenState();
 
     if (this.state === STATE.OPEN) {
@@ -288,7 +318,7 @@ export class CircuitBreaker {
 
     try {
       const result = await fn();
-      this._onSuccess();
+      this._recordResolvedResult(result, options?.classifyResult);
       return result;
     } catch (error) {
       if (this.isFailure(error)) {
@@ -349,6 +379,26 @@ export class CircuitBreaker {
   }
 
   // ─── Internal ─────────────────────────────────
+
+  _recordResolvedResult<T>(
+    result: T,
+    classifyResult?: (result: T) => CircuitBreakerResultOutcome
+  ): void {
+    let outcome: CircuitBreakerResultOutcome = "success";
+    if (classifyResult) {
+      try {
+        outcome = classifyResult(result);
+      } catch {
+        outcome = "success";
+      }
+    }
+
+    if (outcome === "failure") {
+      this._onFailure();
+    } else if (outcome === "success") {
+      this._onSuccess();
+    }
+  }
 
   _onSuccess() {
     if (this.state === STATE.OPEN) {

@@ -23,6 +23,7 @@ import {
   SPAWN_CAPABLE_PREFIXES,
   SPAWN_CAPABLE_PATTERN_ANCESTORS,
 } from "../constants/spawnCapablePrefixes.ts";
+import { isHttpUrl } from "./schemas/misc.ts";
 
 const signatureCacheModeValues = ["enabled", "bypass", "bypass-strict"] as const;
 
@@ -493,6 +494,22 @@ export const updateSettingsSchema = z.object({
   // CLIProxyAPI connection settings
   cliproxyapi_fallback_enabled: z.boolean().optional(),
   cliproxyapi_url: z.string().url().max(500).optional(),
+  // Empty means: fall back to HEADROOM_URL, then localhost:8787. Restrict the
+  // persisted value to http(s), because it is interpolated into a health probe.
+  headroomUrl: z
+    .string()
+    .trim()
+    .pipe(
+      z.union([
+        z.literal(""),
+        z
+          .string()
+          .url()
+          .max(500)
+          .refine((value) => isHttpUrl(value), "must be an http(s) URL"),
+      ])
+    )
+    .optional(),
   cliproxyapi_fallback_codes: z.string().max(200).optional(),
   // #7645: dedicated CLIProxyAPI credential. CLIProxyAPI requires its own
   // separately-configured `api-keys:` credential and rejects any other token

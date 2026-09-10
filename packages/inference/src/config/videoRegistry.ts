@@ -190,6 +190,10 @@ export const VIDEO_PROVIDERS: Record<string, VideoProvider> = {
     authType: "apikey",
     authHeader: "bearer",
     format: "pollinations-video",
+    unsupported: true,
+    unsupportedReason:
+      "Pollinations video has no submit/poll transport in the dispatcher yet. " +
+      "Use another video provider until one is added.",
     models: [{ id: "default", name: "Pollinations Video (Free)" }],
   },
 
@@ -200,6 +204,10 @@ export const VIDEO_PROVIDERS: Record<string, VideoProvider> = {
     authType: "apikey",
     authHeader: "bearer",
     format: "minimax-video",
+    unsupported: true,
+    unsupportedReason:
+      "MiniMax video uses a submit/query transport the dispatcher does not implement yet. " +
+      "Use another video provider until one is added.",
     models: [
       { id: "MiniMax-Hailuo-2.3", name: "Hailuo 2.3" },
       { id: "MiniMax-Hailuo-02", name: "Hailuo 02" },
@@ -214,6 +222,10 @@ export const VIDEO_PROVIDERS: Record<string, VideoProvider> = {
     authType: "apikey",
     authHeader: "bearer",
     format: "together-video",
+    unsupported: true,
+    unsupportedReason:
+      "Together video has no transport in the dispatcher yet. " +
+      "Use another video provider until one is added.",
     models: [
       { id: "wan-ai/wan2.1-t2v-480p", name: "Wan 2.1 T2V 480p" },
       { id: "wan-ai/wan2.7-t2v", name: "Wan 2.7 T2V" },
@@ -227,6 +239,10 @@ export const VIDEO_PROVIDERS: Record<string, VideoProvider> = {
     authType: "apikey",
     authHeader: "bearer",
     format: "replicate-video",
+    unsupported: true,
+    unsupportedReason:
+      "Replicate video has no prediction submit/poll transport in the dispatcher yet. " +
+      "Use another video provider until one is added.",
     models: [
       { id: "minimax/video-01", name: "MiniMax Video 01" },
       { id: "wan-ai/wan2.1-t2v-480p", name: "Wan 2.1 T2V" },
@@ -394,7 +410,11 @@ export const VIDEO_PROVIDERS: Record<string, VideoProvider> = {
     baseUrl: "https://nano-gpt.com/api/v1/video/generations",
     authType: "apikey",
     authHeader: "bearer",
-    format: "openai",
+    format: "openai-video",
+    unsupported: true,
+    unsupportedReason:
+      "NanoGPT publishes no working video generation route at the configured endpoint. " +
+      "Use another video provider.",
     models: [{ id: "default", name: "NanoGPT Video" }],
   },
 };

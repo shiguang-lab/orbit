@@ -507,6 +507,17 @@ export const settingsApi = {
   getSettings: () => api<Record<string, unknown>>("/settings"),
   patch: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) }),
   updateSettings: (patch: Record<string, unknown>) => api<Record<string, unknown>>("/settings", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(patch) }),
+  headroomStatus: () =>
+    api<{
+      url: string;
+      running: boolean;
+      canStart: boolean;
+      localUrl: boolean;
+      installed: boolean;
+      managedPid?: number | null;
+    }>("/headroom/status"),
+  startHeadroom: () => api<Record<string, unknown>>("/headroom/start", { method: "POST" }),
+  stopHeadroom: () => api<Record<string, unknown>>("/headroom/stop", { method: "POST" }),
   changePassword: (password: string) =>
     api<{ success: boolean }>("/settings/password", {
       method: "POST",
@@ -1795,6 +1806,7 @@ export const COMPRESSION_ENGINE_CATALOG: Record<string, CompressionEngineMeta> =
 export interface CompressionConfig {
   enabled: boolean;
   autoTriggerTokens: number;
+  proactiveConfig?: { thresholdRatio: number };
   preserveSystemPrompt: boolean;
   preserveSystemPromptMode?: "always" | "whenNoCache" | "never";
   engines: Record<string, { enabled: boolean; level?: string }>;
@@ -1803,6 +1815,12 @@ export interface CompressionConfig {
     enabled: boolean;
     intensity: "lite" | "full" | "ultra";
     autoClarity: boolean;
+  };
+  languageConfig?: {
+    enabled: boolean;
+    defaultLanguage: string;
+    autoDetect: boolean;
+    enabledPacks: string[];
   };
   ultraEngine?: "heuristic" | "slm";
   ultraSlmPrewarm?: boolean;

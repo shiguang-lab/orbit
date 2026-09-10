@@ -47,6 +47,12 @@ const INNER_RE = new RegExp(
 
 // Match an arg separator.
 const ARG_SEP_RE = new RegExp(`<${FW}tool${SEP}sep${FW}>`, "gi");
+const OPEN_ONLY_RE = new RegExp(`<${FW}tool${SEP}calls${SEP}begin${FW}>`, "i");
+const TRIM_EDGES_RE = /^\s+|\s+$/g;
+const FIRST_SPACE_RE = /\s/;
+const TRAILING_NEWLINES_RE = /\n+$/;
+const INTEGER_RE = /^-?\d+$/;
+const DECIMAL_RE = /^-?\d*\.\d+$/;
 
 // Heuristic: any partial opening marker (start of `<｜tool` ... without the
 // final `>`). Used by the streaming parser to know it must hold back text.
@@ -115,7 +121,7 @@ function generateToolCallId(index: number): string {
 function parseInnerCall(body: string): { name: string; arguments: string } | null {
   // Body starts with the tool name on (typically) its own line, optionally
   // surrounded by whitespace, then the first `<｜tool▁sep｜>`.
-  const trimmed = body.replace(/^\s+|\s+$/g, "");
+  const trimmed = body.replace(TRIM_EDGES_RE, "");
   // Split by argument separator first to isolate name + arg blocks.
   const segments = trimmed.split(ARG_SEP_RE);
   // First segment is the tool name (and any preamble whitespace).
@@ -137,7 +143,7 @@ function parseInnerCall(body: string): { name: string; arguments: string } | nul
     let argName: string;
     let argValue: string;
     if (idxNl < 0) {
-      const idxSp = seg.search(/\s/);
+      const idxSp = seg.search(FIRST_SPACE_RE);
       if (idxSp < 0) {
         argName = seg.trim();
         argValue = "";
@@ -155,7 +161,7 @@ function parseInnerCall(body: string): { name: string; arguments: string } | nul
     if (!argName) continue;
     // Strip the trailing newline before the next separator (the separator
     // marker itself was already consumed by the split).
-    argValue = argValue.replace(/\n+$/, "");
+    argValue = argValue.replace(TRAILING_NEWLINES_RE, "");
     // Attempt JSON parse so structured args (objects/arrays/numbers/bools)
     // come through as native JSON values rather than quoted strings.
     args[argName] = coerceArgValue(argValue);
@@ -179,11 +185,11 @@ function coerceArgValue(raw: string): unknown {
   if (stripped === "true") return true;
   if (stripped === "false") return false;
   if (stripped === "null") return null;
-  if (/^-?\d+$/.test(stripped)) {
+  if (INTEGER_RE.test(stripped)) {
     const n = Number(stripped);
     if (Number.isSafeInteger(n)) return n;
   }
-  if (/^-?\d*\.\d+$/.test(stripped)) {
+  if (DECIMAL_RE.test(stripped)) {
     const n = Number(stripped);
     if (Number.isFinite(n)) return n;
   }
@@ -295,8 +301,7 @@ export function feedStreamingChunk(state: StreamingState, accumulated: string): 
 
   // 2. Look for an opening-only marker. If found, everything before it is
   //    safe; everything after must be held until we see the closing marker.
-  const openOnlyRe = new RegExp(`<${FW}tool${SEP}calls${SEP}begin${FW}>`, "i");
-  const openMatch = accumulated.match(openOnlyRe);
+  const openMatch = accumulated.match(OPEN_ONLY_RE);
   if (openMatch && openMatch.index !== undefined) {
     const safe = accumulated.slice(0, openMatch.index);
     const safeDelta = safe.length > state.emitted ? safe.slice(state.emitted) : "";

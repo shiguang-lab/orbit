@@ -6,7 +6,10 @@ import {
   isOpenAICompatibleProvider,
   isAnthropicCompatibleProvider,
 } from "@orbit/providers/catalog";
-import { validateProviderApiKey } from "@orbit/inference/services/provider-validation";
+import {
+  projectProviderValidationResultForPublicResponse,
+  validateProviderApiKey,
+} from "@orbit/inference/services/provider-validation";
 import { getProxyForLevel } from "@orbit/core/db/proxy-settings";
 import { resolveProxyForProvider } from "@orbit/core/db/proxies";
 import { validateProviderApiKeySchema } from "@orbit/core/control/provider-validation-schemas";
@@ -18,6 +21,7 @@ import {
   isCommonChatGptWebRetiredProviderId,
 } from "@orbit/contracts/chatgpt-web-retirement";
 import { errorResponse } from "@orbit/inference/utils/error";
+import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 
 function rejectRetiredCommonChatGptWebProvider(providerId: unknown): Response | null {
   return isCommonChatGptWebRetiredProviderId(providerId)
@@ -90,8 +94,10 @@ export async function POST(request: Request): Promise<Response> {
     const registryProxy = await resolveProxyForProvider(provider);
     const providerProxy = registryProxy || await getProxyForLevel("provider", provider);
     const proxyToUse = providerProxy || await getProxyForLevel("global");
-    const result = await runWithProxyContextOrDirect(proxyToUse || null, () =>
-      validateProviderApiKey({ provider, apiKey, providerSpecificData })
+    const result = projectProviderValidationResultForPublicResponse(
+      await runWithProxyContextOrDirect(proxyToUse || null, () =>
+        validateProviderApiKey({ provider, apiKey, providerSpecificData })
+      )
     );
 
     if (result.unsupported) return Response.json({ error: "Provider validation not supported", unsupported: true }, { status: 400 });
@@ -123,7 +129,7 @@ export async function POST(request: Request): Promise<Response> {
       capabilities: result.capabilities || null, providerSpecificData: result.providerSpecificData || null,
     });
   } catch (error) {
-    console.log("Error validating API key:", error);
+    console.log("Error validating API key:", sanitizeErrorMessage(error) || "Validation failed");
     return Response.json({ error: "Validation failed" }, { status: 500 });
   }
 }

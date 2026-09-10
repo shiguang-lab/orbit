@@ -43,7 +43,16 @@ export function resolveReasoningTransport(
 ): ReasoningTransport {
   const normalized = typeof provider === "string" ? provider.trim().toLowerCase() : "";
   const transport = REASONING_TRANSPORTS.get(normalized);
-  return transport ?? (preserveEncryptedReasoning ? "opaque" : "plaintext");
+  if (transport) return transport;
+  if (
+    normalized.startsWith("openai-compatible-responses") ||
+    normalized.startsWith("custom-openai-responses") ||
+    normalized.includes("codex") ||
+    normalized.includes("responses")
+  ) {
+    return "opaque";
+  }
+  return preserveEncryptedReasoning ? "opaque" : "plaintext";
 }
 
 function asRecord(value: unknown): JsonRecord | null {

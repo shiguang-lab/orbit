@@ -26,12 +26,12 @@ test("public flag projects the same full cached catalog; internal catalog stays 
   const dir = mkdtempSync(join(tmpdir(), "orbit-effort-catalog-"));
   process.env.DATA_DIR = dir;
   process.env.API_KEY_SECRET = "effort-catalog-test-secret";
-  const db = await import("../../core/src/lib/db/core.ts");
+  const db = await import("@orbit/core/db/connection");
   t.after(() => { db.resetDbInstance(); rmSync(dir, { recursive: true, force: true }); });
-  const { createProviderConnection } = await import("../../core/src/lib/db/providers.ts");
+  const { createProviderConnection } = await import("@orbit/core/db/provider-connections");
   await createProviderConnection({ provider: "codex", name: "test", authType: "oauth", isActive: true, accessToken: "test-only" });
-  const keys = await import("../../core/src/lib/db/apiKeys.ts");
-  const flags = await import("../../core/src/shared/utils/featureFlags.ts");
+  const keys = await import("@orbit/core/db/api-keys");
+  const flags = await import("@orbit/core/runtime/feature-flags");
   const { installCoreDomainRuntimePorts } = await import("../src/services/coreDomainRuntimePorts.ts");
   installCoreDomainRuntimePorts();
   const { getUnifiedModelsResponse } = await import("../src/catalog/catalog.ts");

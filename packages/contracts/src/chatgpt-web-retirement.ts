@@ -1,5 +1,4 @@
 export const RETIRED_COMMON_CHATGPT_WEB_PROVIDER_IDS: ReadonlySet<string> = new Set([
-  "chatgpt-web",
   "cgpt-web",
 ]);
 

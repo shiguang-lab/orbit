@@ -602,7 +602,7 @@ export async function checkConnection(conn, dependencies: { probeWebCookie: WebC
     conn.testStatus === "expired" &&
     conn.lastErrorType !== "account_deactivated" &&
     getExpiredRetryCount(conn) < EXPIRED_RETRY_MAX;
-  const terminalStatuses = new Set(["credits_exhausted", "banned", "expired"]);
+  const terminalStatuses = new Set(["banned", "expired"]);
   if (
     typeof conn.testStatus === "string" &&
     terminalStatuses.has(conn.testStatus.toLowerCase()) &&

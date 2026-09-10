@@ -25,13 +25,14 @@ import {
   readCompressionRequestHeader,
   withCompressionHeaderEcho,
 } from "../../completions/compression-header-echo.js";
+import { resolveIncomingCorrelationId } from "../correlation.js";
 
 const load = (specifier: string): Promise<any> => import(specifier);
 
 let initPromise: Promise<void> | null = null;
 
 // Singleton injection guard instance
-const injectionGuard = createInjectionGuard();
+const injectionGuard = createInjectionGuard({ logger: null });
 
 /**
  * Initialize translators once (Promise-based singleton — no race condition)
@@ -240,9 +241,12 @@ export async function POST(request: Request): Promise<Response> {
     // on the response when internal early-returns (idempotency cache, some combo
     // paths) drop the meta the docs promise.
     const compressionRequestHeader = readCompressionRequestHeader(request);
+    const callerCorrelationId = resolveIncomingCorrelationId(
+      request.headers.get("x-correlation-id")
+    );
 
     if (wantsStreaming) {
-      const reqId = generateRequestId();
+      const reqId = callerCorrelationId ?? generateRequestId();
       // Wrap the real handler response, not the synthetic early-keepalive response. If the
       // client cancels while handleChat is still pending, earlyStreamKeepalive will cancel the
       // eventual handler body; only that confirmed cleanup releases heavyweight capacity.
@@ -263,7 +267,7 @@ export async function POST(request: Request): Promise<Response> {
 
     return finishAdmission(
       withCompressionHeaderEcho(
-        await handleChat(request, null, parsedBody),
+        await handleChat(request, null, parsedBody, callerCorrelationId ?? undefined),
         compressionRequestHeader
       )
     );

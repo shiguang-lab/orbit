@@ -11,6 +11,8 @@ import {
   DEFAULT_RESILIENCE_SETTINGS,
   type ResilienceSettings,
 } from "@orbit/core/resilience/settings";
+import { PROVIDER_PROFILES } from "../config/constants.ts";
+import { getProviderCategory } from "../config/providerRegistry.ts";
 
 interface CooldownEntry {
   /** Timestamp of last recorded failure (ms since epoch) */
@@ -19,6 +21,32 @@ interface CooldownEntry {
   failureCount: number;
   /** How long this entry must be retained for cleanup purposes */
   retentionMs: number;
+  /** Provider-level recent failures retained inside the configured profile window. */
+  failureTimestamps?: number[];
+}
+
+function providerWindowProfile(provider: string) {
+  const category = getProviderCategory(provider);
+  const profile = PROVIDER_PROFILES[category] ?? PROVIDER_PROFILES.apikey;
+  return {
+    failureThreshold: profile.providerFailureThreshold,
+    failureWindowMs: profile.providerFailureWindowMs,
+    cooldownMs: profile.providerCooldownMs,
+  };
+}
+
+function pruneWindow(timestamps: number[], windowMs: number, now: number): number[] {
+  const cutoff = now - windowMs;
+  const pruned = timestamps.filter((timestamp) => timestamp >= cutoff);
+  return pruned.length > 200 ? pruned.slice(-200) : pruned;
+}
+
+function providerWindowCooldownMs(provider: string, entry: CooldownEntry, now: number): number {
+  const { failureThreshold, failureWindowMs, cooldownMs } = providerWindowProfile(provider);
+  const inWindow = pruneWindow(entry.failureTimestamps ?? [], failureWindowMs, now);
+  if (inWindow.length < failureThreshold) return 0;
+  const remaining = cooldownMs - (now - entry.lastFailureAt);
+  return remaining > 0 ? remaining : 0;
 }
 
 // Global cooldown state: keyed by "provider:connectionId" or "provider"
@@ -90,8 +118,21 @@ export function recordProviderCooldown(
     existing.lastFailureAt = now;
     existing.failureCount++;
     existing.retentionMs = Math.max(existing.retentionMs, retentionMs);
+    if (!connectionId) {
+      const { failureWindowMs } = providerWindowProfile(provider);
+      existing.failureTimestamps = pruneWindow(
+        [...(existing.failureTimestamps ?? []), now],
+        failureWindowMs,
+        now
+      );
+    }
   } else {
-    cooldownMap.set(key, { lastFailureAt: now, failureCount: 1, retentionMs });
+    cooldownMap.set(key, {
+      lastFailureAt: now,
+      failureCount: 1,
+      retentionMs,
+      ...(connectionId ? {} : { failureTimestamps: [now] }),
+    });
   }
 
   startCleanupIfNeeded();
@@ -119,6 +160,9 @@ export function isProviderInCooldown(
   if (entry.failureCount === 0) return false;
 
   const now = Date.now();
+  if (!connectionId) {
+    return providerWindowCooldownMs(provider, entry, now) > 0;
+  }
   const elapsed = now - entry.lastFailureAt;
 
   const minCooldownMs =
@@ -151,6 +195,10 @@ export function getRemainingCooldownMs(
   if (!entry) return 0;
 
   const now = Date.now();
+  if (!connectionId) {
+    if (entry.failureCount === 0) return 0;
+    return providerWindowCooldownMs(provider, entry, now);
+  }
   const elapsed = now - entry.lastFailureAt;
 
   const minCooldownMs =
@@ -183,8 +231,9 @@ export function recordProviderSuccess(provider: string, connectionId: string | u
   const key = cooldownKey(provider, connectionId);
   const entry = cooldownMap.get(key);
   if (entry) {
-    // Reset failure count but keep the entry
+    // Reset both consecutive count and the provider-level failure window.
     entry.failureCount = 0;
+    entry.failureTimestamps = [];
   }
 }
 

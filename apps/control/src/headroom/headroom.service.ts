@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import {
-  DEFAULT_HEADROOM_URL,
   getHeadroomStatus,
   isLoopbackHeadroomUrl,
   parsePortFromHeadroomUrl,
+  resolveHeadroomUrl,
 } from "./runtime/detect.js";
 import {
   getManagedPid,
@@ -24,9 +24,7 @@ export class HeadroomService {
 
   private async configuredUrl(): Promise<string> {
     const settings = await getCachedSettings();
-    return typeof settings.headroomUrl === "string" && settings.headroomUrl
-      ? settings.headroomUrl
-      : DEFAULT_HEADROOM_URL;
+    return resolveHeadroomUrl(settings.headroomUrl);
   }
 
   async start(request: Request): Promise<Response> {

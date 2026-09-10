@@ -68,6 +68,44 @@ import { resolveAlibabaProviderBaseUrl } from "@orbit/providers/alibaba-regions"
 import { usesCcWireImage } from "../services/ccWireImageBuiltins.ts";
 
 const NVIDIA_TOOL_CALL_ID_PATTERN = /^[A-Za-z0-9]{9}$/;
+const ZAI_GLM_53_OPENAI_MODEL_PATTERN = /^glm-5\.3(?:-flash)?$/i;
+const ZAI_GLM_53_EFFORT_MODEL_PATTERN = /^(glm-5\.3(?:-flash)?)-(low|high|max)$/i;
+
+function applyZaiGlm53OpenAIDefaults<T>(
+  provider: string,
+  model: string,
+  body: T,
+  stream: boolean
+): T {
+  if (provider !== "zai" && provider !== "glm-coding-apikey") return body;
+  if (!body || typeof body !== "object" || Array.isArray(body)) return body;
+
+  const record = body as Record<string, unknown>;
+  const outboundModel = typeof record.model === "string" ? record.model : model;
+  const effortMatch = outboundModel.match(ZAI_GLM_53_EFFORT_MODEL_PATTERN);
+  const baseModel = effortMatch?.[1] ?? outboundModel;
+  if (!ZAI_GLM_53_OPENAI_MODEL_PATTERN.test(baseModel)) return body;
+
+  const next: Record<string, unknown> = { ...record };
+  if (effortMatch) next.model = baseModel;
+  if (record.reasoning_effort === undefined && record.reasoning === undefined) {
+    next.reasoning_effort = (effortMatch?.[2] ?? "low").toLowerCase();
+  }
+  const existingThinking =
+    record.thinking && typeof record.thinking === "object" && !Array.isArray(record.thinking)
+      ? (record.thinking as Record<string, unknown>)
+      : null;
+  next.thinking = { ...(existingThinking ?? {}), type: "enabled", clear_thinking: false };
+  if (
+    stream &&
+    Array.isArray(record.tools) &&
+    record.tools.length > 0 &&
+    record.tool_stream === undefined
+  ) {
+    next.tool_stream = true;
+  }
+  return next as T;
+}
 
 function normalizeNvidiaToolCallId(id: unknown): unknown {
   if (id === null || id === undefined) return id;
@@ -867,6 +905,8 @@ export class DefaultExecutor extends BaseExecutor {
           };
         }
       }
+
+      withDefaults = applyZaiGlm53OpenAIDefaults(this.provider, model, withDefaults, stream);
     }
 
     // Config-driven strip of params unsupported by the target provider/model

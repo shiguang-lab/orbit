@@ -8,7 +8,7 @@ import {
 import { getCustomModels, getProviderNodeById, isConnectionUnavailableToAuxiliaryActivity } from "./model-test-data.js";
 import { sanitizeErrorMessage } from "@orbit/inference/utils/error";
 import { runAsProbe } from "@orbit/core/network/probe-origin";
-import { isImageModelId } from "@orbit/core/edge/synced-endpoint-routing";
+import { isImageModelId } from "@orbit/core/control/model-test-routing";
 
 export const DEFAULT_MODEL_TEST_TIMEOUT_MS = 30_000;
 const DOLA_PRO_TEST_TIMEOUT_MS = 90_000;

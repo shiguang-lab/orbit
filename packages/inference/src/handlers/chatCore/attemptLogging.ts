@@ -17,8 +17,44 @@ import type { RequestCompletedPayload, RequestFailedPayload } from "@orbit/core/
 import { saveCallLog } from "@orbit/core/usage/call-logs";
 import { FORMATS } from "../../translator/formats.ts";
 import { takeEarlyKeepaliveBytes } from "../../utils/earlyKeepaliveByteBuffer.ts";
+import { buildErrorBody } from "../../utils/error.ts";
 import { cloneBoundedChatLogPayload, truncateForLog } from "./logTruncation.ts";
 import { attachLogMeta } from "./cacheUsageMeta.ts";
+
+type VideoBridgeLogRedactionEntry = {
+  container: "messages" | "input";
+  fullText: string;
+  redactedText: string;
+};
+
+export function applyVideoBridgeLogRedaction(
+  body: unknown,
+  entries: VideoBridgeLogRedactionEntry[] | null | undefined
+): unknown {
+  if (!entries?.length || !body || typeof body !== "object") return body;
+  const source = body as Record<string, unknown>;
+  const clone = structuredClone(source);
+  let changed = false;
+  for (const entry of entries) {
+    const container = clone[entry.container];
+    if (!Array.isArray(container) || !entry.fullText) continue;
+    const expectedType = entry.container === "input" ? "input_text" : "text";
+    for (const message of container) {
+      if (!message || typeof message !== "object") continue;
+      const content = (message as Record<string, unknown>).content;
+      if (!Array.isArray(content)) continue;
+      for (const part of content) {
+        if (!part || typeof part !== "object") continue;
+        const record = part as Record<string, unknown>;
+        if (record.type === expectedType && record.text === entry.fullText) {
+          record.text = entry.redactedText;
+          changed = true;
+        }
+      }
+    }
+  }
+  return changed ? clone : body;
+}
 
 /**
  * Extract the OpenAI Responses API response id this attempt produced, so it
@@ -89,6 +125,8 @@ export type PersistAttemptLogsContext = {
    * explicitly present (never synthesized from skillRequestId) — persisted as call_logs.session_tag
    * for per-session cost attribution. */
   sessionTag?: string | null;
+  videoContentRemoved?: boolean;
+  videoBridgeLogRedaction?: VideoBridgeLogRedactionEntry[];
 };
 
 function toConnectionId(value: unknown): string | null {
@@ -157,7 +195,7 @@ export function resolveRequestLifecycleEvent(input: {
     name: "request.failed",
     payload: {
       id: traceId,
-      error: error || `HTTP ${status}`,
+      error: buildErrorBody(status, error || `HTTP ${status}`).error.message,
       statusCode: typeof status === "number" ? status : undefined,
       latencyMs,
       model: model || undefined,
@@ -204,6 +242,8 @@ export function persistAttemptLogs(args: PersistAttemptLogsArgs, ctx: PersistAtt
     correlationId,
     modelPinned,
     sessionTag,
+    videoContentRemoved,
+    videoBridgeLogRedaction,
   } = ctx;
   const initialConnectionId = toConnectionId(connectionId);
   const finalConnectionId = toConnectionId(credentials?.connectionId) || initialConnectionId;
@@ -287,7 +327,7 @@ export function persistAttemptLogs(args: PersistAttemptLogsArgs, ctx: PersistAtt
     duration: Date.now() - startTime,
     tokens: tokens || {},
     requestBody: cloneBoundedChatLogPayload(
-      attachLogMeta(truncateForLog(body as Record<string, unknown>), {
+      attachLogMeta(truncateForLog(applyVideoBridgeLogRedaction(body, videoBridgeLogRedaction) as Record<string, unknown>), {
         ...accountRotationMeta,
         claudePromptCache: claudeCacheMeta,
       })
@@ -321,6 +361,7 @@ export function persistAttemptLogs(args: PersistAttemptLogsArgs, ctx: PersistAtt
     modelPinned: modelPinned || false,
     sessionTag: sessionTag || null,
     responseId: extractResponsesId(sourceFormat, clientResponse),
+    videoContentRemoved: videoContentRemoved === true,
   }).catch(() => {});
 
   // Emit the terminal request-lifecycle event to the live dashboard bus. `request.started`

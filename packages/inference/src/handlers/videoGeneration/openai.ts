@@ -22,7 +22,7 @@ interface CredentialsLike {
  * Resolve the video generation endpoint URL from credentials and fallback.
  * Handles baseUrl from providerSpecificData or top-level credentials.
  */
-function resolveVideoEndpoint(credentials: unknown, fallback: string): string {
+export function resolveVideoEndpoint(credentials: unknown, fallback: string): string {
   const creds = credentials as CredentialsLike | null | undefined;
   const psdBaseUrl =
     creds?.providerSpecificData?.baseUrl != null &&
@@ -35,6 +35,7 @@ function resolveVideoEndpoint(credentials: unknown, fallback: string): string {
       ? creds.baseUrl.trim()
       : null;
   const nodeBaseUrl = psdBaseUrl || topLevelBaseUrl;
+  if (!nodeBaseUrl) return fallback;
   let n = nodeBaseUrl;
   while (n.endsWith("/")) n = n.slice(0, -1);
   if (n.endsWith("/videos/generations")) return n;

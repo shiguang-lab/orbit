@@ -14,6 +14,7 @@ export interface SearchProviderConfig {
   cacheTTLMs: number;
   fallbackOnly?: boolean;
   disabled?: boolean;
+  allowClientBaseUrlOverride?: boolean;
 }
 
 export const SEARCH_PROVIDERS: Record<string, SearchProviderConfig>;

@@ -238,6 +238,10 @@ export function ensureCallLogsColumns(db: SqliteDatabase) {
       db.exec("ALTER TABLE call_logs ADD COLUMN request_summary TEXT DEFAULT NULL");
       console.log("[DB] Added call_logs.request_summary column");
     }
+    if (!columnNames.has("video_content_removed")) {
+      db.exec("ALTER TABLE call_logs ADD COLUMN video_content_removed INTEGER NOT NULL DEFAULT 0");
+      console.log("[DB] Added call_logs.video_content_removed column");
+    }
     if (!columnNames.has("correlation_id")) {
       db.exec("ALTER TABLE call_logs ADD COLUMN correlation_id TEXT DEFAULT NULL");
       console.log("[DB] Added call_logs.correlation_id column");

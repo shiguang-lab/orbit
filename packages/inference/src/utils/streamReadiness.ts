@@ -421,29 +421,56 @@ function prependBufferedChunks(
   chunks: Uint8Array[],
   reader: ReadableStreamDefaultReader<Uint8Array>
 ): ReadableStream<Uint8Array> {
+  let bufferedIndex = 0;
+  let readInFlight = false;
+  let cancelRequested = false;
+  let readerReleased = false;
+
+  const releaseReader = () => {
+    if (readerReleased) return;
+    readerReleased = true;
+    reader.releaseLock();
+  };
+
+  const cancelReader = (reason: unknown) => {
+    if (cancelRequested) return;
+    cancelRequested = true;
+    try {
+      void reader.cancel(reason).catch(() => {});
+    } catch {
+      // Cancellation is cleanup-only.
+    }
+    if (!readInFlight) releaseReader();
+  };
+
   return new ReadableStream<Uint8Array>({
-    async start(controller) {
+    async pull(controller) {
+      if (cancelRequested) return;
+      if (bufferedIndex < chunks.length) {
+        controller.enqueue(chunks[bufferedIndex]);
+        bufferedIndex += 1;
+        return;
+      }
+      readInFlight = true;
       try {
-        for (const chunk of chunks) {
-          controller.enqueue(chunk);
+        const { done, value } = await reader.read();
+        if (cancelRequested) return;
+        if (done) {
+          releaseReader();
+          controller.close();
+        } else if (value) {
+          controller.enqueue(value);
         }
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          if (value) controller.enqueue(value);
-        }
-
-        controller.close();
       } catch (error) {
-        controller.error(error);
+        releaseReader();
+        if (!cancelRequested) controller.error(error);
       } finally {
-        reader.releaseLock();
+        readInFlight = false;
+        if (cancelRequested) releaseReader();
       }
     },
-    async cancel(reason) {
-      await reader.cancel(reason).catch(() => {});
-      reader.releaseLock();
+    cancel(reason) {
+      cancelReader(reason);
     },
   });
 }

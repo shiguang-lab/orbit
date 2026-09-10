@@ -84,6 +84,47 @@ function parseJsonSafe(raw: string | null): unknown {
   }
 }
 
+export const PROACTIVE_COMPRESSION_DEFAULT_RATIO = 0.7;
+const PROACTIVE_COMPRESSION_RATIO_MIN = 0.1;
+const PROACTIVE_COMPRESSION_RATIO_MAX = 0.99;
+const PROACTIVE_COMPRESSION_CACHE_TTL_MS = 30_000;
+let proactiveRatioCache: { value: number; readAt: number; dbRef: WeakRef<object> } | null = null;
+
+function normalizeProactiveConfig(value: unknown): { thresholdRatio: number } {
+  const candidate = Number(toRecord(value).thresholdRatio);
+  return {
+    thresholdRatio:
+      Number.isFinite(candidate) &&
+      candidate >= PROACTIVE_COMPRESSION_RATIO_MIN &&
+      candidate <= PROACTIVE_COMPRESSION_RATIO_MAX
+        ? candidate
+        : PROACTIVE_COMPRESSION_DEFAULT_RATIO,
+  };
+}
+
+export function getProactiveCompressionRatio(): number {
+  const db = getDbInstance();
+  const now = Date.now();
+  if (
+    proactiveRatioCache &&
+    now - proactiveRatioCache.readAt < PROACTIVE_COMPRESSION_CACHE_TTL_MS &&
+    proactiveRatioCache.dbRef.deref() === db
+  ) {
+    return proactiveRatioCache.value;
+  }
+  let value = PROACTIVE_COMPRESSION_DEFAULT_RATIO;
+  try {
+    const row = db
+      .prepare("SELECT value FROM key_value WHERE namespace = ? AND key = ?")
+      .get(NAMESPACE, "proactiveConfig") as { value?: string } | undefined;
+    value = normalizeProactiveConfig(parseJsonSafe(row?.value ?? null)).thresholdRatio;
+  } catch {
+    // Missing or malformed state keeps the shipped default.
+  }
+  proactiveRatioCache = { value, readAt: now, dbRef: new WeakRef(db) };
+  return value;
+}
+
 function normalizeCavemanConfig(value: unknown): CavemanConfig {
   const record = toRecord(value);
   const intensity =
@@ -680,6 +721,9 @@ export async function getCompressionSettings(): Promise<CompressionConfig> {
             ? Math.max(0, Math.floor(parsed))
             : 0;
         break;
+      case "proactiveConfig":
+        config.proactiveConfig = normalizeProactiveConfig(parsed);
+        break;
       case "cacheMinutes":
         config.cacheMinutes =
           typeof parsed === "number" && Number.isFinite(parsed)
@@ -857,6 +901,7 @@ export async function updateCompressionSettings(
   tx();
   backupDbFile("pre-write");
   compressionSettingsCache = null;
+  proactiveRatioCache = null;
   invalidateDbCache();
   const next = await getCompressionSettings();
   // Phase 4 (B): the SAVE path covers the enable transition — if this write turns the

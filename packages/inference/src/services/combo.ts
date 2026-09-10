@@ -55,6 +55,7 @@ import {
   maybeGenerateHandoff,
   maybeGenerateUniversalHandoff,
   injectUniversalHandoffBody,
+  isCrossRequestHandoffAttempt,
   SKIP_UNIVERSAL_HANDOFF_FLAG,
   type MessageLike,
 } from "./contextHandoff.ts";
@@ -69,6 +70,7 @@ import { resolveModelLockoutSettings } from "@orbit/core/resilience/model-lockou
 import { fetchCodexQuota } from "./codexQuotaFetcher.ts";
 import { evaluateQuotaCutoff, getQuotaFetcher, type QuotaInfo } from "./quotaPreflight.ts";
 import { resolveProviderId } from "@orbit/providers/catalog";
+import { getQuotaFetchScope } from "./antigravityQuotaFamily.ts";
 import * as semaphore from "./rateLimitSemaphore.ts";
 import { getCircuitBreaker } from "@orbit/core/resilience/circuit-breaker";
 import { parseModel } from "./model.ts";
@@ -178,6 +180,7 @@ import {
 } from "./combo/validateQuality.ts";
 import {
   resolveComboCooldownWaitDecision,
+  resolveCircuitOpenWaitDecision,
   ResolveComboCooldownDecisionResult,
 } from "./combo/comboCooldownRetry.ts";
 import {
@@ -593,14 +596,14 @@ export async function buildAutoCandidates(
         statusPenaltyReason = connectionStatusReason;
       }
       if (fetcher && target.connectionId) {
-        const quotaKey = `${provider}:${target.connectionId}`;
+        const quotaKey = `${provider}:${target.connectionId}:${getQuotaFetchScope(provider, target.modelStr)}`;
         if (!quotaPromises.has(quotaKey)) {
           quotaPromises.set(
             quotaKey,
             fetchResetAwareQuotaWithCache({
               provider,
               connectionId: target.connectionId,
-              connection,
+              connection: connection ? { ...connection, requestedModel: target.modelStr } : connection,
               fetcher,
               config: resetWindowConfig,
               log: {},
@@ -611,12 +614,16 @@ export async function buildAutoCandidates(
         const quota = await quotaPromises.get(quotaKey)!;
         resetWindowAffinity = calculateResetWindowAffinity(quota, resetWindowConfig);
         if (!quotaCutoffBlocked) {
-          quotaRemaining = quotaRemainingPercentFromQuota(quota);
+          quotaRemaining = quotaRemainingPercentFromQuota(quota, {
+            provider,
+            requestedModel: modelStr,
+          });
         }
         if (!quotaCutoffBlocked && quotaCutoffEnabled) {
           const cutoffDecision = evaluateQuotaCutoff(
             quota as QuotaInfo | null,
-            buildAutoQuotaThresholds(provider, connection, resilienceSettings)
+            buildAutoQuotaThresholds(provider, connection, resilienceSettings),
+            { provider, requestedModel: modelStr }
           );
           if (!cutoffDecision.proceed) {
             quotaCutoffBlocked = true;
@@ -1111,6 +1118,8 @@ async function handleComboChatInner({
     let lastError: string | null = null;
     let earliestRetryAfter: ComboRetryAfter | null = null;
     let lastStatus: number | null = null;
+    let skippedForCircuitOpen = false;
+    let earliestCircuitOpenRetryMs = 0;
 
     for (let setTry = 0; setTry <= maxSetRetries; setTry++) {
       // #1731: Per-set-iteration set of providers whose quota is fully exhausted.
@@ -1118,6 +1127,8 @@ async function handleComboChatInner({
       const exhaustedProviders = new Set<string>();
       const exhaustedConnections = new Set<string>();
       const transientRateLimitedProviders = new Set<string>();
+      skippedForCircuitOpen = false;
+      earliestCircuitOpenRetryMs = 0;
       if (setTry > 0) {
         log.info("COMBO", `All targets failed — retrying set (${setTry}/${maxSetRetries})`);
         await new Promise((resolve) => {
@@ -1238,7 +1249,15 @@ async function handleComboChatInner({
         };
 
         const cb = getCircuitBreaker(provider);
-        if (cb.getStatus().state === "OPEN") {
+        const cbStatus = cb.getStatus();
+        if (cbStatus.state === "OPEN") {
+          skippedForCircuitOpen = true;
+          if (
+            cbStatus.retryAfterMs > 0 &&
+            (earliestCircuitOpenRetryMs === 0 || cbStatus.retryAfterMs < earliestCircuitOpenRetryMs)
+          ) {
+            earliestCircuitOpenRetryMs = cbStatus.retryAfterMs;
+          }
           log.info("COMBO", `Skipping ${modelStr} — circuit breaker OPEN for ${provider}`);
           recordComboDecision(traceInvocationId, {
             step: target.executionKey,
@@ -1345,7 +1364,8 @@ async function handleComboChatInner({
             resilienceSettings,
             quotaCutoffResetWindowConfig,
             combo.name,
-            log
+            log,
+            modelStr
           );
           if (quotaCutoff.blocked) {
             log.info(
@@ -1626,8 +1646,10 @@ async function handleComboChatInner({
             }
           }
 
-          // Universal handoff: inject existing handoff if model changed
+          // Same-request fallback targets still have the original request intact;
+          // only the first target may consume a handoff from the previous request.
           if (
+            isCrossRequestHandoffAttempt(i) &&
             universalHandoffConfig.enabled &&
             relayOptions?.sessionId &&
             !(body as Record<string, unknown>)?.[SKIP_UNIVERSAL_HANDOFF_FLAG]
@@ -1892,7 +1914,10 @@ async function handleComboChatInner({
                 provider,
                 target.connectionId ?? undefined
               );
-              if (prevModel && prevModel !== modelStr) {
+              // Generate a summary only for a cross-request switch. A fallback
+              // target in this request must not summarize a failure the client
+              // never observed; model usage is still recorded unconditionally.
+              if (isCrossRequestHandoffAttempt(i) && prevModel && prevModel !== modelStr) {
                 const handoffSourceMessages =
                   Array.isArray(body?.messages) && body.messages.length > 0
                     ? body.messages
@@ -2710,6 +2735,30 @@ async function handleComboChatInner({
 
       // Retry the entire set if more attempts remain
       if (setTry < maxSetRetries) continue;
+
+      if (!lastStatus && recordedAttempts === 0 && comboCooldownWaitEnabled) {
+        const circuitOpenWait = resolveCircuitOpenWaitDecision({
+          skippedForCircuitOpen,
+          retryAfterMs: earliestCircuitOpenRetryMs,
+          attempt: comboCooldownAttempt,
+          budgetLeftMs: comboCooldownBudgetLeftMs,
+          settings: resilienceSettings.comboCooldownWait,
+        });
+        if (circuitOpenWait.wait) {
+          log.info(
+            "COMBO",
+            `${strategy} circuit-open wait: waiting ${Math.ceil(circuitOpenWait.waitMs / 1000)}s (reason=${circuitOpenWait.reason ?? "circuit_open"}) then retrying (attempt ${comboCooldownAttempt + 1}/${resilienceSettings.comboCooldownWait.maxAttempts})`
+          );
+          const completed = await waitForCooldownAwareRetry(circuitOpenWait.waitMs, signal);
+          if (!completed) return errorResponse(499, "Request aborted");
+          comboCooldownAttempt += 1;
+          comboCooldownBudgetLeftMs = Math.max(
+            0,
+            comboCooldownBudgetLeftMs - circuitOpenWait.waitMs
+          );
+          return dispatchWithCooldownRetry();
+        }
+      }
 
       // All set retries exhausted — return the final error
       // #10681: finalize the decision trace (all targets failed or skipped).

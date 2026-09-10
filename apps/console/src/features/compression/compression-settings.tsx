@@ -261,7 +261,7 @@ export function CompressionSettingsPage() {
       {/* 3. General Trigger Threshold & Strategy Settings */}
       <Card title="全局触发阈值与系统提示词策略" className={styles.sectionCard} size="small">
         <Row gutter={[20, 16]}>
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
             <div>
               <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
                 <Text strong style={{ fontSize: 13 }}>自动触发 Token 阈值 (Auto-Trigger Tokens)</Text>
@@ -284,7 +284,42 @@ export function CompressionSettingsPage() {
             </div>
           </Col>
 
-          <Col xs={24} md={12}>
+          <Col xs={24} md={8}>
+            <div>
+              <Flex justify="space-between" align="center" style={{ marginBottom: 4 }}>
+                <Text strong style={{ fontSize: 13 }}>
+                  {tt("主动压缩上下文比例", "Proactive Context Ratio")}
+                </Text>
+                <Tag color="purple">
+                  {Math.round((localConfig.proactiveConfig?.thresholdRatio ?? 0.7) * 100)}%
+                </Tag>
+              </Flex>
+              <Paragraph type="secondary" style={{ fontSize: 12, marginBottom: 8 }}>
+                {tt(
+                  "上下文达到可用窗口的该比例时开始主动压缩；调高可优先保留客户端自身的压缩行为。",
+                  "Start proactive compression at this share of the usable context window."
+                )}
+              </Paragraph>
+              <Slider
+                min={10}
+                max={99}
+                step={1}
+                marks={{ 10: "10%", 70: "70%", 85: "85%", 99: "99%" }}
+                value={Math.round((localConfig.proactiveConfig?.thresholdRatio ?? 0.7) * 100)}
+                onChange={(value) =>
+                  setLocalConfig({
+                    ...localConfig,
+                    proactiveConfig: { thresholdRatio: value / 100 },
+                  })
+                }
+                onChangeComplete={(value) =>
+                  updateMutation.mutate({ proactiveConfig: { thresholdRatio: value / 100 } })
+                }
+              />
+            </div>
+          </Col>
+
+          <Col xs={24} md={8}>
             <div>
               <Text strong style={{ fontSize: 13, display: "block", marginBottom: 4 }}>
                 System Prompt 系统提示词保护模式

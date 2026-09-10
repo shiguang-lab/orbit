@@ -25,7 +25,10 @@ import { resolveProxyForProvider } from "@orbit/core/db/proxies";
 import { getConsistentMachineId } from "@orbit/core/shared/utils/machineId";
 import { isValidGheUrl } from "@orbit/core/shared/provider-specific-data";
 import { AWS_REGION_PATTERN } from "@orbit/inference/oauth/constants";
-import { antigravityDegradedProjectState } from "../../../antigravity-project-gate.js";
+import {
+  antigravityDegradedProjectState,
+  antigravityPersistStatus,
+} from "../../../antigravity-project-gate.js";
 import { syncToCloud } from "@orbit/core/sync/cloud";
 import { startLocalServer } from "../../../callback-listener.js";
 import { runWithProxyContextOrDirect } from "@orbit/inference/utils/proxyFetch";
@@ -556,8 +559,7 @@ export async function POST(
           connection = await updateProviderConnection(matchId, {
             ...tokenData,
             expiresAt,
-            testStatus: degradedProject?.testStatus ?? "active",
-            ...(degradedProject ?? {}),
+            ...antigravityPersistStatus(degradedProject),
             isActive: true,
           });
         }
@@ -785,8 +787,7 @@ export async function POST(
             connection = await updateProviderConnection(matchId, {
               ...tokenData,
               expiresAt,
-              testStatus: degradedProject?.testStatus ?? "active",
-              ...(degradedProject ?? {}),
+              ...antigravityPersistStatus(degradedProject),
               isActive: true,
             });
           }

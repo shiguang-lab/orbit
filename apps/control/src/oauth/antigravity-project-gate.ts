@@ -29,16 +29,37 @@ export function antigravityDegradedProjectState(
   tokenData: Record<string, unknown> | null | undefined,
 ): AntigravityDegradedProjectState | null {
   if (!PROJECT_EXPECTED_PROVIDERS.has(provider)) return null;
+  const nested =
+    tokenData?.providerSpecificData && typeof tokenData.providerSpecificData === "object"
+      ? (tokenData.providerSpecificData as Record<string, unknown>)
+      : {};
+  const projectId = [tokenData?.projectId, nested.projectId].find(
+    (value) => typeof value === "string" && value.trim()
+  );
+  if (projectId) return null;
   const outcome = tokenData?.projectDiscoveryOutcome;
-  if (!outcome) return null;
+  const resolvedOutcome = outcome === "discovery_failed" ? outcome : "requires_manual_project";
   console.warn(
-    `[oauth] ${provider}: marking connection degraded — no Cloud Code projectId (${String(outcome)}) (#11284)`,
+    `[oauth] ${provider}: marking connection degraded — no Cloud Code projectId (${resolvedOutcome}) (#11284)`,
   );
   return {
     testStatus: "degraded",
     errorCode: "missing_project_id",
     lastErrorType: "oauth_missing_project_id",
-    lastError: outcome === "requires_manual_project" ? BYOP_WARNING : DISCOVERY_FAILED_WARNING,
-    warning: outcome === "requires_manual_project" ? BYOP_WARNING : DISCOVERY_FAILED_WARNING,
+    lastError: resolvedOutcome === "requires_manual_project" ? BYOP_WARNING : DISCOVERY_FAILED_WARNING,
+    warning: resolvedOutcome === "requires_manual_project" ? BYOP_WARNING : DISCOVERY_FAILED_WARNING,
   };
+}
+
+export function antigravityPersistStatus(
+  degraded: AntigravityDegradedProjectState | null | undefined
+) {
+  return degraded
+    ? {
+        testStatus: degraded.testStatus,
+        errorCode: degraded.errorCode,
+        lastErrorType: degraded.lastErrorType,
+        lastError: degraded.lastError,
+      }
+    : { testStatus: "active" as const, errorCode: null, lastErrorType: null, lastError: null };
 }

@@ -8,6 +8,8 @@
  * byte-identical to the previous module-level functions.
  */
 
+import { pickCacheCreationTokens } from "../../utils/pickCacheCreationTokens.ts";
+
 export function toPositiveNumber(value: unknown) {
   return typeof value === "number" && Number.isFinite(value) && value > 0 ? value : 0;
 }
@@ -22,14 +24,19 @@ export function buildCacheUsageLogMeta(usage: Record<string, unknown> | null | u
     "cache_read_input_tokens" in usage ||
     "cached_tokens" in usage ||
     "cache_creation_input_tokens" in usage ||
+    "cache_write_tokens" in usage ||
     (!!promptTokenDetails &&
-      ("cached_tokens" in promptTokenDetails || "cache_creation_tokens" in promptTokenDetails));
+      ("cached_tokens" in promptTokenDetails ||
+        "cache_creation_tokens" in promptTokenDetails ||
+        "cache_write_tokens" in promptTokenDetails)) ||
+    (usage.input_tokens_details !== null &&
+      typeof usage.input_tokens_details === "object" &&
+      ("cache_creation_tokens" in usage.input_tokens_details ||
+        "cache_write_tokens" in usage.input_tokens_details));
   const cacheReadTokens = toPositiveNumber(
     usage.cache_read_input_tokens ?? usage.cached_tokens ?? promptTokenDetails?.cached_tokens
   );
-  const cacheCreationTokens = toPositiveNumber(
-    usage.cache_creation_input_tokens ?? promptTokenDetails?.cache_creation_tokens
-  );
+  const cacheCreationTokens = toPositiveNumber(pickCacheCreationTokens(usage));
   if (!hasCacheFields) return null;
   return {
     cacheReadTokens,

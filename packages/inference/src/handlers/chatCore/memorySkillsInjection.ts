@@ -9,7 +9,25 @@ import { detectCachingContext } from "../../services/compression/cachingAware.ts
 
 type MemorySkillsLogger = { debug?: (...args: unknown[]) => void } | null | undefined;
 
-export function getSkillsProviderForFormat(format: string): "openai" | "anthropic" | "google" | "other" {
+function getToolName(tool: unknown): string {
+  if (!tool || typeof tool !== "object") return "";
+  const record = tool as Record<string, unknown>;
+  if (typeof record.name === "string") return record.name;
+  if (record.function && typeof record.function === "object") {
+    const fn = record.function as Record<string, unknown>;
+    if (typeof fn.name === "string") return fn.name;
+  }
+  return "";
+}
+
+export function sortToolsByName<T>(tools: T[]): T[] {
+  if (!Array.isArray(tools) || tools.length <= 1) return tools;
+  return [...tools].sort((a, b) => getToolName(a).localeCompare(getToolName(b)));
+}
+
+export function getSkillsProviderForFormat(
+  format: string
+): "openai" | "anthropic" | "google" | "other" {
   switch (format) {
     case FORMATS.CLAUDE:
       return "anthropic";
@@ -101,7 +119,7 @@ export async function injectMemoryAndSkills({
           }
           return "";
         }
-        
+
         if (Array.isArray(body.messages)) {
           const r = pickFrom(body.messages);
           if (r) return r;
@@ -206,6 +224,10 @@ export async function injectMemoryAndSkills({
       };
       log?.debug?.("SKILLS", `Injected ${mergedTools.length - existingTools.length} skills`);
     }
+  }
+
+  if (Array.isArray(body.tools) && body.tools.length > 1) {
+    body = { ...body, tools: sortToolsByName(body.tools) };
   }
 
   return { body, memorySettings };

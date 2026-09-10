@@ -17,7 +17,8 @@ import {
 } from "./aihordeMapRequest.ts";
 
 const GENERATE_TIMEOUT_MS = 600_000;
-const POLL_INTERVAL_MS = 1_000;
+const POLL_INTERVAL_MIN_MS = 1_000;
+const POLL_INTERVAL_MAX_MS = 8_000;
 // Per-call bound for the Horde API's own submit/check/status/cancel calls
 // (a fixed, trusted host — no SSRF guard needed, just a hard timeout so a
 // hung upstream cannot stall a request indefinitely). Individual calls are
@@ -119,6 +120,10 @@ async function fetchHordeImageBytes(
   return value;
 }
 
+function numericField(value: unknown): number | null {
+  return typeof value === "number" && Number.isFinite(value) ? value : null;
+}
+
 export async function handleAiHordeImageGeneration({
   model,
   provider,
@@ -212,13 +217,14 @@ export async function handleAiHordeImageGeneration({
     }
 
     let completed = false;
+    let pollDelayMs = POLL_INTERVAL_MIN_MS;
     try {
       while (true) {
         if (signal?.aborted) throw new Error("Horde image generation cancelled");
         if (Date.now() >= deadline) {
           throw Object.assign(new Error("Horde image generation timed out"), { status: 504 });
         }
-        await sleep(POLL_INTERVAL_MS);
+        await sleep(pollDelayMs);
         const checkRes = await safeOutboundFetch(`${AI_HORDE_API_BASE}/v2/generate/check/${jobId}`, {
           headers: hordeHeaders(apiKey),
           signal: signal ?? undefined,
@@ -239,7 +245,37 @@ export async function handleAiHordeImageGeneration({
             status: 503,
           });
         }
-        if (!checkObj.done) continue;
+        if (!checkObj.done) {
+          const waitSeconds = numericField(checkObj.wait_time);
+          const remainingMs = deadline - Date.now();
+          if (waitSeconds !== null && waitSeconds * 1_000 > remainingMs) {
+            const queuePosition = numericField(checkObj.queue_position);
+            const workers = numericField(checkObj.eligible_workers);
+            const details = [
+              `queue wait ~${Math.round(waitSeconds)}s`,
+              queuePosition !== null ? `position ${queuePosition}` : null,
+              workers !== null ? `${workers} eligible worker(s)` : null,
+              `budget ${Math.round(remainingMs / 1_000)}s left`,
+            ]
+              .filter(Boolean)
+              .join(", ");
+            throw Object.assign(
+              new Error(
+                `Horde queue is longer than the request budget (${details}). ` +
+                  "Pick a model with more workers or raise the timeout."
+              ),
+              { status: 504 }
+            );
+          }
+          pollDelayMs =
+            waitSeconds === null
+              ? POLL_INTERVAL_MIN_MS
+              : Math.min(
+                  POLL_INTERVAL_MAX_MS,
+                  Math.max(POLL_INTERVAL_MIN_MS, Math.round((waitSeconds * 1_000) / 10))
+                );
+          continue;
+        }
 
         const statusRes = await safeOutboundFetch(`${AI_HORDE_API_BASE}/v2/generate/status/${jobId}`, {
           headers: hordeHeaders(apiKey),

@@ -33,6 +33,7 @@ type Page = import("playwright").Page;
 export interface BrowserPoolContextOptions {
   cookieDomain: string;
   cookieString?: string | null;
+  storageState?: import("playwright").BrowserContextOptions["storageState"];
   localStorage?: Record<string, string>;
   localStorageOrigin?: string;
   warmupUrl?: string | null;
@@ -41,6 +42,8 @@ export interface BrowserPoolContextOptions {
   timezone?: string;
   preferCloakbrowser?: boolean;
   proxyProviderKey?: string;
+  headless?: boolean;
+  executablePath?: string;
 }
 
 export interface PooledContext {
@@ -83,9 +86,12 @@ function createBrowserPoolMetrics(): BrowserPoolMetrics {
 
 interface PoolState {
   browser: Browser | null;
+  headedBrowser: Browser | null;
   contexts: Map<string, PooledContext>;
-  pendingContexts: Map<string, Promise<PooledContext>>;
+  pendingContexts: Map<string, { promise: Promise<PooledContext>; createdAt: number }>;
   launching: Promise<Browser> | null;
+  headedLaunching: Promise<Browser> | null;
+  generation: number;
   lastActivity: number;
   idleTimer: NodeJS.Timeout | null;
   evictTimer: NodeJS.Timeout | null;
@@ -96,15 +102,19 @@ interface PoolState {
 
 const POOL_IDLE_TIMEOUT_MS = 5 * 60 * 1000;
 const CONTEXT_TTL_MS = 10 * 60 * 1000; // 10 min — evict stale contexts
+const PENDING_CONTEXT_TTL_MS = 5 * 60 * 1000;
 const EVICT_INTERVAL_MS = 60 * 1000; // check every 60s
 const DEFAULT_USER_AGENT =
   "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/149.0.0.0 Safari/537.36";
 
 const state: PoolState = {
   browser: null,
+  headedBrowser: null,
   contexts: new Map(),
   pendingContexts: new Map(),
   launching: null,
+  headedLaunching: null,
+  generation: 0,
   lastActivity: 0,
   idleTimer: null,
   evictTimer: null,
@@ -161,7 +171,18 @@ function evictStaleContexts(): void {
       pooled.context.close().catch(() => {});
     }
   }
-  if (state.contexts.size === 0 && !state.launching) {
+  for (const [key, pending] of state.pendingContexts) {
+    if (now - pending.createdAt > PENDING_CONTEXT_TTL_MS) {
+      state.pendingContexts.delete(key);
+      state.metrics.contextsEvicted++;
+    }
+  }
+  if (
+    state.contexts.size === 0 &&
+    state.pendingContexts.size === 0 &&
+    !state.launching &&
+    !state.headedLaunching
+  ) {
     void shutdownPool("all-contexts-evicted");
   }
 }
@@ -224,41 +245,77 @@ export async function resolveBrowserContextProxy(
   return resolvePlaywrightProxy(options.proxyProviderKey ?? contextKey, deps);
 }
 
-async function launchBrowser(): Promise<Browser> {
-  if (state.browser) return state.browser;
-  if (state.launching) return state.launching;
-  state.launching = (async () => {
-    const cloakLaunch = await resolveCloakLaunch();
-    let browser: Browser;
-    if (cloakLaunch) {
-      browser = await cloakLaunch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-dev-shm-usage"],
-      });
-    } else {
-      // Fallback: plain Playwright. Works for Claude web (cookie-only
-      // auth) but DDG's VQD challenge will detect this Chromium build.
-      const { chromium } = await import("playwright");
-      browser = await chromium.launch({
-        headless: true,
-        args: [
-          "--no-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-blink-features=AutomationControlled",
-        ],
-      });
+function currentBrowser(headless: boolean): Browser | null {
+  const browser = headless ? state.browser : state.headedBrowser;
+  if (browser?.isConnected()) return browser;
+  if (headless) state.browser = null;
+  else state.headedBrowser = null;
+  return null;
+}
+
+export function resolvePlainBrowserLaunchOptions(
+  options: Pick<BrowserPoolContextOptions, "headless" | "executablePath">
+): import("playwright").LaunchOptions {
+  const headless = options.headless !== false;
+  return {
+    headless,
+    ...(!headless && options.executablePath ? { executablePath: options.executablePath } : {}),
+    args: [
+      "--no-sandbox",
+      "--disable-dev-shm-usage",
+      "--disable-blink-features=AutomationControlled",
+      ...(!headless ? ["--window-position=-32000,-32000"] : []),
+    ],
+  };
+}
+
+async function launchBrowserInstance(
+  options: BrowserPoolContextOptions,
+  headless: boolean
+): Promise<Browser> {
+  if (!headless) {
+    const { chromium } = await import("playwright");
+    return chromium.launch(resolvePlainBrowserLaunchOptions(options));
+  }
+  const cloakLaunch = await resolveCloakLaunch();
+  if (cloakLaunch) {
+    return cloakLaunch({
+      headless: true,
+      args: ["--no-sandbox", "--disable-dev-shm-usage"],
+    });
+  }
+  const { chromium } = await import("playwright");
+  return chromium.launch(resolvePlainBrowserLaunchOptions(options));
+}
+
+async function launchBrowser(options: BrowserPoolContextOptions): Promise<Browser> {
+  const headless = options.headless !== false;
+  const existing = currentBrowser(headless);
+  if (existing) return existing;
+  const pending = headless ? state.launching : state.headedLaunching;
+  if (pending) return pending;
+  const generation = state.generation;
+  const launch = (async () => {
+    const browser = await launchBrowserInstance(options, headless);
+    if (state.generation !== generation) {
+      await browser.close().catch(() => {});
+      throw new Error("Pool shut down during browser launch");
     }
-    state.browser = browser;
-    state.launching = null;
+    if (headless) state.browser = browser;
+    else state.headedBrowser = browser;
     state.metrics.browserLaunches++;
     return browser;
   })();
+  if (headless) state.launching = launch;
+  else state.headedLaunching = launch;
   try {
-    return await state.launching;
-  } catch (err) {
-    state.launching = null;
+    return await launch;
+  } catch (error) {
     state.metrics.browserLaunchFailures++;
-    throw err;
+    throw error;
+  } finally {
+    if (headless && state.launching === launch) state.launching = null;
+    if (!headless && state.headedLaunching === launch) state.headedLaunching = null;
   }
 }
 
@@ -357,7 +414,9 @@ export async function acquireBrowserContext(
       "browserPool: ORBIT_BROWSER_POOL=off — context requested but pool is disabled"
     );
   }
-  const existing = state.contexts.get(key);
+  const headless = options.headless !== false;
+  const poolKey = `${headless ? "headless" : "headed"}:${key}`;
+  const existing = state.contexts.get(poolKey);
   if (existing) {
     existing.lastUsed = Date.now();
     state.lastActivity = Date.now();
@@ -367,20 +426,21 @@ export async function acquireBrowserContext(
   }
 
   // Dedup concurrent creations for the same key
-  const pending = state.pendingContexts.get(key);
-  if (pending) return pending;
+  const pending = state.pendingContexts.get(poolKey);
+  if (pending) return pending.promise;
 
   const createPromise = (async (): Promise<PooledContext> => {
     const [browser, proxy] = await Promise.all([
-      launchBrowser(),
+      launchBrowser(options),
       resolveBrowserContextProxy(key, options),
     ]);
-    const isStealth = state.cloakLaunch !== null;
+    const isStealth = headless && state.cloakLaunch !== null;
     const context = await browser.newContext({
       userAgent: options.userAgent || DEFAULT_USER_AGENT,
       locale: options.locale || "en-US",
       timezoneId: options.timezone || "America/New_York",
       viewport: { width: 1280, height: 800 },
+      ...(options.storageState ? { storageState: options.storageState } : {}),
       ...(proxy ? { proxy } : {}),
     });
 
@@ -412,7 +472,7 @@ export async function acquireBrowserContext(
     // Guard: if shutdownPool() ran while we were creating this context,
     // the browser we obtained is now closed. Close our temp context and
     // throw so the caller knows to retry.
-    if (state.browser !== browser) {
+    if (currentBrowser(headless) !== browser) {
       await context.close().catch(() => {});
       if (warmupPage) {
         await warmupPage.close().catch(() => {});
@@ -421,13 +481,13 @@ export async function acquireBrowserContext(
     }
 
     const pooled: PooledContext = {
-      id: key,
+      id: poolKey,
       context,
       warmupPage,
       lastUsed: Date.now(),
       isStealth,
     };
-    state.contexts.set(key, pooled);
+    state.contexts.set(poolKey, pooled);
     state.metrics.contextsCreated++;
     state.lastActivity = Date.now();
     resetIdleTimer();
@@ -435,10 +495,10 @@ export async function acquireBrowserContext(
     return pooled;
   })();
 
-  state.pendingContexts.set(key, createPromise);
+  state.pendingContexts.set(poolKey, { promise: createPromise, createdAt: Date.now() });
   createPromise
-    .then(() => settlePendingContext(key, false))
-    .catch(() => settlePendingContext(key, true));
+    .then(() => settlePendingContext(poolKey, false))
+    .catch(() => settlePendingContext(poolKey, true));
 
   return createPromise;
 }
@@ -448,9 +508,13 @@ export async function openPage(pooled: PooledContext): Promise<Page> {
 }
 
 export async function releaseBrowserContext(key: string): Promise<void> {
-  const pooled = state.contexts.get(key);
+  const resolvedKey = [key, `headless:${key}`, `headed:${key}`].find((candidate) =>
+    state.contexts.has(candidate)
+  );
+  if (!resolvedKey) return;
+  const pooled = state.contexts.get(resolvedKey);
   if (!pooled) return;
-  state.contexts.delete(key);
+  state.contexts.delete(resolvedKey);
   state.metrics.contextsReleased++;
   try {
     await pooled.context.close();
@@ -463,6 +527,7 @@ export async function releaseBrowserContext(key: string): Promise<void> {
 }
 
 export async function shutdownPool(reason: string): Promise<void> {
+  state.generation++;
   state.metrics.shutdowns++;
   state.metrics.lastShutdownReason = reason;
   if (state.idleTimer) {
@@ -490,6 +555,16 @@ export async function shutdownPool(reason: string): Promise<void> {
     }
     state.browser = null;
   }
+  if (state.headedBrowser) {
+    try {
+      await state.headedBrowser.close();
+    } catch {
+      /* ignore */
+    }
+    state.headedBrowser = null;
+  }
+  state.launching = null;
+  state.headedLaunching = null;
   state.lastActivity = Date.now();
   // Avoid unused-parameter lint: log reason via debug if anyone hooks
   // process.on('exit') and prints state.
@@ -506,7 +581,7 @@ export function getBrowserPoolStatus(): {
   return {
     enabled: isPoolEnabled(),
     contexts: state.contexts.size,
-    browserRunning: state.browser !== null,
+    browserRunning: state.browser !== null || state.headedBrowser !== null,
     stealthAvailable: state.cloakLaunch !== null,
     lastActivityAgoMs: state.lastActivity === 0 ? -1 : Date.now() - state.lastActivity,
   };

@@ -23,6 +23,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { MaterialIcon } from "@/app/nav";
 import { logsApi, type RequestCallLog } from "@/entities/api";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
+import { JsonTreeViewer } from "@/shared/components/JsonTreeViewer";
 import { useI18n } from "@/i18n";
 
 const { Text } = Typography;
@@ -1232,9 +1233,7 @@ export function RequestLogsPage() {
                   key: "raw",
                   label: "调用明细 JSON",
                   children: (
-                    <pre className={styles.jsonViewer}>
-                      {JSON.stringify(selectedLog, null, 2)}
-                    </pre>
+                    <JsonTreeViewer value={selectedLog} />
                   ),
                 },
                 ...(selectedLog.requestBody
@@ -1243,9 +1242,7 @@ export function RequestLogsPage() {
                         key: "req",
                         label: "请求载荷 (Request Body)",
                         children: (
-                          <pre className={styles.jsonViewer}>
-                            {JSON.stringify(selectedLog.requestBody, null, 2)}
-                          </pre>
+                          <JsonTreeViewer value={selectedLog.requestBody} />
                         ),
                       },
                     ]
@@ -1256,9 +1253,7 @@ export function RequestLogsPage() {
                         key: "resp",
                         label: "响应载荷 (Response Body)",
                         children: (
-                          <pre className={styles.jsonViewer}>
-                            {JSON.stringify(selectedLog.responseBody, null, 2)}
-                          </pre>
+                          <JsonTreeViewer value={selectedLog.responseBody} />
                         ),
                       },
                     ]

@@ -256,7 +256,7 @@ export function classifyProviderError(
   const oauthInvalid = isOAuthInvalidToken(bodyStr);
   const preserveQuota429 = shouldPreserveQuotaSignalsFor429(provider);
 
-  if ((creditsExhausted || subscriptionQuotaExhausted) && [400, 402, 403].includes(statusCode)) {
+  if ((creditsExhausted || subscriptionQuotaExhausted) && [400, 401, 402, 403].includes(statusCode)) {
     return PROVIDER_ERROR_TYPES.QUOTA_EXHAUSTED;
   }
 
@@ -361,6 +361,12 @@ export function classifyProviderError(
       /\bit is disabled\b/i.test(bodyStr) ||
       isCloudCodeProvider;
     if (recoverableProject403) {
+      return PROVIDER_ERROR_TYPES.PROJECT_ROUTE_ERROR;
+    }
+    const isKiroProfile403 =
+      (p === "kiro" || p === "amazon-q") &&
+      bodyStr.includes("User is not authorized to make this call");
+    if (isKiroProfile403) {
       return PROVIDER_ERROR_TYPES.PROJECT_ROUTE_ERROR;
     }
     // A Cloudflare Sentinel/Turnstile 403 is a TERMINAL block for browser-session

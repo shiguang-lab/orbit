@@ -178,7 +178,8 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
   private readonly startupTimeoutMs: number;
   private readonly requestTimeoutMs: number;
   private child?: ChildProcessWithoutNullStreams;
-  private outputBuffer = Buffer.alloc(0);
+  private pendingChunks: Buffer[] = [];
+  private pendingBytes = 0;
   private handshakeDone = false;
   private ready = false;
   private startPromise?: Promise<void>;
@@ -220,7 +221,8 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
     }
 
     this.child = child;
-    this.outputBuffer = Buffer.alloc(0);
+    this.pendingChunks = [];
+    this.pendingBytes = 0;
     this.handshakeDone = false;
     this.ready = false;
     child.stdin.on("error", () => {
@@ -272,17 +274,33 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
   }
 
   private onStdout(chunk: Buffer): void {
-    this.outputBuffer = Buffer.concat([this.outputBuffer, chunk]);
+    this.pendingChunks.push(chunk);
+    this.pendingBytes += chunk.byteLength;
     if (!this.handshakeDone) {
-      const newline = this.outputBuffer.indexOf(0x0a);
+      let newline = -1;
+      let scanned = 0;
+      for (const part of this.pendingChunks) {
+        const localIndex = part.indexOf(0x0a);
+        if (localIndex >= 0) {
+          newline = scanned + localIndex;
+          break;
+        }
+        scanned += part.byteLength;
+      }
       if (newline < 0) {
-        if (this.outputBuffer.byteLength > 64 * 1024) {
+        if (this.pendingBytes > 64 * 1024) {
           this.serverReadyError?.(new Error("ZCode hello line is too large"));
         }
         return;
       }
-      const line = this.outputBuffer.subarray(0, newline).toString("utf8").trim();
-      this.outputBuffer = this.outputBuffer.subarray(newline + 1);
+      const buffer =
+        this.pendingChunks.length === 1
+          ? this.pendingChunks[0]
+          : Buffer.concat(this.pendingChunks, this.pendingBytes);
+      const line = buffer.subarray(0, newline).toString("utf8").trim();
+      const remainder = buffer.subarray(newline + 1);
+      this.pendingChunks = remainder.byteLength > 0 ? [remainder] : [];
+      this.pendingBytes = remainder.byteLength;
       let hello: unknown;
       try {
         hello = JSON.parse(line);
@@ -307,9 +325,33 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
   }
 
   private consumeFrames(): void {
-    while (this.outputBuffer.byteLength >= HEADER_SIZE) {
-      const type = this.outputBuffer.readUInt8(0);
-      const length = this.outputBuffer.readUInt32BE(9);
+    if (this.pendingBytes < HEADER_SIZE) return;
+    const header = Buffer.allocUnsafe(HEADER_SIZE);
+    let headerOffset = 0;
+    for (const part of this.pendingChunks) {
+      const length = Math.min(part.byteLength, HEADER_SIZE - headerOffset);
+      part.copy(header, headerOffset, 0, length);
+      headerOffset += length;
+      if (headerOffset === HEADER_SIZE) break;
+    }
+    const firstPayloadLength = header.readUInt32BE(9);
+    if (firstPayloadLength > MAX_FRAME_BYTES) {
+      const error = new Error("ZCode frame exceeds the configured safety limit");
+      this.serverReadyError?.(error);
+      this.rejectPending(error);
+      return;
+    }
+    const firstFrameLength = HEADER_SIZE + firstPayloadLength;
+    if (this.pendingBytes < firstFrameLength) return;
+
+    const buffer =
+      this.pendingChunks.length === 1
+        ? this.pendingChunks[0]
+        : Buffer.concat(this.pendingChunks, this.pendingBytes);
+    let offset = 0;
+    while (buffer.byteLength - offset >= HEADER_SIZE) {
+      const type = buffer.readUInt8(offset);
+      const length = buffer.readUInt32BE(offset + 9);
       if (length > MAX_FRAME_BYTES) {
         const error = new Error("ZCode frame exceeds the configured safety limit");
         this.serverReadyError?.(error);
@@ -317,9 +359,9 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
         return;
       }
       const frameLength = HEADER_SIZE + length;
-      if (this.outputBuffer.byteLength < frameLength) return;
-      const body = this.outputBuffer.subarray(HEADER_SIZE, frameLength);
-      this.outputBuffer = this.outputBuffer.subarray(frameLength);
+      if (buffer.byteLength - offset < frameLength) break;
+      const body = buffer.subarray(offset + HEADER_SIZE, offset + frameLength);
+      offset += frameLength;
       if (type !== REGULAR_MESSAGE) continue;
       try {
         const header = decodeZcodeValue(body, 0);
@@ -330,6 +372,11 @@ export class ZcodeAppServerClient implements ZcodeClientLike {
         this.serverReadyError?.(normalized);
         this.rejectPending(normalized);
       }
+    }
+    if (offset > 0) {
+      const remainder = buffer.subarray(offset);
+      this.pendingChunks = remainder.byteLength > 0 ? [remainder] : [];
+      this.pendingBytes = remainder.byteLength;
     }
   }
 

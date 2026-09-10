@@ -1,5 +1,66 @@
 import { capMemoryExtractionText, MEMORY_EXTRACTION_TEXT_LIMIT } from "./logTruncation.ts";
 
+type MemoryExtractionSettings = {
+  enabled?: boolean;
+  maxTokens?: number;
+} | null | undefined;
+
+type ExtractFacts = (text: string, apiKeyId: string, sessionId: string) => void;
+
+export function shouldExtractMemory({
+  enabled,
+  maxTokens,
+  memoryOwnerId,
+  videoBridgeObserved,
+}: {
+  enabled: boolean | undefined;
+  maxTokens: number | undefined;
+  memoryOwnerId: string | null;
+  videoBridgeObserved: boolean;
+}): boolean {
+  return Boolean(memoryOwnerId && enabled && (maxTokens ?? 0) > 0 && !videoBridgeObserved);
+}
+
+export function runMemoryExtractionGate({
+  memoryOwnerId,
+  memorySettings,
+  videoBridgeObserved,
+  pipelineSessionId,
+  requestBody,
+  responseBody,
+  extractFacts,
+}: {
+  memoryOwnerId: string | null;
+  memorySettings: MemoryExtractionSettings;
+  videoBridgeObserved: boolean;
+  pipelineSessionId: string;
+  requestBody: Record<string, unknown> | null | undefined;
+  responseBody: Record<string, unknown> | null | undefined;
+  extractFacts: ExtractFacts;
+}): void {
+  if (
+    !shouldExtractMemory({
+      enabled: memorySettings?.enabled,
+      maxTokens: memorySettings?.maxTokens,
+      memoryOwnerId,
+      videoBridgeObserved,
+    })
+  ) {
+    return;
+  }
+
+  const ownerId = memoryOwnerId as string;
+  const requestMemoryText = extractMemoryTextFromRequestBody(requestBody);
+  if (requestMemoryText) {
+    extractFacts(requestMemoryText, ownerId, pipelineSessionId);
+  }
+
+  const responseMemoryText = extractMemoryTextFromResponse(responseBody);
+  if (responseMemoryText) {
+    extractFacts(responseMemoryText, ownerId, pipelineSessionId);
+  }
+}
+
 export function extractMemoryTextFromResponse(
   response: Record<string, unknown> | null | undefined
 ): string {

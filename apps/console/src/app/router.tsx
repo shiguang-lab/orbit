@@ -47,6 +47,7 @@ const RequestLogsPage = withSuspense(lazy(() => import("@/features/logs/request-
 const ProxyLogsPage = withSuspense(lazy(() => import("@/features/logs/proxy-logs")));
 const ConsoleLogsPage = withSuspense(lazy(() => import("@/features/logs/console-logs")));
 const LogTimelinePage = withSuspense(lazy(() => import("@/features/logs/log-timeline")));
+const LogExportPage = withSuspense(lazy(() => import("@/features/logs/log-export")));
 const ConversationsPage = withSuspense(lazy(() => import("@/features/conversations/conversations")));
 const HealthPage = withSuspense(lazy(() => import("@/features/health/health")));
 const EmbeddedServicesPage = withSuspense(lazy(() => import("@/features/services/embedded-services")));
@@ -69,6 +70,7 @@ const CliAgentsPage = withSuspense(lazy(() => import("@/features/agents/cli-agen
 const AcpAgentsPage = withSuspense(lazy(() => import("@/features/agents/acp-agents")));
 const CloudAgentsPage = withSuspense(lazy(() => import("@/features/agents/cloud-agents")));
 const ConductorPage = withSuspense(lazy(() => import("@/features/agents/conductor")));
+const OrchestrationPage = withSuspense(lazy(() => import("@/features/orchestration/orchestration")));
 const AgentBridgePage = withSuspense(lazy(() => import("@/features/tools/agent-bridge")));
 const TrafficInspectorPage = withSuspense(lazy(() => import("@/features/tools/traffic-inspector")));
 const DiscoveryPage = withSuspense(lazy(() => import("@/features/discovery/discovery")));
@@ -191,6 +193,7 @@ export const router = createBrowserRouter([
       { path: "dashboard/acp-agents", element: <AcpAgentsPage /> },
       { path: "dashboard/cloud-agents", element: <CloudAgentsPage /> },
       { path: "dashboard/conductor", element: <ConductorPage /> },
+      { path: "dashboard/orchestration", element: <OrchestrationPage /> },
       { path: "dashboard/tools/agent-bridge", element: <AgentBridgePage /> },
       { path: "dashboard/tools/traffic-inspector", element: <TrafficInspectorPage /> },
       { path: "dashboard/discovery", element: <DiscoveryPage /> },
@@ -228,6 +231,7 @@ export const router = createBrowserRouter([
       { path: "dashboard/logs/proxy", element: <ProxyLogsPage /> },
       { path: "dashboard/logs/console", element: <ConsoleLogsPage /> },
       { path: "dashboard/logs/timeline", element: <LogTimelinePage /> },
+      { path: "dashboard/logs/export", element: <LogExportPage /> },
       { path: "dashboard/conversations", element: <ConversationsPage /> },
       { path: "dashboard/usage", element: <Navigate to="/dashboard/logs" replace /> },
       { path: "dashboard/health", element: <HealthPage /> },

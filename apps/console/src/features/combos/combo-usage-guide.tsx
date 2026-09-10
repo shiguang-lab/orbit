@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { Button, Card, Space, Steps, Typography, theme } from "antd";
 import { MaterialIcon } from "@/app/nav";
+import {
+  getComboUsageGuideDismissed,
+  getComboUsageGuideServerSnapshot,
+  setComboUsageGuideDismissed,
+  subscribeComboUsageGuide,
+} from "./usage-guide-store";
 
 const { Text, Title, Paragraph } = Typography;
-
-export const COMBO_USAGE_GUIDE_STORAGE_KEY = "orbit:combos:hide-usage-guide";
 
 const COMBO_WIZARD_STEPS = [
   {
@@ -41,20 +45,22 @@ interface ComboUsageGuideProps {
 
 export function ComboUsageGuide({ forceOpen = false, onClose, onCreateCombo }: ComboUsageGuideProps) {
   const { token } = theme.useToken();
-  const [hidden, setHidden] = useState(() => {
-    return localStorage.getItem(COMBO_USAGE_GUIDE_STORAGE_KEY) === "1";
-  });
+  const dismissed = useSyncExternalStore(
+    subscribeComboUsageGuide,
+    getComboUsageGuideDismissed,
+    getComboUsageGuideServerSnapshot,
+  );
+  const [hiddenForNow, setHiddenForNow] = useState(false);
 
-  if (hidden && !forceOpen) return null;
+  if ((dismissed || hiddenForNow) && !forceOpen) return null;
 
   const handleHide = () => {
-    setHidden(true);
+    setHiddenForNow(true);
     onClose?.();
   };
 
   const handleHideForever = () => {
-    localStorage.setItem(COMBO_USAGE_GUIDE_STORAGE_KEY, "1");
-    setHidden(true);
+    setComboUsageGuideDismissed(true);
     onClose?.();
   };
 

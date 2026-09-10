@@ -7,10 +7,18 @@ import {
   getAntigravityOAuthUserAgent,
 } from "../../services/antigravityHeaders.js";
 import { extractCodeAssistOnboardTierId } from "../../services/codeAssistSubscription.js";
+import {
+  BUILTIN_ANTIGRAVITY_CLIENT,
+  type GoogleOauthClientMarker,
+} from "../../services/tokenRefresh/googleClientBinding.js";
 
 const POSTEXCHANGE_TIMEOUT_MS = 8_000;
 
 type AntigravityOAuthConfig = typeof ANTIGRAVITY_CONFIG;
+
+function isCustomAntigravityClient(config: AntigravityOAuthConfig): boolean {
+  return config.clientId !== BUILTIN_ANTIGRAVITY_CLIENT.clientId;
+}
 type AntigravityTokenPayload = {
   access_token: string;
   expires_in?: number;
@@ -31,6 +39,7 @@ type AntigravityPostExchange = {
   tierId: string;
   userInfo: { email?: string };
   projectDiscoveryOutcome?: AntigravityProjectDiscoveryOutcome;
+  oauthClient?: GoogleOauthClientMarker;
 };
 
 async function fetchFirstOk(endpoints: string[], init: RequestInit, timeoutMs?: number) {
@@ -247,6 +256,7 @@ function mapAntigravityTokens(
       clientProfile,
       projectId: extra?.projectId,
       tier: extra?.tierId,
+      oauthClient: extra?.oauthClient,
       // The Antigravity backend ships new models frequently (e.g. Gemini 3.7
       // Flash tiers appeared upstream weeks before the pinned catalog knew
       // them). Default new connections into the 24h model auto-sync (#488) so
@@ -267,7 +277,13 @@ export function createAntigravityOAuthProvider(
     buildAuthUrl: buildAntigravityAuthUrl,
     exchangeToken: (runtimeConfig, code, redirectUri) =>
       exchangeAntigravityToken(runtimeConfig, clientProfile, code, redirectUri),
-    postExchange: (tokens) => postExchangeAntigravity(config, clientProfile, tokens),
+    postExchange: (tokens) =>
+      postExchangeAntigravity(config, clientProfile, tokens).then((extra) => ({
+        ...extra,
+        oauthClient: isCustomAntigravityClient(config)
+          ? `custom:${config.clientId}`
+          : "builtin",
+      })),
     mapTokens: (tokens, extra) => mapAntigravityTokens(clientProfile, tokens, extra),
   };
 }

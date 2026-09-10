@@ -213,6 +213,17 @@ export async function* readPplxSseEvents(
   const decoder = new TextDecoder();
   let buffer = "";
   let dataLines: string[] = [];
+  let readerFinished = false;
+  let readerCancelRequested = false;
+
+  const cancelReader = (reason: unknown) => {
+    if (readerFinished || readerCancelRequested) return;
+    readerCancelRequested = true;
+    void reader.cancel(reason).catch(() => undefined);
+  };
+  const handleAbort = () => cancelReader(signal?.reason ?? "perplexity_stream_aborted");
+  if (signal?.aborted) handleAbort();
+  else signal?.addEventListener("abort", handleAbort, { once: true });
 
   function flush(): PplxStreamEvent | null | "done" {
     if (dataLines.length === 0) return null;
@@ -231,7 +242,10 @@ export async function* readPplxSseEvents(
     while (true) {
       if (signal?.aborted) return;
       const { value, done } = await reader.read();
-      if (done) break;
+      if (done) {
+        readerFinished = true;
+        break;
+      }
       buffer += decoder.decode(value, { stream: true });
 
       while (true) {
@@ -263,7 +277,13 @@ export async function* readPplxSseEvents(
     const tail = flush();
     if (tail && tail !== "done") yield tail;
   } finally {
-    reader.releaseLock();
+    signal?.removeEventListener("abort", handleAbort);
+    cancelReader(signal?.reason ?? "perplexity_stream_reader_closed");
+    try {
+      reader.releaseLock();
+    } catch {
+      // A hostile source may keep its cancellation pending.
+    }
   }
 }
 
@@ -914,6 +934,9 @@ export async function* extractContent(
       break;
     }
   }
+
+  // Cancellation is not a successful terminal event and must not synthesize done.
+  if (signal?.aborted) return;
 
   // End-of-stream without a COMPLETED frame still try the last text blob.
   if (!fullAnswer.trim() && lastEventText) {

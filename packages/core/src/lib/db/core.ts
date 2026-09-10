@@ -395,7 +395,8 @@ const SCHEMA_SQL = `
     has_response_body INTEGER DEFAULT 0,
     has_pipeline_details INTEGER DEFAULT 0,
     request_summary TEXT,
-    correlation_id TEXT
+    correlation_id TEXT,
+    video_content_removed INTEGER NOT NULL DEFAULT 0
   );
   CREATE INDEX IF NOT EXISTS idx_cl_timestamp ON call_logs(timestamp);
   CREATE INDEX IF NOT EXISTS idx_cl_status ON call_logs(status);
@@ -1203,13 +1204,16 @@ export function getDbInstance(): SqliteDatabase {
   // selected on the server's primary DB path too, not only the backup-import
   // route.
   console.log(`[DB] Driver: ${db.driver} | file: ${sqliteFile}`);
-  db.pragma("journal_mode = WAL");
   // better-sqlite3 is synchronous, so a contended write parks the Node event loop for up to
   // busy_timeout ms (a 0-CPU freeze that stacks under load → /health stops responding). The
   // hot-path writers here (usage_history, call_logs) are best-effort and the WinUI host opens
   // the same DB, so cap the block at 2s instead of 5s: normal writes complete in <1ms, and a
   // contended op can no longer freeze the loop past the host watchdog's 6s liveness probe.
+  // Install the busy handler before the first statement: journal_mode needs a
+  // shared lock and can otherwise fail immediately while another process is
+  // briefly closing/checkpointing its WAL connection.
   db.pragma("busy_timeout = 2000");
+  db.pragma("journal_mode = WAL");
   db.pragma("synchronous = NORMAL");
   db.pragma(`cache_size = -${DEFAULT_DATABASE_SETTINGS.optimization.cacheSize}`);
   db.pragma("temp_store = MEMORY");

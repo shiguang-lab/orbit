@@ -337,8 +337,14 @@ export function sanitizeProviderSpecificDataForResponse(value: unknown): JsonRec
   delete sanitized.ollamaCloudUsageCookie;
   delete sanitized.ollamaCloudCookie;
   delete sanitized.usageCookie;
+  delete sanitized.qwenCloudCookie;
+  delete sanitized.qwenCloudSecToken;
+  delete sanitized.alibabaConsoleCookie;
+  delete sanitized.alibabaConsoleSecToken;
   delete sanitized.runtimeKey;
   delete sanitized.validationId;
+  delete sanitized.volcConsoleCookie;
+  delete sanitized.volcCsrfToken;
   // System-managed Codex fingerprint seed: never exposed through the API
   // (mirrors sub2api stripping `codex_fingerprint_seed`); the server-side
   // partial-update merge keeps it alive without the client round-tripping it.

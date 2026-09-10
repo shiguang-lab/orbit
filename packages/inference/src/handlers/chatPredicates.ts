@@ -1,4 +1,7 @@
-import { isLocalStreamLifecycleError } from "@orbit/core/resilience/circuit-breaker";
+import {
+  isLocalStreamLifecycleError,
+  isModelCapacityOverloadError,
+} from "@orbit/core/resilience/circuit-breaker";
 import { isRequestScopedUpstreamFailure } from "./comboFailureLogging";
 import { getTrustedLocalRateLimitResponse } from "../services/rateLimitManager/errors.ts";
 
@@ -35,8 +38,35 @@ export function shouldTripProviderBreakerForResult(
     result.errorCode !== "proxy_unreachable" &&
     result.errorCode !== "RATE_LIMIT_QUEUE_TIMEOUT" &&
     result.errorCode !== "RATE_LIMIT_QUEUE_WEDGED" &&
+    !isModelCapacityOverloadError(result.error) &&
+    !isModelCapacityOverloadError(result.status) &&
     PROVIDER_BREAKER_FAILURE_STATUSES.has(Number(result.status))
   );
+}
+
+export type ProviderBreakerResultOutcome = "success" | "failure" | "ignore";
+
+/**
+ * Classify a resolved dispatch exactly once at the layer that has request
+ * context. Combo dispatches own their accounting in the combo target loop.
+ */
+export function classifyProviderBreakerResult(
+  result: {
+    success?: boolean;
+    status: number;
+    response?: Response;
+    errorCode?: string | null;
+    errorType?: string | null;
+    error?: unknown;
+  },
+  isCombo: boolean,
+  forceLiveComboTest: boolean
+): ProviderBreakerResultOutcome {
+  if (forceLiveComboTest || isCombo) return "ignore";
+  if (result.success) return "success";
+  return shouldTripProviderBreakerForResult(result, isCombo, forceLiveComboTest)
+    ? "failure"
+    : "ignore";
 }
 
 export function isAntigravityMissingProjectError(

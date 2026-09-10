@@ -10,7 +10,7 @@ import {
 import { asTextCompletionResponse } from "./text-completion-transform.js";
 
 let initPromise: Promise<void> | null = null;
-const injectionGuard = createInjectionGuard();
+const injectionGuard = createInjectionGuard({ logger: null });
 
 function ensureInitialized(): Promise<void> {
   if (!initPromise) {

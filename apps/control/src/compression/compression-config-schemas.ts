@@ -367,6 +367,10 @@ export const compressionSettingsUpdateSchema = z
     defaultMode: compressionModeSchema.optional(),
     autoTriggerMode: compressionModeSchema.optional(),
     autoTriggerTokens: z.number().int().min(0).optional(),
+    proactiveConfig: z
+      .object({ thresholdRatio: z.number().min(0.1).max(0.99) })
+      .strict()
+      .optional(),
     cacheMinutes: z.number().int().min(1).max(60).optional(),
     preserveSystemPrompt: z.boolean().optional(),
     preserveSystemPromptMode: z.enum(["always", "whenNoCache", "never"]).optional(),

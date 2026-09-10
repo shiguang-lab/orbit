@@ -139,7 +139,7 @@ function waitForVideoBridgePromise<T>(promise: Promise<T>, signal: AbortSignal):
 // boundary, budgets, cross-source reconciliation, focus scoping) — bump so a
 // cache entry computed under the old, less-restrictive normalization can
 // never be served for a request processed under the new contract.
-const VIDEO_BRIDGE_RESULT_CACHE_VERSION = "v5";
+const VIDEO_BRIDGE_RESULT_CACHE_VERSION = "v6";
 const VIDEO_BRIDGE_RESULT_CACHE_POLICY = "sampling-then-dedup-v2";
 const VIDEO_BRIDGE_RESULT_CACHE_KEY_KIND = "video-result-v4";
 const VIDEO_BRIDGE_DOWNLOAD_FLIGHT_VERSION = "v1";
@@ -201,6 +201,7 @@ interface VideoResultCacheMetadata {
   samplingPolicyEffective?: VideoSamplingPolicy;
   samplingPolicyRequested?: VideoSamplingPolicy;
   transcriptCuesApplied?: number;
+  descriptionRedacted?: string;
   contactSheetUsed?: boolean;
   fusion?: VideoFusionTelemetry;
   cacheBytes: number;
@@ -395,7 +396,8 @@ function isVideoResultCacheMetadata(
     (record.transcriptCuesApplied === undefined ||
       isFiniteNonNegativeInteger(record.transcriptCuesApplied)) &&
     (record.contactSheetUsed === undefined || typeof record.contactSheetUsed === "boolean") &&
-    (record.fusion === undefined || isFusionTelemetry(record.fusion))
+    (record.fusion === undefined || isFusionTelemetry(record.fusion)) &&
+    (record.descriptionRedacted === undefined || typeof record.descriptionRedacted === "string")
   );
 }
 
@@ -520,6 +522,7 @@ export type ProcessVideoPartResult =
       contactSheetUsed: boolean;
       dedupDropped: number;
       description: string;
+      descriptionRedacted?: string;
       durationSeconds: number;
       framesExtracted: number;
       framesRequested: number;
@@ -610,6 +613,7 @@ export async function processVideoPart(
           contactSheetUsed: meta.contactSheetUsed ?? false,
           dedupDropped: meta.dedupDropped ?? 0,
           description: cachedResult.value,
+          descriptionRedacted: meta.descriptionRedacted,
           durationSeconds: meta.durationSeconds,
           framesExtracted: meta.framesExtracted,
           framesRequested: meta.framesRequested,
@@ -666,6 +670,7 @@ export async function processVideoPart(
               samplingPolicyEffective: described.sampling?.policyEffective ?? "uniform",
               samplingPolicyRequested: described.sampling?.policyRequested ?? runtime.samplingPolicy,
               transcriptCuesApplied: described.transcriptCues?.length ?? 0,
+              ...(described.descriptionRedacted ? { descriptionRedacted: described.descriptionRedacted } : {}),
               contactSheetUsed: described.contactSheetUsed ?? false,
               ...(described.fusion ? { fusion: described.fusion } : {}),
             },
@@ -705,6 +710,7 @@ export async function processVideoPart(
       contactSheetUsed: described.contactSheetUsed ?? false,
       dedupDropped: described.dedupDropped ?? 0,
       description: described.description,
+      descriptionRedacted: described.descriptionRedacted,
       durationSeconds: described.durationSeconds,
       framesExtracted: described.framesExtracted ?? described.framesUsed,
       framesRequested: described.framesRequested,

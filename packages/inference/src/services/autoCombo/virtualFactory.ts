@@ -37,7 +37,13 @@ import {
   orderPoolByRung,
   type LadderOptions,
 } from "./subscriptionLadder";
-import { filterStrictZeroCostCandidates, filterTosAvoidCandidates } from "./strictZeroCostFilter";
+import {
+  classifyStrictZeroCostCandidate,
+  filterStrictZeroCostCandidates,
+  filterTosAvoidCandidates,
+  findBudgetEntry,
+  type StrictZeroCostExclusionReason,
+} from "./strictZeroCostFilter";
 import { resolveFreeAccessState } from "./freeAccessQuota";
 import { isModelExcludedByConnection } from "@orbit/core/routing/connection-model-rules";
 import { resolveProviderAlias } from "../model.ts";
@@ -106,6 +112,8 @@ export interface VirtualAutoComboCandidate {
   resolvedSupportsVision?: boolean;
   resolvedReasoning?: boolean;
   resolvedSupportsThinking?: boolean;
+  /** Inspector-only reason; dispatch pools leave this undefined. */
+  freeAccessExclusion?: StrictZeroCostExclusionReason | null;
 }
 
 type VirtualAutoCombo = AutoComboConfig & {
@@ -119,6 +127,7 @@ type VirtualAutoCombo = AutoComboConfig & {
     allowedConnectionIds?: string[];
     weight: number;
     label: string;
+    freeAccessExclusion?: StrictZeroCostExclusionReason | null;
   }>;
   /** MAX of candidates' context windows — safe to advertise because the
    * auto-combo context pre-filter routes oversized requests to large-window
@@ -749,16 +758,35 @@ export async function prepareVirtualAutoComboInputs(
     // per-candidate: `resolveFreeAccessState` here is a raw pass-through of the real
     // per-(provider,connectionId) resolver; the filter itself decides which connection(s)
     // on each candidate to check and rewrites `allowedConnectionIds` to the SAFE subset.
-    const strictFilteredPool = filterStrictZeroCostCandidates(pool, {
-      enabled: settings.freeAccessPolicy === "strict",
-      resolveFreeAccessState,
+    const strictZeroCostThresholds = {
       // 1 percentage point of headroom, not 0: `freeAccessQuota.ts` reports
       // remaining allowance as a percentage, and a raw ">0" comparison would
       // let a reading of e.g. 0.3% (rounding noise, not real headroom) pass.
       minRemainingAllowance: 1,
       maxStateAgeMs: toNumber(settings.autoRefreshProviderQuotaInterval, 180) * 1000,
+    };
+    const strictZeroCostOn = settings.freeAccessPolicy === "strict";
+    const strictFilteredPool = filterStrictZeroCostCandidates(pool, {
+      enabled: strictZeroCostOn && !skip,
+      resolveFreeAccessState,
+      ...strictZeroCostThresholds,
     });
     if (strictFilteredPool !== pool) pool = strictFilteredPool;
+
+    if (strictZeroCostOn && skip) {
+      pool = pool.map((candidate) => {
+        const verdict = classifyStrictZeroCostCandidate(
+          candidate,
+          findBudgetEntry(candidate),
+          resolveFreeAccessState,
+          strictZeroCostThresholds
+        );
+        return {
+          ...candidate,
+          freeAccessExclusion: verdict.outcome === "safe" ? null : verdict.outcome,
+        };
+      });
+    }
 
     // Separate, optional ToS guard — independent of economic safety on purpose.
     const tosFilteredPool = filterTosAvoidCandidates(pool, settings.excludeTosAvoid === true);
@@ -1058,6 +1086,9 @@ export async function createVirtualAutoComboFromPrepared(
       : {}),
     weight: snapshotScores.get(candidate.modelStr) ?? 1,
     label: candidate.provider,
+    ...(candidate.freeAccessExclusion === undefined
+      ? {}
+      : { freeAccessExclusion: candidate.freeAccessExclusion }),
   }));
   const autoConfig = {
     candidatePool: providerPool,

@@ -319,6 +319,14 @@
       "types": "./src/public/callLogStats.d.ts",
       "import": "./src/lib/db/callLogStats.ts"
     },
+    "./control/log-export": {
+      "types": "./src/public/logExport.d.ts",
+      "import": "./src/control/log-export.ts"
+    },
+    "./control/model-test-routing": {
+      "types": "./src/public/modelTestRouting.d.ts",
+      "import": "./src/control/model-test-routing.ts"
+    },
     "./db/ping": {
       "types": "./src/public/ping.d.ts",
       "import": "./src/db/ping.ts"
@@ -346,6 +354,10 @@
     "./guardrails/video-runtime-probe": {
       "types": "./src/public/videoBridgeRuntime.d.ts",
       "import": "./src/guardrails/videoRuntimeProbe.ts"
+    },
+    "./guardrails/video-snapshot-redaction": {
+      "types": "./src/public/videoSnapshotRedaction.d.ts",
+      "import": "./src/guardrails/videoSnapshotRedaction.ts"
     },
     "./edge/video-bridge-extraction-runtime": "./src/edge/videoBridgeExtractionRuntime.ts",
     "./control/agent-skills": {

@@ -1,0 +1,4 @@
+import assert from "node:assert/strict";import test from "node:test";import { collectMemoryHits } from "../src/lib/a2a/taskExecution.ts";import type { A2ATask } from "../src/lib/a2a/taskManager.ts";
+const task={id:"t",skill:"x",state:"working",input:{skill:"x",messages:[{role:"user",content:"first"},{role:"assistant",content:"x"},{role:"user",content:"latest"}]},artifacts:[],events:[],metadata:{},createdAt:"",updatedAt:"",expiresAt:""} satisfies A2ATask;
+test("memory hits use the latest user message and truncate observable snippets",async()=>{let query="";const hits=await collectMemoryHits(task,{search:async config=>{query=config.query;return [{id:"m",key:"k",type:"factual",content:"x".repeat(250)}]}});assert.equal(query,"latest");assert.equal(hits[0].snippet.length,200);});
+test("memory recall failures never fail A2A execution",async()=>{assert.deepEqual(await collectMemoryHits(task,{search:async()=>{throw new Error("offline")}}),[]);});

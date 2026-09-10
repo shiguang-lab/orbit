@@ -31,6 +31,8 @@ import { DefaultExecutor } from "./default.ts";
 //   - each alias still gets its OWN instance (aliases never share)
 //   - ctor arguments are unchanged
 const lazyExecutors: Record<string, () => Promise<BaseExecutor>> = {
+  "clova-studio": () =>
+    import("./clova-studio.ts").then((m) => new m.ClovaStudioExecutor()),
   antigravity: () => import("./antigravity.ts").then((m) => new m.AntigravityExecutor()),
   agy: () => import("./antigravity.ts").then((m) => new m.AntigravityExecutor()),
   github: () => import("./github.ts").then((m) => new m.GithubExecutor()),
@@ -46,6 +48,7 @@ const lazyExecutors: Record<string, () => Promise<BaseExecutor>> = {
     ),
   "chatgpt-web-codex": () =>
     import("./chatgpt-web-codex.ts").then((m) => new m.ChatGptWebCodexExecutor()),
+  "chatgpt-web": () => import("./chatgpt-web.ts").then((m) => new m.ChatGptWebExecutor()),
   "cgpt-codex": () =>
     import("./chatgpt-web-codex.ts").then((m) => new m.ChatGptWebCodexExecutor()),
   cursor: () => import("./cursor.ts").then((m) => new m.CursorExecutor()),
@@ -89,6 +92,10 @@ const lazyExecutors: Record<string, () => Promise<BaseExecutor>> = {
     import("./perplexity-web.ts").then((m) => new m.PerplexityWebExecutor()),
   "pplx-web": () =>
     import("./perplexity-web.ts").then((m) => new m.PerplexityWebExecutor()), // Alias
+  maxai: () => import("./maxai.ts").then((m) => new m.MaxAiExecutor()),
+  mx: () => import("./maxai.ts").then((m) => new m.MaxAiExecutor()),
+  uc: () => import("./uc.ts").then((m) => new m.UcExecutor()),
+  ucn: () => import("./uc.ts").then((m) => new m.UcExecutor()),
   "grok-web": () => import("./grok-web.ts").then((m) => new m.GrokWebExecutor()),
   "claude-web": () => import("./claude-web.ts").then((m) => new m.ClaudeWebExecutor()),
   "cw-web": () => import("./claude-web.ts").then((m) => new m.ClaudeWebExecutor()), // Alias

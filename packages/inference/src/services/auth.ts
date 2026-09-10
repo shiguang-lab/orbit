@@ -47,7 +47,15 @@ import {
   hydrateCodexQuotaCacheForRequest,
   isQuotaExhaustedForRequest,
 } from "@orbit/core/quota/cache";
-import { getQuotaScopeLabelForProvider } from "../services/antigravityQuotaFamily.ts";
+import {
+  getQuotaScopeLabelForProvider,
+  isAntigravityQuotaProvider,
+} from "../services/antigravityQuotaFamily.ts";
+import {
+  persistAntigravityFamilyCooldownIfQuota,
+  rehydrateAntigravityFamilyLocksForConnections,
+} from "../services/antigravityFamilyCooldown.ts";
+import { markQuotaPreflightAccountUnavailable } from "../services/quotaPreflightUnavailable.ts";
 import { getCreditsMode } from "../services/antigravityCredits.ts";
 import { preferAntigravityConnectionsWithStoredProject } from "../services/antigravityProjectPersistence.ts";
 import {
@@ -66,8 +74,10 @@ import {
   retryHintBypassesMaxCooldownMs,
   isProviderModelUnsupported400,
 } from "../services/accountFallback.ts";
+import { compareLeastUsedConnections } from "./leastUsedOrdering.ts";
 import { isLocalProvider } from "../config/providerRegistry.ts";
 import { COOLDOWN_MS, RateLimitReason } from "../config/constants.ts";
+import { sanitizeErrorMessage } from "../utils/error.ts";
 import {
   honorsRuleLockScope,
   isEgressBucketedLockScope,
@@ -130,6 +140,7 @@ import { isFreeModel } from "@orbit/core/catalog/free-models";
 import {
   applySessionAffinityPin,
   formatSessionKeyForLog,
+  isForcedConnectionMissingFromPool,
   resolveForcedConnectionForCredentialPool,
   resolveSessionAffinityTtlMs,
   selectSessionAffinityConnection,
@@ -875,44 +886,6 @@ function buildQuotaPreflightRateLimitedResult(
     lastErrorCode: 429,
   };
 }
-function quotaPreflightUnavailableUntil(resetAt?: string | null): string {
-  const resetMs = parseFutureDateMs(resetAt ?? null);
-  return new Date(resetMs ?? Date.now() + 5 * 60 * 1000).toISOString();
-}
-async function markQuotaPreflightAccountUnavailable(
-  provider: string,
-  connectionId: string,
-  preflight: { quotaPercent?: number; resetAt?: string | null },
-  requestedModel: string | null
-): Promise<string> {
-  const unavailableUntil = quotaPreflightUnavailableUntil(preflight.resetAt ?? null);
-  if (provider === "codex" && requestedModel?.trim()) {
-    await persistCodexChildCooldown({
-      connectionId,
-      model: requestedModel,
-      rateLimitedUntil: unavailableUntil,
-    });
-    return unavailableUntil;
-  }
-
-  const percentLabel = Number.isFinite(preflight.quotaPercent)
-    ? `${Math.round((preflight.quotaPercent as number) * 100)}%`
-    : "exhausted";
-  const modelLabel = requestedModel ? ` for ${requestedModel}` : "";
-
-  await updateProviderConnection(connectionId, {
-    rateLimitedUntil: unavailableUntil,
-    testStatus: "unavailable",
-    lastError: `Quota preflight blocked${modelLabel}: ${percentLabel}`,
-    lastErrorType: "quota_exhausted",
-    lastErrorSource: "quota_preflight",
-    errorCode: 429,
-    lastErrorAt: new Date().toISOString(),
-  });
-
-  return unavailableUntil;
-}
-
 // Provider-scoped mutexes prevent race conditions during account selection without
 // serializing unrelated providers behind a single global lock.
 const selectionMutexes = new Map<string, Promise<void>>();
@@ -1323,6 +1296,7 @@ export async function getProviderCredentials(
         );
       }
     }
+    rehydrateAntigravityFamilyLocksForConnections(provider, connections);
     // allowedConnections: restrict to specific connection IDs (from API key policy, #363)
     if (allowedConnections && allowedConnections.length > 0) {
       connections = connections.filter((conn) => allowedConnections.includes(conn.id));
@@ -1360,7 +1334,20 @@ export async function getProviderCredentials(
         }) ?? forcedConnectionId;
     }
 
-    if (!strictManagedCredential) {
+    if (
+      !strictManagedCredential &&
+      isForcedConnectionMissingFromPool(
+        forcedConnectionId,
+        excludedConnectionIds,
+        connections
+      )
+    ) {
+      // An explicit combo/header connection that is absent from the current
+      // active/allowed pool must stay scoped to that connection. Emptying the
+      // pool routes through the existing ineligible-credential result instead
+      // of silently selecting a sibling account from the same provider.
+      connections = [];
+    } else if (!strictManagedCredential) {
       forcedConnectionId = resolveForcedConnectionForCredentialPool({
         forcedConnectionId,
         excludedConnectionIds,
@@ -1432,7 +1419,7 @@ export async function getProviderCredentials(
             retryAfterHuman: formatRetryAfter(earliest),
           };
         }
-        log.warn("AUTH", `${provider} | ${allConnections.length} accounts found but none active`);
+        log.debug("AUTH", `${provider} | ${allConnections.length} accounts found but none active`);
         allConnections.forEach((c) => {
           log.debug(
             "AUTH",
@@ -1483,7 +1470,7 @@ export async function getProviderCredentials(
         return geminiEnvCredentials;
       }
       invalidateManagedLease(options, "CONNECTION_INELIGIBLE");
-      log.warn("AUTH", `No credentials for ${provider}`);
+      log.debug("AUTH", `No credentials for ${provider}`);
       return null;
     }
 
@@ -2077,12 +2064,7 @@ export async function getProviderCredentials(
       connection = orderedConnections[idx];
     } else if (strategy === "least-used") {
       // Least Used: pick the one with oldest lastUsedAt
-      const sorted = [...orderedConnections].sort((a, b) => {
-        if (!a.lastUsedAt && !b.lastUsedAt) return (a.priority || 999) - (b.priority || 999);
-        if (!a.lastUsedAt) return -1;
-        if (!b.lastUsedAt) return 1;
-        return new Date(a.lastUsedAt).getTime() - new Date(b.lastUsedAt).getTime();
-      });
+      const sorted = [...orderedConnections].sort(compareLeastUsedConnections);
       connection = sorted[0];
       // Record the use (#10945). This strategy sorts on the very field it was
       // not writing, so on a pool where every lastUsedAt is null the tie-break
@@ -2379,7 +2361,8 @@ export async function getProviderCredentialsWithQuotaPreflight(
       return defaultThresholdPercent;
     };
     // #6842: openrouter also needs requestedModel, for the :free-window check.
-    const modelAwarePreflight = provider === "codex" || provider === "openrouter";
+    const modelAwarePreflight =
+      provider === "codex" || provider === "openrouter" || isAntigravityQuotaProvider(provider);
     const preflightCredentials =
       requestedModel && modelAwarePreflight ? { ...credentials, requestedModel } : credentials;
     let preflight;
@@ -2704,7 +2687,7 @@ export async function markAccountUnavailable(
         // auth.ts getProviderCredentials) which wipes lastError back to
         // NULL on the next attempt — silently destroying the probe record.
         // The backoff is also routing state a probe must not touch (#9817).
-        lastError: errorText,
+        lastError: sanitizeErrorMessage(errorText) || "Provider request failed",
         lastErrorType: fallbackResult.reason || null,
         errorCode: status,
         lastErrorAt: new Date().toISOString(),
@@ -2941,6 +2924,13 @@ export async function markAccountUnavailable(
         "AUTH",
         `Model-only lockout for ${provider}:${model} — ${status} ${reason} ${Math.ceil(lockout.cooldownMs / 1000)}s (failureCount=${lockout.failureCount}, connection stays active)`
       );
+      persistAntigravityFamilyCooldownIfQuota({
+        provider,
+        connectionId,
+        model,
+        cooldownMs: lockout.cooldownMs,
+        reason,
+      });
       return { shouldFallback: true, cooldownMs: lockout.cooldownMs };
     }
     const result = fallbackResult;
@@ -3017,12 +3007,20 @@ export async function markAccountUnavailable(
       return { shouldFallback: true, cooldownMs: lockout.cooldownMs };
     }
 
-    const terminalStatus = resolveTerminalConnectionStatus(
+    let terminalStatus = resolveTerminalConnectionStatus(
       status,
       result as { permanent?: boolean; creditsExhausted?: boolean },
       providerErrorType,
       provider
     );
+    const tokenExpiryMs = Date.parse(String(conn?.tokenExpiresAt || conn?.expiresAt || ""));
+    if (
+      terminalStatus === "expired" &&
+      Number.isFinite(tokenExpiryMs) &&
+      tokenExpiryMs > Date.now() + 60_000
+    ) {
+      terminalStatus = null;
+    }
     const cachedQuotaResetAt =
       providerErrorType === PROVIDER_ERROR_TYPES.QUOTA_EXHAUSTED ||
       reason === RateLimitReason.QUOTA_EXHAUSTED
@@ -3107,7 +3105,8 @@ export async function markAccountUnavailable(
       return { shouldFallback: true, cooldownMs: lockout.cooldownMs };
     }
 
-    const errorMsg = describeUpstreamFailure(errorText);
+    const errorMsg =
+      sanitizeErrorMessage(describeUpstreamFailure(errorText)) || "Provider request failed";
 
     // T09: Codex per-scope lockout (do not block the whole account globally).
     if (

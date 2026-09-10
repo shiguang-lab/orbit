@@ -113,6 +113,7 @@ import { SearchStatsModule } from "./search/stats/search-stats.module.js";
 import { IntelligenceModule } from "./intelligence/intelligence.module.js";
 import { EmbeddedServiceProxyModule } from "./services/embedded-service-proxy.module.js";
 import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.service.js";
+import { LogExportModule } from "./log-export/log-export.module.js";
 
 @Module({
   imports: [
@@ -228,6 +229,7 @@ import { DatabaseRuntimeLifecycleService } from "./database-runtime-lifecycle.se
     SearchStatsModule,
     IntelligenceModule,
     EmbeddedServiceProxyModule,
+    LogExportModule,
   ],
   providers: [DatabaseRuntimeLifecycleService, RealtimePublisherLifecycleService],
 })

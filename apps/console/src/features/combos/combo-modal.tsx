@@ -46,6 +46,13 @@ import type {
   ComboProviderWildcardStep,
   ComboStep,
 } from "@/entities/api";
+import { buildComboAgentFeaturePatch } from "./combo-agent-features";
+import {
+  COMBO_MODE_PACK_OPTIONS,
+  COMBO_SCORING_WEIGHTS,
+  COMBO_SCORING_WEIGHT_LABELS,
+  type ComboScoringWeight,
+} from "./combo-scoring-weights";
 
 const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
@@ -743,10 +750,13 @@ export function ComboModal({
       models,
       config: Object.keys(payloadConfig).length > 0 ? payloadConfig : undefined,
       custom_output_model: customOutputModel.trim() || undefined,
-      system_message: systemMessage.trim() || undefined,
-      tool_filter_regex: toolFilterRegex.trim() || undefined,
-      context_cache_protection: contextCacheProtection || undefined,
       context_length: contextLength || undefined,
+      ...buildComboAgentFeaturePatch({
+        systemMessage,
+        toolFilterRegex,
+        contextCacheProtection,
+        isEdit,
+      }),
     };
 
     await onSave(saveData);
@@ -1803,70 +1813,54 @@ export function ComboModal({
                   </Text>
                   <Segmented
                     size="small"
-                    value={((config.intelligentMode as string) || "balanced")}
-                    options={[
-                      { label: "综合平衡", value: "balanced" },
-                      { label: "极速响应", value: "speed" },
-                      { label: "最低成本", value: "cost" },
-                      { label: "最高质量", value: "quality" },
-                    ]}
+                    value={(config.modePack as string) || "custom"}
+                    options={[...COMBO_MODE_PACK_OPTIONS]}
                     onChange={(v) => {
-                      const mode = v as string;
-                      let weights = { latency: 0.33, cost: 0.33, quality: 0.34 };
-                      if (mode === "speed") weights = { latency: 0.7, cost: 0.1, quality: 0.2 };
-                      if (mode === "cost") weights = { latency: 0.1, cost: 0.7, quality: 0.2 };
-                      if (mode === "quality") weights = { latency: 0.1, cost: 0.1, quality: 0.8 };
-                      setConfig({ ...config, intelligentMode: mode, weights });
+                      const modePack = v as string;
+                      setConfig({
+                        ...config,
+                        modePack: modePack === "custom" ? undefined : modePack,
+                        weights:
+                          modePack === "custom"
+                            ? {
+                                ...COMBO_SCORING_WEIGHTS,
+                                ...((config.weights as Record<string, number>) || {}),
+                              }
+                            : config.weights,
+                      });
                     }}
                   />
                 </div>
 
                 <Row gutter={16}>
-                  <Col span={8}>
-                    <Text style={{ fontSize: 11 }}>延迟权重: {Math.round((((config.weights as Record<string, number>)?.latency ?? 0.33) * 100))}%</Text>
-                    <Slider
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      value={(config.weights as Record<string, number>)?.latency ?? 0.33}
-                      onChange={(v) =>
-                        setConfig({
-                          ...config,
-                          weights: { ...((config.weights as Record<string, number>) || {}), latency: v },
-                        })
-                      }
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <Text style={{ fontSize: 11 }}>成本权重: {Math.round((((config.weights as Record<string, number>)?.cost ?? 0.33) * 100))}%</Text>
-                    <Slider
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      value={(config.weights as Record<string, number>)?.cost ?? 0.33}
-                      onChange={(v) =>
-                        setConfig({
-                          ...config,
-                          weights: { ...((config.weights as Record<string, number>) || {}), cost: v },
-                        })
-                      }
-                    />
-                  </Col>
-                  <Col span={8}>
-                    <Text style={{ fontSize: 11 }}>质量画像权重: {Math.round((((config.weights as Record<string, number>)?.quality ?? 0.34) * 100))}%</Text>
-                    <Slider
-                      min={0}
-                      max={1}
-                      step={0.05}
-                      value={(config.weights as Record<string, number>)?.quality ?? 0.34}
-                      onChange={(v) =>
-                        setConfig({
-                          ...config,
-                          weights: { ...((config.weights as Record<string, number>) || {}), quality: v },
-                        })
-                      }
-                    />
-                  </Col>
+                  {(Object.keys(COMBO_SCORING_WEIGHTS) as ComboScoringWeight[]).map((factor) => {
+                    const configured = config.weights as Record<string, number> | undefined;
+                    const value = configured?.[factor] ?? COMBO_SCORING_WEIGHTS[factor];
+                    return (
+                      <Col span={8} key={factor}>
+                        <Text style={{ fontSize: 11 }}>
+                          {COMBO_SCORING_WEIGHT_LABELS[factor]}: {Math.round(value * 100)}%
+                        </Text>
+                        <Slider
+                          min={0}
+                          max={1}
+                          step={0.01}
+                          value={value}
+                          onChange={(nextValue) =>
+                            setConfig({
+                              ...config,
+                              modePack: undefined,
+                              weights: {
+                                ...COMBO_SCORING_WEIGHTS,
+                                ...(configured || {}),
+                                [factor]: nextValue,
+                              },
+                            })
+                          }
+                        />
+                      </Col>
+                    );
+                  })}
                 </Row>
               </div>
             )}

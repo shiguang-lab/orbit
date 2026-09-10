@@ -101,6 +101,7 @@ export const gheCopilot = {
     refreshToken: tokens.refresh_token,
     expiresIn: tokens.expires_in,
     providerSpecificData: {
+      autoSync: true,
       gheUrl: extra?.gheUrl,
       copilotApiUrl: extra?.copilotApiUrl || extra?.copilotToken?.endpoints?.api,
       copilotProxyUrl: extra?.copilotProxyUrl || extra?.copilotToken?.endpoints?.proxy,

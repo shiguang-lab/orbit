@@ -912,7 +912,11 @@ async function testApiKeyConnection(connection: any) {
   const error = result.valid ? null : result.error || "Invalid API key";
   const diagnosis = result.valid
     ? makeDiagnosis("ok", "upstream", null, null)
-    : classifyFailure({ error, statusCode: result.statusCode, provider: connection.provider });
+    : classifyFailure({
+        error: error || "Invalid API key",
+        statusCode: result.statusCode,
+        provider: connection.provider,
+      });
 
   return buildApiKeyConnectionTestResult(result, error, diagnosis);
 }

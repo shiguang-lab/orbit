@@ -189,6 +189,24 @@ export const ROUTING_STRATEGIES: RoutingStrategyDef[] = [
     },
   },
   {
+    value: "quota-weighted",
+    label: "配额加权",
+    desc: "排除耗尽账户，再按剩余额度与当前在途负载加权选择账户",
+    icon: "pie_chart",
+    category: "deterministic",
+    guide: {
+      when: "同一模型绑定多个可查询配额的账户，并需要按剩余额度自动分流时",
+      avoid: "多数账户无法提供配额快照的场景",
+      example: "多个具有不同 5 小时和每周剩余额度的订阅账户",
+    },
+    recommendations: {
+      title: "按剩余额度分摊",
+      description: "跳过耗尽账户，保留 1% 软阈值兜底池，并按剩余额度除以在途负载抽取",
+      tips: ["保持会话粘性开启", "确保账户支持配额快照", "1% 以下账户仅在主池为空时使用"],
+      defaults: { quotaWeightedFloorPercent: 1 },
+    },
+  },
+  {
     value: "cache-optimized",
     label: "缓存亲和优化",
     desc: "将具有相同可复用提示词前缀的请求一致性路由到相同节点，最大化命中 Prompt Cache",
@@ -563,4 +581,3 @@ export const QUICK_MODEL_PRESETS = [
   "Qwen 2.5 72B",
   "Kimi K3",
 ];
-

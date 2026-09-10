@@ -45,3 +45,20 @@ export function filterUpstreamResponseHeaderEntries(
 }
 
 export const STRIP_UPSTREAM_HEADER_NAMES: ReadonlySet<string> = STRIP_HEADER_NAMES;
+
+export const SENSITIVE_RESPONSE_HEADER_NAMES: ReadonlyArray<string> = [
+  "authorization",
+  "proxy-authorization",
+  "x-api-key",
+  "x-goog-api-key",
+  "api-key",
+  "cookie",
+  "set-cookie",
+];
+
+/** Remove stale framing plus credentials or sessions echoed by an upstream relay. */
+export function stripSensitiveResponseHeaders(input: Headers): Headers {
+  return new Headers(
+    filterUpstreamResponseHeaderEntries(input.entries(), SENSITIVE_RESPONSE_HEADER_NAMES)
+  );
+}

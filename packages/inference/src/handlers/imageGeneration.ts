@@ -2629,7 +2629,9 @@ async function handleCodexImageGeneration({
     }
   }
 
-  const wantsUrl = body.response_format !== "b64_json";
+  // GPT image clients expect omitted response_format to return image bytes.
+  // A data URL is emitted only for an explicit `url` request.
+  const wantsUrl = body.response_format === "url";
   const data = wantsUrl
     ? collected.map((item) => ({
         url: `data:image/png;base64,${item.b64_json}`,

@@ -34,7 +34,7 @@ import {
 import { getProviderPluginManifestEntryForModel } from "@orbit/inference/config/providerPluginManifestRegistry";
 import { getProviderPluginManifestHeader } from "@orbit/inference/config/providerPluginManifestUrl";
 import { finalizeReadableStream } from "./streamFinalizer.js";
-import { stripStaleEncodingHeaders } from "@orbit/inference/utils/upstreamResponseHeaders";
+import { stripSensitiveResponseHeaders } from "@orbit/inference/utils/upstreamResponseHeaders";
 import {
   clearBifrostFailure,
   getActiveBifrostCooldown,
@@ -49,7 +49,7 @@ type RelayToken = {
 
 const JSON_CORS_HEADERS = { ...CORS_HEADERS, "Content-Type": "application/json" } as const;
 
-const injectionGuard = createInjectionGuard();
+const injectionGuard = createInjectionGuard({ logger: null });
 
 type RelayUsageStatus = "success" | "error";
 
@@ -111,7 +111,7 @@ async function forwardToBifrost(
       signal: ac.signal,
     });
 
-    const headers = new Headers(upstream.headers);
+    const headers = stripSensitiveResponseHeaders(upstream.headers);
     headers.set("X-Routed-By", "bifrost");
     headers.set("X-Routing-Backend", "bifrost");
     headers.set("X-Relay-Token", token.tokenPrefix + "...");
@@ -132,7 +132,7 @@ async function forwardToBifrost(
         sanitizeErrorMessage(parsed.message),
         parsed.responseBody
       );
-      const errorHeaders = stripStaleEncodingHeaders(headers);
+      const errorHeaders = stripSensitiveResponseHeaders(headers);
       errorHeaders.set("Content-Type", "application/json");
       if (parsed.retryAfterMs && parsed.retryAfterMs > 0) {
         errorHeaders.set("Retry-After", String(Math.ceil(parsed.retryAfterMs / 1000)));

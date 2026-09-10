@@ -21,7 +21,11 @@ import {
   getObservedReasoning,
 } from "@orbit/contracts/usage/tokenAccounting";
 import { isNoLog } from "../compliance/noLog";
-import { protectPayloadForLog, parseStoredPayload } from "../logPayloads";
+import {
+  parseStoredPayload,
+  protectErrorPayloadForLog,
+  protectPayloadForLog,
+} from "../logPayloads";
 import { pickDisplayValue } from "../../shared/utils/maskEmail.ts";
 import {
   CALL_LOGS_DIR,
@@ -178,7 +182,7 @@ function isCompatibleProviderId(providerId: string | null): boolean {
   );
 }
 
-function applyNodePrefix(
+export function applyNodePrefix(
   requestedModel: string | null,
   provider: string | null,
   nodePrefix: string | null
@@ -341,7 +345,7 @@ function readLegacyLogFromDisk(entry: {
   return null;
 }
 
-function resolveProviderDisplay(
+export function resolveProviderDisplay(
   provider: string | null,
   nodeName: string | null,
   nodePrefix: string | null
@@ -447,10 +451,19 @@ async function saveCallLogOperation(entry: any): Promise<void> {
     const noLogEnabled = Boolean(entry.noLog) || (apiKeyId ? isNoLog(apiKeyId) : false);
 
     const protectedRequestBody = noLogEnabled ? null : protectPayloadForLog(entry.requestBody);
-    const protectedResponseBody = noLogEnabled ? null : protectPayloadForLog(entry.responseBody);
+    const responseStatus = Number(entry.status);
+    const failedResponse = Number.isFinite(responseStatus) && responseStatus >= 400;
+    const protectedResponseBody = noLogEnabled
+      ? null
+      : failedResponse
+        ? protectErrorPayloadForLog(entry.responseBody)
+        : protectPayloadForLog(entry.responseBody);
     const protectedPipelinePayloads = noLogEnabled
       ? null
-      : protectPipelinePayloads(entry.pipelinePayloads ?? entry.pipeline ?? null);
+      : protectPipelinePayloads(
+          entry.pipelinePayloads ?? entry.pipeline ?? null,
+          failedResponse ? responseStatus : undefined
+        );
     const protectedError = sanitizeErrorForLog(entry.error);
 
     const account = await resolveAccountName(entry.connectionId || null);
@@ -505,6 +518,7 @@ async function saveCallLogOperation(entry: any): Promise<void> {
       // this row's artifact for Orbit-native continuation. See
       // src/lib/db/responsesContinuationStore.ts.
       responseId: typeof entry.responseId === "string" ? entry.responseId : null,
+      videoContentRemoved: entry.videoContentRemoved ? 1 : 0,
     };
 
     const requestSummary = noLogEnabled
@@ -553,7 +567,7 @@ async function saveCallLogOperation(entry: any): Promise<void> {
         combo_name, combo_step_id, combo_execution_key, error_summary, detail_state,
         artifact_relpath, artifact_size_bytes, artifact_sha256,
         has_request_body, has_response_body, has_pipeline_details, request_summary,
-        correlation_id, model_pinned, session_tag, response_id, error_type
+        correlation_id, model_pinned, session_tag, response_id, error_type, video_content_removed
       )
       VALUES (
         @id, @timestamp, @method, @path, @status, @model, @requestedModel, @provider,
@@ -564,7 +578,7 @@ async function saveCallLogOperation(entry: any): Promise<void> {
         @comboName, @comboStepId, @comboExecutionKey, @errorSummary, @detailState,
         @artifactRelPath, @artifactSizeBytes, @artifactSha256,
         @hasRequestBody, @hasResponseBody, @hasPipelineDetails, @requestSummary,
-        @correlationId, @modelPinned, @sessionTag, @responseId, @errorType
+        @correlationId, @modelPinned, @sessionTag, @responseId, @errorType, @videoContentRemoved
       )
     `
     ).run({

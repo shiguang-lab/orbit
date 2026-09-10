@@ -44,3 +44,26 @@ test("exception filter supports raw Node responses", () => {
     requestId: "request-456",
   });
 });
+
+test("exception filter redacts credentials from uncaught 5xx responses", () => {
+  let body = "";
+  const response = {
+    statusCode: 0,
+    setHeader: () => {},
+    end: (value: string) => { body = value; },
+  };
+  const host = {
+    switchToHttp: () => ({
+      getResponse: () => response,
+      getRequest: () => ({}),
+    }),
+  };
+
+  new ApiExceptionFilter().catch(
+    new Error("upstream rejected sk-proj-AbCdEfGhIjKlMnOpQrStUv"),
+    host as never,
+  );
+
+  assert.doesNotMatch(body, /sk-proj-/);
+  assert.match(body, /REDACTED_CREDENTIAL/);
+});

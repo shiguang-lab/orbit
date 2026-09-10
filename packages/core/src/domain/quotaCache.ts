@@ -16,7 +16,8 @@
  * @module domain/quotaCache
  */
 
-import { getCachedProviderConnectionById, resolveProxyForConnection } from "../lib/localDb.js";
+import { getCachedProviderConnectionById } from "../lib/db/readCache.js";
+import { resolveProxyForConnection } from "../lib/db/settings.js";
 import { providerRuntimePorts, type CodexQuotaHydration } from "../runtime/providerRuntimePorts.js";
 import { safePercentage } from "../shared/utils/formatting.js";
 import {

@@ -5,6 +5,7 @@ import {
   Injectable,
   type ExceptionFilter,
 } from "@nestjs/common";
+import { sanitizeErrorMessage, sanitizeUpstreamDetails } from "@orbit/utils/errors";
 
 /** Normalizes uncaught Nest exceptions to the gateway API error envelope. */
 @Catch()
@@ -32,7 +33,10 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const body = {
       error: {
         type: status >= 500 ? "server_error" : status === 404 ? "not_found" : "invalid_request",
-        message,
+        message: sanitizeErrorMessage(message),
+        ...(payload && typeof payload === "object" && "details" in payload
+          ? { details: sanitizeUpstreamDetails((payload as { details?: unknown }).details) }
+          : {}),
       },
       ...(request.id ? { requestId: request.id } : {}),
     };

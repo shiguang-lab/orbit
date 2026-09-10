@@ -19,11 +19,14 @@ export function transformToOllama(response, model) {
   let buffer = "";
   let pendingToolCalls: Record<number, PendingToolCall> = {};
   const completedToolCalls: PendingToolCall[] = [];
+  // Keep decoder state across network chunks so split UTF-8 code points are
+  // completed by the next chunk instead of becoming replacement characters.
+  const decoder = new TextDecoder();
 
   const transform = new TransformStream(
     {
       transform(chunk, controller) {
-        const text = new TextDecoder().decode(chunk);
+        const text = decoder.decode(chunk, { stream: true });
         buffer += text;
         const lines = buffer.split("\n");
         buffer = lines.pop() || "";

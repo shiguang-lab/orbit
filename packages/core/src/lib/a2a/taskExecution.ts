@@ -1,4 +1,6 @@
 import type { A2ATask, TaskArtifact } from "./taskManager";
+import { appendA2ATaskEvent } from "../db/a2aTasks.ts";
+import { memoryManager } from "../memory/manager.ts";
 
 type TaskManagerLike = {
   updateTask: (
@@ -13,6 +15,9 @@ type StreamTaskResult = {
   artifacts: TaskArtifact[];
   metadata: Record<string, unknown>;
 };
+export interface MemoryHit {id:string;key:string;type:string;snippet:string}
+export interface MemoryHitsDeps {search?:(config:{query:string;apiKeyId:string;limit?:number})=>Promise<Array<{id:string;key:string;type:string;content:string}>>;appendEvent?:(taskId:string,eventType:string,dataJson?:string)=>void}
+export async function collectMemoryHits(task:A2ATask,deps?:MemoryHitsDeps):Promise<MemoryHit[]>{if(process.env.ORBIT_A2A_MEMORY_HITS==="0")return [];const query=[...(task.input?.messages??[])].reverse().find(message=>message.role==="user")?.content;if(!query?.trim())return [];try{const search=deps?.search??(config=>memoryManager.getPrimaryBackend().search(config));const found=await search({query,apiKeyId:task.owner??"mcp",limit:5});return found.map(memory=>({id:memory.id,key:memory.key,type:String(memory.type),snippet:memory.content.slice(0,200)}));}catch{return []}}
 
 export type A2ASkillHandler = (task: A2ATask) => Promise<StreamTaskResult>;
 
@@ -46,9 +51,11 @@ export const A2A_SKILL_HANDLERS: Record<string, A2ASkillHandler> = {
 export async function executeA2ATaskWithState(
   tm: TaskManagerLike,
   task: A2ATask,
-  handler: (task: A2ATask) => Promise<StreamTaskResult>
+  handler: (task: A2ATask) => Promise<StreamTaskResult>,
+  deps?: MemoryHitsDeps
 ) {
   try {
+    const hits=await collectMemoryHits(task,deps);if(hits.length){task.metadata.memoryHits=hits;try{(deps?.appendEvent??appendA2ATaskEvent)(task.id,"memory_hits",JSON.stringify(hits))}catch{/* observability must not fail execution */}}
     const result = await handler(task);
     tm.updateTask(task.id, "completed", result.artifacts);
     return result;

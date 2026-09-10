@@ -103,11 +103,25 @@ export function parsePerplexitySonarModels(data: any): any[] {
     (model: any) => typeof model?.id === "string" && /^sonar(-|$)/.test(model.id)
   );
 }
-type ProviderModelsHeaderContext = {
+export type ProviderModelsHeaderContext = {
   authType?: string;
   providerSpecificData?: unknown;
   email?: string | null;
+  accessToken?: string | null;
+  apiKey?: string | null;
 };
+
+export function assembleProviderModelsHeaders(
+  config: ProviderModelsConfigEntry,
+  token: string,
+  context?: ProviderModelsHeaderContext
+): Record<string, string> {
+  const headers = config.buildHeaders ? config.buildHeaders(token, context) : { ...config.headers };
+  if (!config.buildHeaders && config.authHeader && !config.authQuery) {
+    headers[config.authHeader] = (config.authPrefix || "") + token;
+  }
+  return headers;
+}
 
 export type ProviderModelsConfigEntry = {
   url: string;
@@ -386,11 +400,23 @@ export const PROVIDER_MODELS_CONFIG: Record<string, ProviderModelsConfigEntry> =
   claude: {
     url: "https://api.anthropic.com/v1/models",
     method: "GET",
-    headers: {
-      "Anthropic-Version": "2023-06-01",
-      "Content-Type": "application/json",
+    headers: {},
+    buildHeaders: (_token, context): Record<string, string> => {
+      const accessToken = context?.accessToken?.trim();
+      if (accessToken) {
+        return {
+          "Content-Type": "application/json",
+          "anthropic-version": "2023-06-01",
+          "anthropic-beta": "oauth-2025-04-20",
+          Authorization: `Bearer ${accessToken}`,
+        };
+      }
+      return {
+        "Content-Type": "application/json",
+        "anthropic-version": "2023-06-01",
+        "x-api-key": context?.apiKey?.trim() || "",
+      };
     },
-    authHeader: "x-api-key",
     parseResponse: (data) => data.data || [],
   },
   gemini: {
