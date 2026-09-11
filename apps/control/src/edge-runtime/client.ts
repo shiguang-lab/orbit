@@ -5,7 +5,7 @@ import type {
 } from "@orbit/contracts/edge-runtime-command";
 import { getInternalServiceAuthHeaders } from "@orbit/auth/internal-service";
 
-function edgeGatewayBaseUrl(): string {
+export function edgeGatewayBaseUrl(): string {
   const configured = process.env.EDGE_GATEWAY_URL?.trim();
   if (configured) return configured.replace(/\/$/, "");
   const host = (process.env.EDGE_GATEWAY_HOST ?? "127.0.0.1").trim();

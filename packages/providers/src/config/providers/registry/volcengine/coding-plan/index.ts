@@ -8,7 +8,8 @@ import type { RegistryEntry, RegistryModel } from "../../../shared.ts";
  * standard pay-per-use API (`/api/v3`) and the Agent Plan API (`/api/plan/v3`). Using
  * the wrong base URL returns HTTP 401 "The API key or AK/SK ... is missing or invalid"
  * even with a valid Coding Plan key. Model IDs below verified live against
- * /api/coding/v3/chat/completions (all return 200).
+ * /api/coding/v3/chat/completions (all return 200). The matching model catalog
+ * is available from /api/coding/v3/models with the same plan API key.
  */
 export const VOLCENGINE_CODING_PLAN_MODELS: RegistryModel[] = [
   {

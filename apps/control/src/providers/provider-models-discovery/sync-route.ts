@@ -431,11 +431,11 @@ export async function syncProviderModels(
     logProvider = toNonEmptyString(connection.provider) || "unknown";
     channelLabel = getModelSyncChannelLabel(connection);
 
-    // Volcano Ark plan providers: discover models live from the console API
-    // (cookie+csrf captured at bind time). The chat API has no /models
-    // endpoint, so the default discovery path below cannot serve them.
+    // Agent Plan still requires console discovery. Coding Plan exposes the
+    // ordinary OpenAI-compatible `/api/coding/v3/models` endpoint and follows
+    // the default discovery path below using the connection's API key.
     const volcPlanKind = providerToVolcPlanKind(logProvider);
-    if (volcPlanKind) {
+    if (volcPlanKind === "agent") {
       const psd =
         connection.providerSpecificData && typeof connection.providerSpecificData === "object"
           ? (connection.providerSpecificData as JsonRecord)

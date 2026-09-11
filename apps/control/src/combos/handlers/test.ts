@@ -3,6 +3,7 @@ import { requireManagementAuth } from "@orbit/core/control/management-auth";
 import { getComboByName, getCombos } from "@orbit/core/db/combos";
 import { pickApiKeyForInternalUse } from "@orbit/core/db/api-keys";
 import { buildComboTestRequestBody, extractComboTestResponseText } from "../combo-test.js";
+import { edgeGatewayBaseUrl } from "../../edge-runtime/client.js";
 import { sanitizeErrorMessage } from "@orbit/utils/errors";
 import { z } from "zod";
 
@@ -104,7 +105,7 @@ export async function testCombo(request: Request): Promise<Response> {
     if (targets.length === 0) return Response.json({ error: "Combo has no models" }, { status: 400 });
 
     const internalApiKey = await pickApiKeyForInternalUse("combo-health-check");
-    const baseUrl = `http://127.0.0.1:${Number(process.env.EDGE_GATEWAY_PORT ?? 8787)}`;
+    const baseUrl = edgeGatewayBaseUrl();
     const results = await Promise.all(targets.map((target) => testTarget(target, baseUrl, internalApiKey, validation.data.prompt)));
     const resolved = results.find((result) => result.status === "ok") as any;
     return Response.json({

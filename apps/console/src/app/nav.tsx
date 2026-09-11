@@ -2,7 +2,7 @@
  * 侧栏导航配置：模块级常量，路由匹配 selectedKeys。
  * 图标名称与线上 Orbit Orbit 侧栏保持一致，使用本地 Material Symbols SVG 渲染。
  */
-import type { CSSProperties } from "react";
+import { forwardRef, type HTMLAttributes } from "react";
 import { MATERIAL_SYMBOL_PATHS } from "./material-symbol-paths";
 import { translate, type AppLocale } from "@/i18n";
 
@@ -165,10 +165,20 @@ export function NavIcon({ name, itemKey }: { name: string; itemKey: string }) {
   );
 }
 
-export function MaterialIcon({ name, size = 16, className, style }: { name: string; size?: number; className?: string; style?: CSSProperties }) {
+interface MaterialIconProps extends Omit<HTMLAttributes<HTMLSpanElement>, "children"> {
+  name: string;
+  size?: number;
+}
+
+export const MaterialIcon = forwardRef<HTMLSpanElement, MaterialIconProps>(function MaterialIcon(
+  { name, size = 16, className, style, ...spanProps },
+  ref,
+) {
   const path = MATERIAL_SYMBOL_PATHS[name] ?? MATERIAL_SYMBOL_PATHS.help;
   return (
     <span
+      {...spanProps}
+      ref={ref}
       className={["material-symbol-icon", className].filter(Boolean).join(" ")}
       style={{
         fontSize: size,
@@ -181,7 +191,6 @@ export function MaterialIcon({ name, size = 16, className, style }: { name: stri
         verticalAlign: "middle",
         flexShrink: 0,
         userSelect: "none",
-        pointerEvents: "none",
         ...style,
       }}
       aria-hidden="true"
@@ -191,7 +200,7 @@ export function MaterialIcon({ name, size = 16, className, style }: { name: stri
       </svg>
     </span>
   );
-}
+});
 
 /**
  * Complete dashboard inventory mirrored from Orbit's sidebar source.
