@@ -218,3 +218,16 @@ test("the shared validation schema catch-all stays retired", () => {
     }
   }
 });
+
+test("API key updates accept null for cleared session and throttle limits", async () => {
+  const { updateKeyPermissionsSchema } = await import(
+    pathToFileURL(path.join(packageRoot, "src/validation/keys.ts")).href
+  );
+
+  const result = updateKeyPermissionsSchema.safeParse({
+    maxSessions: null,
+    throttleDelayMs: null,
+  });
+
+  assert.equal(result.success, true);
+});

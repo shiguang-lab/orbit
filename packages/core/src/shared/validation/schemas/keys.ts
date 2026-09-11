@@ -132,10 +132,10 @@ export const updateKeyPermissionsSchema = z
     noLog: z.boolean().optional(),
     autoResolve: z.boolean().optional(),
     isActive: z.boolean().optional(),
-    throttleDelayMs: z.number().int().min(0).max(300000).optional(),
+    throttleDelayMs: z.number().int().min(0).max(300000).nullable().optional(),
     isBanned: z.boolean().optional(),
     expiresAt: z.string().datetime().nullable().optional(),
-    maxSessions: z.number().int().min(0).max(10000).optional(),
+    maxSessions: z.number().int().min(0).max(10000).nullable().optional(),
     accessSchedule: z.union([accessScheduleSchema, z.null()]).optional(),
     rateLimits: z
       .union([
