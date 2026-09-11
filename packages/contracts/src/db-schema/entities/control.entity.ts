@@ -265,6 +265,7 @@ export const ApiKeyEntity: EntityDefinition = {
     column("key", "TEXT", { nullable: false }), column("machine_id", "TEXT"),
     column("created_at", "TEXT", { nullable: false }), column("revoked_at", "TEXT"), column("expires_at", "TEXT"),
     column("last_used_at", "TEXT"), column("key_prefix", "TEXT"), column("ip_allowlist", "TEXT"),
+    column("last_client_ip", "TEXT"), column("last_client_user_agent", "TEXT"), column("last_client_at", "TEXT"),
     column("scopes", "TEXT"), column("allowed_combos", "TEXT"), column("throttle_delay_ms", "INTEGER"),
     column("stream_default_mode", "TEXT", { nullable: false, default: "'legacy'" }),
     column("allowed_quotas", "TEXT", { nullable: false, default: "'[]'" }),

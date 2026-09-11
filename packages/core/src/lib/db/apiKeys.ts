@@ -441,7 +441,7 @@ function getPreparedStatements(db: ApiKeysDbLike): ApiKeysStatements {
       "SELECT id, name, machine_id, model_access_mode, allowed_models, blocked_models, allowed_combos, allowed_connections, allowed_quotas, no_log, auto_resolve, is_active, access_schedule, max_requests_per_day, max_requests_per_minute, throttle_delay_ms, max_sessions, revoked_at, expires_at, ip_allowlist, scopes, rate_limits, is_banned, key_hash, allowed_endpoints, stream_default_mode, cache_default_mode, disable_non_public_models, allow_usage_command, usage_limit_enabled, daily_usage_limit_usd, weekly_usage_limit_usd, chaos_mode_enabled, compression_enabled, proxy_id FROM api_keys WHERE key = ? OR key_hash = ?",
     );
     _stmtInsertKey = db.prepare(
-      "INSERT INTO api_keys (id, name, key, machine_id, model_access_mode, allowed_models, allowed_combos, allowed_connections, no_log, created_at, key_prefix, key_hash, scopes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+      "INSERT INTO api_keys (id, name, key, machine_id, model_access_mode, allowed_models, allowed_combos, allowed_connections, no_log, created_at, key_prefix, key_hash, scopes, ip_allowlist) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     );
     _stmtDeleteKey = db.prepare("DELETE FROM api_keys WHERE id = ?");
   }
@@ -483,6 +483,7 @@ export async function getApiKeys(limit?: number, offset?: number) {
       camelRow.modelAccessMode,
       camelRow.allowedModels
     );
+    camelRow.ipAllowlist = parseStringList(camelRow.ipAllowlist);
     camelRow.allowedModels = parseAllowedModels(camelRow.allowedModels);
     camelRow.blockedModels = parseAllowedModels(camelRow.blockedModels);
     camelRow.allowedCombos = parseAllowedCombos(camelRow.allowedCombos);
@@ -620,6 +621,7 @@ export async function getApiKeyById(id: string) {
   if (!row) return null;
   const camelRow = toRecord(rowToCamel(row)) as ApiKeyView;
   camelRow.modelAccessMode = parseModelAccessMode(camelRow.modelAccessMode, camelRow.allowedModels);
+  camelRow.ipAllowlist = parseStringList(camelRow.ipAllowlist);
   camelRow.allowedModels = parseAllowedModels(camelRow.allowedModels);
   camelRow.blockedModels = parseAllowedModels(camelRow.blockedModels);
   camelRow.allowedCombos = parseAllowedCombos(camelRow.allowedCombos);
@@ -661,6 +663,7 @@ async function hashKey(key: string): Promise<string> {
 }
 
 interface CreateApiKeyOptions {
+  ipAllowlist?: string[];
   modelAccessMode?: ModelAccessMode;
   allowedModels?: string[];
   allowedCombos?: string[];
@@ -705,6 +708,7 @@ export async function createApiKey(
     allowedModels,
     allowedCombos,
     allowedConnections,
+    ipAllowlist: options.ipAllowlist ?? [],
     noLog: false,
     allowUsageCommand: false,
     createdAt: now,
@@ -726,6 +730,7 @@ export async function createApiKey(
     apiKey.key.slice(0, 12),
     await hashKey(apiKey.key),
     JSON.stringify(scopes),
+    JSON.stringify(apiKey.ipAllowlist),
   );
   setNoLog(apiKey.id, false);
 
@@ -791,6 +796,7 @@ export async function updateApiKeyPermissions(
     normalized.allowedCombos === undefined &&
     normalized.allowedConnections === undefined &&
     (normalized as Record<string, unknown>).allowedQuotas === undefined &&
+    normalized.ipAllowlist === undefined &&
     normalized.noLog === undefined &&
     normalized.autoResolve === undefined &&
     normalized.isActive === undefined &&
@@ -826,6 +832,7 @@ export async function updateApiKeyPermissions(
     allowedCombos?: string;
     allowedConnections?: string;
     allowedQuotas?: string;
+    ipAllowlist?: string;
     noLog?: number;
     autoResolve?: number;
     isActive?: number;
@@ -849,6 +856,14 @@ export async function updateApiKeyPermissions(
     chaosModeEnabled?: number;
     compressionEnabled?: number;
   } = { id };
+
+  if (normalized.ipAllowlist !== undefined) {
+    updates.push("ip_allowlist = @ipAllowlist");
+    params.ipAllowlist = JSON.stringify(normalized.ipAllowlist);
+  }
+  if (normalized.noLog === true) {
+    updates.push("last_client_ip = NULL", "last_client_user_agent = NULL", "last_client_at = NULL");
+  }
 
   if (normalized.name !== undefined) {
     updates.push("name = @name");
@@ -1663,4 +1678,11 @@ export function getApiKeyDisplayNames(ids: readonly string[]): Map<string, strin
     for (const row of rows) if (row.name?.trim()) names.set(row.id, row.name);
   }
   return names;
+}
+
+/** Persist the latest authenticated gateway caller; no-log keys keep no source data. */
+export function recordApiKeyClient(id: string, ip: string, userAgent: string): void {
+  getDbInstance().prepare(
+    "UPDATE api_keys SET last_client_ip = ?, last_client_user_agent = ?, last_client_at = ? WHERE id = ? AND no_log = 0"
+  ).run(ip, userAgent.replace(/[\x00-\x1f\x7f]/g, "").slice(0, 512), new Date().toISOString(), id);
 }

@@ -21,6 +21,10 @@
       "types": "./src/logging/redaction.ts",
       "import": "./src/logging/redaction.ts"
     },
+    "./network/ip-allowlist": {
+      "types": "./src/network/ip-allowlist.ts",
+      "import": "./src/network/ip-allowlist.ts"
+    },
     "./network": {
       "types": "./src/network/outbound-url-guard.ts",
       "import": "./src/network/outbound-url-guard.ts"

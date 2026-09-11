@@ -38,6 +38,8 @@ import {
 import { MaterialIcon } from "@/app/nav";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import dayjs from "dayjs";
+import { CallerAccessFields, CallerSourceDrawer } from "./caller-access-panel";
+import { callerClientName, parseCallerIpRules } from "./caller-access";
 import { useI18n } from "@/i18n";
 import {
   ALL_COMBOS_ACCESS_RULE,
@@ -92,6 +94,7 @@ export default function ApiManagerPage() {
   const { tt } = useI18n();
   const edgeBaseUrl = (import.meta.env.VITE_EDGE_BASE_URL ?? "http://127.0.0.1:8787").replace(/\/$/, "");
 
+  const [sourceKeyId, setSourceKeyId] = useState<string | null>(null);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [featureFilter, setFeatureFilter] = useState<string>("all");
@@ -217,7 +220,8 @@ export default function ApiManagerPage() {
         const matchesName = k.name.toLowerCase().includes(q);
         const matchesKey = (k.key ?? "").toLowerCase().includes(q);
         const matchesMachine = (k.machineId ?? "").toLowerCase().includes(q);
-        if (!matchesName && !matchesKey && !matchesMachine) return false;
+        const matchesSource = [k.lastClientIp, k.lastClientUserAgent, callerClientName(k.lastClientUserAgent)].some((value) => value?.toLowerCase().includes(q));
+        if (!matchesName && !matchesKey && !matchesMachine && !matchesSource) return false;
       }
 
       if (statusFilter === "active" && !isKeyActive(k)) return false;
@@ -348,6 +352,8 @@ export default function ApiManagerPage() {
           : "all";
     editForm.setFieldsValue({
       name: k.name,
+      ipAllowlist: (k.ipAllowlist ?? []).join("\n"),
+      ipAccessMode: k.ipAllowlist?.length ? "restricted" : "all",
       isActive: k.isActive !== false,
       isBanned: k.isBanned === true,
       expiresAt: k.expiresAt ? dayjs(k.expiresAt) : null,
@@ -377,75 +383,61 @@ export default function ApiManagerPage() {
 
   const columns = [
     {
-      title: tt("密钥名称与归属", "Key Name & Owner"),
+      title: tt("密钥", "API key"),
       key: "name",
-      width: 200,
-      render: (_: unknown, k: ApiKeyView) => (
-        <Flex vertical gap={2}>
-          <Space size={6}>
-            <MaterialIcon
-              name="vpn_key"
-              size={16}
-              style={{ color: isKeyActive(k) ? token.colorPrimary : token.colorTextQuaternary }}
-            />
-            <Text strong style={{ fontSize: 13 }}>
-              {k.name}
-            </Text>
-          </Space>
-          {k.machineId && (
-            <Text type="secondary" style={{ fontSize: 11, marginLeft: 22 }}>
-              {tt("设备", "Device")}: {k.machineId.slice(0, 10)}
-            </Text>
-          )}
-          {k.createdAt && (
-            <Text type="secondary" style={{ fontSize: 10, marginLeft: 22 }}>
-              {tt("创建于", "Created at")} {dayjs(k.createdAt).format("YYYY-MM-DD HH:mm")}
-            </Text>
-          )}
-        </Flex>
-      ),
-    },
-    {
-      title: tt("密钥令牌", "Token Key"),
-      key: "key",
-      width: 240,
+      width: 250,
       render: (_: unknown, k: ApiKeyView) => {
         const isShown = visibleKeys.has(k.id) && revealed[k.id];
         const displayValue = isShown ? revealed[k.id] : k.key;
         return (
-          <Space size={6} align="center">
-            <span className={styles.keyText}>
-              {isShown ? displayValue : maskKeyClient(displayValue)}
-            </span>
-            {allowReveal && (
-              <Tooltip title={isShown ? tt("隐藏明文", "Hide Plaintext") : tt("显示完整明文", "Reveal Plaintext")}>
-                <Button
-                  type="text"
-                  size="small"
-                  icon={<MaterialIcon name={isShown ? "visibility_off" : "visibility"} size={14} />}
-                  onClick={() => void revealKey(k)}
-                />
+          <Flex vertical gap={4} style={{ minWidth: 0 }}>
+            <Text strong ellipsis={{ tooltip: k.name }}>{k.name}</Text>
+            <Flex gap={4} align="center">
+              <Text className={styles.keyText} ellipsis={{ tooltip: isShown ? displayValue : undefined }} style={{ flex: 1, minWidth: 0 }}>{isShown ? displayValue : maskKeyClient(displayValue)}</Text>
+              {allowReveal && <Tooltip title={isShown ? tt("隐藏明文", "Hide plaintext") : tt("显示完整明文", "Reveal plaintext")}>
+                <Button type="text" aria-label={isShown ? tt("隐藏明文", "Hide plaintext") : tt("显示完整明文", "Reveal plaintext")} icon={<MaterialIcon name={isShown ? "visibility_off" : "visibility"} size={18} />} onClick={() => void revealKey(k)} />
+              </Tooltip>}
+              <Tooltip title={tt("复制密钥", "Copy key")}><Button type="text" aria-label={tt("复制密钥", "Copy key")} icon={<MaterialIcon name="content_copy" size={18} />} onClick={() => void copyKey(k)} /></Tooltip>
+            </Flex>
+            <Flex gap={8} align="center">
+              <Switch aria-label={tt("启用密钥", "Enable key")} checked={k.isActive !== false && !k.isBanned} disabled={k.isBanned === true} onChange={(checked) => updateMutation.mutate({ id: k.id, patch: { isActive: checked } })} />
+              <Tooltip title={k.expiresAt ? `${tt("到期", "Expires")}: ${dayjs(k.expiresAt).format("YYYY-MM-DD HH:mm")}` : tt("永久有效", "Never expires")}>
+                <Text type={isKeyActive(k) ? "secondary" : "warning"} style={{ fontSize: 12 }}>{k.isBanned ? tt("已封禁", "Banned") : k.expiresAt && dayjs(k.expiresAt).isBefore(dayjs()) ? tt("已过期", "Expired") : k.isActive === false ? tt("已停用", "Disabled") : tt("已启用", "Enabled")}</Text>
               </Tooltip>
-            )}
-            <Tooltip title={tt("复制密钥", "Copy Key")}>
-              <Button
-                type="text"
-                size="small"
-                icon={<MaterialIcon name="content_copy" size={14} />}
-                onClick={() => void copyKey(k)}
-              />
-            </Tooltip>
-          </Space>
+            </Flex>
+          </Flex>
         );
       },
     },
     {
+      title: tt("最近调用来源", "Latest caller"),
+      key: "callerSource",
+      width: 200,
+      render: (_: unknown, k: ApiKeyView) => (
+        <Flex vertical gap={4}>
+          <Button type="link" onClick={() => setSourceKeyId(k.id)} style={{ padding: 0, height: "auto", justifyContent: "flex-start", maxWidth: "100%" }}>
+            <MaterialIcon name={k.noLog ? "visibility_off" : k.lastClientAt ? "devices" : "history"} size={18} />
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{k.noLog ? tt("记录已关闭", "Recording disabled") : k.lastClientAt ? callerClientName(k.lastClientUserAgent) || tt("未知客户端", "Unknown client") : tt("暂无来源", "No caller yet")}</span>
+          </Button>
+          {!k.noLog && k.lastClientAt ? <>
+            <Text style={{ fontFamily: "monospace", fontSize: 12 }} ellipsis={{ tooltip: k.lastClientIp }}>{k.lastClientIp || "—"}</Text>
+            <Tooltip title={dayjs(k.lastClientAt).format("YYYY-MM-DD HH:mm:ss")}><Text type="secondary" style={{ fontSize: 12 }}>{dayjs(k.lastClientAt).format("MM-DD HH:mm")}</Text></Tooltip>
+          </> : <Text type="secondary" style={{ fontSize: 12 }}>{k.noLog ? tt("免日志模式", "No-log mode") : tt("等待首次请求", "Awaiting first request")}</Text>}
+        </Flex>
+      ),
+    },
+    {
       title: tt("权限与安全特性", "Permissions & Features"),
       key: "permissions",
+      width: 180,
       render: (_: unknown, k: ApiKeyView) => {
         const scopes = k.scopes ?? [];
         return (
           <Space wrap size={[4, 4]}>
+            <Tooltip title={(k.modelAccessMode === "restricted" ? k.allowedModels : k.blockedModels)?.join(", ")}>
+              <Tag color={k.modelAccessMode === "restricted" ? "geekblue" : k.blockedModels?.length ? "orange" : undefined}>{k.modelAccessMode === "restricted" ? tt(`限定 ${k.allowedModels?.length ?? 0} 个模型`, `${k.allowedModels?.length ?? 0} models allowed`) : k.blockedModels?.length ? tt(`排除 ${k.blockedModels.length} 个模型`, `${k.blockedModels.length} models blocked`) : tt("全部模型", "All models")}</Tag>
+            </Tooltip>
+            <Tag color={k.ipAllowlist?.length ? "blue" : undefined}>{k.ipAllowlist?.length ? tt(`IP 限制 · ${k.ipAllowlist.length} 条`, `IP restricted · ${k.ipAllowlist.length}`) : tt("不限 IP", "Any IP")}</Tag>
             {scopes.includes("manage") && <Tag color="magenta">{tt("管理访问", "Manage")}</Tag>}
             {k.noLog && <Tag color="purple">{tt("免日志审计", "No Log")}</Tag>}
             {k.autoResolve && <Tag color="blue">{tt("自动解析", "Auto-Resolve")}</Tag>}
@@ -462,7 +454,7 @@ export default function ApiManagerPage() {
     {
       title: tt("用量与消耗", "Usage & Cost"),
       key: "usage",
-      width: 140,
+      width: 120,
       render: (_: unknown, k: ApiKeyView) => {
         const stats = usageStats[k.id];
         const totalRequests = stats?.totalRequests ?? 0;
@@ -501,73 +493,15 @@ export default function ApiManagerPage() {
       },
     },
     {
-      title: tt("模型范围", "Model Scope"),
-      key: "models",
-      width: 140,
-      render: (_: unknown, k: ApiKeyView) => {
-        if (k.modelAccessMode === "custom" && k.allowedModels?.length) {
-          return (
-            <Tooltip title={k.allowedModels.join(", ")}>
-              <Tag color="geekblue" style={{ cursor: "pointer" }}>
-                {tt(`限定 ${k.allowedModels.length} 个模型`, `${k.allowedModels.length} models allowed`)}
-              </Tag>
-            </Tooltip>
-          );
-        }
-        if (k.modelAccessMode === "blacklist" && k.blockedModels?.length) {
-          return (
-            <Tooltip title={k.blockedModels.join(", ")}>
-              <Tag color="orange" style={{ cursor: "pointer" }}>
-                {tt(`排除 ${k.blockedModels.length} 个模型`, `${k.blockedModels.length} models blocked`)}
-              </Tag>
-            </Tooltip>
-          );
-        }
-        return <Tag color="default">{tt("全部模型", "All Models")}</Tag>;
-      },
-    },
-    {
-      title: tt("有效期与状态", "Status & Expiry"),
-      key: "status",
-      width: 160,
-      render: (_: unknown, k: ApiKeyView) => {
-        const isExpired = k.expiresAt && new Date(k.expiresAt).getTime() < Date.now();
-        const active = isKeyActive(k);
-
-        return (
-          <Flex vertical gap={4}>
-            <Space size={6}>
-              <Switch
-                size="small"
-                checked={k.isActive !== false && !k.isBanned}
-                disabled={k.isBanned === true}
-                onChange={(checked) => {
-                  updateMutation.mutate({ id: k.id, patch: { isActive: checked } });
-                }}
-              />
-              <Tag color={k.isBanned ? "error" : isExpired ? "warning" : active ? "success" : "default"}>
-                {k.isBanned ? "已封禁" : isExpired ? "已过期" : active ? "正常" : "已停用"}
-              </Tag>
-            </Space>
-            <Text type="secondary" style={{ fontSize: 10 }}>
-              {k.expiresAt
-                ? tt(`到期: ${dayjs(k.expiresAt).format("YYYY-MM-DD")}`, `Expires: ${dayjs(k.expiresAt).format("YYYY-MM-DD")}`)
-                : tt("永久有效", "Never expires")}
-            </Text>
-          </Flex>
-        );
-      },
-    },
-    {
-      title: "操作",
+      title: tt("操作", "Actions"),
       key: "actions",
-      width: 140,
+      fixed: "right" as const,
+      width: 168,
       render: (_: unknown, k: ApiKeyView) => (
         <Space size={2}>
           <Tooltip title={tt(`查看 ${k.name} 的用量分析`, `View analytics for ${k.name}`)}>
             <Button
               type="text"
-              size="small"
               icon={<MaterialIcon name="payments" size={15} style={{ color: "#10B981" }} />}
               onClick={() =>
                 navigate(`/dashboard/analytics?range=all&apiKeyIds=${encodeURIComponent(k.id)}&groupBy=model`)
@@ -577,7 +511,6 @@ export default function ApiManagerPage() {
           <Tooltip title="编辑权限与属性">
             <Button
               type="text"
-              size="small"
               icon={<MaterialIcon name="tune" size={15} />}
               onClick={() => openEditModal(k)}
             />
@@ -592,8 +525,7 @@ export default function ApiManagerPage() {
             >
               <Button
                 type="text"
-                size="small"
-                icon={<MaterialIcon name="refresh" size={15} style={{ color: "#F59E0B" }} />}
+                  icon={<MaterialIcon name="refresh" size={15} style={{ color: "#F59E0B" }} />}
               />
             </Popconfirm>
           </Tooltip>
@@ -608,8 +540,7 @@ export default function ApiManagerPage() {
             >
               <Button
                 type="text"
-                size="small"
-                danger
+                  danger
                 icon={<MaterialIcon name="delete" size={15} />}
               />
             </Popconfirm>
@@ -724,7 +655,7 @@ export default function ApiManagerPage() {
         <Flex align="center" justify="space-between" wrap gap={12}>
           <Space size={8} wrap>
             <Input
-              placeholder={tt("搜索密钥名称、前缀或设备...", "Search key name, prefix, or device...")}
+              placeholder={tt("搜索密钥、来源 IP 或客户端", "Search key, caller IP or client")}
               prefix={<MaterialIcon name="search" size={16} />}
               allowClear
               value={search}
@@ -759,12 +690,16 @@ export default function ApiManagerPage() {
         </Flex>
       </Card>
 
+      {keysQuery.isError && <Alert type="error" showIcon title={tt("无法加载密钥列表", "Unable to load API keys")} description={tt("请检查服务连接后重试。", "Check the service connection and retry.")} action={<Button onClick={() => void keysQuery.refetch()}>{tt("重试", "Retry")}</Button>} />}
+
       {/* Table */}
       <Card size="small" style={{ borderRadius: 8 }}>
         <Table
           dataSource={filteredKeys}
           columns={columns}
           rowKey="id"
+          tableLayout="fixed"
+          scroll={{ x: 920 }}
           pagination={{ pageSize: 15, showTotal: (t) => `共 ${t} 个密钥` }}
           loading={keysQuery.isLoading}
           size="middle"
@@ -772,12 +707,20 @@ export default function ApiManagerPage() {
         />
       </Card>
 
+      <CallerSourceDrawer
+        apiKey={keys.find((key) => key.id === sourceKeyId) ?? null}
+        onClose={() => setSourceKeyId(null)}
+        onEdit={(key) => { setSourceKeyId(null); openEditModal(key); }}
+      />
+
       {/* Create Modal */}
       <Modal
         open={addModalOpen}
         onCancel={() => setAddModalOpen(false)}
         title="新建 API 密钥"
         width={720}
+        centered
+        styles={{ body: { maxHeight: "calc(100dvh - 180px)", overflowY: "auto", paddingRight: 4 } }}
         onOk={() => createForm.submit()}
         confirmLoading={createMutation.isPending}
         okText="确认创建"
@@ -802,6 +745,7 @@ export default function ApiManagerPage() {
 
             const payload: ApiKeyCreateInput = {
               name: values.name.trim(),
+              ipAllowlist: values.ipAccessMode === "restricted" ? parseCallerIpRules(values.ipAllowlist) : [],
               scopes,
               noLog: Boolean(values.noLog),
               allowUsageCommand: Boolean(values.allowUsageCommand),
@@ -824,6 +768,7 @@ export default function ApiManagerPage() {
           </div>
 
           <div>
+          <CallerAccessFields />
           {/* Management Access */}
           <div
             style={{
@@ -1032,11 +977,12 @@ export default function ApiManagerPage() {
         onCancel={() => setEditTarget(null)}
         title={`编辑密钥权限与配置 · ${editTarget?.name || ""}`}
         width={960}
+        centered
         onOk={() => editForm.submit()}
         confirmLoading={updateMutation.isPending}
         okText="保存更改"
         cancelText="取消"
-        styles={{ body: { maxHeight: "calc(82vh - 120px)", overflowY: "auto", paddingRight: 6 } }}
+        styles={{ body: { maxHeight: "calc(100dvh - 180px)", overflowY: "auto", paddingRight: 6 } }}
       >
         <Form
           form={editForm}
@@ -1053,6 +999,7 @@ export default function ApiManagerPage() {
 
             const patch: Record<string, unknown> = {
               name: values.name.trim(),
+              ipAllowlist: values.ipAccessMode === "restricted" ? parseCallerIpRules(values.ipAllowlist) : [],
               isActive: values.isActive,
               isBanned: values.isBanned,
               expiresAt: values.expiresAt ? values.expiresAt.toISOString() : null,
@@ -1146,6 +1093,7 @@ export default function ApiManagerPage() {
           </div>
 
           <div>
+          <CallerAccessFields />
           {/* Card 2: 管理访问权限 */}
           <div
             style={{

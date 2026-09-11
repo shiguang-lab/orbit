@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidIpRule } from "@orbit/utils/network/ip-allowlist";
 import {
   ACCOUNT_FALLBACK_STRATEGY_VALUES,
   ROUTING_STRATEGY_VALUES,
@@ -17,6 +18,7 @@ import { MAX_TIMER_TIMEOUT_MS } from "@orbit/config/timeouts";
 import { accessScheduleSchema } from "./misc.ts";
 
 // ──── API Key Schemas ────
+const ipAllowlistSchema = z.array(z.string().trim().refine(isValidIpRule, "Invalid IP address or CIDR")).max(100).optional();
 
 const requireExclusiveLeaseConnections = (value: {
   scopes?: string[]; allowedConnections?: string[];
@@ -51,6 +53,7 @@ export const createKeySchema = z
     modelAccessMode: z.enum(["all", "restricted"]).optional(),
     allowedModels: z.array(z.string().trim().min(1)).max(1000).optional(),
     allowedCombos: z.array(z.string().trim().min(1).max(200)).max(500).optional(),
+    ipAllowlist: ipAllowlistSchema,
     noLog: z.boolean().optional(),
     allowUsageCommand: z.boolean().optional(),
     usageLimitEnabled: z.boolean().optional(),
@@ -124,6 +127,7 @@ export const updateKeyPermissionsSchema = z
     blockedModels: z.array(z.string().trim().min(1)).max(1000).optional(),
     allowedCombos: z.array(z.string().trim().min(1).max(200)).max(500).optional(),
     allowedConnections: z.array(z.string().uuid()).max(100).optional(),
+    ipAllowlist: ipAllowlistSchema,
     noLog: z.boolean().optional(),
     autoResolve: z.boolean().optional(),
     isActive: z.boolean().optional(),
@@ -191,6 +195,7 @@ export const updateKeyPermissionsSchema = z
       value.blockedModels === undefined &&
       value.allowedCombos === undefined &&
       value.allowedConnections === undefined &&
+      value.ipAllowlist === undefined &&
       value.noLog === undefined &&
       value.autoResolve === undefined &&
       value.isActive === undefined &&

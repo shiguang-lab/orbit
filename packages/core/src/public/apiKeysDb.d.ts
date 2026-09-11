@@ -11,6 +11,7 @@ interface ApiKeyRecord {
   allowedConnections?: string[];
   allowedQuotas?: string[];
   allowedModels?: string[];
+  ipAllowlist?: string[];
   noLog?: boolean;
   allowUsageCommand?: boolean;
   usageLimitEnabled?: boolean;
@@ -73,6 +74,7 @@ export function createApiKey(
   machineId: string,
   scopes?: string[],
   options?: {
+    ipAllowlist?: string[];
     modelAccessMode?: "all" | "restricted";
     allowedModels?: string[];
     allowedCombos?: string[];
@@ -95,3 +97,5 @@ export function isModelAllowedForKey(
   modelId: string | null | undefined,
   effort?: string,
 ): Promise<boolean>;
+
+export function recordApiKeyClient(id: string, ip: string, userAgent: string): void;

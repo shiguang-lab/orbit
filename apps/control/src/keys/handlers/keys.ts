@@ -73,6 +73,7 @@ export async function POST(request: Request) {
     const {
       name,
       modelAccessMode,
+      ipAllowlist,
       allowedModels,
       allowedCombos,
       noLog,
@@ -90,6 +91,7 @@ export async function POST(request: Request) {
     const normalizedScopes = normalizeSelfServiceScopesForCreate(scopes);
     const apiKey = await createApiKey(name, machineId, normalizedScopes, {
       modelAccessMode,
+      ipAllowlist,
       allowedModels,
       allowedCombos,
       allowedConnections,
@@ -129,6 +131,7 @@ export async function POST(request: Request) {
         id: apiKey.id,
         machineId: apiKey.machineId,
         modelAccessMode: apiKey.modelAccessMode,
+        ipAllowlist: apiKey.ipAllowlist,
         allowedModels: apiKey.allowedModels,
         allowedCombos: apiKey.allowedCombos,
         allowedConnections: apiKey.allowedConnections,

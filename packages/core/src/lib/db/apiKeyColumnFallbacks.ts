@@ -1,4 +1,7 @@
 export const API_KEY_COLUMN_FALLBACKS = [
+  { name: "last_client_ip", definition: "last_client_ip TEXT" },
+  { name: "last_client_user_agent", definition: "last_client_user_agent TEXT" },
+  { name: "last_client_at", definition: "last_client_at TEXT" },
   { name: "allowed_models", definition: "allowed_models TEXT" },
   {
     name: "model_access_mode",

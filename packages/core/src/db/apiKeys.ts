@@ -10,6 +10,7 @@ export {
   getExclusiveLeaseConnectionIds,
   isModelAllowedForKey,
   pickApiKeyForInternalUse,
+  recordApiKeyClient,
   regenerateApiKey,
   revokeApiKey,
   updateApiKeyPermissions,

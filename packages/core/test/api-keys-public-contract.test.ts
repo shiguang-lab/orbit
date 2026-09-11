@@ -22,6 +22,7 @@ const expectedRuntimeExports = [
   "getExclusiveLeaseConnectionIds",
   "isModelAllowedForKey",
   "pickApiKeyForInternalUse",
+  "recordApiKeyClient",
   "regenerateApiKey",
   "revokeApiKey",
   "updateApiKeyPermissions",

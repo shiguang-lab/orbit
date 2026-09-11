@@ -647,6 +647,10 @@ export interface SystemVersionInfo {
 /* ---------------- API Keys ---------------- */
 
 export interface ApiKeyView {
+  ipAllowlist?: string[];
+  lastClientIp?: string | null;
+  lastClientUserAgent?: string | null;
+  lastClientAt?: string | null;
   id: string;
   name: string;
   key?: string | null;

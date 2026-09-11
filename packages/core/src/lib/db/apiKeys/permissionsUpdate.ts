@@ -9,6 +9,7 @@ export interface ApiKeyPermissionsUpdate {
   allowedCombos?: string[];
   allowedConnections?: string[];
   allowedQuotas?: string[];
+  ipAllowlist?: string[];
   noLog?: boolean;
   autoResolve?: boolean;
   isActive?: boolean;
@@ -50,6 +51,7 @@ export function normalizeApiKeyPermissionsUpdate(
     allowedCombos: update.allowedCombos,
     allowedConnections: update.allowedConnections,
     allowedQuotas: update.allowedQuotas,
+    ipAllowlist: update.ipAllowlist,
     noLog: update.noLog,
     autoResolve: update.autoResolve,
     isActive: update.isActive,

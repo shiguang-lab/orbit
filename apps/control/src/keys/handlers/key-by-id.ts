@@ -47,7 +47,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
     const data = validation.data;
     const payload: Parameters<typeof updateApiKeyPermissions>[1] = {};
     for (const field of [
-      "name", "modelAccessMode", "allowedModels", "blockedModels", "allowedCombos",
+      "ipAllowlist", "name", "modelAccessMode", "allowedModels", "blockedModels", "allowedCombos",
       "noLog", "autoResolve", "isActive", "throttleDelayMs", "isBanned", "expiresAt", "maxSessions",
       "accessSchedule", "rateLimits", "scopes", "allowedEndpoints", "streamDefaultMode", "compressionEnabled",
       "cacheDefaultMode", "disableNonPublicModels", "allowUsageCommand", "usageLimitEnabled", "dailyUsageLimitUsd",

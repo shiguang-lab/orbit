@@ -1,3 +1,4 @@
+import { installApiKeyClientPolicy } from "./common/api-key-client-policy.js";
 import { NestFactory } from "@nestjs/core";
 import { FastifyAdapter } from "@nestjs/platform-fastify";
 import { initializeUsageStorage } from "@orbit/core/startup";
@@ -20,8 +21,10 @@ export async function bootstrapEdgeGateway() {
     logger: { level: process.env.LOG_LEVEL ?? "info" },
     bodyLimit: 512 * 1024 * 1024,
     exposeHeadRoutes: false,
+    trustProxy: process.env.EDGE_TRUSTED_PROXIES?.split(",").map((ip) => ip.trim()).filter(Boolean) ?? false,
   });
   const fastify = adapter.getInstance() as FastifyInstance;
+  installApiKeyClientPolicy(fastify);
   fastify.addContentTypeParser(
     "multipart/form-data",
     { parseAs: "buffer" },
