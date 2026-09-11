@@ -14,6 +14,8 @@ const localApiExtensions = new Set([
   "search/analytics/route.ts",
   "cloud-agents/tasks/route.ts",
   "providers/catalog/route.ts",
+  // Provider detail built-in registry catalog, served by the Control API.
+  "providers/[id]/catalog-models/route.ts",
   // Signed gateway SSO session, covered by control auth-session tests.
   "auth/session/route.ts",
   "media/cache/stats/route.ts",
