@@ -75,6 +75,7 @@ export async function POST(request: Request) {
       modelAccessMode,
       ipAllowlist,
       allowedModels,
+      blockedModels,
       allowedCombos,
       noLog,
       scopes,
@@ -98,6 +99,7 @@ export async function POST(request: Request) {
     });
     if (
       noLog === true ||
+      blockedModels !== undefined ||
       allowUsageCommand === true ||
       usageLimitEnabled === true ||
       dailyUsageLimitUsd !== undefined ||
@@ -106,6 +108,7 @@ export async function POST(request: Request) {
     ) {
       await updateApiKeyPermissions(apiKey.id, {
         ...(noLog === true && { noLog: true }),
+        ...(blockedModels !== undefined && { blockedModels }),
         ...(allowUsageCommand === true && { allowUsageCommand: true }),
         ...(usageLimitEnabled === true && { usageLimitEnabled: true }),
         ...(dailyUsageLimitUsd !== undefined && { dailyUsageLimitUsd }),
@@ -133,6 +136,7 @@ export async function POST(request: Request) {
         modelAccessMode: apiKey.modelAccessMode,
         ipAllowlist: apiKey.ipAllowlist,
         allowedModels: apiKey.allowedModels,
+        blockedModels: blockedModels ?? [],
         allowedCombos: apiKey.allowedCombos,
         allowedConnections: apiKey.allowedConnections,
         noLog: noLog === true,

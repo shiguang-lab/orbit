@@ -803,6 +803,8 @@ export default function ApiManagerPage() {
           form={createForm}
           layout="vertical"
           initialValues={{
+            modelAccessMode: "all",
+            comboAccessMode: "all",
             manageEnabled: false,
             selfUsageEnabled: true,
             selfAccountQuotaEnabled: false,
@@ -811,6 +813,8 @@ export default function ApiManagerPage() {
             compressionEnabled: false,
           }}
           onFinish={(values) => {
+            const isAllowlist = values.modelAccessMode === "custom";
+            const isBlocklist = values.modelAccessMode === "blacklist";
             const scopes: string[] = [];
             if (values.manageEnabled) scopes.push("manage");
             if (values.selfUsageEnabled !== false) scopes.push("read:usage");
@@ -818,6 +822,13 @@ export default function ApiManagerPage() {
 
             const payload: ApiKeyCreateInput = {
               name: values.name.trim(),
+              modelAccessMode: isAllowlist ? "restricted" : "all",
+              allowedModels: isAllowlist ? values.allowedModels ?? [] : [],
+              blockedModels: isBlocklist ? values.blockedModels ?? [] : [],
+              allowedCombos: comboAccessSaveValue(
+                values.comboAccessMode === "restricted" ? "restricted" : "all",
+                values.allowedCombos ?? []
+              ),
               ipAllowlist: values.ipAccessMode === "restricted" ? parseCallerIpRules(values.ipAllowlist) : [],
               scopes,
               noLog: Boolean(values.noLog),
@@ -855,45 +866,27 @@ export default function ApiManagerPage() {
             </Form.Item>
           </div>
 
-          <Row gutter={[16, 16]} style={{ marginInline: 0, alignItems: "stretch" }}>
+          <Row gutter={[16, 16]} style={{ alignItems: "stretch" }}>
             {/* Left Column: Caller Access Control */}
             <Col xs={24} md={12} style={{ display: "flex", flexDirection: "column" }}>
-              <CallerAccessFields style={{ flex: 1, marginBottom: 0, height: "100%" }} />
-            </Col>
-
-            {/* Right Column: Permissions & Features */}
-            <Col xs={24} md={12} style={{ display: "flex", flexDirection: "column" }}>
-              <div
-                style={{
-                  flex: 1,
-                  height: "100%",
-                  padding: 14,
-                  borderRadius: 8,
-                  background: token.colorFillQuaternary,
-                  border: `1px solid ${token.colorBorderSecondary}`,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between",
-                }}
-              >
-                <div>
+              <Flex vertical gap={16} style={{ height: "100%" }}>
+                {/* Management Access */}
+                <div
+                  style={{
+                    padding: 14,
+                    borderRadius: 8,
+                    background: token.colorFillQuaternary,
+                    border: `1px solid ${token.colorBorderSecondary}`,
+                  }}
+                >
                   <Flex align="center" gap={6} style={{ marginBottom: 4 }}>
-                    <MaterialIcon name="tune" size={16} style={{ color: "#8B5CF6" }} />
+                    <MaterialIcon name="admin_panel_settings" size={16} style={{ color: "#F43F5E" }} />
                     <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                      {tt("权限范围与功能特性", "Permissions & Features")}
+                      {tt("管理访问权限", "Management Access")}
                     </Text>
                   </Flex>
-                  <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 12 }}>
-                    {tt("配置该密钥的管理权限、用量可见性以及安全传输特性：", "Configure management permissions, usage visibility, and security features:")}
-                  </Text>
-
-                  {/* Management Access */}
-                  <Flex align="center" justify="space-between" style={{ paddingBottom: 10, borderBottom: `1px dashed ${token.colorBorderSecondary}` }}>
+                  <Flex align="center" justify="space-between">
                     <div style={{ paddingRight: 12 }}>
-                      <Flex align="center" gap={6}>
-                        <MaterialIcon name="admin_panel_settings" size={15} style={{ color: "#F43F5E" }} />
-                        <Text style={{ fontSize: 12, fontWeight: 500 }}>{tt("管理访问权限", "Management Access")}</Text>
-                      </Flex>
                       <Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 2 }}>
                         {tt("允许此密钥访问管理控制台与系统配置接口（建议仅限管理员）", "Allow accessing management console and system configuration APIs. Recommended for administrators.")}
                       </Text>
@@ -902,9 +895,120 @@ export default function ApiManagerPage() {
                       <Switch />
                     </Form.Item>
                   </Flex>
+                </div>
+                <CallerAccessFields fillHeight style={{ flex: 1, marginBottom: 0 }} />
+              </Flex>
+            </Col>
 
-                  {/* Self-Service & Usage Visibility */}
-                  <Flex vertical gap={10} style={{ paddingBlock: 10, borderBottom: `1px dashed ${token.colorBorderSecondary}` }}>
+            {/* Right Column: Permissions & Features */}
+            <Col xs={24} md={12} style={{ display: "flex", flexDirection: "column" }}>
+              <Flex vertical gap={16} style={{ height: "100%" }}>
+                {/* Model Access */}
+                <div
+                  style={{
+                    padding: 14,
+                    borderRadius: 8,
+                    background: token.colorFillQuaternary,
+                    border: `1px solid ${token.colorBorderSecondary}`,
+                  }}
+                >
+                  <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+                    <MaterialIcon name="tune" size={16} style={{ color: "#3B82F6" }} />
+                    <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
+                      {tt("模型访问控制", "Model Access Control")}
+                    </Text>
+                  </Flex>
+                  <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 12 }}>
+                    {tt("配置该 API 密钥允许调用的模型范围与黑白名单：", "Configure the models this API key can use, including allowlists and blocklists:")}
+                  </Text>
+                  <Form.Item name="modelAccessMode" style={{ marginBottom: 12 }}>
+                    <Radio.Group style={{ width: "100%", display: "flex" }}>
+                      <Radio.Button value="all" style={{ flex: 1, textAlign: "center" }}>
+                        {tt("全部模型", "All")}
+                      </Radio.Button>
+                      <Radio.Button value="custom" style={{ flex: 1, textAlign: "center" }}>
+                        {tt("白名单限定", "Allowlist")}
+                      </Radio.Button>
+                      <Radio.Button value="blacklist" style={{ flex: 1, textAlign: "center" }}>
+                        {tt("黑名单排除", "Blocklist")}
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item noStyle shouldUpdate={(previous, current) => previous.modelAccessMode !== current.modelAccessMode}>
+                    {({ getFieldValue }) => {
+                      const mode = getFieldValue("modelAccessMode");
+                      if (mode === "custom") {
+                        return (
+                          <Form.Item name="allowedModels" label={<Text style={{ fontSize: 12 }}>{tt("允许调用的模型", "Allowed models")}</Text>} style={{ marginBottom: 0 }}>
+                            <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelCatalogQuery.isLoading} placeholder={tt("选择可用模型", "Select models")} notFoundContent={modelCatalogQuery.isLoading ? tt("正在加载模型…", "Loading models…") : tt("暂无可用模型", "No models available")} />
+                          </Form.Item>
+                        );
+                      }
+                      if (mode === "blacklist") {
+                        return (
+                          <Form.Item name="blockedModels" label={<Text style={{ fontSize: 12 }}>{tt("禁止调用的模型", "Blocked models")}</Text>} style={{ marginBottom: 0 }}>
+                            <Select mode="multiple" showSearch optionFilterProp="label" options={modelOptions} loading={modelCatalogQuery.isLoading} placeholder={tt("选择需排除的模型", "Select models to exclude")} notFoundContent={modelCatalogQuery.isLoading ? tt("正在加载模型…", "Loading models…") : tt("暂无可用模型", "No models available")} />
+                          </Form.Item>
+                        );
+                      }
+                      return null;
+                    }}
+                  </Form.Item>
+                </div>
+
+                {/* Combo Access */}
+                <div
+                  style={{
+                    padding: 14,
+                    borderRadius: 8,
+                    background: token.colorFillQuaternary,
+                    border: `1px solid ${token.colorBorderSecondary}`,
+                  }}
+                >
+                  <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+                    <MaterialIcon name="route" size={16} style={{ color: "#8B5CF6" }} />
+                    <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
+                      {tt("组合访问控制", "Combo Access Control")}
+                    </Text>
+                  </Flex>
+                  <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 12 }}>
+                    {tt("配置该密钥允许访问的模型组合套餐范围：", "Configure allowed model combos for this key:")}
+                  </Text>
+                  <Form.Item name="comboAccessMode" style={{ marginBottom: 12 }}>
+                    <Radio.Group style={{ width: "100%", display: "flex" }}>
+                      <Radio.Button value="all" style={{ flex: 1, textAlign: "center" }}>
+                        {tt("允许全部组合", "Allow all combos")}
+                      </Radio.Button>
+                      <Radio.Button value="restricted" style={{ flex: 1, textAlign: "center" }}>
+                        {tt("限定组合", "Restrict combos")}
+                      </Radio.Button>
+                    </Radio.Group>
+                  </Form.Item>
+                  <Form.Item noStyle shouldUpdate={(previous, current) => previous.comboAccessMode !== current.comboAccessMode}>
+                    {({ getFieldValue }) => getFieldValue("comboAccessMode") === "restricted" ? (
+                      <Form.Item name="allowedCombos" style={{ marginBottom: 0 }}>
+                        <Select mode="multiple" showSearch options={comboOptions} loading={combosQuery.isLoading} placeholder={tt("选择允许的组合", "Select allowed combos")} />
+                      </Form.Item>
+                    ) : null}
+                  </Form.Item>
+                </div>
+
+                {/* Self-Service & Usage Visibility */}
+                <div
+                  style={{
+                    padding: 14,
+                    borderRadius: 8,
+                    background: token.colorFillQuaternary,
+                    border: `1px solid ${token.colorBorderSecondary}`,
+                  }}
+                >
+                  <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
+                    <MaterialIcon name="visibility" size={16} style={{ color: "#8B5CF6" }} />
+                    <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
+                      {tt("用量与额度可见性", "Usage & Quota Visibility")}
+                    </Text>
+                  </Flex>
+                  <Flex vertical gap={12}>
                     <Flex align="center" justify="space-between">
                       <div>
                         <Text style={{ fontSize: 12 }}>{tt("自身用量可见性", "Own Usage Visibility")}</Text>
@@ -951,37 +1055,57 @@ export default function ApiManagerPage() {
                       </Form.Item>
                     </Flex>
                   </Flex>
-
-                  {/* Safety & Performance */}
-                  <Flex vertical gap={10} style={{ paddingTop: 10 }}>
-                    <Flex align="center" justify="space-between">
-                      <div>
-                        <Text style={{ fontSize: 12 }}>{tt("免日志审计模式", "No-Log Mode")}</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                          {tt("不记录请求 Payload 与 Prompt，适用于极端隐私场景", "Do not record request payloads or prompts; suitable for highly private workloads.")}
-                        </Text>
-                      </div>
-                      <Form.Item name="noLog" valuePropName="checked" noStyle>
-                        <Switch />
-                      </Form.Item>
-                    </Flex>
-
-                    <Flex align="center" justify="space-between">
-                      <div>
-                        <Text style={{ fontSize: 12 }}>{tt("压缩加速传输", "Compression")}</Text>
-                        <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                          {tt("为该密钥开启请求与响应的 Gzip/Brotli 压缩传输", "Enable Gzip/Brotli compression for this key's requests and responses.")}
-                        </Text>
-                      </div>
-                      <Form.Item name="compressionEnabled" valuePropName="checked" noStyle>
-                        <Switch />
-                      </Form.Item>
-                    </Flex>
-                  </Flex>
                 </div>
-              </div>
+
+              </Flex>
             </Col>
           </Row>
+
+          {/* Safety & Performance - Full Width */}
+          <div
+            style={{
+              padding: 14,
+              borderRadius: 8,
+              background: token.colorFillQuaternary,
+              border: `1px solid ${token.colorBorderSecondary}`,
+              marginTop: 16,
+            }}
+          >
+            <Flex align="center" gap={6} style={{ marginBottom: 12 }}>
+              <MaterialIcon name="shield" size={16} style={{ color: "#3B82F6" }} />
+              <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
+                {tt("安全与传输", "Security & Transport")}
+              </Text>
+            </Flex>
+            <Row gutter={[24, 16]}>
+              <Col xs={24} md={12}>
+                <Flex align="center" justify="space-between">
+                  <div style={{ paddingRight: 12 }}>
+                    <Text style={{ fontSize: 12 }}>{tt("免日志审计模式", "No-Log Mode")}</Text>
+                    <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+                      {tt("不记录请求 Payload 与 Prompt，适用于极端隐私场景", "Do not record request payloads or prompts; suitable for highly private workloads.")}
+                    </Text>
+                  </div>
+                  <Form.Item name="noLog" valuePropName="checked" noStyle>
+                    <Switch />
+                  </Form.Item>
+                </Flex>
+              </Col>
+              <Col xs={24} md={12}>
+                <Flex align="center" justify="space-between">
+                  <div style={{ paddingRight: 12 }}>
+                    <Text style={{ fontSize: 12 }}>{tt("压缩加速传输", "Compression")}</Text>
+                    <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+                      {tt("为该密钥开启请求与响应的 Gzip/Brotli 压缩传输", "Enable Gzip/Brotli compression for this key's requests and responses.")}
+                    </Text>
+                  </div>
+                  <Form.Item name="compressionEnabled" valuePropName="checked" noStyle>
+                    <Switch />
+                  </Form.Item>
+                </Flex>
+              </Col>
+            </Row>
+          </div>
         </Form>
       </Modal>
 
@@ -1166,9 +1290,14 @@ export default function ApiManagerPage() {
             </Row>
           </div>
 
-          <Row gutter={[16, 16]} style={{ marginInline: 0 }}>
-            {/* Left Column: Model Access, Combo Access, Caller IP */}
-            <Col xs={24} md={12}>
+          <Row gutter={[16, 16]} style={{ alignItems: "stretch" }}>
+            {/* Left Column: Caller Access */}
+            <Col xs={24} md={12} style={{ display: "flex", flexDirection: "column" }}>
+              <CallerAccessFields fillHeight style={{ flex: 1, height: "100%", marginBottom: 0 }} />
+            </Col>
+
+            {/* Right Column: Model, Combo, Quota & Traffic Access */}
+            <Col xs={24} md={12} style={{ display: "flex", flexDirection: "column" }}>
               {/* Card: 模型访问控制 */}
               <div
                 style={{
@@ -1314,12 +1443,6 @@ export default function ApiManagerPage() {
                   }}
                 </Form.Item>
               </div>
-            </Col>
-
-            {/* Right Column: Caller Access & Quota / Traffic Limits */}
-            <Col xs={24} md={12}>
-              {/* Card: 调用方访问控制 */}
-              <CallerAccessFields />
 
               {/* Card: 额度与流量治理 */}
               <div
@@ -1328,7 +1451,7 @@ export default function ApiManagerPage() {
                   borderRadius: 8,
                   background: token.colorFillQuaternary,
                   border: `1px solid ${token.colorBorderSecondary}`,
-                  marginBottom: 16,
+                  marginBottom: 0,
                 }}
               >
                 <Flex align="center" gap={6} style={{ marginBottom: 8 }}>

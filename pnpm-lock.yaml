@@ -171,9 +171,6 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.23
-      material-symbols:
-        specifier: ^0.46.0
-        version: 0.46.0
       react:
         specifier: 'catalog:'
         version: 19.2.8
@@ -190,6 +187,9 @@ importers:
         specifier: ^5.0.15
         version: 5.0.15(@types/react@19.2.18)(immer@11.1.18)(react@19.2.8)(use-sync-external-store@1.6.0(react@19.2.8))
     devDependencies:
+      '@material-symbols/svg-400':
+        specifier: 0.47.2
+        version: 0.47.2
       '@types/node':
         specifier: 'catalog:'
         version: 22.20.1
@@ -1979,6 +1979,9 @@ packages:
   '@lukeed/ms@2.0.2':
     resolution: {integrity: sha512-9I2Zn6+NJLfaGoz9jN3lpwDgAYvfGeNYdbAIjJOqzs4Tpc+VU3Jqq4IofSUBKajiDS8k9fZIg18/z13mpk1bsA==}
     engines: {node: '>=8'}
+
+  '@material-symbols/svg-400@0.47.2':
+    resolution: {integrity: sha512-OCKG/jxhd3rymUzu2ay8sX+/1uTITy2rKfy67skFLeQN+srzxgPBG6MeXCPn5Kw9XFBEQSkinvc29SawnuFFcQ==}
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -5062,9 +5065,6 @@ packages:
   matcher@3.0.0:
     resolution: {integrity: sha512-OkeDaAZ/bQCxeFAozM55PKcKU0yJMPGifLwV4Qgjitu+5MoAfSQN4lsLJeXZ1b8w0x+/Emda6MZgXS1jvsapng==}
     engines: {node: '>=10'}
-
-  material-symbols@0.46.0:
-    resolution: {integrity: sha512-YxmTXwOhLOI6EupAwFfxFERbaDe61dG/tveOSy2HecndGKqvJ74WqXrrXLNWpIGDkk6TDpieuQPDS+hA7+z3Ig==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -8239,6 +8239,8 @@ snapshots:
   '@lukeed/csprng@1.1.0': {}
 
   '@lukeed/ms@2.0.2': {}
+
+  '@material-symbols/svg-400@0.47.2': {}
 
   '@mdx-js/mdx@3.1.1':
     dependencies:
@@ -11637,8 +11639,6 @@ snapshots:
   matcher@3.0.0:
     dependencies:
       escape-string-regexp: 4.0.0
-
-  material-symbols@0.46.0: {}
 
   math-intrinsics@1.1.0: {}
 

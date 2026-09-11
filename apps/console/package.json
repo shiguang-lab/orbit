@@ -21,7 +21,6 @@
     "antd": "^6.6.2",
     "antd-style": "^3.7.1",
     "dayjs": "^1.11.13",
-    "material-symbols": "^0.46.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-router-dom": "^6.30.0",
@@ -29,6 +28,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@material-symbols/svg-400": "0.47.2",
     "@types/node": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

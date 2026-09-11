@@ -1,8 +1,9 @@
 /**
  * 侧栏导航配置：模块级常量，路由匹配 selectedKeys。
- * 图标名称与线上 Orbit Orbit 侧栏保持一致，使用本地 Material Symbols 字体渲染。
+ * 图标名称与线上 Orbit Orbit 侧栏保持一致，使用本地 Material Symbols SVG 渲染。
  */
 import type { CSSProperties } from "react";
+import { MATERIAL_SYMBOL_PATHS } from "./material-symbol-paths";
 import { translate, type AppLocale } from "@/i18n";
 
 export interface NavItem {
@@ -139,9 +140,10 @@ const NAV_ICON_ACCENTS: Record<string, string> = {
 };
 
 export function NavIcon({ name, itemKey }: { name: string; itemKey: string }) {
+  const path = MATERIAL_SYMBOL_PATHS[name] ?? MATERIAL_SYMBOL_PATHS.help;
   return (
     <span
-      className="material-symbols-outlined"
+      className="material-symbol-icon"
       style={{
         color: NAV_ICON_ACCENTS[itemKey],
         fontSize: 18,
@@ -156,15 +158,18 @@ export function NavIcon({ name, itemKey }: { name: string; itemKey: string }) {
       }}
       aria-hidden="true"
     >
-      {name}
+      <svg width="100%" height="100%" viewBox="0 -960 960 960" fill="currentColor" focusable="false">
+        <path d={path} />
+      </svg>
     </span>
   );
 }
 
 export function MaterialIcon({ name, size = 16, className, style }: { name: string; size?: number; className?: string; style?: CSSProperties }) {
+  const path = MATERIAL_SYMBOL_PATHS[name] ?? MATERIAL_SYMBOL_PATHS.help;
   return (
     <span
-      className={["material-symbols-outlined", className].filter(Boolean).join(" ")}
+      className={["material-symbol-icon", className].filter(Boolean).join(" ")}
       style={{
         fontSize: size,
         width: size,
@@ -176,11 +181,14 @@ export function MaterialIcon({ name, size = 16, className, style }: { name: stri
         verticalAlign: "middle",
         flexShrink: 0,
         userSelect: "none",
+        pointerEvents: "none",
         ...style,
       }}
       aria-hidden="true"
     >
-      {name}
+      <svg width="100%" height="100%" viewBox="0 -960 960 960" fill="currentColor" focusable="false">
+        <path d={path} />
+      </svg>
     </span>
   );
 }

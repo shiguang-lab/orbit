@@ -694,6 +694,10 @@ export interface ApiKeyListResponse {
 
 export interface ApiKeyCreateInput {
   name: string;
+  modelAccessMode?: "all" | "restricted";
+  allowedModels?: string[];
+  blockedModels?: string[];
+  allowedCombos?: string[];
   scopes?: string[];
   allowUsageCommand?: boolean;
   noLog?: boolean;

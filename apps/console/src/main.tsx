@@ -5,7 +5,6 @@ import { RouterProvider } from "react-router-dom";
 import { App, Spin, Alert, Button, Space } from "antd";
 import { ThemeProvider } from "@/theme/ThemeProvider";
 import { router } from "@/app/router";
-import "@/styles/global.css";
 import {
   DEV_DEFAULT_SESSION,
   retryUnifiedLogin,

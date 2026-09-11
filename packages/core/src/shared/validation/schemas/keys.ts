@@ -52,6 +52,7 @@ export const createKeySchema = z
     name: z.string().min(1, "Name is required").max(200),
     modelAccessMode: z.enum(["all", "restricted"]).optional(),
     allowedModels: z.array(z.string().trim().min(1)).max(1000).optional(),
+    blockedModels: z.array(z.string().trim().min(1)).max(1000).optional(),
     allowedCombos: z.array(z.string().trim().min(1).max(200)).max(500).optional(),
     ipAllowlist: ipAllowlistSchema,
     noLog: z.boolean().optional(),

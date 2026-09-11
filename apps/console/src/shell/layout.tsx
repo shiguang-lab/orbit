@@ -69,8 +69,9 @@ const useStyles = createStyles(({ token }) => ({
     color: "#fff",
     background: "linear-gradient(145deg, #6d59ff, #4d35d7)",
     boxShadow: "0 0 20px rgba(92, 69, 255, 0.25)",
-    "& .material-symbols-outlined": {
-      fontSize: 19,
+    "& .material-symbol-icon": {
+      width: 19,
+      height: 19,
     },
   },
   sidebarBrandCopy: {
@@ -151,7 +152,7 @@ const useStyles = createStyles(({ token }) => ({
     "& input": { fontSize: 14 },
   },
   shellContentInner: {
-    padding: "20px 24px 32px",
+    padding: 16,
     minHeight: "100%",
     boxSizing: "border-box",
     display: "flex",

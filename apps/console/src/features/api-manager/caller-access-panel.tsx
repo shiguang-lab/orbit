@@ -1,4 +1,5 @@
 import { Alert, Button, Descriptions, Drawer, Empty, Flex, Form, Input, Radio, Tag, Typography, theme } from "antd";
+import { createStyles } from "antd-style";
 import dayjs from "dayjs";
 import type { ApiKeyView } from "@/entities/api";
 import { useI18n } from "@/i18n";
@@ -7,9 +8,35 @@ import { callerClientName, isCallerIpRuleValid, parseCallerIpRules } from "./cal
 
 const { Text } = Typography;
 
-export function CallerAccessFields({ style }: { style?: React.CSSProperties } = {}) {
+const useCallerAccessStyles = createStyles({
+  fillHeightItem: {
+    flex: 1,
+    minHeight: 0,
+    display: "flex",
+    flexDirection: "column",
+    "& .ant-form-item-row, & .ant-form-item-control, & .ant-form-item-control-input": {
+      flex: 1,
+      minHeight: 0,
+    },
+    "& .ant-form-item-row, & .ant-form-item-control": {
+      display: "flex",
+      flexDirection: "column",
+    },
+    "& .ant-form-item-control-input-content": {
+      height: "100%",
+    },
+    "& textarea.ant-input": {
+      height: "100% !important",
+      minHeight: "96px",
+      resize: "none",
+    },
+  },
+});
+
+export function CallerAccessFields({ style, fillHeight = false }: { style?: React.CSSProperties; fillHeight?: boolean } = {}) {
   const { tt } = useI18n();
   const { token } = theme.useToken();
+  const { styles } = useCallerAccessStyles();
   const form = Form.useFormInstance();
   const mode = Form.useWatch("ipAccessMode", form) ?? "all";
   const noLog = Form.useWatch("noLog", form);
@@ -47,6 +74,7 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
         </Radio.Group>
       </Form.Item>
       <Form.Item
+        className={fillHeight ? styles.fillHeightItem : undefined}
         name="ipAllowlist"
         label={<Text style={{ fontSize: 12 }}>{tt("允许的 IP 或网段", "Allowed IPs or networks")}</Text>}
         validateTrigger="onBlur"
@@ -76,7 +104,7 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
       >
         <Input.TextArea
           disabled={mode !== "restricted"}
-          autoSize={{ minRows: 4, maxRows: 6 }}
+          autoSize={fillHeight ? false : { minRows: 4, maxRows: 6 }}
           style={{ fontFamily: "monospace", fontSize: 12 }}
           placeholder={
             mode === "restricted"

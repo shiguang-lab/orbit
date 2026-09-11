@@ -21,7 +21,7 @@ function placeholder(navKey: string, fallbackTitle: string): ComponentType {
     const { locale, t } = useI18n();
     return createElement(
       "div",
-      { style: { padding: 24 } },
+      null,
       createElement("h2", null, navKey === "not-found" ? t("placeholder.notFound") : translate(locale, `nav.item.${navKey}`, undefined, fallbackTitle)),
       createElement("p", { style: { opacity: 0.6 } }, t("placeholder.migrating")),
     );
