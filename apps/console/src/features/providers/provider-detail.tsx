@@ -872,6 +872,8 @@ export default function ProviderDetailPage() {
     return activeConnections.length > 0 && activeConnections.every((c) => (c as any).providerSpecificData?.autoFetchModels === true);
   }, [connections]);
 
+  const isCodingPlanProvider = providerId === "volcengine-coding-plan";
+
   const handleToggleAutoFetchModels = async (enabled: boolean) => {
     const activeConnections = connections.filter((c) => c.isActive !== false);
     for (const c of activeConnections) {
@@ -1918,7 +1920,7 @@ export default function ProviderDetailPage() {
                   {connectionStatus(row, t, styles.statusTag)}
                   <Button className={styles.actionButton} size="small" color={row.rateLimitProtection ? "green" : "default"} variant="filled" icon={<MaterialIcon name="shield" />} onClick={() => rateLimitMutation.mutate({ id: row.id, enabled: !row.rateLimitProtection })}>{row.rateLimitProtection ? t("providers.protected") : t("providers.unprotected")}</Button>
                   <Button className={styles.actionButton} size="small" color={row.quotaVisible === false ? "default" : "blue"} variant="filled" icon={<MaterialIcon name="visibility" />} onClick={() => featureMutation.mutate({ id: row.id, patch: { quotaVisible: row.quotaVisible === false } })}>{t("providers.quota")}</Button>
-                  <Button className={styles.actionButton} size="small" color={(row.providerSpecificData as Record<string, unknown> | undefined)?.autoSync ? "green" : "default"} variant="filled" icon={<MaterialIcon name="sync" />} onClick={() => toggleConnectionAutoSync(row)}>{t("providers.sync")}</Button>
+                  {!isCodingPlanProvider && <Button className={styles.actionButton} size="small" color={(row.providerSpecificData as Record<string, unknown> | undefined)?.autoSync ? "green" : "default"} variant="filled" icon={<MaterialIcon name="sync" />} onClick={() => toggleConnectionAutoSync(row)}>{t("providers.sync")}</Button>}
                   <Button className={styles.actionButton} size="small" color={row.proxyEnabled === false ? "default" : "green"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => featureMutation.mutate({ id: row.id, patch: { proxyEnabled: row.proxyEnabled === false } })}>{t("providers.proxy")}</Button>
                   <Button className={styles.actionButton} size="small" color={row.perKeyProxyEnabled ? "purple" : "default"} variant="filled" icon={<MaterialIcon name="key" />} onClick={() => featureMutation.mutate({ id: row.id, patch: { perKeyProxyEnabled: !row.perKeyProxyEnabled } })}>{t("providers.perKey")}</Button>
                   {Boolean(
@@ -1984,13 +1986,13 @@ export default function ProviderDetailPage() {
                   providerDisplayAlias={providerDisplayAlias}
                   models={availableModelRows}
                   modelAliases={aliasesQuery.data || {}}
-                  allowModelImport={(kind !== "upstream-proxy" || providerId === "cliproxyapi") && Boolean(connections.length > 0)}
-                  autoFetchModels={(kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoFetchModelsEnabled}
-                  onToggleAutoFetchModels={handleToggleAutoFetchModels}
-                  autoSync={(kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoSyncEnabled}
-                  onToggleAutoSync={handleToggleAutoSync}
-                  onImportModels={() => syncModelsMutation.mutateAsync().then(() => {})}
-                  importingModels={syncModelsMutation.isPending}
+                  allowModelImport={!isCodingPlanProvider && (kind !== "upstream-proxy" || providerId === "cliproxyapi") && Boolean(connections.length > 0)}
+                  autoFetchModels={!isCodingPlanProvider && (kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoFetchModelsEnabled}
+                  onToggleAutoFetchModels={isCodingPlanProvider ? undefined : handleToggleAutoFetchModels}
+                  autoSync={!isCodingPlanProvider && (kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoSyncEnabled}
+                  onToggleAutoSync={isCodingPlanProvider ? undefined : handleToggleAutoSync}
+                  onImportModels={isCodingPlanProvider ? undefined : () => syncModelsMutation.mutateAsync().then(() => {})}
+                  importingModels={!isCodingPlanProvider && syncModelsMutation.isPending}
                   onClearAllModels={() => clearAllCustomModelsMutation.mutateAsync().then(() => {})}
                   clearingModels={clearAllCustomModelsMutation.isPending}
                   onSetAlias={(mId, alias) => setAliasMutation.mutateAsync({ modelId: mId, alias }).then(() => {})}

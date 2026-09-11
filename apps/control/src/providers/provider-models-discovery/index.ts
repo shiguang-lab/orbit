@@ -1,4 +1,4 @@
-export { getProviderModels } from "./models-route.js";
+export { getProviderModels, getProviderCatalogModels } from "./models-route.js";
 export { syncProviderModels } from "./sync-route.js";
 export {
   ensureLoopbackServerReady,

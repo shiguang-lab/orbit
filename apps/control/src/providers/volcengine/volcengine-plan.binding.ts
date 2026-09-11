@@ -261,8 +261,8 @@ export async function upsertConnection(
     volcApiKeyId: apiKeyId,
     volcPlanKind: kind,
     volcLastUsage: usage,
-    // Enable 24h model auto-sync (modelSyncScheduler picks up autoSync:true).
-    autoSync: true,
+    // Agent Plan requires console model discovery; Coding Plan uses its registry catalog.
+    ...(kind === "agent" ? { autoSync: true } : {}),
   };
 
   if (matched?.id) {

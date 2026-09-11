@@ -11,7 +11,7 @@
 
 import { getProviderConnections, updateProviderConnection } from "../db/providers.ts";
 
-const VOLC_PLAN_PROVIDERS = new Set(["volcengine-agent-plan", "volcengine-coding-plan"]);
+const VOLC_PLAN_PROVIDERS = new Set(["volcengine-agent-plan"]);
 
 let backfilled = false;
 

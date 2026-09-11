@@ -10,6 +10,7 @@ import {
 export { revalidateCodexCatalogsOnStartup } from "./codexCatalogRevalidation.js";
 
 const MODEL_SYNC_SETTING_KEY = "model_sync_last_run";
+const REGISTRY_ONLY_PROVIDERS = new Set(["volcengine-coding-plan"]);
 
 export type AutoSyncConnection = {
   id: string;
@@ -37,6 +38,7 @@ async function getAutoSyncConnections(): Promise<AutoSyncConnection[]> {
           : {};
       if (psd.autoSync !== true) continue;
       if (typeof conn.id !== "string" || typeof conn.provider !== "string") continue;
+      if (REGISTRY_ONLY_PROVIDERS.has(conn.provider)) continue;
       autoSyncConnections.push({
         id: conn.id,
         provider: conn.provider,

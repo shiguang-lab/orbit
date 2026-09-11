@@ -126,6 +126,32 @@ import {
 } from "./discovery/codex.js";
 import { maybeHandleConolModelDiscovery } from "./conolDiscovery.js";
 import { buildNoAuthModelsResponse, filterModelsForRoute } from "./modelRouteProjection.js";
+import { requireManagementAuth } from "@orbit/core/control/management-auth";
+
+/**
+ * GET /api/providers/:id/catalog-models - Return the built-in registry catalog.
+ * This is intentionally local-only: unlike /models, it never calls the upstream
+ * provider and is therefore safe for the provider detail model picker.
+ */
+export async function getProviderCatalogModels(
+  request: Request,
+  context?: { params?: Promise<Record<string, string>> | Record<string, string> },
+) {
+  const authError = await requireManagementAuth(request);
+  if (authError) return authError;
+
+  const params = await context?.params;
+  const providerId = String(params?.id || "").trim();
+  if (!providerId) return Response.json({ error: "Provider id is required" }, { status: 400 });
+
+  const entry = getRegistryEntry(providerId);
+  if (!entry) return Response.json({ error: "Provider not found" }, { status: 404 });
+
+  const models = Array.isArray(entry.models)
+    ? entry.models.map((model) => ({ ...model }))
+    : [];
+  return Response.json({ models, source: "registry" });
+}
 
 /**
  * GET /api/providers/[id]/models - Get models list from provider

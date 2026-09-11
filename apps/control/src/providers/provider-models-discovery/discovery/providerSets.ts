@@ -102,10 +102,6 @@ export const NAMED_OPENAI_STYLE_PROVIDERS = new Set([
   // unclassified, so Import Models never issued a network request and always served
   // the hardcoded 3-model seed. The registry entry also carries modelsUrl now.
   "nara",
-  // Coding Plan exposes an OpenAI-compatible model catalog at its dedicated
-  // `/api/coding/v3/models` endpoint. It uses the plan API key, so model sync
-  // must not require a separate Volcano console session.
-  "volcengine-coding-plan",
 ]);
 
 export function isNamedOpenAIStyleProvider(provider: string): boolean {

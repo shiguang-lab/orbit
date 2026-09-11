@@ -38,6 +38,7 @@ import { bulkCreateProviders } from "./handlers/provider-bulk.js";
 import { importProviders } from "./handlers/provider-import.js";
 import {
   getProviderModels as getProviderModelsDiscovery,
+  getProviderCatalogModels,
   syncProviderModels,
 } from "./provider-models-discovery/index.js";
 import {
@@ -232,6 +233,15 @@ export class ProvidersController {
     @Res() reply: FastifyReply,
   ) {
     return this.routes.dispatch(request, reply, getProviderModelsDiscovery, { id });
+  }
+
+  @Get("providers/:id/catalog-models")
+  providerCatalogModels(
+    @Param("id") id: string,
+    @Req() request: FastifyRequest,
+    @Res() reply: FastifyReply,
+  ) {
+    return this.routes.dispatch(request, reply, getProviderCatalogModels, { id });
   }
 
   @Post("providers/:id/sync-models")

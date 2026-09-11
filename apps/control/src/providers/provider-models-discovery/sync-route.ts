@@ -431,6 +431,17 @@ export async function syncProviderModels(
     logProvider = toNonEmptyString(connection.provider) || "unknown";
     channelLabel = getModelSyncChannelLabel(connection);
 
+    if (logProvider === "volcengine-coding-plan") {
+      return Response.json(
+        {
+          error: "Volcengine Ark Coding Plan uses the built-in registry catalog and does not support model synchronization.",
+          provider: logProvider,
+          source: "registry",
+        },
+        { status: 409 },
+      );
+    }
+
     // Agent Plan still requires console discovery. Coding Plan exposes the
     // ordinary OpenAI-compatible `/api/coding/v3/models` endpoint and follows
     // the default discovery path below using the connection's API key.
