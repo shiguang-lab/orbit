@@ -44,28 +44,45 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
           </Radio.Button>
         </Radio.Group>
       </Form.Item>
-      {mode === "restricted" ? (
-        <Form.Item
-          name="ipAllowlist"
-          label={<Text style={{ fontSize: 12 }}>{tt("允许的 IP 或网段", "Allowed IPs or networks")}</Text>}
-          validateTrigger="onBlur"
-          rules={[{ validator: async (_, value) => {
+      <Form.Item
+        name="ipAllowlist"
+        label={<Text style={{ fontSize: 12 }}>{tt("允许的 IP 或网段", "Allowed IPs or networks")}</Text>}
+        validateTrigger="onBlur"
+        rules={mode === "restricted" ? [{
+          validator: async (_, value) => {
             const entries = parseCallerIpRules(value);
             if (!entries.length) throw new Error(tt("请至少填写一个 IP 或网段，或选择「不限制 IP」。", "Add at least one IP or network, or select Any IP."));
             if (entries.length > 100) throw new Error(tt("最多支持 100 条规则。", "Up to 100 rules are supported."));
             const invalid = entries.filter((entry) => !isCallerIpRuleValid(entry));
             if (invalid.length) throw new Error(`${tt("格式不正确", "Invalid format")}: ${invalid.slice(0, 3).join(", ")}`);
-          } }]}
-          extra={<Flex justify="space-between" wrap gap={4} style={{ fontSize: 11, marginTop: 4 }}><span>{tt("每行一条；支持 IPv4、IPv6、CIDR，也可粘贴逗号分隔的地址。", "One per line. Supports IPv4, IPv6, CIDR and comma-separated addresses.")}</span><span>{tt(`${rules.length} / 100 条`, `${rules.length} / 100 rules`)}</span></Flex>}
-          style={{ marginBottom: 10 }}
-        >
-          <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} style={{ fontFamily: "monospace", fontSize: 12 }} placeholder={"192.0.2.10\n198.51.100.0/24\n2001:db8::/32"} />
-        </Form.Item>
-      ) : (
-        <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 8 }}>
-          {tt("持有有效密钥的调用方可从任意 IP 发起请求。", "Callers with a valid key can connect from any IP.")}
-        </Text>
-      )}
+          }
+        }] : []}
+        extra={
+          mode === "restricted" ? (
+            <Flex justify="space-between" wrap gap={4} style={{ fontSize: 11, marginTop: 4 }}>
+              <span>{tt("每行一条；支持 IPv4、IPv6、CIDR，也可粘贴逗号分隔的地址。", "One per line. Supports IPv4, IPv6, CIDR and comma-separated addresses.")}</span>
+              <span>{tt(`${rules.length} / 100 条`, `${rules.length} / 100 rules`)}</span>
+            </Flex>
+          ) : (
+            <Flex justify="space-between" wrap gap={4} style={{ fontSize: 11, marginTop: 4 }}>
+              <span>{tt("持有有效密钥的调用方可从任意网络 IP 发起请求。", "Callers with a valid key can connect from any IP.")}</span>
+              <span style={{ opacity: 0.6 }}>{tt("未限制", "Unrestricted")}</span>
+            </Flex>
+          )
+        }
+        style={{ marginBottom: 10 }}
+      >
+        <Input.TextArea
+          disabled={mode !== "restricted"}
+          autoSize={{ minRows: 3, maxRows: 6 }}
+          style={{ fontFamily: "monospace", fontSize: 12 }}
+          placeholder={
+            mode === "restricted"
+              ? "192.0.2.10\n198.51.100.0/24\n2001:db8::/32"
+              : tt("当前允许任意 IP 访问；切换为「仅允许指定 IP」后可在此配置规则", "Currently allows all IPs; switch to 'Specified IPs only' to configure rules")
+          }
+        />
+      </Form.Item>
       <Flex gap={6} align="flex-start" style={{ paddingTop: 8, marginTop: 4, borderTop: `1px dashed ${token.colorBorderSecondary}`, color: token.colorTextSecondary }}>
         <MaterialIcon name={noLog ? "visibility_off" : "history"} size={14} style={{ marginTop: 2 }} />
         <Text type="secondary" style={{ fontSize: 11 }}>{noLog
