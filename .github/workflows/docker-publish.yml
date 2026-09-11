@@ -49,13 +49,29 @@ jobs:
       - name: Run independence and runtime smoke gates
         run: pnpm verify:release
 
-  publish-console:
-    name: Publish console
+  publish:
+    name: Publish ${{ matrix.target }}
     needs: verify
     permissions:
       contents: read
       packages: write
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: console
+            context: .
+          - target: gateway
+            context: .
+          - target: control
+            context: .
+          - target: realtime
+            context: .
+          - target: worker
+            context: .
+          - target: cliproxy-manager
+            context: ./apps/cliproxy-manager
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -63,104 +79,13 @@ jobs:
       - name: Publish image
         uses: ./.github/actions/publish-image
         with:
-          target: console
+          target: ${{ matrix.target }}
+          context: ${{ matrix.context }}
           registry-token: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-gateway:
-    name: Publish gateway
-    needs: verify
-    permissions:
-      contents: read
-      packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Publish image
-        uses: ./.github/actions/publish-image
-        with:
-          target: gateway
-          registry-token: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-control:
-    name: Publish control
-    needs: verify
-    permissions:
-      contents: read
-      packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Publish image
-        uses: ./.github/actions/publish-image
-        with:
-          target: control
-          registry-token: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-realtime:
-    name: Publish realtime
-    needs: verify
-    permissions:
-      contents: read
-      packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Publish image
-        uses: ./.github/actions/publish-image
-        with:
-          target: realtime
-          registry-token: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-worker:
-    name: Publish worker
-    needs: verify
-    permissions:
-      contents: read
-      packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Publish image
-        uses: ./.github/actions/publish-image
-        with:
-          target: worker
-          registry-token: ${{ secrets.GITHUB_TOKEN }}
-
-  publish-cliproxy-manager:
-    name: Publish cliproxy-manager
-    needs: verify
-    permissions:
-      contents: read
-      packages: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Publish image
-        uses: ./.github/actions/publish-image
-        with:
-          target: cliproxy-manager
-          registry-token: ${{ secrets.GITHUB_TOKEN }}
-          context: ./apps/cliproxy-manager
 
   release:
     name: Build GitHub Release assets
-    needs:
-      - publish-console
-      - publish-gateway
-      - publish-control
-      - publish-realtime
-      - publish-worker
-      - publish-cliproxy-manager
+    needs: publish
     runs-on: ubuntu-latest
     permissions:
       contents: write
