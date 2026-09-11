@@ -25,6 +25,7 @@ import { A2aDashboard } from "./a2a-dashboard";
 import { ContextSources } from "./context-sources";
 import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
+import { normalizePublicBaseUrl, resolvePublicBaseUrl } from "./public-base-url";
 
 const { Text, Title, Paragraph } = Typography;
 const CUSTOM_PUBLIC_URL_STORAGE_KEY = "orbit.endpoints.customPublicUrl";
@@ -49,39 +50,6 @@ function persistCustomPublicUrl(value: string): boolean {
   } catch {
     return false;
   }
-}
-
-function isLocalNetworkHostname(hostname: string): boolean {
-  const host = hostname.toLowerCase().replace(/^\[|\]$/g, "");
-  const isPrivateIpv6 = host.includes(":") && (/^f[cd]/.test(host) || /^fe[89ab]/.test(host));
-  if (
-    host === "localhost" ||
-    host === "::1" ||
-    host.endsWith(".localhost") ||
-    host.endsWith(".local") ||
-    isPrivateIpv6
-  ) {
-    return true;
-  }
-
-  const octets = host.split(".").map(Number);
-  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet))) return false;
-  const [first, second] = octets;
-  return (
-    first === 10 ||
-    first === 127 ||
-    (first === 169 && second === 254) ||
-    (first === 172 && second >= 16 && second <= 31) ||
-    (first === 192 && second === 168) ||
-    (first === 100 && second >= 64 && second <= 127)
-  );
-}
-
-function getCurrentPublicBaseUrl(): string {
-  if (typeof window === "undefined") return "";
-  const { protocol, hostname, origin } = window.location;
-  if (protocol !== "https:" || isLocalNetworkHostname(hostname)) return "";
-  return `${origin.replace(/\/$/, "")}/v1`;
 }
 
 const useStyles = createStyles(({ token }) => ({
@@ -247,15 +215,12 @@ export default function EndpointsPage() {
   // Compute addresses
   const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "8787");
   const lanUrls = networkQuery.data?.lanUrls || [];
-  const currentPublicBaseUrl = getCurrentPublicBaseUrl();
-
-  const publicBaseUrl = useMemo(() => {
-    if (customPublicUrl.trim()) return customPublicUrl.trim();
-    if (cloudflaredQuery.data?.publicUrl) return `${cloudflaredQuery.data.publicUrl}/v1`;
-    if (tailscaleQuery.data?.publicUrl) return `${tailscaleQuery.data.publicUrl}/v1`;
-    if (ngrokQuery.data?.publicUrl) return `${ngrokQuery.data.publicUrl}/v1`;
-    return currentPublicBaseUrl;
-  }, [customPublicUrl, cloudflaredQuery.data, tailscaleQuery.data, ngrokQuery.data, currentPublicBaseUrl]);
+  const currentOrigin = typeof window === "undefined" ? "" : window.location.origin;
+  const publicBaseUrl = resolvePublicBaseUrl({
+    customUrl: customPublicUrl,
+    currentOrigin,
+    tunnelUrls: [cloudflaredQuery.data?.publicUrl, tailscaleQuery.data?.publicUrl, ngrokQuery.data?.publicUrl],
+  });
 
   const clientIsOverTailscale = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -348,7 +313,7 @@ export default function EndpointsPage() {
                   color={publicBaseUrl ? "success" : "default"}
                   style={{ margin: 0, fontSize: 10 }}
                 >
-                  {publicBaseUrl ? tt("在线 (HTTPS)", "Online (HTTPS)") : tt("未开启", "Disabled")}
+                  {publicBaseUrl ? tt(`已配置 (${new URL(publicBaseUrl).protocol === "https:" ? "HTTPS" : "HTTP"})`, `Configured (${new URL(publicBaseUrl).protocol === "https:" ? "HTTPS" : "HTTP"})`) : tt("未开启", "Disabled")}
                 </Tag>
               </Flex>
 
@@ -651,17 +616,11 @@ export default function EndpointsPage() {
         onCancel={() => setCustomUrlModalOpen(false)}
         title={tt("设置自定义公开域名 / 反向代理基址", "Configure Custom Public Domain / Proxy URL")}
         onOk={() => {
-          const nextUrl = customPublicUrlDraft.trim().replace(/\/+$/, "");
-          if (nextUrl) {
-            try {
-              const parsedUrl = new URL(nextUrl);
-              if (parsedUrl.protocol !== "http:" && parsedUrl.protocol !== "https:") {
-                throw new Error("unsupported protocol");
-              }
-            } catch {
-              message.error(tt("请输入有效的 HTTP 或 HTTPS 地址", "Please enter a valid HTTP or HTTPS URL"));
-              return;
-            }
+          const draft = customPublicUrlDraft.trim();
+          const nextUrl = normalizePublicBaseUrl(draft);
+          if (draft && !nextUrl) {
+            message.error(tt("请输入有效的公网域名地址；IP 地址请使用内网或专网入口。", "Enter a public domain URL. Use the LAN or Tailnet entry for IP addresses."));
+            return;
           }
           if (!persistCustomPublicUrl(nextUrl)) {
             message.error(tt("浏览器无法保存自定义公网域名", "Unable to save custom domain to browser storage"));
