@@ -47,7 +47,7 @@ test("#12407: config set claude preserves existing settings and writes Claude Co
         "--api-key",
         "sk_test_12407",
         "--base-url",
-        "http://localhost:20128/v1",
+        "http://localhost:8787/v1",
         "--yes",
         "--non-interactive",
         "--allow-container-write",
@@ -59,7 +59,7 @@ test("#12407: config set claude preserves existing settings and writes Claude Co
           HOME: home,
           USERPROFILE: home,
           ORBIT_API_KEY: "sk_test_12407",
-          ORBIT_BASE_URL: "http://localhost:20128/v1",
+          ORBIT_BASE_URL: "http://localhost:8787/v1",
         },
         timeout: 300_000, // dev-mode CLI cold start (tsx compiling the command registry) takes ~80s
       }
@@ -73,7 +73,7 @@ test("#12407: config set claude preserves existing settings and writes Claude Co
     assert.deepEqual(written.hooks, { PreToolUse: [{ command: "echo keep" }] });
     assert.deepEqual(written.statusLine, { type: "command", command: "orbit status" });
     assert.equal(written.env.KEEP_ME, "1");
-    assert.equal(written.env.ANTHROPIC_BASE_URL, "http://localhost:20128");
+    assert.equal(written.env.ANTHROPIC_BASE_URL, "http://localhost:8787");
     assert.equal(written.env.ANTHROPIC_AUTH_TOKEN, "sk_test_12407");
     assert.equal(written.env.ANTHROPIC_MODEL, "claude-fallback");
     assert.equal(written.env.CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY, "1");
