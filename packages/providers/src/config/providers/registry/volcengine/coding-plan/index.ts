@@ -12,15 +12,16 @@ import type { RegistryEntry, RegistryModel } from "../../../shared.ts";
  * user-facing catalog because it includes extra versioned/non-plan entries.
  */
 export const VOLCENGINE_CODING_PLAN_MODELS: RegistryModel[] = [
-  { id: "doubao-seed-2.0-code", name: "Doubao Seed 2.0 Code (Coding Plan)", contextLength: 262144, toolCalling: true, supportsVision: true, supportsReasoning: true },
-  { id: "doubao-seed-2.0-pro", name: "Doubao Seed 2.0 Pro (Coding Plan)", contextLength: 262144, toolCalling: true, supportsVision: true, supportsReasoning: true },
-  { id: "doubao-seed-2.0-lite", name: "Doubao Seed 2.0 Lite (Coding Plan)", contextLength: 262144, toolCalling: true, supportsReasoning: true },
-  { id: "doubao-seed-code", name: "Doubao Seed Code (Coding Plan)", contextLength: 262144, toolCalling: true, supportsReasoning: true },
-  { id: "minimax-m2.5", name: "MiniMax M2.5 (Coding Plan)", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
-  { id: "glm-4.7", name: "GLM 4.7 (Coding Plan)", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
-  { id: "deepseek-v3.2", name: "DeepSeek V3.2 (Coding Plan)", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
-  { id: "kimi-k2.5", name: "Kimi K2.5 (Coding Plan)", contextLength: 1048576, toolCalling: true, supportsVision: true, supportsReasoning: true },
-  { id: "ark-code-latest", name: "Ark Code Latest (Coding Plan)", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
+  { id: "ark-code-latest", name: "Auto", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
+  { id: "doubao-seed-2-1-turbo", name: "Doubao-Seed-2.1-turbo", contextLength: 262144, toolCalling: true, supportsVision: true, supportsReasoning: true },
+  { id: "doubao-seed-2.0-lite", name: "Doubao-Seed-2.0-lite", contextLength: 262144, toolCalling: true, supportsVision: true, supportsReasoning: true },
+  { id: "glm-5.3-flash", name: "GLM-5.3-Flash", contextLength: 1048576, toolCalling: true, supportsVision: true, supportsReasoning: true },
+  { id: "glm-5.3", name: "GLM-5.3", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
+  { id: "deepseek-v4-pro", name: "DeepSeek-V4-Pro", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
+  { id: "deepseek-v4-flash", name: "DeepSeek-V4-Flash", contextLength: 1048576, toolCalling: true, supportsReasoning: true },
+  { id: "kimi-k3", name: "Kimi-K3", contextLength: 1048576, toolCalling: true, supportsVision: true, supportsReasoning: true },
+  { id: "kimi-k2.7-code", name: "Kimi-K2.7-Code", contextLength: 1048576, toolCalling: true, supportsVision: true, supportsReasoning: true },
+  { id: "minimax-m3", name: "MiniMax-M3", contextLength: 1048576, toolCalling: true, supportsVision: true, supportsReasoning: true },
 ];
 
 export const volcengine_coding_planProvider: RegistryEntry = {
