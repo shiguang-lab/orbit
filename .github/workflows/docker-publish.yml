@@ -55,9 +55,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/publish-image.yml
-    with:
-      target: console
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Publish image
+        uses: ./.github/actions/publish-image
+        with:
+          target: console
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-gateway:
     name: Publish gateway
@@ -65,9 +72,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/publish-image.yml
-    with:
-      target: gateway
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Publish image
+        uses: ./.github/actions/publish-image
+        with:
+          target: gateway
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-control:
     name: Publish control
@@ -75,9 +89,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/publish-image.yml
-    with:
-      target: control
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Publish image
+        uses: ./.github/actions/publish-image
+        with:
+          target: control
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-realtime:
     name: Publish realtime
@@ -85,9 +106,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/publish-image.yml
-    with:
-      target: realtime
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Publish image
+        uses: ./.github/actions/publish-image
+        with:
+          target: realtime
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-worker:
     name: Publish worker
@@ -95,9 +123,16 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/publish-image.yml
-    with:
-      target: worker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Publish image
+        uses: ./.github/actions/publish-image
+        with:
+          target: worker
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
 
   publish-cliproxy-manager:
     name: Publish cliproxy-manager
@@ -105,10 +140,17 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/publish-image.yml
-    with:
-      target: cliproxy-manager
-      context: ./apps/cliproxy-manager
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Publish image
+        uses: ./.github/actions/publish-image
+        with:
+          target: cliproxy-manager
+          registry-token: ${{ secrets.GITHUB_TOKEN }}
+          context: ./apps/cliproxy-manager
 
   release:
     name: Build GitHub Release assets

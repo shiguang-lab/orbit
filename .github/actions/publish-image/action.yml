@@ -1,0 +1,90 @@
+name: Publish service image
+description: Build, smoke-test runtime services, and publish an image to GHCR.
+inputs:
+  target:
+    description: Docker build target and service image suffix.
+    required: true
+  context:
+    description: Docker build context.
+    default: .
+  registry-token:
+    description: Token with permission to publish to GHCR.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v4
+
+    - name: Log in to GHCR
+      uses: docker/login-action@v4
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ inputs.registry-token }}
+
+    - name: Reclaim runner disk space
+      shell: bash
+      run: |
+        sudo rm -rf /usr/local/lib/android /usr/share/dotnet /opt/ghc
+        docker system prune --all --force
+
+    - name: Resolve image tags
+      id: meta
+      env:
+        IMAGE_NAME: ghcr.io/shiguang-lab/orbit-${{ inputs.target }}
+        REF_NAME: ${{ github.ref_name }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        primary="${REF_NAME#v}"
+        {
+          echo "tags<<EOF"
+          echo "$IMAGE_NAME:$primary"
+          echo "$IMAGE_NAME:sha-${GITHUB_SHA::12}"
+          echo "$IMAGE_NAME:$REF_NAME"
+          echo "$IMAGE_NAME:latest"
+          echo "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: Build ${{ inputs.target }} image
+      uses: docker/build-push-action@v7
+      with:
+        context: ${{ inputs.context }}
+        target: ${{ inputs.target }}
+        # NAS deployment target is x86_64; keeping one platform avoids
+        # exhausting GitHub-hosted runner disk while building the services.
+        platforms: linux/amd64
+        push: ${{ !contains(fromJSON('["gateway", "control", "realtime", "worker"]'), inputs.target) }}
+        load: ${{ contains(fromJSON('["gateway", "control", "realtime", "worker"]'), inputs.target) }}
+        provenance: false
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: |
+          org.opencontainers.image.title=Orbit
+          org.opencontainers.image.source=https://github.com/shiguang-lab/orbit
+          org.opencontainers.image.revision=${{ github.sha }}
+        cache-from: type=gha,scope=orbit-${{ inputs.target }}
+        # Export only the final cache chain. mode=max duplicated every large
+        # pnpm/Docker layer and exhausted the hosted runner disk.
+        cache-to: type=gha,scope=orbit-${{ inputs.target }},mode=min
+
+    - name: Start built runtime image before publishing
+      if: contains(fromJSON('["gateway", "control", "realtime", "worker"]'), inputs.target)
+      env:
+        TARGET: ${{ inputs.target }}
+        IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+      shell: bash
+      run: |
+        first_tag="${IMAGE_TAGS%%$'\n'*}"
+        node scripts/smoke-built-image.mjs "$TARGET" "$first_tag"
+
+    - name: Push verified local image tags
+      if: contains(fromJSON('["gateway", "control", "realtime", "worker"]'), inputs.target)
+      env:
+        IMAGE_TAGS: ${{ steps.meta.outputs.tags }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        while IFS= read -r tag; do
+          if [[ -n "$tag" ]]; then docker push "$tag"; fi
+        done <<< "$IMAGE_TAGS"
