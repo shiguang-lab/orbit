@@ -383,28 +383,96 @@ export default function ApiManagerPage() {
 
   const columns = [
     {
-      title: tt("密钥", "API key"),
+      title: tt("密钥名称与归属", "Key name & owner"),
       key: "name",
-      width: 250,
+      width: 190,
+      render: (_: unknown, k: ApiKeyView) => (
+        <Flex vertical gap={2}>
+          <Space size={6}>
+            <MaterialIcon
+              name="vpn_key"
+              size={16}
+              style={{ color: isKeyActive(k) ? token.colorPrimary : token.colorTextQuaternary }}
+            />
+            <Text strong style={{ fontSize: 13 }} ellipsis={{ tooltip: k.name }}>
+              {k.name}
+            </Text>
+          </Space>
+          {k.machineId && (
+            <Text type="secondary" style={{ fontSize: 11, marginLeft: 22 }}>
+              {tt("设备", "Device")}: {k.machineId.slice(0, 10)}
+            </Text>
+          )}
+          {k.createdAt && (
+            <Text type="secondary" style={{ fontSize: 10, marginLeft: 22 }}>
+              {tt("创建于", "Created at")} {dayjs(k.createdAt).format("YYYY-MM-DD HH:mm")}
+            </Text>
+          )}
+        </Flex>
+      ),
+    },
+    {
+      title: tt("密钥令牌", "Token key"),
+      key: "key",
+      width: 220,
       render: (_: unknown, k: ApiKeyView) => {
         const isShown = visibleKeys.has(k.id) && revealed[k.id];
         const displayValue = isShown ? revealed[k.id] : k.key;
         return (
-          <Flex vertical gap={4} style={{ minWidth: 0 }}>
-            <Text strong ellipsis={{ tooltip: k.name }}>{k.name}</Text>
-            <Flex gap={4} align="center">
-              <Text className={styles.keyText} ellipsis={{ tooltip: isShown ? displayValue : undefined }} style={{ flex: 1, minWidth: 0 }}>{isShown ? displayValue : maskKeyClient(displayValue)}</Text>
-              {allowReveal && <Tooltip title={isShown ? tt("隐藏明文", "Hide plaintext") : tt("显示完整明文", "Reveal plaintext")}>
-                <Button type="text" aria-label={isShown ? tt("隐藏明文", "Hide plaintext") : tt("显示完整明文", "Reveal plaintext")} icon={<MaterialIcon name={isShown ? "visibility_off" : "visibility"} size={18} />} onClick={() => void revealKey(k)} />
-              </Tooltip>}
-              <Tooltip title={tt("复制密钥", "Copy key")}><Button type="text" aria-label={tt("复制密钥", "Copy key")} icon={<MaterialIcon name="content_copy" size={18} />} onClick={() => void copyKey(k)} /></Tooltip>
-            </Flex>
-            <Flex gap={8} align="center">
-              <Switch aria-label={tt("启用密钥", "Enable key")} checked={k.isActive !== false && !k.isBanned} disabled={k.isBanned === true} onChange={(checked) => updateMutation.mutate({ id: k.id, patch: { isActive: checked } })} />
-              <Tooltip title={k.expiresAt ? `${tt("到期", "Expires")}: ${dayjs(k.expiresAt).format("YYYY-MM-DD HH:mm")}` : tt("永久有效", "Never expires")}>
-                <Text type={isKeyActive(k) ? "secondary" : "warning"} style={{ fontSize: 12 }}>{k.isBanned ? tt("已封禁", "Banned") : k.expiresAt && dayjs(k.expiresAt).isBefore(dayjs()) ? tt("已过期", "Expired") : k.isActive === false ? tt("已停用", "Disabled") : tt("已启用", "Enabled")}</Text>
+          <Space size={6} align="center">
+            <span className={styles.keyText}>
+              {isShown ? displayValue : maskKeyClient(displayValue)}
+            </span>
+            {allowReveal && (
+              <Tooltip title={isShown ? tt("隐藏明文", "Hide plaintext") : tt("显示完整明文", "Reveal plaintext")}>
+                <Button
+                  type="text"
+                  aria-label={isShown ? tt("隐藏明文", "Hide plaintext") : tt("显示完整明文", "Reveal plaintext")}
+                  icon={<MaterialIcon name={isShown ? "visibility_off" : "visibility"} size={16} />}
+                  onClick={() => void revealKey(k)}
+                />
               </Tooltip>
-            </Flex>
+            )}
+            <Tooltip title={tt("复制密钥", "Copy key")}>
+              <Button
+                type="text"
+                aria-label={tt("复制密钥", "Copy key")}
+                icon={<MaterialIcon name="content_copy" size={16} />}
+                onClick={() => void copyKey(k)}
+              />
+            </Tooltip>
+          </Space>
+        );
+      },
+    },
+    {
+      title: tt("有效期与状态", "Status & Expiry"),
+      key: "status",
+      width: 150,
+      render: (_: unknown, k: ApiKeyView) => {
+        const isExpired = k.expiresAt && new Date(k.expiresAt).getTime() < Date.now();
+        const active = isKeyActive(k);
+
+        return (
+          <Flex vertical gap={4}>
+            <Space size={6}>
+              <Switch
+                aria-label={tt("启用密钥", "Enable key")}
+                checked={k.isActive !== false && !k.isBanned}
+                disabled={k.isBanned === true}
+                onChange={(checked) => {
+                  updateMutation.mutate({ id: k.id, patch: { isActive: checked } });
+                }}
+              />
+              <Tag color={k.isBanned ? "error" : isExpired ? "warning" : active ? "success" : "default"}>
+                {k.isBanned ? tt("已封禁", "Banned") : isExpired ? tt("已过期", "Expired") : active ? tt("正常", "Active") : tt("已停用", "Disabled")}
+              </Tag>
+            </Space>
+            <Text type="secondary" style={{ fontSize: 11 }}>
+              {k.expiresAt
+                ? tt(`到期: ${dayjs(k.expiresAt).format("YYYY-MM-DD")}`, `Expires: ${dayjs(k.expiresAt).format("YYYY-MM-DD")}`)
+                : tt("永久有效", "Never expires")}
+            </Text>
           </Flex>
         );
       },
@@ -699,7 +767,7 @@ export default function ApiManagerPage() {
           columns={columns}
           rowKey="id"
           tableLayout="fixed"
-          scroll={{ x: 920 }}
+          scroll={{ x: 1200 }}
           pagination={{ pageSize: 15, showTotal: (t) => `共 ${t} 个密钥` }}
           loading={keysQuery.isLoading}
           size="middle"
