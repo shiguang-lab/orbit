@@ -9,3 +9,7 @@ coverage
 .idea
 .claude
 .workbuddy
+
+# Runtime caches are refreshed in place and must not be versioned.
+/apps/control/data/
+/apps/worker/data/cache/openrouter-provider-stats.json
