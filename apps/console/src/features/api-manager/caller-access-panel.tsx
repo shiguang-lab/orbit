@@ -34,11 +34,15 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
       <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 12 }}>
         {tt("决定哪些网络地址可以使用此密钥，与模型权限同时生效。", "Choose which network addresses can use this key, alongside its model permissions.")}
       </Text>
-      <Form.Item name="ipAccessMode" label={<Text style={{ fontSize: 12 }}>{tt("IP 访问范围", "IP Access Range")}</Text>} initialValue="all" style={{ marginBottom: mode === "restricted" ? 12 : 8 }}>
-        <Radio.Group options={[
-          { value: "all", label: tt("不限制 IP", "Any IP") },
-          { value: "restricted", label: tt("仅允许指定 IP", "Specified IPs only") },
-        ]} />
+      <Form.Item name="ipAccessMode" initialValue="all" style={{ marginBottom: mode === "restricted" ? 12 : 8 }}>
+        <Radio.Group style={{ width: "100%", display: "flex" }}>
+          <Radio.Button value="all" style={{ flex: 1, textAlign: "center" }}>
+            {tt("不限制 IP", "Any IP")}
+          </Radio.Button>
+          <Radio.Button value="restricted" style={{ flex: 1, textAlign: "center" }}>
+            {tt("仅允许指定 IP", "Specified IPs only")}
+          </Radio.Button>
+        </Radio.Group>
       </Form.Item>
       {mode === "restricted" ? (
         <Form.Item

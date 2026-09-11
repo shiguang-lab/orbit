@@ -1211,9 +1211,13 @@ export default function ApiManagerPage() {
                   {tt("配置该密钥允许访问的模型组合套餐范围：", "Configure allowed model combos for this key:")}
                 </Text>
                 <Form.Item name="comboAccessMode" style={{ marginBottom: 12 }}>
-                  <Radio.Group>
-                    <Radio.Button value="all">{tt("允许全部组合", "Allow all combos")}</Radio.Button>
-                    <Radio.Button value="restricted">{tt("限定组合", "Restrict combos")}</Radio.Button>
+                  <Radio.Group style={{ width: "100%", display: "flex" }}>
+                    <Radio.Button value="all" style={{ flex: 1, textAlign: "center" }}>
+                      {tt("允许全部组合", "Allow all combos")}
+                    </Radio.Button>
+                    <Radio.Button value="restricted" style={{ flex: 1, textAlign: "center" }}>
+                      {tt("限定组合", "Restrict combos")}
+                    </Radio.Button>
                   </Radio.Group>
                 </Form.Item>
                 <Form.Item
@@ -1265,42 +1269,14 @@ export default function ApiManagerPage() {
                   }}
                 </Form.Item>
               </div>
-
-              {/* Card: 调用方访问控制 */}
-              <CallerAccessFields />
             </Col>
 
-            {/* Right Column: Management Access, Self-Service & Spending Limits */}
+            {/* Right Column: Caller Access & Quota / Traffic Limits */}
             <Col xs={24} md={12}>
-              {/* Card: 管理访问权限 */}
-              <div
-                style={{
-                  padding: 14,
-                  borderRadius: 8,
-                  background: token.colorFillQuaternary,
-                  border: `1px solid ${token.colorBorderSecondary}`,
-                  marginBottom: 16,
-                }}
-              >
-                <Flex align="center" justify="space-between">
-                  <div style={{ paddingRight: 12 }}>
-                    <Flex align="center" gap={6}>
-                      <MaterialIcon name="admin_panel_settings" size={16} style={{ color: "#F43F5E" }} />
-                      <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                        {tt("管理访问权限", "Management Access")}
-                      </Text>
-                    </Flex>
-                    <Text type="secondary" style={{ fontSize: 11, display: "block", marginTop: 4 }}>
-                      {tt("允许此密钥访问管理控制台与系统配置接口（建议仅限管理员使用）", "Allow this key to access the management console and system configuration APIs. Recommended for administrators only.")}
-                    </Text>
-                  </div>
-                  <Form.Item name="manageEnabled" valuePropName="checked" noStyle>
-                    <Switch />
-                  </Form.Item>
-                </Flex>
-              </div>
+              {/* Card: 调用方访问控制 */}
+              <CallerAccessFields />
 
-              {/* Card: 自助服务与用量可见性及预算限制 */}
+              {/* Card: 额度与流量治理 */}
               <div
                 style={{
                   padding: 14,
@@ -1311,68 +1287,22 @@ export default function ApiManagerPage() {
                 }}
               >
                 <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
-                  <MaterialIcon name="query_stats" size={16} style={{ color: "#10B981" }} />
+                  <MaterialIcon name="speed" size={16} style={{ color: "#F59E0B" }} />
                   <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                    {tt("自助服务与用量可见性", "Self-Service Visibility")}
+                    {tt("额度与流量治理", "Quota & Traffic Limits")}
                   </Text>
                 </Flex>
                 <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 12 }}>
-                  {tt("控制客户端使用此密钥时能够直接查询的用量统计与消费上限：", "Control usage statistics and spending limits clients can query directly with this key:")}
+                  {tt("设置该密钥的消费上限与并发速率，防止超额消耗与突发洪峰：", "Set spend limits and concurrency rates to prevent unexpected cost surges and traffic spikes:")}
                 </Text>
 
                 <Flex vertical gap={12}>
-                  <Flex align="center" justify="space-between">
-                    <div>
-                      <Text style={{ fontSize: 12 }}>{tt("自身用量可见性", "Own Usage Visibility")}</Text>
-                      <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                        {tt("允许持有者查询该密钥自身的用量统计和消耗明细", "Allow the holder to view this key's usage statistics and consumption details.")}
-                      </Text>
-                    </div>
-                    <Form.Item name="selfUsageEnabled" valuePropName="checked" noStyle>
-                      <Switch />
-                    </Form.Item>
-                  </Flex>
-
-                  <Form.Item
-                    noStyle
-                    shouldUpdate={(prev, curr) => prev.selfUsageEnabled !== curr.selfUsageEnabled}
-                  >
-                    {({ getFieldValue }) => {
-                      const selfUsage = getFieldValue("selfUsageEnabled");
-                      return (
-                        <Flex align="center" justify="space-between" style={{ opacity: selfUsage ? 1 : 0.5 }}>
-                          <div>
-                            <Text style={{ fontSize: 12 }}>{tt("共享账户额度可见性", "Shared Account Quota")}</Text>
-                            <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                              {tt("允许此密钥查询账户剩余总额度（依赖自身用量可见性）", "Allow this key to view the account's remaining total quota. Requires own usage visibility.")}
-                            </Text>
-                          </div>
-                          <Form.Item name="selfAccountQuotaEnabled" valuePropName="checked" noStyle>
-                            <Switch disabled={!selfUsage} />
-                          </Form.Item>
-                        </Flex>
-                      );
-                    }}
-                  </Form.Item>
-
-                  <Flex align="center" justify="space-between">
-                    <div>
-                      <Text style={{ fontSize: 12 }}>{tt("本地用量快捷指令", "Local Usage Command")}</Text>
-                      <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                        {tt("允许在支持的客户端通过 /usage 指令直接返回当前配额", "Allow supported clients to return the current quota with the /usage command.")}
-                      </Text>
-                    </div>
-                    <Form.Item name="allowUsageCommand" valuePropName="checked" noStyle>
-                      <Switch />
-                    </Form.Item>
-                  </Flex>
-
-                  <div style={{ borderTop: `1px dashed ${token.colorBorderSecondary}`, paddingTop: 10 }}>
-                    <Flex align="center" justify="space-between" style={{ marginBottom: 8 }}>
+                  <div>
+                    <Flex align="center" justify="space-between">
                       <div>
-                        <Text style={{ fontSize: 12 }}>{tt("USD 消费额度硬限制", "Usage Limits")}</Text>
+                        <Text style={{ fontSize: 12 }}>{tt("USD 消费额度硬限制", "USD Spend Hard Limit")}</Text>
                         <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
-                          {tt("达到消费上限后自动暂停该密钥的计费推理请求", "Pause this key's billable inference requests automatically when the spending limit is reached.")}
+                          {tt("达到消费上限后自动暂停该密钥的计费推理请求", "Pause billing inference requests once the spend threshold is reached.")}
                         </Text>
                       </div>
                       <Form.Item name="usageLimitEnabled" valuePropName="checked" noStyle>
@@ -1412,12 +1342,35 @@ export default function ApiManagerPage() {
                       }}
                     </Form.Item>
                   </div>
+
+                  <div style={{ borderTop: `1px dashed ${token.colorBorderSecondary}`, paddingTop: 10 }}>
+                    <Row gutter={16} style={{ marginInline: 0 }}>
+                      <Col span={12}>
+                        <Form.Item
+                          name="maxSessions"
+                          label={<Text style={{ fontSize: 12 }}>{tt("最大并发会话数", "Maximum concurrent sessions")}</Text>}
+                          style={{ marginBottom: 0 }}
+                        >
+                          <InputNumber min={1} max={10000} style={{ width: "100%" }} placeholder={tt("无限制", "Unlimited")} />
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item
+                          name="throttleDelayMs"
+                          label={<Text style={{ fontSize: 12 }}>{tt("请求软延迟延时 (ms)", "Request soft delay (ms)")}</Text>}
+                          style={{ marginBottom: 0 }}
+                        >
+                          <InputNumber min={0} max={300000} step={100} style={{ width: "100%" }} placeholder="0" />
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
                 </Flex>
               </div>
             </Col>
           </Row>
 
-          {/* Bottom Collapsible: 高级安全与流量控制 */}
+          {/* Bottom Collapsible: 权限范围与高级特性 */}
           <Collapse
             style={{ marginTop: 8, overflowX: "hidden" }}
             items={[{
@@ -1425,13 +1378,93 @@ export default function ApiManagerPage() {
               label: (
                 <Flex align="center" gap={6}>
                   <MaterialIcon name="tune" size={16} style={{ color: "#8B5CF6" }} />
-                  <Text strong>{tt("高级安全与流量控制", "Advanced security & traffic controls")}</Text>
+                  <Text strong>{tt("权限范围与高级特性", "Permissions & Advanced Features")}</Text>
                 </Flex>
               ),
               forceRender: true,
               children: (
                 <Row gutter={[16, 16]} style={{ marginInline: 0 }}>
-                  {/* Left Column in Collapse: 安全与协议特性 */}
+                  {/* Left Column in Collapse: 客户端权限与自助服务 */}
+                  <Col xs={24} md={12}>
+                    <div
+                      style={{
+                        padding: 14,
+                        borderRadius: 8,
+                        background: token.colorFillQuaternary,
+                        border: `1px solid ${token.colorBorderSecondary}`,
+                        marginBottom: 8,
+                      }}
+                    >
+                      <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+                        <MaterialIcon name="admin_panel_settings" size={16} style={{ color: "#F43F5E" }} />
+                        <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
+                          {tt("客户端权限与自助服务", "Permissions & Self-Service")}
+                        </Text>
+                      </Flex>
+
+                      <Flex vertical gap={12}>
+                        <Flex align="center" justify="space-between">
+                          <div style={{ paddingRight: 12 }}>
+                            <Text style={{ fontSize: 12 }}>{tt("管理访问权限", "Management Access")}</Text>
+                            <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+                              {tt("允许此密钥访问管理控制台与系统配置接口", "Allow this key to access the management console and system configuration APIs.")}
+                            </Text>
+                          </div>
+                          <Form.Item name="manageEnabled" valuePropName="checked" noStyle>
+                            <Switch />
+                          </Form.Item>
+                        </Flex>
+
+                        <Flex align="center" justify="space-between">
+                          <div style={{ paddingRight: 12 }}>
+                            <Text style={{ fontSize: 12 }}>{tt("自身用量可见性", "Own Usage Visibility")}</Text>
+                            <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+                              {tt("允许持有者查询该密钥自身的用量统计和消耗明细", "Allow the holder to view this key's usage statistics and consumption details.")}
+                            </Text>
+                          </div>
+                          <Form.Item name="selfUsageEnabled" valuePropName="checked" noStyle>
+                            <Switch />
+                          </Form.Item>
+                        </Flex>
+
+                        <Form.Item
+                          noStyle
+                          shouldUpdate={(prev, curr) => prev.selfUsageEnabled !== curr.selfUsageEnabled}
+                        >
+                          {({ getFieldValue }) => {
+                            const selfUsage = getFieldValue("selfUsageEnabled");
+                            return (
+                              <Flex align="center" justify="space-between" style={{ opacity: selfUsage ? 1 : 0.5 }}>
+                                <div style={{ paddingRight: 12 }}>
+                                  <Text style={{ fontSize: 12 }}>{tt("共享账户额度可见性", "Shared Account Quota")}</Text>
+                                  <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+                                    {tt("允许此密钥查询账户剩余总额度（依赖自身用量可见性）", "Allow this key to view the account's remaining total quota. Requires own usage visibility.")}
+                                  </Text>
+                                </div>
+                                <Form.Item name="selfAccountQuotaEnabled" valuePropName="checked" noStyle>
+                                  <Switch disabled={!selfUsage} />
+                                </Form.Item>
+                              </Flex>
+                            );
+                          }}
+                        </Form.Item>
+
+                        <Flex align="center" justify="space-between">
+                          <div style={{ paddingRight: 12 }}>
+                            <Text style={{ fontSize: 12 }}>{tt("本地用量快捷指令", "Local Usage Command")}</Text>
+                            <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
+                              {tt("允许在支持的客户端通过 /usage 指令直接返回当前配额", "Allow supported clients to return the current quota with the /usage command.")}
+                            </Text>
+                          </div>
+                          <Form.Item name="allowUsageCommand" valuePropName="checked" noStyle>
+                            <Switch />
+                          </Form.Item>
+                        </Flex>
+                      </Flex>
+                    </div>
+                  </Col>
+
+                  {/* Right Column in Collapse: 安全与协议特性 */}
                   <Col xs={24} md={12}>
                     <div
                       style={{
@@ -1451,7 +1484,7 @@ export default function ApiManagerPage() {
 
                       <Flex vertical gap={12}>
                         <Flex align="center" justify="space-between">
-                          <div>
+                          <div style={{ paddingRight: 12 }}>
                             <Text style={{ fontSize: 12 }}>{tt("免日志审计模式", "No-Log Mode")}</Text>
                             <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
                               {tt("不记录请求 Payload 与 Prompt，适用于极端隐私场景", "Do not record request payloads or prompts; suitable for highly private workloads.")}
@@ -1463,7 +1496,7 @@ export default function ApiManagerPage() {
                         </Flex>
 
                         <Flex align="center" justify="space-between">
-                          <div>
+                          <div style={{ paddingRight: 12 }}>
                             <Text style={{ fontSize: 12 }}>{tt("压缩加速传输", "Compression")}</Text>
                             <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
                               {tt("为该密钥开启请求与响应的 Gzip/Brotli 压缩传输", "Enable Gzip/Brotli compression for this key's requests and responses.")}
@@ -1475,7 +1508,7 @@ export default function ApiManagerPage() {
                         </Flex>
 
                         <Flex align="center" justify="space-between">
-                          <div>
+                          <div style={{ paddingRight: 12 }}>
                             <Text style={{ fontSize: 12 }}>{tt("模型别名自动消歧解析", "Auto-Resolve")}</Text>
                             <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
                               {tt("自动将模糊模型名（如 claude-3-5-sonnet）解析映射至最优可用提供商", "Resolve ambiguous model names, such as claude-3-5-sonnet, to the best available provider.")}
@@ -1487,7 +1520,7 @@ export default function ApiManagerPage() {
                         </Flex>
 
                         <Flex align="center" justify="space-between">
-                          <div>
+                          <div style={{ paddingRight: 12 }}>
                             <Text style={{ fontSize: 12 }}>{tt("禁用非公开私有模型", "Disable Non-Public Models")}</Text>
                             <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
                               {tt("禁止此密钥访问实验性或非公开的私有提供商模型", "Prevent this key from accessing experimental or non-public provider models.")}
@@ -1499,7 +1532,7 @@ export default function ApiManagerPage() {
                         </Flex>
 
                         <Flex align="center" justify="space-between">
-                          <div>
+                          <div style={{ paddingRight: 12 }}>
                             <Text style={{ fontSize: 12 }}>{tt("混沌工程测试模式", "Chaos Mode")}</Text>
                             <Text type="secondary" style={{ fontSize: 11, display: "block" }}>
                               {tt("随机注入故障与模拟网络延迟，用于容灾弹性验证", "Inject simulated failures and network latency for resilience testing.")}
@@ -1510,47 +1543,6 @@ export default function ApiManagerPage() {
                           </Form.Item>
                         </Flex>
                       </Flex>
-                    </div>
-                  </Col>
-
-                  {/* Right Column in Collapse: 流量并发与节流 */}
-                  <Col xs={24} md={12}>
-                    <div
-                      style={{
-                        padding: 14,
-                        borderRadius: 8,
-                        background: token.colorFillQuaternary,
-                        border: `1px solid ${token.colorBorderSecondary}`,
-                        marginBottom: 8,
-                      }}
-                    >
-                      <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
-                        <MaterialIcon name="speed" size={16} style={{ color: "#F59E0B" }} />
-                        <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
-                          {tt("流量并发与节流限制", "Traffic & Concurrency")}
-                        </Text>
-                      </Flex>
-
-                      <Row gutter={16} style={{ marginInline: 0 }}>
-                        <Col span={12}>
-                          <Form.Item
-                            name="maxSessions"
-                            label={<Text style={{ fontSize: 12 }}>{tt("最大并发会话数", "Maximum concurrent sessions")}</Text>}
-                            style={{ marginBottom: 0 }}
-                          >
-                            <InputNumber min={1} max={10000} style={{ width: "100%" }} placeholder={tt("无限制", "Unlimited")} />
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
-                          <Form.Item
-                            name="throttleDelayMs"
-                            label={<Text style={{ fontSize: 12 }}>{tt("请求软延迟延时 (ms)", "Request soft delay (ms)")}</Text>}
-                            style={{ marginBottom: 0 }}
-                          >
-                            <InputNumber min={0} max={300000} step={100} style={{ width: "100%" }} placeholder="0" />
-                          </Form.Item>
-                        </Col>
-                      </Row>
                     </div>
                   </Col>
                 </Row>
