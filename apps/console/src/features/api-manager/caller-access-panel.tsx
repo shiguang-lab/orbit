@@ -22,6 +22,8 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
         background: token.colorFillQuaternary,
         border: `1px solid ${token.colorBorderSecondary}`,
         marginBottom: 16,
+        display: "flex",
+        flexDirection: "column",
         ...style,
       }}
     >
@@ -74,7 +76,7 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
       >
         <Input.TextArea
           disabled={mode !== "restricted"}
-          autoSize={{ minRows: 3, maxRows: 6 }}
+          autoSize={{ minRows: 4, maxRows: 6 }}
           style={{ fontFamily: "monospace", fontSize: 12 }}
           placeholder={
             mode === "restricted"
@@ -83,7 +85,7 @@ export function CallerAccessFields({ style }: { style?: React.CSSProperties } = 
           }
         />
       </Form.Item>
-      <Flex gap={6} align="flex-start" style={{ paddingTop: 8, marginTop: 4, borderTop: `1px dashed ${token.colorBorderSecondary}`, color: token.colorTextSecondary }}>
+      <Flex gap={6} align="flex-start" style={{ paddingTop: 8, marginTop: "auto", borderTop: `1px dashed ${token.colorBorderSecondary}`, color: token.colorTextSecondary }}>
         <MaterialIcon name={noLog ? "visibility_off" : "history"} size={14} style={{ marginTop: 2 }} />
         <Text type="secondary" style={{ fontSize: 11 }}>{noLog
           ? tt("已开启免日志：保存后将清除已有来源，并停止记录。IP 限制仍然生效。", "No-log is enabled: saving clears the recorded source and stops recording. IP restrictions still apply.")
