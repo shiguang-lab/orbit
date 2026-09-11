@@ -820,7 +820,7 @@ export class DefaultExecutor extends BaseExecutor {
       const hasUserTag = stringTags.some((t) => t.startsWith("user="));
       if (!hasUserTag) {
         const username =
-          typeof record.user === "string" && record.user.trim() ? record.user.trim() : "omniroute";
+          typeof record.user === "string" && record.user.trim() ? record.user.trim() : "orbit";
         record.tags = [...stringTags, `user=${username}`];
       } else {
         record.tags = stringTags;
