@@ -725,7 +725,7 @@ export default function ApiManagerPage() {
         }
         width={960}
         centered
-        styles={{ body: { maxHeight: "calc(100dvh - 160px)", overflowY: "auto", paddingRight: 6 } }}
+        styles={{ body: { maxHeight: "calc(100dvh - 160px)", overflowY: "auto", overflowX: "hidden", paddingRight: 8 } }}
         onOk={() => createForm.submit()}
         confirmLoading={createMutation.isPending}
         okText={tt("确认创建", "Create Key")}
@@ -758,7 +758,7 @@ export default function ApiManagerPage() {
             };
             createMutation.mutate(payload);
           }}
-          style={{ marginTop: 16 }}
+          style={{ marginTop: 16, maxWidth: "100%", overflowX: "hidden" }}
         >
           {/* Key Name - Full Width */}
           <div
@@ -787,7 +787,7 @@ export default function ApiManagerPage() {
             </Form.Item>
           </div>
 
-          <Row gutter={16}>
+          <Row gutter={[16, 16]} style={{ marginInline: 0 }}>
             {/* Left Column: Caller Access & Management */}
             <Col xs={24} md={12}>
               <CallerAccessFields />
@@ -1013,7 +1013,7 @@ export default function ApiManagerPage() {
         confirmLoading={updateMutation.isPending}
         okText={tt("保存更改", "Save Changes")}
         cancelText={tt("取消", "Cancel")}
-        styles={{ body: { maxHeight: "calc(100dvh - 160px)", overflowY: "auto", paddingRight: 6 } }}
+        styles={{ body: { maxHeight: "calc(100dvh - 160px)", overflowY: "auto", overflowX: "hidden", paddingRight: 8 } }}
       >
         <Form
           form={editForm}
@@ -1058,7 +1058,7 @@ export default function ApiManagerPage() {
             };
             updateMutation.mutate({ id: editTarget.id, patch });
           }}
-          style={{ marginTop: 12 }}
+          style={{ marginTop: 12, maxWidth: "100%", overflowX: "hidden" }}
         >
           {/* Top Card: 基本标识与生命周期 (Full Width) */}
           <div
@@ -1086,7 +1086,7 @@ export default function ApiManagerPage() {
               <Input placeholder={tt("例如: 生产网关客户端", "Example: production gateway client")} maxLength={200} />
             </Form.Item>
 
-            <Row gutter={16}>
+            <Row gutter={16} style={{ marginInline: 0 }}>
               <Col span={12}>
                 <Form.Item
                   name="expiresAt"
@@ -1121,7 +1121,7 @@ export default function ApiManagerPage() {
             </Row>
           </div>
 
-          <Row gutter={16}>
+          <Row gutter={[16, 16]} style={{ marginInline: 0 }}>
             {/* Left Column: Model Access, Combo Access, Caller IP */}
             <Col xs={24} md={12}>
               {/* Card: 模型访问控制 */}
@@ -1145,14 +1145,14 @@ export default function ApiManagerPage() {
                 </Text>
 
                 <Form.Item name="modelAccessMode" style={{ marginBottom: 12 }}>
-                  <Radio.Group style={{ width: "100%" }}>
-                    <Radio.Button value="all" style={{ width: "33.3%", textAlign: "center" }}>
+                  <Radio.Group style={{ width: "100%", display: "flex" }}>
+                    <Radio.Button value="all" style={{ flex: 1, textAlign: "center" }}>
                       {tt("全部模型", "All")}
                     </Radio.Button>
-                    <Radio.Button value="custom" style={{ width: "33.3%", textAlign: "center" }}>
+                    <Radio.Button value="custom" style={{ flex: 1, textAlign: "center" }}>
                       {tt("白名单限定", "Allowlist")}
                     </Radio.Button>
-                    <Radio.Button value="blacklist" style={{ width: "33.4%", textAlign: "center" }}>
+                    <Radio.Button value="blacklist" style={{ flex: 1, textAlign: "center" }}>
                       {tt("黑名单排除", "Blocklist")}
                     </Radio.Button>
                   </Radio.Group>
@@ -1388,7 +1388,7 @@ export default function ApiManagerPage() {
                         const limitOn = getFieldValue("usageLimitEnabled");
                         if (!limitOn) return null;
                         return (
-                          <Row gutter={16} style={{ marginTop: 8 }}>
+                          <Row gutter={16} style={{ marginTop: 8, marginInline: 0 }}>
                             <Col span={12}>
                               <Form.Item
                                 name="dailyUsageLimitUsd"
@@ -1419,7 +1419,7 @@ export default function ApiManagerPage() {
 
           {/* Bottom Collapsible: 高级安全与流量控制 */}
           <Collapse
-            style={{ marginTop: 8 }}
+            style={{ marginTop: 8, overflowX: "hidden" }}
             items={[{
               key: "advanced",
               label: (
@@ -1430,7 +1430,7 @@ export default function ApiManagerPage() {
               ),
               forceRender: true,
               children: (
-                <Row gutter={16}>
+                <Row gutter={[16, 16]} style={{ marginInline: 0 }}>
                   {/* Left Column in Collapse: 安全与协议特性 */}
                   <Col xs={24} md={12}>
                     <div
@@ -1531,7 +1531,7 @@ export default function ApiManagerPage() {
                         </Text>
                       </Flex>
 
-                      <Row gutter={16}>
+                      <Row gutter={16} style={{ marginInline: 0 }}>
                         <Col span={12}>
                           <Form.Item
                             name="maxSessions"
