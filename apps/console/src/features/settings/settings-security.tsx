@@ -276,7 +276,7 @@ export function SettingsSecurityPage() {
                 style={{ width: 260 }}
               />
               <Button icon={<MaterialIcon name="add" size={14} />} onClick={handleAddCidr}>
-                {tt("添加规则", "Add Rule")}
+                {tt("添加", "Add")}
               </Button>
             </Space>
           </Flex>
@@ -325,7 +325,7 @@ export function SettingsSecurityPage() {
               style={{ width: 240 }}
             />
             <Button icon={<MaterialIcon name="add" size={14} />} onClick={handleAddKeyword}>
-              {tt("添加违禁词", "Add Keyword")}
+              {tt("添加", "Add")}
             </Button>
           </Space>
         </Flex>

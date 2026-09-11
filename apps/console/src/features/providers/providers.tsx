@@ -216,7 +216,7 @@ function SummaryChip({
 
 export default function ProvidersPage() {
   const { styles } = useProviderStyles();
-  const { t } = useI18n();
+  const { t, tt } = useI18n();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
@@ -625,7 +625,7 @@ export default function ProvidersPage() {
                 ]}
               />
               <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new")}>
-                {t("新建", "New")}
+                {tt("新建", "New")}
               </Button>
               <Button icon={<MaterialIcon name="upload_file" />} onClick={() => setImportOpen(true)}>
                 {t("providersPage.importFile")}
@@ -719,9 +719,9 @@ export default function ProvidersPage() {
               actions={(
                 <Space wrap>
                   {groups.length > 0 && <Button icon={<MaterialIcon name="play_circle" />} onClick={() => testMutation.mutate({ mode: "compatible" })} loading={testMutation.isPending && testMutation.variables.mode === "compatible"}>{t("providers.testAll")}</Button>}
-                  {nodesQuery.data?.ccCompatibleProviderEnabled && <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=cc-compatible")}>{t("新建", "New")}</Button>}
-                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=anthropic-compatible")}>{t("新建", "New")}</Button>
-                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=openai-compatible")}>{t("新建", "New")}</Button>
+                  {nodesQuery.data?.ccCompatibleProviderEnabled && <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=cc-compatible")}>{t("providersPage.addCcCompatible")}</Button>}
+                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=anthropic-compatible")}>{t("providersPage.addAnthropicCompatible")}</Button>
+                  <Button type="primary" icon={<MaterialIcon name="add" />} onClick={() => navigate("/dashboard/providers/new?kind=openai-compatible")}>{t("providersPage.addOpenAiCompatible")}</Button>
                 </Space>
               )}
               navigate={navigate}
@@ -918,7 +918,11 @@ function ProviderCard({ group, onOpen, onTest, testing, onToggle, togglingId }: 
             {group.subscriptionRisk && <ProviderRiskIndicator variant={group.riskNoticeVariant} provider={group.displayName} />}
           </Flex>
           <Flex gap={4} wrap>
-            {group.popularityRank && <Tag color="gold">OR #{group.popularityRank}</Tag>}
+            {group.popularityRank && (
+              <Tooltip title={t("providersPage.popularityRankTooltip", { rank: group.popularityRank })}>
+                <Tag color="gold" style={{ cursor: "default" }}>OR #{group.popularityRank}</Tag>
+              </Tooltip>
+            )}
             {group.codexServiceTier && group.codexServiceTier !== "false" && <Tag color="purple">Codex {group.codexServiceTier}</Tag>}
           </Flex>
         </Flex>

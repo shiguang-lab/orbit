@@ -569,7 +569,7 @@ export async function detectTailscaleNode(
   const envUrl = process.env.TAILSCALE_URL?.trim();
   const envIp = process.env.TAILSCALE_IP?.trim();
   const envHostname = process.env.TAILSCALE_HOSTNAME?.trim();
-  const envDomain = (process.env.TS_DOMAIN || process.env.MAGIC_DNS || envHostname)?.trim();
+  const envDomain = (process.env.TS_DOMAIN || process.env.MAGIC_DNS || (envHostname?.includes(".") ? envHostname : undefined))?.trim();
 
   if (envUrl || envIp || envDomain) {
     let parsedIp = envIp || null;
@@ -745,11 +745,13 @@ export async function detectTailscaleNode(
   if (opts.requestHost) {
     recordPassiveTailscaleHost(opts.requestHost);
   }
-  const candidateHost = opts.requestHost || (
-    Date.now() - _lastPassiveTailscaleTimestamp < PASSIVE_TTL_MS
-      ? _lastPassiveTailscaleHost
-      : null
-  );
+  const candidateHost = (opts.requestHost && isTailscaleHost(opts.requestHost))
+    ? opts.requestHost
+    : (
+        Date.now() - _lastPassiveTailscaleTimestamp < PASSIVE_TTL_MS
+          ? _lastPassiveTailscaleHost
+          : null
+      );
 
   if (candidateHost && isTailscaleHost(candidateHost)) {
     const isHttps = candidateHost.endsWith(".ts.net") || candidateHost.includes(":443");

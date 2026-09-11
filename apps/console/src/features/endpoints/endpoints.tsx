@@ -3,11 +3,13 @@ import {
   Button,
   Card,
   Col,
+  Divider,
   Flex,
   Input,
   Modal,
   Popconfirm,
   Row,
+  Segmented,
   Space,
   Switch,
   Tabs,
@@ -45,6 +47,30 @@ function persistCustomPublicUrl(value: string): boolean {
       window.localStorage.setItem(CUSTOM_PUBLIC_URL_STORAGE_KEY, value);
     } else {
       window.localStorage.removeItem(CUSTOM_PUBLIC_URL_STORAGE_KEY);
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const CUSTOM_TAILSCALE_URL_STORAGE_KEY = "orbit.endpoints.customTailscaleUrl";
+
+function readStoredCustomTailscaleUrl(): string {
+  if (typeof window === "undefined") return "";
+  try {
+    return window.localStorage.getItem(CUSTOM_TAILSCALE_URL_STORAGE_KEY)?.trim() ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function persistCustomTailscaleUrl(value: string): boolean {
+  try {
+    if (value) {
+      window.localStorage.setItem(CUSTOM_TAILSCALE_URL_STORAGE_KEY, value);
+    } else {
+      window.localStorage.removeItem(CUSTOM_TAILSCALE_URL_STORAGE_KEY);
     }
     return true;
   } catch {
@@ -103,6 +129,9 @@ export default function EndpointsPage() {
   const [tailscaleAuthKey, setTailscaleAuthKey] = useState("");
   const [tailscaleHostname, setTailscaleHostname] = useState("orbit-gateway");
   const [tailscaleEphemeral, setTailscaleEphemeral] = useState(false);
+  const [customTailscaleUrl, setCustomTailscaleUrl] = useState<string>(readStoredCustomTailscaleUrl);
+  const [customTailscaleDraft, setCustomTailscaleDraft] = useState<string>(customTailscaleUrl);
+  const [tailscaleModalTab, setTailscaleModalTab] = useState<"manual" | "authkey" | "docker">("manual");
 
   // Network info query
   const networkQuery = useQuery({
@@ -212,6 +241,38 @@ export default function EndpointsPage() {
     message.success(successMsg);
   };
 
+  const handleSaveCustomTailscale = () => {
+    const raw = customTailscaleDraft.trim();
+    if (!raw) return;
+    let formatted = raw;
+    const cleanHost = raw.replace(/^https?:\/\//, "").split("/")[0];
+    if (/^100\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(cleanHost)) {
+      const hasPort = cleanHost.includes(":");
+      formatted = hasPort ? `http://${cleanHost}/v1` : `http://${cleanHost}:${port}/v1`;
+    } else if (cleanHost.includes(".ts.net") || cleanHost.includes(".tailscale.net")) {
+      formatted = `https://${cleanHost}/v1`;
+    } else if (!raw.startsWith("http://") && !raw.startsWith("https://")) {
+      formatted = `http://${raw}:${port}/v1`;
+    }
+    if (!formatted.endsWith("/v1")) {
+      formatted = `${formatted.replace(/\/+$/, "")}/v1`;
+    }
+    if (!persistCustomTailscaleUrl(formatted)) {
+      message.error(tt("浏览器无法保存自定义专网地址", "Unable to save custom Tailscale URL to storage"));
+      return;
+    }
+    setCustomTailscaleUrl(formatted);
+    message.success(tt("已配置 Tailscale 专网基址", "Tailscale URL configured"));
+    setTailscaleModalOpen(false);
+  };
+
+  const handleClearCustomTailscale = () => {
+    persistCustomTailscaleUrl("");
+    setCustomTailscaleUrl("");
+    setCustomTailscaleDraft("");
+    message.success(tt("已清除自定义专网基址", "Cleared custom Tailscale URL"));
+  };
+
   // Compute addresses
   const port = networkQuery.data?.port || (typeof window !== "undefined" && window.location.port ? window.location.port : "8787");
   const lanUrls = networkQuery.data?.lanUrls || [];
@@ -240,6 +301,7 @@ export default function EndpointsPage() {
   }, [clientIsOverTailscale]);
 
   const isTailscaleConnected =
+    Boolean(customTailscaleUrl.trim()) ||
     Boolean(tailscaleStatusQuery.data?.connected) ||
     Boolean(networkQuery.data?.tailscaleUrl) ||
     Boolean(networkQuery.data?.tailscaleIpUrl) ||
@@ -248,16 +310,20 @@ export default function EndpointsPage() {
     clientIsOverTailscale;
 
   const effectiveTailscaleUrl = useMemo(() => {
+    if (customTailscaleUrl.trim()) {
+      const u = customTailscaleUrl.trim().replace(/\/+$/, "");
+      return u.endsWith("/v1") ? u : `${u}/v1`;
+    }
     if (networkQuery.data?.tailscaleUrl) return networkQuery.data.tailscaleUrl;
-    if (tailscaleStatusQuery.data?.magicDns) return `https://${tailscaleStatusQuery.data.magicDns}/v1`;
+    if (networkQuery.data?.tailscaleIpUrl) return networkQuery.data.tailscaleIpUrl;
     if (tailscaleStatusQuery.data?.tailscaleUrl) return `${tailscaleStatusQuery.data.tailscaleUrl.replace(/\/$/, "")}/v1`;
     if (tailscaleStatusQuery.data?.ip) return `http://${tailscaleStatusQuery.data.ip}:${port}/v1`;
-    if (networkQuery.data?.tailscaleIpUrl) return networkQuery.data.tailscaleIpUrl;
     if (networkQuery.data?.tailscaleDetails?.ip) return `http://${networkQuery.data.tailscaleDetails.ip}:${port}/v1`;
+    if (tailscaleStatusQuery.data?.magicDns) return `https://${tailscaleStatusQuery.data.magicDns}/v1`;
     if (tailscaleQuery.data?.publicUrl) return `${tailscaleQuery.data.publicUrl.replace(/\/$/, "")}/v1`;
     if (clientTailscaleUrl) return clientTailscaleUrl;
     return "";
-  }, [networkQuery.data, tailscaleStatusQuery.data, tailscaleQuery.data, clientTailscaleUrl, port]);
+  }, [customTailscaleUrl, networkQuery.data, tailscaleStatusQuery.data, tailscaleQuery.data, clientTailscaleUrl, port]);
 
   const effectiveBaseUrl = publicBaseUrl || lanUrls[0] || effectiveTailscaleUrl || "";
 
@@ -438,7 +504,7 @@ export default function EndpointsPage() {
                       onClick={() => setTailscaleModalOpen(true)}
                       style={{ padding: 0, height: "auto", fontSize: 11, fontWeight: 600 }}
                     >
-                      🔑 {tt("填入 Auth Key", "Enter Auth Key")}
+                      🔑 {tt("接入专网 / 配置", "Connect / Configure")}
                     </Button>
                   </>
                 )}
@@ -671,18 +737,18 @@ export default function EndpointsPage() {
         </Flex>
       </Modal>
 
-      {/* Tailscale Tsnet Auth Key Modal */}
+      {/* Tailscale Tsnet / Custom Config Modal */}
       <Modal
         open={tailscaleModalOpen}
         onCancel={() => setTailscaleModalOpen(false)}
         title={
           <Flex align="center" gap={8}>
             <MaterialIcon name="vpn_lock" size={20} style={{ color: "#8B5CF6" }} />
-            <span>{tt("接入 Tailscale 专网", "Connect to Tailscale Network")}</span>
+            <span>{tt("Tailscale 专网连接配置", "Tailscale Network Configuration")}</span>
           </Flex>
         }
         footer={null}
-        width={560}
+        width={580}
       >
         {isTailscaleConnected ? (
           <Flex vertical gap={16} style={{ marginTop: 16 }}>
@@ -706,31 +772,37 @@ export default function EndpointsPage() {
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("专网分配 IP:", "Tailscale IP:")}</Text>
                   <Text code copyable>
-                    {tailscaleStatusQuery.data?.ip ||
-                      networkQuery.data?.tailscaleDetails?.ip ||
-                      (networkQuery.data?.tailscaleIpUrl ? new URL(networkQuery.data.tailscaleIpUrl).hostname : null) ||
-                      "100.x.x.x"}
+                    {customTailscaleUrl
+                      ? customTailscaleUrl.replace(/^https?:\/\//, "").split("/")[0].split(":")[0]
+                      : tailscaleStatusQuery.data?.ip ||
+                        networkQuery.data?.tailscaleDetails?.ip ||
+                        (networkQuery.data?.tailscaleIpUrl ? new URL(networkQuery.data.tailscaleIpUrl).hostname : null) ||
+                        "100.x.x.x"}
                   </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("MagicDNS 域名:", "MagicDNS Domain:")}</Text>
                   <Text code copyable>
-                    {tailscaleStatusQuery.data?.magicDns ||
-                      networkQuery.data?.tailscaleDetails?.magicDns ||
-                      (tailscaleStatusQuery.data?.hostname ? `${tailscaleStatusQuery.data.hostname}.ts.net` : null) ||
-                      tt("未启用", "Disabled")}
+                    {customTailscaleUrl && (customTailscaleUrl.includes(".ts.net") || customTailscaleUrl.includes(".tailscale.net"))
+                      ? customTailscaleUrl.replace(/^https?:\/\//, "").split("/")[0].split(":")[0]
+                      : tailscaleStatusQuery.data?.magicDns ||
+                        networkQuery.data?.tailscaleDetails?.magicDns ||
+                        (tailscaleStatusQuery.data?.hostname ? `${tailscaleStatusQuery.data.hostname}.ts.net` : null) ||
+                        tt("未启用", "Disabled")}
                   </Text>
                 </Flex>
                 <Flex justify="space-between">
                   <Text type="secondary">{tt("接入模式:", "Access Mode:")}</Text>
                   <Tag color="purple">
-                    {tailscaleStatusQuery.data?.mode === "manual"
-                      ? tt("环境变量配置 (NAS 独立部署)", "Environment Var (NAS Standalone)")
-                      : tailscaleStatusQuery.data?.mode === "external" || networkQuery.data?.tailscaleDetails?.source === "network-interface"
-                        ? tt("宿主网络接口 (NAS Host)", "Host Network (NAS Host)")
-                        : tailscaleStatusQuery.data?.mode === "daemon" || networkQuery.data?.tailscaleDetails?.source === "localapi-socket"
-                          ? tt("守护进程 / LocalAPI 探测", "Daemon / LocalAPI Socket")
-                          : tt("纯用户态 (Tsnet 免特权运行)", "Userspace (Tsnet unprivileged)")}
+                    {customTailscaleUrl
+                      ? tt("自定义指定 (NAS 独立部署)", "Custom Specified (NAS Standalone)")
+                      : tailscaleStatusQuery.data?.mode === "manual"
+                        ? tt("环境变量配置 (NAS 独立部署)", "Environment Var (NAS Standalone)")
+                        : tailscaleStatusQuery.data?.mode === "external" || networkQuery.data?.tailscaleDetails?.source === "network-interface"
+                          ? tt("宿主网络接口 (NAS Host)", "Host Network (NAS Host)")
+                          : tailscaleStatusQuery.data?.mode === "daemon" || networkQuery.data?.tailscaleDetails?.source === "localapi-socket"
+                            ? tt("守护进程 / LocalAPI 探测", "Daemon / LocalAPI Socket")
+                            : tt("纯用户态 (Tsnet 免特权运行)", "Userspace (Tsnet unprivileged)")}
                   </Tag>
                 </Flex>
                 <Flex justify="space-between">
@@ -744,104 +816,192 @@ export default function EndpointsPage() {
 
             <Flex justify="flex-end" gap={8}>
               <Button onClick={() => setTailscaleModalOpen(false)}>{tt("关闭", "Close")}</Button>
-              <Popconfirm
-                title={tt("确认断开 Tailscale 专网？", "Disconnect from Tailscale?")}
-                description={tt("断开后将无法再通过 Tailscale 专网地址访问此网关。", "Clients in your Tailnet will no longer be able to access this gateway.")}
-                onConfirm={() => disconnectTailscale.mutate()}
-                okText={tt("断开", "Disconnect")}
-                cancelText={tt("取消", "Cancel")}
-              >
-                <Button danger loading={disconnectTailscale.isPending}>
-                  {tt("断开专网连接", "Disconnect Tailscale")}
+              {customTailscaleUrl ? (
+                <Button danger onClick={handleClearCustomTailscale}>
+                  {tt("清除自定义配置", "Clear Custom URL")}
                 </Button>
-              </Popconfirm>
+              ) : (
+                <Popconfirm
+                  title={tt("确认断开 Tailscale 专网？", "Disconnect from Tailscale?")}
+                  description={tt("断开后将无法再通过 Tailscale 专网地址访问此网关。", "Clients in your Tailnet will no longer be able to access this gateway.")}
+                  onConfirm={() => disconnectTailscale.mutate()}
+                  okText={tt("断开", "Disconnect")}
+                  cancelText={tt("取消", "Cancel")}
+                >
+                  <Button danger loading={disconnectTailscale.isPending}>
+                    {tt("断开专网连接", "Disconnect Tailscale")}
+                  </Button>
+                </Popconfirm>
+              )}
             </Flex>
           </Flex>
         ) : (
           <Flex vertical gap={14} style={{ marginTop: 16 }}>
-            <div
-              style={{
-                padding: "10px 14px",
-                borderRadius: 8,
-                background: "rgba(255,255,255,0.03)",
-                border: "1px solid var(--ant-color-border-secondary)",
-                fontSize: 12,
-                lineHeight: 1.6,
-              }}
-            >
-              💡 <b>{tt("免特权一键直连", "Unprivileged 1-Click Connect")}</b>：{tt(
-                "通过提供 Tailscale Auth Key，网关将在内存中直接启动纯用户态节点加入您的 Tailnet，无需在 NAS 宿主机上安装任何驱动、无需 root 特权，也无需单独维护容器。",
-                "By providing a Tailscale Auth Key, the gateway starts an in-memory userspace node in your Tailnet without root privileges or host drivers."
-              )}
-            </div>
+            <Segmented<"manual" | "authkey" | "docker">
+              value={tailscaleModalTab}
+              onChange={setTailscaleModalTab}
+              block
+              options={[
+                { label: tt("直接填入专网地址 (NAS 推荐)", "Direct Tailscale URL / IP (NAS)"), value: "manual" },
+                { label: tt("Auth Key 接入 (免特权内嵌)", "Auth Key (Userspace)"), value: "authkey" },
+                { label: tt("Docker 配置指南", "Docker Setup"), value: "docker" },
+              ]}
+            />
 
-            <Flex vertical gap={6}>
-              <Flex justify="space-between" align="center">
-                <Text strong style={{ fontSize: 13 }}>
-                  Tailscale Auth Key *
-                </Text>
-                <a
-                  href="https://login.tailscale.com/admin/settings/keys"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ fontSize: 12 }}
+            {tailscaleModalTab === "manual" && (
+              <Flex vertical gap={12}>
+                <div
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 8,
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid var(--ant-color-border-secondary)",
+                    fontSize: 12,
+                    lineHeight: 1.6,
+                  }}
                 >
-                  {tt("获取 Auth Key ↗", "Get Auth Key ↗")}
-                </a>
-              </Flex>
-              <Input.Password
-                placeholder="tskey-auth-kXXXXX-XXXXXXXXXXXX"
-                value={tailscaleAuthKey}
-                onChange={(e) => setTailscaleAuthKey(e.target.value)}
-              />
-              <Text type="secondary" style={{ fontSize: 11 }}>
-                {tt(
-                  "请在 Tailscale 控制台 Settings → Keys 中生成一个 Reusable 或 Pre-authorized 密钥。",
-                  "Generate a Reusable or Pre-authorized key in Tailscale Admin Console Settings → Keys."
-                )}
-              </Text>
-            </Flex>
-
-            <Flex vertical gap={6}>
-              <Text strong style={{ fontSize: 13 }}>
-                {tt("自定义节点主机名", "Custom Hostname")}
-              </Text>
-              <Input
-                placeholder="orbit-gateway"
-                value={tailscaleHostname}
-                onChange={(e) => setTailscaleHostname(e.target.value)}
-              />
-            </Flex>
-
-            <Flex justify="space-between" align="center" style={{ paddingTop: 4 }}>
-              <div>
-                <Text strong style={{ fontSize: 13 }}>
-                  {tt("临时节点 (Ephemeral)", "Ephemeral Node")}
-                </Text>
-                <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
-                  {tt("网关容器离线或重启时自动从 Tailnet 中注销该节点", "Auto-deregister node from Tailnet when gateway restarts")}
+                  💡 <b>{tt("NAS 独立 Docker 部署推荐", "Recommended for NAS Standalone Docker")}</b>：{tt(
+                    "NAS 宿主机或旁路已运行 Tailscale 时，由于 Docker Bridge 默认隔离了宿主网络，容器内部无法扫描到宿主网卡。直接填入 NAS 的 Tailscale IP（如 100.x.y.z）或 MagicDNS 域名即可立即启用专网基址。",
+                    "When your NAS is on Tailscale, Docker bridge isolation prevents interface scanning. Enter your NAS Tailscale IP (100.x.y.z) or MagicDNS domain to enable the endpoint."
+                  )}
                 </div>
-              </div>
-              <Switch checked={tailscaleEphemeral} onChange={setTailscaleEphemeral} />
-            </Flex>
+                <Flex vertical gap={6}>
+                  <Text strong style={{ fontSize: 13 }}>
+                    {tt("Tailscale IP / MagicDNS / 访问地址", "Tailscale IP / MagicDNS / Access URL")}
+                  </Text>
+                  <Input
+                    placeholder="例如 100.115.22.33 或 my-nas.ts.net 或 http://100.115.22.33:8787"
+                    value={customTailscaleDraft}
+                    onChange={(e) => setCustomTailscaleDraft(e.target.value)}
+                    onPressEnter={handleSaveCustomTailscale}
+                  />
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {tt("输入 100.x 专网 IP 或 .ts.net 域名，系统将自动补齐网关端口与 /v1 路由路径。", "Enter 100.x IP or .ts.net domain; port and /v1 path will be appended automatically.")}
+                  </Text>
+                </Flex>
+                <Flex justify="flex-end" gap={8} style={{ marginTop: 8 }}>
+                  <Button onClick={() => setTailscaleModalOpen(false)}>{tt("取消", "Cancel")}</Button>
+                  <Button
+                    type="primary"
+                    disabled={!customTailscaleDraft.trim()}
+                    onClick={handleSaveCustomTailscale}
+                  >
+                    {tt("保存专网基址", "Save Tailscale URL")}
+                  </Button>
+                </Flex>
+              </Flex>
+            )}
 
-            <Flex justify="flex-end" gap={8} style={{ marginTop: 8 }}>
-              <Button onClick={() => setTailscaleModalOpen(false)}>{tt("取消", "Cancel")}</Button>
-              <Button
-                type="primary"
-                loading={connectTailscale.isPending}
-                disabled={!tailscaleAuthKey.trim()}
-                onClick={() =>
-                  connectTailscale.mutate({
-                    authKey: tailscaleAuthKey.trim(),
-                    hostname: tailscaleHostname.trim() || "orbit-gateway",
-                    ephemeral: tailscaleEphemeral,
-                  })
-                }
-              >
-                {tt("立即接入 Tailscale", "Connect to Tailscale")}
-              </Button>
-            </Flex>
+            {tailscaleModalTab === "authkey" && (
+              <Flex vertical gap={12}>
+                <div
+                  style={{
+                    padding: "10px 14px",
+                    borderRadius: 8,
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid var(--ant-color-border-secondary)",
+                    fontSize: 12,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  💡 <b>{tt("免特权一键直连", "Unprivileged 1-Click Connect")}</b>：{tt(
+                    "通过提供 Tailscale Auth Key，网关将在内存中直接启动纯用户态节点加入您的 Tailnet，无需在 NAS 宿主机上安装任何驱动、无需 root 特权，也无需单独维护容器。",
+                    "By providing a Tailscale Auth Key, the gateway starts an in-memory userspace node in your Tailnet without root privileges or host drivers."
+                  )}
+                </div>
+
+                <Flex vertical gap={6}>
+                  <Flex justify="space-between" align="center">
+                    <Text strong style={{ fontSize: 13 }}>Tailscale Auth Key *</Text>
+                    <a href="https://login.tailscale.com/admin/settings/keys" target="_blank" rel="noopener noreferrer" style={{ fontSize: 12 }}>
+                      {tt("获取 Auth Key ↗", "Get Auth Key ↗")}
+                    </a>
+                  </Flex>
+                  <Input.Password
+                    placeholder="tskey-auth-kXXXXX-XXXXXXXXXXXX"
+                    value={tailscaleAuthKey}
+                    onChange={(e) => setTailscaleAuthKey(e.target.value)}
+                  />
+                  <Text type="secondary" style={{ fontSize: 11 }}>
+                    {tt("请在 Tailscale 控制台 Settings → Keys 中生成一个 Reusable 或 Pre-authorized 密钥。", "Generate a Reusable or Pre-authorized key in Tailscale Admin Console Settings → Keys.")}
+                  </Text>
+                </Flex>
+
+                <Flex vertical gap={6}>
+                  <Text strong style={{ fontSize: 13 }}>{tt("自定义节点主机名", "Custom Hostname")}</Text>
+                  <Input
+                    placeholder="orbit-gateway"
+                    value={tailscaleHostname}
+                    onChange={(e) => setTailscaleHostname(e.target.value)}
+                  />
+                </Flex>
+
+                <Flex justify="space-between" align="center" style={{ paddingTop: 4 }}>
+                  <div>
+                    <Text strong style={{ fontSize: 13 }}>{tt("临时节点 (Ephemeral)", "Ephemeral Node")}</Text>
+                    <div style={{ fontSize: 11, color: "var(--ant-color-text-secondary)" }}>
+                      {tt("网关容器离线或重启时自动从 Tailnet 中注销该节点", "Auto-deregister node from Tailnet when gateway restarts")}
+                    </div>
+                  </div>
+                  <Switch checked={tailscaleEphemeral} onChange={setTailscaleEphemeral} />
+                </Flex>
+
+                <Flex justify="flex-end" gap={8} style={{ marginTop: 8 }}>
+                  <Button onClick={() => setTailscaleModalOpen(false)}>{tt("取消", "Cancel")}</Button>
+                  <Button
+                    type="primary"
+                    loading={connectTailscale.isPending}
+                    disabled={!tailscaleAuthKey.trim()}
+                    onClick={() =>
+                      connectTailscale.mutate({
+                        authKey: tailscaleAuthKey.trim(),
+                        hostname: tailscaleHostname.trim() || "orbit-gateway",
+                        ephemeral: tailscaleEphemeral,
+                      })
+                    }
+                  >
+                    {tt("立即接入 Tailscale", "Connect to Tailscale")}
+                  </Button>
+                </Flex>
+              </Flex>
+            )}
+
+            {tailscaleModalTab === "docker" && (
+              <Flex vertical gap={12}>
+                <div
+                  style={{
+                    padding: "12px 14px",
+                    borderRadius: 8,
+                    background: "rgba(255,255,255,0.03)",
+                    border: "1px solid var(--ant-color-border-secondary)",
+                    fontSize: 12,
+                    lineHeight: 1.6,
+                  }}
+                >
+                  <Text strong style={{ display: "block", marginBottom: 6 }}>
+                    {tt("方式一：通过 Docker 环境变量指定（最推荐）", "Method 1: Docker Environment Variable (Recommended)")}
+                  </Text>
+                  <pre style={{ margin: 0, padding: "8px 10px", background: "rgba(0,0,0,0.25)", borderRadius: 6, fontSize: 11, overflowX: "auto" }}>
+{`environment:
+  TAILSCALE_IP: "100.x.y.z"             # NAS 宿主机 Tailscale IP
+  MAGIC_DNS: "my-nas.tailscale.net"     # 可选：MagicDNS 域名`}
+                  </pre>
+                  <Divider style={{ margin: "10px 0" }} />
+                  <Text strong style={{ display: "block", marginBottom: 6 }}>
+                    {tt("方式二：挂载宿主机 Tailscale Socket", "Method 2: Mount Host Tailscale Socket")}
+                  </Text>
+                  <pre style={{ margin: 0, padding: "8px 10px", background: "rgba(0,0,0,0.25)", borderRadius: 6, fontSize: 11, overflowX: "auto" }}>
+{`volumes:
+  - /var/run/tailscale:/var/run/tailscale:ro
+  # 群晖 DSM 套件版通常路径为：
+  # - /var/packages/Tailscale/etc/tailscaled.sock:/var/run/tailscale/tailscaled.sock:ro`}
+                  </pre>
+                </div>
+                <Flex justify="flex-end" gap={8}>
+                  <Button onClick={() => setTailscaleModalOpen(false)}>{tt("关闭", "Close")}</Button>
+                </Flex>
+              </Flex>
+            )}
           </Flex>
         )}
       </Modal>

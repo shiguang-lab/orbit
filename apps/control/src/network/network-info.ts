@@ -57,7 +57,7 @@ export async function resolveNetworkInfo(
   const envUrl = env.TAILSCALE_URL?.trim();
   const envIp = env.TAILSCALE_IP?.trim();
   const envHostname = env.TAILSCALE_HOSTNAME?.trim();
-  const envDomain = (env.TS_DOMAIN || env.MAGIC_DNS || envHostname)?.trim();
+  const envDomain = (env.TS_DOMAIN || env.MAGIC_DNS || (envHostname?.includes(".") ? envHostname : undefined))?.trim();
   if (envUrl || envIp || envDomain) {
     tailscaleConnected = true;
     tailscaleSource = "env";
@@ -68,7 +68,7 @@ export async function resolveNetworkInfo(
     if (envDomain) {
       tailscaleMagicDns = envDomain.includes(".") ? envDomain : null;
       tailscaleHostname = envHostname || envDomain;
-      if (tailscaleMagicDns) {
+      if (tailscaleMagicDns && !tailscaleUrl) {
         tailscaleUrl = `https://${tailscaleMagicDns}/v1`;
       }
     }
@@ -122,7 +122,9 @@ export async function resolveNetworkInfo(
       }
       if (status.magicDns) {
         tailscaleMagicDns = status.magicDns;
-        tailscaleUrl = `https://${status.magicDns}/v1`;
+        if (!tailscaleUrl) {
+          tailscaleUrl = `https://${status.magicDns}/v1`;
+        }
       }
       if (status.hostname && !tailscaleHostname) {
         tailscaleHostname = status.hostname;

@@ -313,14 +313,13 @@ export function SettingsRoutingPage() {
           extra={
             <Button
               type="primary"
-              size="small"
               icon={<MaterialIcon name="add" size={14} />}
               onClick={() => {
                 aliasForm.resetFields();
                 setAliasModalOpen(true);
               }}
             >
-              {tt("新建", "New")}
+              {tt("添加", "Add")}
             </Button>
           }
         >
@@ -403,7 +402,6 @@ export function SettingsRoutingPage() {
           extra={
             <Button
               type="primary"
-              size="small"
               icon={<MaterialIcon name="add" size={14} />}
               onClick={() => {
                 chainForm.resetFields();

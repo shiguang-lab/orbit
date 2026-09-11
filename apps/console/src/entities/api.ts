@@ -374,6 +374,8 @@ export const providersApi = {
     }),
   test: (id: string) => api<BatchTestResultItem>(`/providers/${id}/test`, { method: "POST" }),
   refresh: (id: string) => api<{ success?: boolean }>(`/providers/${id}/refresh`, { method: "POST" }),
+  refreshToken: (id: string) =>
+    api<{ success?: boolean; message?: string; expiresAt?: string }>(`/providers/${encodeURIComponent(id)}/refresh-token`, { method: "POST" }),
   refreshCursor: (id: string) => api<{ success?: boolean; unchanged?: boolean }>(`/providers/${id}/refresh-cursor`, { method: "POST" }),
   setRateLimitProtection: (connectionId: string, enabled: boolean) => api<{ success?: boolean }>("/rate-limits", { method: "POST", body: JSON.stringify({ connectionId, enabled }) }),
 };

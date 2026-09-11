@@ -54,15 +54,14 @@ jobs:
         run: pnpm verify:release
 
   publish:
+    name: Publish ${{ matrix.target }} image
     needs: verify
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      # The Node targets share the expensive install/build stages. Building
-      # sequentially lets the later targets reuse the cache exported by the
-      # first target instead of compiling the workspace five times in parallel.
-      max-parallel: 1
+      # Each service builds on its own runner with an independent cache scope.
+      max-parallel: 6
       matrix:
         include:
           - target: console
@@ -70,16 +69,16 @@ jobs:
             cache_scope: console
           - target: gateway
             image: gateway
-            cache_scope: node-runtime
+            cache_scope: gateway
           - target: control
             image: control
-            cache_scope: node-runtime
+            cache_scope: control
           - target: realtime
             image: realtime
-            cache_scope: node-runtime
+            cache_scope: realtime
           - target: worker
             image: worker
-            cache_scope: node-runtime
+            cache_scope: worker
           - target: cliproxy-manager
             image: cliproxy-manager
             context: ./apps/cliproxy-manager

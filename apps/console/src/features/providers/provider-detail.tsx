@@ -43,6 +43,7 @@ import { SearchProviderCard } from "./components/SearchProviderCard";
 import { ProviderPlaygroundPanel } from "./components/ProviderPlaygroundPanel";
 import { ProviderParamFilterSection } from "./components/ProviderParamFilterSection";
 import { ProviderInterceptionSection } from "./components/ProviderInterceptionSection";
+import { getWebSessionCredentialRequirement } from "@orbit/contracts/config/webSessionCredentials";
 import { ProviderCcAliasSection } from "./components/ProviderCcAliasSection";
 import { useBreadcrumbTitle } from "@/shell/useBreadcrumbTitle";
 import { getConnectionHealth, resolveOAuthRedirectUri } from "./connection-health";
@@ -191,7 +192,7 @@ function maskAccountName(value: string | null | undefined): string {
 
 export default function ProviderDetailPage() {
   const { styles } = useStyles();
-  const { t } = useI18n();
+  const { t, tt } = useI18n();
   const navigate = useNavigate();
   const { id: providerId = "" } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
@@ -211,8 +212,10 @@ export default function ProviderDetailPage() {
   const [noAuthEnabled, setNoAuthEnabled] = useState(true);
   const [noAuthBusy, setNoAuthBusy] = useState(false);
   const [addConnectionOpen, setAddConnectionOpen] = useState(false);
+  const [editingConnection, setEditingConnection] = useState<ProviderConnection | null>(null);
   const [connectionName, setConnectionName] = useState("");
   const [connectionApiKey, setConnectionApiKey] = useState("");
+  const [connectionRefreshToken, setConnectionRefreshToken] = useState("");
   const [connectionBaseUrl, setConnectionBaseUrl] = useState("");
   const [connectionPriority, setConnectionPriority] = useState(1);
   const [proxyModalOpen, setProxyModalOpen] = useState(false);
@@ -317,6 +320,7 @@ export default function ProviderDetailPage() {
   const info = useMemo(() => resolveProvider(catalogQuery.data, providerId), [catalogQuery.data, providerId]);
   const kind = classify(providerId, info);
   const providerSupportsPat = supportsApiKeyOnFreeProvider(providerId);
+  const webSessionRequirement = useMemo(() => getWebSessionCredentialRequirement(providerId), [providerId]);
   const connections = providerQuery.data?.connections ?? [];
   const settingsQuery = useQuery({ queryKey: ["settings", "provider-routing"], queryFn: settingsApi.get, staleTime: 30_000, enabled: connections.length > 1 || kind === "no-auth" });
   const proxyConfigQuery = useQuery({ queryKey: ["settings", "proxy"], queryFn: () => settingsApi.proxyConfig(), staleTime: 30_000, enabled: Boolean(providerId) });
@@ -534,33 +538,71 @@ export default function ProviderDetailPage() {
   }, [messageApi, oauthDevice, oauthOpen, providerId, queryClient]);
 
   const openAddConnection = useCallback(() => {
+    setEditingConnection(null);
     setConnectionName(`${info?.name ?? providerId} Primary`);
     setConnectionApiKey("");
+    setConnectionRefreshToken("");
     setConnectionBaseUrl(node?.baseUrl ?? info?.baseUrl ?? "");
     setConnectionPriority(1);
     setAddConnectionOpen(true);
   }, [info?.baseUrl, info?.name, node?.baseUrl, providerId]);
 
-  const createConnectionMutation = useMutation({
-    mutationFn: () => providersApi.create({
-      provider: providerId,
-      name: connectionName.trim() || `${info?.name ?? providerId} Primary`,
-      apiKey: connectionApiKey.trim() || undefined,
-      baseUrl: connectionBaseUrl.trim() || undefined,
-      authType: kind === "compatible" ? "compatible" : kind === "oauth" ? "oauth" : kind === "web-cookie" ? "web-cookie" : "apikey",
-      priority: connectionPriority,
-      isActive: false,
-      testStatus: "unknown",
-    }),
+  const openEditConnection = useCallback((row: ProviderConnection) => {
+    setEditingConnection(row);
+    setConnectionName(row.name);
+    setConnectionApiKey("");
+    setConnectionRefreshToken("");
+    setConnectionBaseUrl(row.baseUrl ?? "");
+    setConnectionPriority(row.priority ?? 1);
+    setAddConnectionOpen(true);
+  }, []);
+
+  const saveConnectionMutation = useMutation({
+    mutationFn: () => {
+      if (editingConnection) {
+        const payload: Record<string, unknown> = {
+          name: connectionName.trim() || editingConnection.name,
+          baseUrl: connectionBaseUrl.trim() || undefined,
+          priority: connectionPriority,
+        };
+        if (connectionApiKey.trim()) {
+          payload.apiKey = connectionApiKey.trim();
+        }
+        if (connectionRefreshToken.trim()) {
+          payload.providerSpecificData = {
+            refreshToken: connectionRefreshToken.trim(),
+          };
+        }
+        return providersApi.update(editingConnection.id, payload);
+      }
+      const payload: Record<string, unknown> = {
+        provider: providerId,
+        name: connectionName.trim() || `${info?.name ?? providerId} Primary`,
+        apiKey: connectionApiKey.trim() || undefined,
+        baseUrl: connectionBaseUrl.trim() || undefined,
+        authType: kind === "compatible" ? "compatible" : kind === "oauth" ? "oauth" : kind === "web-cookie" ? "web-cookie" : "apikey",
+        priority: connectionPriority,
+        isActive: false,
+        testStatus: "unknown",
+      };
+      if (connectionRefreshToken.trim()) {
+        payload.providerSpecificData = {
+          refreshToken: connectionRefreshToken.trim(),
+        };
+      }
+      return providersApi.create(payload);
+    },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
       await queryClient.invalidateQueries({ queryKey: ["providers"] });
       setAddConnectionOpen(false);
       setConnectionApiKey("");
-      messageApi.success("连接已添加，请测试通过后启用");
+      setConnectionRefreshToken("");
+      messageApi.success(editingConnection ? tt("连接已保存", "Connection saved") : tt("连接已添加，请测试通过后启用", "Connection added, please enable after testing"));
+      setEditingConnection(null);
     },
     onError: (error: any) => {
-      const msg = error?.response?.data?.error?.message || error?.message || "连接添加失败";
+      const msg = error?.response?.data?.error?.message || error?.message || (editingConnection ? "连接保存失败" : "连接添加失败");
       messageApi.error(msg);
     },
   });
@@ -1010,8 +1052,17 @@ export default function ProviderDetailPage() {
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "限流保护更新失败"),
   });
   const refreshTokenMutation = useMutation({
-    mutationFn: (row: ProviderConnection) => row.provider === "cursor" ? providersApi.refreshCursor(row.id) : providersApi.refresh(row.id),
-    onSuccess: () => { void queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] }); messageApi.success("令牌已刷新"); },
+    mutationFn: (row: ProviderConnection) =>
+      row.provider === "cursor"
+        ? providersApi.refreshCursor(row.id)
+        : (row.provider === "kimi-web" || row.provider === "kimi_web")
+        ? providersApi.refreshToken(row.id)
+        : providersApi.refresh(row.id),
+    onSuccess: (result: any) => {
+      void queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] });
+      const msg = result?.message || (result?.expiresAt ? `令牌已刷新 (有效期至 ${new Date(result.expiresAt).toLocaleTimeString()})` : "令牌已刷新");
+      messageApi.success(msg);
+    },
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "令牌刷新失败"),
   });
   const distributeProxyMutation = useMutation({
@@ -1087,6 +1138,259 @@ export default function ProviderDetailPage() {
     onSuccess: () => { void queryClient.invalidateQueries({ queryKey: ["providers", "detail", providerId] }); void queryClient.invalidateQueries({ queryKey: ["providers"] }); messageApi.success("连接已删除"); },
     onError: (error) => messageApi.error(error instanceof Error ? error.message : "删除失败"),
   });
+
+  const renderWebSessionGuide = () => {
+    if (providerId === "deepseek-web") {
+      return (
+        <Card
+          style={{
+            background: "var(--ant-color-fill-quaternary)",
+            borderRadius: 8,
+            border: "1px solid var(--ant-color-border-secondary)",
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name="help_outline" size={16} style={{ color: "var(--ant-color-primary)" }} />
+              {tt("如何获取 DeepSeek Web 会话凭据 (userToken)", "How to get DeepSeek Web credential (userToken)")}
+            </Typography.Text>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--ant-color-text-secondary)" }}>
+              <div>1. 在浏览器中打开并登录 <Typography.Link href="https://chat.deepseek.com" target="_blank" rel="noreferrer">chat.deepseek.com</Typography.Link>。</div>
+              <div>2. 按 <code>F12</code>（或右键“检查”）打开开发者工具，切换到 <b>Application</b>（应用程序）面板。</div>
+              <div>3. 在左侧栏展开 <b>Storage</b> → <b>Local Storage</b>，点击 <code>https://chat.deepseek.com</code>。</div>
+              <div>4. 在右侧列表中找到 <b><code>userToken</code></b> 项，复制其 Value 粘贴到下方凭据框。</div>
+              <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
+                💡 <b>双 Token 说明</b>：系统已内置自动换票与定期续期机制，您<b>只需填写这一个 <code>userToken</code> 即可</b>，后端会自动换取临时 accessToken，无需也不需要提供双 Token。
+              </div>
+            </div>
+            {editingConnection && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ padding: "4px 10px", fontSize: 12, marginTop: 4 }}
+                message={tt("编辑提示：下方凭据输入框留空表示保留现有已配置的 userToken，无需重复粘贴。", "Edit note: Leave the credential field blank to keep existing userToken.")}
+              />
+            )}
+          </Space>
+        </Card>
+      );
+    }
+
+    if (providerId === "kimi-web") {
+      return (
+        <Card
+          style={{
+            background: "var(--ant-color-fill-quaternary)",
+            borderRadius: 8,
+            border: "1px solid var(--ant-color-border-secondary)",
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name="help_outline" size={16} style={{ color: "var(--ant-color-primary)" }} />
+              {tt("如何获取 Kimi Web 会话凭据 (双 Token 自动续期)", "How to get Kimi Web credentials (Dual-Token Auto-Renewal)")}
+            </Typography.Text>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--ant-color-text-secondary)" }}>
+              <div>1. 在浏览器中打开并登录 <Typography.Link href="https://www.kimi.com" target="_blank" rel="noreferrer">www.kimi.com</Typography.Link>。</div>
+              <div>2. 按 <code>F12</code> 打开开发者工具，切换到 <b>Application</b>（应用程序）面板。</div>
+              <div>3. 在左侧栏展开 <b>Storage</b> → <b>Local Storage</b>，点击 <code>https://www.kimi.com</code>。</div>
+              <div>4. <b>主凭据 (必需)</b>：在列表中找到 <b><code>access_token</code></b>，复制其 Value 粘贴到下方主凭据输入框。</div>
+              <div>5. <b>自动续期凭据 (推荐)</b>：找到同一列表中的 <b><code>refresh_token</code></b>，复制其 Value 粘贴到下方的“Refresh Token”输入框。</div>
+              <div style={{ marginTop: 6, color: "var(--ant-color-success)" }}>
+                ⚡ <b>双 Token 自动续期优势</b>：配置 <code>refresh_token</code> 后，系统后台将在 <code>access_token</code> 即将到期前自动静默刷新换票并轮换保存，实现无需手动重新复制的长效保活！
+              </div>
+            </div>
+            {editingConnection && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ padding: "4px 10px", fontSize: 12, marginTop: 4 }}
+                message={tt("编辑提示：下方输入框留空表示保留现有已配置的 access_token 与 refresh_token，无需重复粘贴。", "Edit note: Leave blank to keep existing access_token and refresh_token.")}
+              />
+            )}
+          </Space>
+        </Card>
+      );
+    }
+
+    if (providerId === "zai-web") {
+      return (
+        <Card
+          style={{
+            background: "var(--ant-color-fill-quaternary)",
+            borderRadius: 8,
+            border: "1px solid var(--ant-color-border-secondary)",
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name="help_outline" size={16} style={{ color: "var(--ant-color-primary)" }} />
+              {tt("如何获取 Z.ai Web 会话凭据 (token)", "How to get Z.ai Web credential (token)")}
+            </Typography.Text>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--ant-color-text-secondary)" }}>
+              <div>1. 在浏览器中打开并登录 <Typography.Link href="https://chat.z.ai" target="_blank" rel="noreferrer">chat.z.ai</Typography.Link>。</div>
+              <div>2. 按 <code>F12</code> 打开开发者工具，切换到 <b>Application</b>（应用程序）→ <b>Storage</b> → <b>Local Storage</b> → <code>https://chat.z.ai</code>。</div>
+              <div>3. 找到名为 <b><code>token</code></b> 的条目，<b>仅复制其 Value</b> 粘贴到下方主凭据框。</div>
+              <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
+                ⚠️ <b>重要说明</b>：切勿复制 Cookie 请求头，仅需 Local Storage 的 <code>token</code> 值。系统会通过内建浏览器传输层自动处理请求级人机验证（CAPTCHA）。
+              </div>
+            </div>
+            {editingConnection && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ padding: "4px 10px", fontSize: 12, marginTop: 4 }}
+                message={tt("编辑提示：下方凭据输入框留空表示保留现有已配置凭据。", "Edit note: Leave blank to keep existing credential.")}
+              />
+            )}
+          </Space>
+        </Card>
+      );
+    }
+
+    if (providerId === "grok-web") {
+      return (
+        <Card
+          style={{
+            background: "var(--ant-color-fill-quaternary)",
+            borderRadius: 8,
+            border: "1px solid var(--ant-color-border-secondary)",
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name="help_outline" size={16} style={{ color: "var(--ant-color-primary)" }} />
+              {tt("如何获取 Grok Web 会话凭据 (sso & sso-rw)", "How to get Grok Web credential (sso & sso-rw)")}
+            </Typography.Text>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--ant-color-text-secondary)" }}>
+              <div>1. 在浏览器中打开并登录 <Typography.Link href="https://grok.com" target="_blank" rel="noreferrer">grok.com</Typography.Link>。</div>
+              <div>2. 按 <code>F12</code> 打开开发者工具，在 <b>Network</b>（网络）面板刷新，找到任一发往 grok.com 的请求。</div>
+              <div>3. 在请求头中找到 <b>Cookie</b>，复制包含 <b><code>sso</code></b> 和 <b><code>sso-rw</code></b> 的 Cookie 字符串粘贴到下方。</div>
+              <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
+                💡 <b>网络与指纹说明</b>：Cloudflare 会将凭据与复制凭据所在浏览器的 IP、User-Agent 和 TLS 指纹绑定。若测试遇到拦截，请在高级配置中设置与该浏览器完全一致的 Custom User-Agent，并在相同网络/代理下使用。
+              </div>
+            </div>
+            {editingConnection && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ padding: "4px 10px", fontSize: 12, marginTop: 4 }}
+                message={tt("编辑提示：下方凭据输入框留空表示保留现有已配置凭据。", "Edit note: Leave blank to keep existing credential.")}
+              />
+            )}
+          </Space>
+        </Card>
+      );
+    }
+
+    if (providerId === "chatgpt-web") {
+      return (
+        <Card
+          style={{
+            background: "var(--ant-color-fill-quaternary)",
+            borderRadius: 8,
+            border: "1px solid var(--ant-color-border-secondary)",
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name="help_outline" size={16} style={{ color: "var(--ant-color-primary)" }} />
+              {tt("ChatGPT Web 会话凭据配置 (Playwright storageState)", "ChatGPT Web Credential Setup (Playwright storageState)")}
+            </Typography.Text>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--ant-color-text-secondary)" }}>
+              <div>1. 在独立/专用的浏览器上下文中登录 <Typography.Link href="https://chatgpt.com" target="_blank" rel="noreferrer">chatgpt.com</Typography.Link>。</div>
+              <div>2. 导出该浏览器上下文的 Playwright 兼容 <b>storageState</b> JSON（包含 cookies 与 origins）。</div>
+              <div>3. 将完整的 JSON 字符串粘贴到下方凭据框中。</div>
+              <div style={{ marginTop: 6, color: "var(--ant-color-text-tertiary)" }}>
+                🔒 凭据将在服务端本地加密存储，仅供本地浏览器上下文会话使用。
+              </div>
+            </div>
+            {editingConnection && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ padding: "4px 10px", fontSize: 12, marginTop: 4 }}
+                message={tt("编辑提示：下方凭据输入框留空表示保留现有已配置凭据。", "Edit note: Leave blank to keep existing credential.")}
+              />
+            )}
+          </Space>
+        </Card>
+      );
+    }
+
+    const req = webSessionRequirement && webSessionRequirement.kind !== "none" ? webSessionRequirement : null;
+    if (req || kind === "web-cookie") {
+      const credName = req?.credentialName || "Cookie / Session Token";
+      const isToken = req?.kind === "token";
+      return (
+        <Card
+          style={{
+            background: "var(--ant-color-fill-quaternary)",
+            borderRadius: 8,
+            border: "1px solid var(--ant-color-border-secondary)",
+          }}
+        >
+          <Space direction="vertical" size={8} style={{ width: "100%" }}>
+            <Typography.Text strong style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <MaterialIcon name="help_outline" size={16} style={{ color: "var(--ant-color-primary)" }} />
+              {tt(`如何获取 ${info?.name ?? providerId} 会话凭据`, `How to get ${info?.name ?? providerId} web credential`)}
+            </Typography.Text>
+            <div style={{ fontSize: 13, lineHeight: 1.7, color: "var(--ant-color-text-secondary)" }}>
+              {req?.guideSteps && req.guideSteps.length > 0 ? (
+                req.guideSteps.map((step: string, idx: number) => (
+                  <div key={idx}>{idx + 1}. {step}</div>
+                ))
+              ) : (
+                <>
+                  <div>1. 在浏览器中打开并登录 {info?.name ?? providerId} 官网。</div>
+                  <div>2. 按 <code>F12</code>（或右键“检查”）打开开发者工具，切换到 <b>Application</b>（应用程序）或 <b>Network</b>（网络）面板。</div>
+                  <div>
+                    3. {isToken
+                      ? <span>在 <b>Local Storage</b> 中找到并复制 <b><code>{credName}</code></b> 的 Value。</span>
+                      : <span>在 <b>Cookies</b> 或请求头中复制包含 <b><code>{credName}</code></b> 的完整 Cookie 字符串。</span>}
+                  </div>
+                  <div>4. 将复制的内容粘贴到下方的会话凭据框中。</div>
+                </>
+              )}
+              {req?.hintFallback && (
+                <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
+                  💡 {req.hintFallback}
+                </div>
+              )}
+              {req?.guideNote && (
+                <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>
+                  📌 {req.guideNote}
+                </div>
+              )}
+            </div>
+            {editingConnection && (
+              <Alert
+                type="info"
+                showIcon
+                style={{ padding: "4px 10px", fontSize: 12, marginTop: 4 }}
+                message={tt("编辑提示：下方凭据输入框留空表示保留现有已配置凭据，无需重复粘贴。", "Edit note: Leave blank to keep existing credential.")}
+              />
+            )}
+          </Space>
+        </Card>
+      );
+    }
+
+    return (
+      <Alert
+        type="info"
+        showIcon
+        message={editingConnection ? tt("编辑连接信息", "Edit Connection") : t("providers.newConnectionDisabled")}
+        description={
+          editingConnection
+            ? tt("修改连接基本信息。凭据输入框留空表示保留当前凭据不变。", "Update connection details. Leave credential blank to keep existing.")
+            : providerId === "qoder"
+            ? "请粘贴你的 Qoder Personal Access Token (PAT)。可在 Qoder → Settings → Personal Access Tokens 中生成。"
+            : t("providers.newConnectionHint")
+        }
+      />
+    );
+  };
   if (providerQuery.isLoading || catalogQuery.isLoading) return <PageSkeleton />;
   if (providerQuery.isError || catalogQuery.isError) return <Alert type="error" showIcon title="Provider 数据加载失败" description={(providerQuery.error ?? catalogQuery.error) instanceof Error ? (providerQuery.error ?? catalogQuery.error)?.message : "无法读取 Provider 数据"} action={<Button onClick={() => { void providerQuery.refetch(); void catalogQuery.refetch(); }}>重试</Button>} />;
   if (!info && connections.length === 0) return <Alert type="warning" title="未找到提供者" description={<Button type="link" onClick={() => navigate("/dashboard/providers")}>返回 Providers</Button>} />;
@@ -1363,7 +1667,7 @@ export default function ProviderDetailPage() {
                       icon={<MaterialIcon name="add" />}
                       onClick={openAddConnection}
                     >
-                      {t("新建", "New")}
+                      {tt("添加", "Add")}
                     </Button>
                     {providerId === "qoder" && (
                       <Button
@@ -1411,7 +1715,7 @@ export default function ProviderDetailPage() {
                     icon={<MaterialIcon name="add" />}
                     onClick={openAddConnection}
                   >
-                    {t("新建", "New")}
+                    {tt("添加", "Add")}
                   </Button>
                 )}
               </Space>
@@ -1537,7 +1841,7 @@ export default function ProviderDetailPage() {
                   <br />
                   <Space style={{ marginTop: 8 }}>
                     <Button type="primary" icon={<MaterialIcon name="add" />} onClick={openAddConnection}>
-                      {t("新建", "New")}
+                      {tt("添加", "Add")}
                     </Button>
                     {providerId === "qoder" && (
                       <Button onClick={() => void startOAuth()}>
@@ -1617,6 +1921,19 @@ export default function ProviderDetailPage() {
                   <Button className={styles.actionButton} size="small" color={(row.providerSpecificData as Record<string, unknown> | undefined)?.autoSync ? "green" : "default"} variant="filled" icon={<MaterialIcon name="sync" />} onClick={() => toggleConnectionAutoSync(row)}>{t("providers.sync")}</Button>
                   <Button className={styles.actionButton} size="small" color={row.proxyEnabled === false ? "default" : "green"} variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => featureMutation.mutate({ id: row.id, patch: { proxyEnabled: row.proxyEnabled === false } })}>{t("providers.proxy")}</Button>
                   <Button className={styles.actionButton} size="small" color={row.perKeyProxyEnabled ? "purple" : "default"} variant="filled" icon={<MaterialIcon name="key" />} onClick={() => featureMutation.mutate({ id: row.id, patch: { perKeyProxyEnabled: !row.perKeyProxyEnabled } })}>{t("providers.perKey")}</Button>
+                  {Boolean(
+                    (row.providerSpecificData as Record<string, unknown> | undefined)?.refreshToken ||
+                    row.refreshToken
+                  ) && (
+                    <Tag color="cyan">{tt("自动续期已启用", "Auto-Renewal")}</Tag>
+                  )}
+                  {(row.provider === "kimi-web" || row.provider === "kimi_web") &&
+                    !Boolean(
+                      (row.providerSpecificData as Record<string, unknown> | undefined)?.refreshToken ||
+                      row.refreshToken
+                    ) && (
+                    <Tag color="default">{tt("单Token", "Single Token")}</Tag>
+                  )}
                   {row.baseUrl && <Tag>{row.baseUrl}</Tag>}
                   {row.defaultModel && <Tag color="blue">{row.defaultModel}</Tag>}
                   {row.lastError && <Tag color={getConnectionHealth(row) === "error" ? "error" : "warning"}>{row.lastError}</Tag>}
@@ -1630,10 +1947,22 @@ export default function ProviderDetailPage() {
                     onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })}
                   />
                   <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest")}</Button>
-                  {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="orange" variant="filled" loading={refreshTokenMutation.isPending} icon={<MaterialIcon name="token" />} onClick={() => refreshTokenMutation.mutate(row)}>{t("providers.token")}</Button>}
+                  {(row.authType === "oauth" || kind === "oauth" || kind === "ide" || row.provider === "kimi-web" || row.provider === "kimi_web") && (
+                    <Button
+                      className={styles.actionButton}
+                      size="small"
+                      color="orange"
+                      variant="filled"
+                      loading={refreshTokenMutation.isPending}
+                      icon={<MaterialIcon name="token" />}
+                      onClick={() => refreshTokenMutation.mutate(row)}
+                    >
+                      {t("providers.token")}
+                    </Button>
+                  )}
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="gold" variant="filled" icon={<MaterialIcon name="passkey" />} onClick={() => void startOAuth(row.id)}>{t("providers.reauthorize")}</Button>}
 
-                  <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="edit" />} onClick={() => navigate(`/dashboard/providers/${providerId}/connections/${row.id}`)}>{t("providers.edit")}</Button>
+                  <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="edit" />} onClick={() => openEditConnection(row)}>{t("providers.edit")}</Button>
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => void openProxyConfig(row)}>{t("providers.proxyConfig")}</Button>
                   <Popconfirm title={t("providers.deleteConnectionConfirm")} onConfirm={() => deleteMutation.mutate(row.id)}><Button className={styles.actionButton} size="small" color="danger" variant="filled" icon={<MaterialIcon name="delete" />}>{t("providers.delete")}</Button></Popconfirm>
                 </Space>
@@ -1732,34 +2061,148 @@ export default function ProviderDetailPage() {
         </Space>
       </Modal>
       <Modal
-        title={providerSupportsPat ? `添加 ${info?.name ?? providerId} PAT` : t("providers.addConnectionTitle", { provider: info?.name ?? providerId })}
+        title={
+          editingConnection
+            ? tt(`编辑 ${info?.name ?? providerId} 连接`, `Edit ${info?.name ?? providerId} Connection`)
+            : providerSupportsPat
+            ? `添加 ${info?.name ?? providerId} PAT`
+            : t("providers.addConnectionTitle", { provider: info?.name ?? providerId })
+        }
         open={addConnectionOpen}
-        onCancel={() => { if (!createConnectionMutation.isPending) setAddConnectionOpen(false); }}
-        okText={providerSupportsPat ? t("providers.addPat", "添加 PAT") : t("providers.add")}
+        onCancel={() => {
+          if (!saveConnectionMutation.isPending) {
+            setAddConnectionOpen(false);
+            setEditingConnection(null);
+          }
+        }}
+        okText={editingConnection ? tt("保存", "Save") : providerSupportsPat ? t("providers.addPat", "添加 PAT") : t("providers.add")}
         cancelText={t("providers.cancel")}
-        confirmLoading={createConnectionMutation.isPending}
-        okButtonProps={{ disabled: !connectionName.trim() || (kind !== "no-auth" && kind !== "compatible" && !providerSupportsPat && !connectionApiKey.trim() && !connectionBaseUrl.trim()) }}
-        onOk={() => createConnectionMutation.mutate()}
+        confirmLoading={saveConnectionMutation.isPending}
+        okButtonProps={{
+          disabled:
+            !connectionName.trim() ||
+            (!editingConnection &&
+              kind !== "no-auth" &&
+              kind !== "compatible" &&
+              !providerSupportsPat &&
+              !connectionApiKey.trim() &&
+              !connectionBaseUrl.trim()),
+        }}
+        onOk={() => saveConnectionMutation.mutate()}
+        width={580}
       >
         <Space direction="vertical" size={16} style={{ width: "100%" }}>
-          <Alert
-            type="info"
-            showIcon
-            message={t("providers.newConnectionDisabled")}
-            description={
-              providerId === "qoder"
-                ? "请粘贴你的 Qoder Personal Access Token (PAT)。可在 Qoder → Settings → Personal Access Tokens 中生成。"
-                : providerId === "deepseek-web"
-                ? "请在 chat.deepseek.com 登录后，从浏览器开发者工具中复制 userToken 填入下方凭据中。"
+          {renderWebSessionGuide()}
+          <label>
+            <Typography.Text>{t("providers.connectionName")}</Typography.Text>
+            <Input
+              value={connectionName}
+              onChange={(event) => setConnectionName(event.target.value)}
+              placeholder="Primary"
+              style={{ marginTop: 6 }}
+            />
+          </label>
+          <label>
+            <Typography.Text strong>
+              {providerId === "qoder"
+                ? "Qoder PAT"
+                : webSessionRequirement?.credentialName
+                ? `${webSessionRequirement.credentialName} (${webSessionRequirement.kind === "token" ? tt("Web 会话令牌", "Web Session Token") : tt("Web 会话凭据", "Web Session Credential")})`
                 : kind === "web-cookie"
-                ? "Web 会话凭据：请将登录后的 Session Token 或 Cookie 粘贴到下方凭据输入框。"
-                : t("providers.newConnectionHint")
-            }
-          />
-          <label><Typography.Text>{t("providers.connectionName")}</Typography.Text><Input value={connectionName} onChange={(event) => setConnectionName(event.target.value)} placeholder="Primary" style={{ marginTop: 6 }} /></label>
-          <label><Typography.Text>{providerId === "qoder" ? "Qoder PAT" : providerId === "deepseek-web" ? "userToken (Web 会话 Token)" : kind === "web-cookie" ? "Cookie / Session Token" : kind === "oauth" || kind === "ide" ? "Access Token / API Key" : kind === "compatible" ? "API Key" : providerSupportsPat ? "PAT (Personal Access Token)" : "API Key / PAT"}</Typography.Text><Input.Password value={connectionApiKey} onChange={(event) => setConnectionApiKey(event.target.value)} placeholder={providerId === "qoder" ? "粘贴 Qoder PAT (例如 pat_...)" : providerId === "deepseek-web" ? "userToken=... 或粘贴 raw userToken" : kind === "web-cookie" ? "粘贴 Cookie 或 Session 凭据..." : kind === "oauth" || kind === "ide" ? "输入 Access Token 或 API Key..." : kind === "compatible" ? "输入 API Key (可为空)..." : t("providers.enterCredential")} style={{ marginTop: 6 }} /></label>
-          {(kind === "compatible" || connectionBaseUrl || Boolean(node?.baseUrl)) && <label><Typography.Text>Base URL</Typography.Text><Input value={connectionBaseUrl} onChange={(event) => setConnectionBaseUrl(event.target.value)} placeholder={node?.baseUrl ?? info?.baseUrl ?? "https://api.example.com/v1"} style={{ marginTop: 6 }} /></label>}
-          <label><Typography.Text>{t("providers.priority")}</Typography.Text><br /><InputNumber min={0} value={connectionPriority} onChange={(value) => setConnectionPriority(value ?? 1)} style={{ marginTop: 6, width: 140 }} /></label>
+                ? tt("Cookie / Session 凭据", "Cookie / Session Credential")
+                : kind === "oauth" || kind === "ide"
+                ? "Access Token / API Key"
+                : kind === "compatible"
+                ? "API Key"
+                : providerSupportsPat
+                ? "PAT (Personal Access Token)"
+                : "API Key / PAT"}
+            </Typography.Text>
+            <Input.Password
+              value={connectionApiKey}
+              onChange={(event) => setConnectionApiKey(event.target.value)}
+              placeholder={
+                editingConnection
+                  ? tt("留空以保持现有凭据不变", "Leave blank to keep existing credential")
+                  : providerId === "qoder"
+                  ? "粘贴 Qoder PAT (例如 pat_...)"
+                  : webSessionRequirement?.placeholder
+                  ? webSessionRequirement.placeholder
+                  : kind === "web-cookie"
+                  ? "粘贴 Cookie 或 Session 凭据..."
+                  : kind === "oauth" || kind === "ide"
+                  ? "输入 Access Token 或 API Key..."
+                  : kind === "compatible"
+                  ? "输入 API Key (可为空)..."
+                  : t("providers.enterCredential")
+              }
+              style={{ marginTop: 6 }}
+            />
+          </label>
+          {Boolean((webSessionRequirement && webSessionRequirement.kind !== "none" && webSessionRequirement.refreshToken) || providerId === "kimi-web") && (
+            <label>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <Typography.Text strong>
+                  {tt("Refresh Token (刷新令牌 · 双 Token 自动续期)", "Refresh Token (Dual-Token Auto-Renewal)")}
+                </Typography.Text>
+                <Tag color="blue">{tt("可选 · 推荐", "Optional · Recommended")}</Tag>
+              </div>
+              <Input.Password
+                value={connectionRefreshToken}
+                onChange={(event) => setConnectionRefreshToken(event.target.value)}
+                placeholder={
+                  editingConnection
+                    ? tt("留空以保持现有 Refresh Token 不变", "Leave blank to keep existing Refresh Token")
+                    : (webSessionRequirement && webSessionRequirement.kind !== "none" && webSessionRequirement.refreshToken?.placeholder) ||
+                      tt("从 Local Storage 复制 refresh_token（开启静默自动续期）", "Copy refresh_token from Local Storage to enable auto-renewal")
+                }
+                style={{ marginTop: 2 }}
+              />
+              <div style={{ fontSize: 12, color: "var(--ant-color-text-tertiary)", marginTop: 4 }}>
+                {tt(
+                  "配置后系统后台将在 access_token 到期前自动使用 refresh_token 静默换取新令牌并轮换，免去手动更新重新复制的麻烦。",
+                  "The system will automatically refresh and rotate tokens before access_token expires when configured."
+                )}
+              </div>
+            </label>
+          )}
+          {(kind === "compatible" || connectionBaseUrl || Boolean(node?.baseUrl)) && (
+            <label>
+              <Typography.Text>Base URL</Typography.Text>
+              <Input
+                value={connectionBaseUrl}
+                onChange={(event) => setConnectionBaseUrl(event.target.value)}
+                placeholder={node?.baseUrl ?? info?.baseUrl ?? "https://api.example.com/v1"}
+                style={{ marginTop: 6 }}
+              />
+            </label>
+          )}
+          <label>
+            <Typography.Text>{t("providers.priority")}</Typography.Text>
+            <br />
+            <InputNumber
+              min={0}
+              value={connectionPriority}
+              onChange={(value) => setConnectionPriority(value ?? 1)}
+              style={{ marginTop: 6, width: 140 }}
+            />
+          </label>
+          {editingConnection && (
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: -4 }}>
+              <Button
+                type="link"
+                style={{ padding: 0, fontSize: 12 }}
+                onClick={() => {
+                  const connId = editingConnection.id;
+                  setAddConnectionOpen(false);
+                  setEditingConnection(null);
+                  navigate(`/dashboard/providers/${providerId}/connections/${connId}`);
+                }}
+              >
+                {tt("打开高级底层配置页面 →", "Open advanced configuration page →")}
+              </Button>
+            </div>
+          )}
         </Space>
       </Modal>
       <Modal

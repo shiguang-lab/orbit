@@ -335,9 +335,9 @@ const EN_MESSAGES = {
   "providersPage.compatibleBadge": "Compatible",
   "providersPage.compatibleDescription": "OpenAI- and Anthropic-compatible endpoints that you host or configure. Point an OpenAI SDK at your URL and route requests here.",
   "providersPage.noCompatible": "No compatible providers added yet",
-  "providersPage.addCcCompatible": "Add CC compatible",
-  "providersPage.addAnthropicCompatible": "Anthropic",
-  "providersPage.addOpenAiCompatible": "OpenAI",
+  "providersPage.addCcCompatible": "Add CC Compatible",
+  "providersPage.addAnthropicCompatible": "Add Anthropic Compatible",
+  "providersPage.addOpenAiCompatible": "Add OpenAI Compatible",
   "providersPage.oauthTitle": "OAuth providers",
   "providersPage.oauthDescription": "Sign in once with OAuth and Orbit handles token rotation.",
   "providersPage.ideTitle": "IDE providers",
@@ -376,6 +376,7 @@ const EN_MESSAGES = {
   "providersPage.noAvailable": "No providers available",
   "providersPage.noConnections": "No connections",
   "providersPage.connectedCount": "{count} connected",
+  "providersPage.popularityRankTooltip": "OpenRouter weekly popularity rank #{rank}",
   "providersPage.errorCount": "{count} errors",
   "providersPage.warningCount": "{count} need attention",
   "providers.statusWarning": "Needs attention",
@@ -763,8 +764,8 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "providersPage.compatibleDescription": "您托管或配置的 OpenAI 兼容和 Anthropic 兼容端点。将任意 OpenAI SDK 指向您的 URL 并在此处路由请求。",
   "providersPage.noCompatible": "尚未添加兼容的提供者",
   "providersPage.addCcCompatible": "添加 CC 兼容",
-  "providersPage.addAnthropicCompatible": "Anthropic",
-  "providersPage.addOpenAiCompatible": "OpenAI",
+  "providersPage.addAnthropicCompatible": "添加 Anthropic 兼容",
+  "providersPage.addOpenAiCompatible": "添加 OpenAI 兼容",
   "providersPage.oauthTitle": "OAuth 提供者",
   "providersPage.oauthDescription": "通过 OAuth 登录一次，智枢会自动处理令牌轮换。",
   "providersPage.ideTitle": "IDE 提供者",
@@ -803,6 +804,7 @@ const ZH_MESSAGES: Record<MessageKey, string> = {
   "providersPage.noAvailable": "暂无可用提供者",
   "providersPage.noConnections": "无连接",
   "providersPage.connectedCount": "{count} 个已连接",
+  "providersPage.popularityRankTooltip": "OpenRouter 热度周榜第 {rank} 名",
   "providersPage.errorCount": "{count} 个错误",
   "providersPage.warningCount": "{count} 个需检查",
   "providers.statusWarning": "需检查",
@@ -922,6 +924,17 @@ export function translate(
       return valuesOrEn;
     }
     return template;
+  }
+
+  if (locale === "zh-CN" && /[\u4e00-\u9fa5]/.test(keyOrZh)) {
+    const values =
+      typeof valuesOrEn === "object" && valuesOrEn !== null
+        ? valuesOrEn
+        : typeof fallback === "object" && fallback !== null
+        ? fallback
+        : undefined;
+    if (!values) return keyOrZh;
+    return Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, String(value)), keyOrZh);
   }
 
   if (typeof valuesOrEn === "string") {

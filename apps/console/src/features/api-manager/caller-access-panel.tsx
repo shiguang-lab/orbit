@@ -5,9 +5,9 @@ import { useI18n } from "@/i18n";
 import { MaterialIcon } from "@/app/nav";
 import { callerClientName, isCallerIpRuleValid, parseCallerIpRules } from "./caller-access";
 
-const { Text, Paragraph } = Typography;
+const { Text } = Typography;
 
-export function CallerAccessFields() {
+export function CallerAccessFields({ style }: { style?: React.CSSProperties } = {}) {
   const { tt } = useI18n();
   const { token } = theme.useToken();
   const form = Form.useFormInstance();
@@ -15,15 +15,26 @@ export function CallerAccessFields() {
   const noLog = Form.useWatch("noLog", form);
   const rules = parseCallerIpRules(Form.useWatch("ipAllowlist", form));
   return (
-    <section style={{ border: `1px solid ${token.colorBorderSecondary}`, borderRadius: token.borderRadiusLG, padding: 20, marginBottom: 20 }}>
-      <Flex gap={10} align="center" style={{ marginBottom: 8 }}>
-        <MaterialIcon name="verified_user" size={20} style={{ color: token.colorPrimary }} />
-        <Text strong>{tt("调用方访问控制", "Caller access")}</Text>
+    <div
+      style={{
+        padding: 14,
+        borderRadius: 8,
+        background: token.colorFillQuaternary,
+        border: `1px solid ${token.colorBorderSecondary}`,
+        marginBottom: 16,
+        ...style,
+      }}
+    >
+      <Flex align="center" gap={6} style={{ marginBottom: 8 }}>
+        <MaterialIcon name="verified_user" size={16} style={{ color: "#3B82F6" }} />
+        <Text strong style={{ fontSize: 13, lineHeight: 1 }}>
+          {tt("调用方访问控制", "Caller Access Control")}
+        </Text>
       </Flex>
-      <Paragraph type="secondary" style={{ marginBottom: 16 }}>
+      <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 12 }}>
         {tt("决定哪些网络地址可以使用此密钥，与模型权限同时生效。", "Choose which network addresses can use this key, alongside its model permissions.")}
-      </Paragraph>
-      <Form.Item name="ipAccessMode" label={tt("IP 访问范围", "IP access")} initialValue="all" style={{ marginBottom: mode === "restricted" ? 16 : 8 }}>
+      </Text>
+      <Form.Item name="ipAccessMode" label={<Text style={{ fontSize: 12 }}>{tt("IP 访问范围", "IP Access Range")}</Text>} initialValue="all" style={{ marginBottom: mode === "restricted" ? 12 : 8 }}>
         <Radio.Group options={[
           { value: "all", label: tt("不限制 IP", "Any IP") },
           { value: "restricted", label: tt("仅允许指定 IP", "Specified IPs only") },
@@ -32,7 +43,7 @@ export function CallerAccessFields() {
       {mode === "restricted" ? (
         <Form.Item
           name="ipAllowlist"
-          label={tt("允许的 IP 或网段", "Allowed IPs or networks")}
+          label={<Text style={{ fontSize: 12 }}>{tt("允许的 IP 或网段", "Allowed IPs or networks")}</Text>}
           validateTrigger="onBlur"
           rules={[{ validator: async (_, value) => {
             const entries = parseCallerIpRules(value);
@@ -41,18 +52,23 @@ export function CallerAccessFields() {
             const invalid = entries.filter((entry) => !isCallerIpRuleValid(entry));
             if (invalid.length) throw new Error(`${tt("格式不正确", "Invalid format")}: ${invalid.slice(0, 3).join(", ")}`);
           } }]}
-          extra={<Flex justify="space-between" wrap gap={4}><span>{tt("每行一条；支持 IPv4、IPv6、CIDR，也可粘贴逗号分隔的地址。", "One per line. Supports IPv4, IPv6, CIDR and comma-separated addresses.")}</span><span>{tt(`${rules.length} / 100 条`, `${rules.length} / 100 rules`)}</span></Flex>}
+          extra={<Flex justify="space-between" wrap gap={4} style={{ fontSize: 11, marginTop: 4 }}><span>{tt("每行一条；支持 IPv4、IPv6、CIDR，也可粘贴逗号分隔的地址。", "One per line. Supports IPv4, IPv6, CIDR and comma-separated addresses.")}</span><span>{tt(`${rules.length} / 100 条`, `${rules.length} / 100 rules`)}</span></Flex>}
+          style={{ marginBottom: 10 }}
         >
-          <Input.TextArea autoSize={{ minRows: 4, maxRows: 8 }} style={{ fontFamily: "monospace" }} placeholder={"192.0.2.10\n198.51.100.0/24\n2001:db8::/32"} />
+          <Input.TextArea autoSize={{ minRows: 3, maxRows: 6 }} style={{ fontFamily: "monospace", fontSize: 12 }} placeholder={"192.0.2.10\n198.51.100.0/24\n2001:db8::/32"} />
         </Form.Item>
-      ) : <Paragraph type="secondary">{tt("持有有效密钥的调用方可从任意 IP 发起请求。", "Callers with a valid key can connect from any IP.")}</Paragraph>}
-      <Flex gap={8} align="flex-start" style={{ paddingTop: 12, borderTop: `1px solid ${token.colorBorderSecondary}`, color: token.colorTextSecondary }}>
-        <MaterialIcon name={noLog ? "visibility_off" : "history"} size={18} />
-        <Text type="secondary">{noLog
+      ) : (
+        <Text type="secondary" style={{ fontSize: 11, display: "block", marginBottom: 8 }}>
+          {tt("持有有效密钥的调用方可从任意 IP 发起请求。", "Callers with a valid key can connect from any IP.")}
+        </Text>
+      )}
+      <Flex gap={6} align="flex-start" style={{ paddingTop: 8, marginTop: 4, borderTop: `1px dashed ${token.colorBorderSecondary}`, color: token.colorTextSecondary }}>
+        <MaterialIcon name={noLog ? "visibility_off" : "history"} size={14} style={{ marginTop: 2 }} />
+        <Text type="secondary" style={{ fontSize: 11 }}>{noLog
           ? tt("已开启免日志：保存后将清除已有来源，并停止记录。IP 限制仍然生效。", "No-log is enabled: saving clears the recorded source and stops recording. IP restrictions still apply.")
           : tt("最近一次调用的 IP、客户端和时间会显示在调用来源中。", "The latest caller IP, client and time appear in Caller source.")}</Text>
       </Flex>
-    </section>
+    </div>
   );
 }
 
