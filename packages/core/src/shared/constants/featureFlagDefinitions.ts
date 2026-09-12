@@ -473,17 +473,6 @@ export const FEATURE_FLAG_DEFINITIONS: FeatureFlagDefinition[] = [
     warningLevel: "info",
   },
   {
-    key: "HIDE_EFFORT_VARIANTS",
-    label: "Aggregate effort variants",
-    description: "Aggregate Orbit-generated effort variants into base models in public model catalogs. Internal catalogs and request policies retain individual variants.",
-    descriptionI18nKey: "featureFlagHideEffortVariantsDescription",
-    category: "runtime",
-    defaultValue: "true",
-    type: "boolean",
-    requiresRestart: false,
-    warningLevel: "info",
-  },
-  {
     key: "ORBIT_DISABLE_THINKING_LEVEL_VARIANTS",
     label: "Disable Thinking Level Variants",
     description:

@@ -28,9 +28,20 @@ export function HEAD(): Response {
   });
 }
 
+/**
+ * Exact model lookup must use the expanded projection: effort aliases are
+ * intentionally omitted from the default list response, but remain valid
+ * callable model IDs and therefore must resolve through this endpoint.
+ */
+function expandedCatalogRequest(request: Request): Request {
+  const url = new URL(request.url);
+  url.searchParams.set("effort_variants", "expanded");
+  return new Request(url, request);
+}
+
 /** GET /v1/models/{model} — return one model from the unified catalog. */
 export async function GET(request: Request, requestedId: string): Promise<Response> {
-  const listResponse = await getUnifiedModelsResponse(request, CORS_HEADERS);
+  const listResponse = await getUnifiedModelsResponse(expandedCatalogRequest(request), CORS_HEADERS);
   // Preserve authentication rejections and upstream failures unchanged.
   if (!listResponse.ok) return listResponse;
 

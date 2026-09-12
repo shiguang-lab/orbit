@@ -1,5 +1,5 @@
-import { isFeatureFlagEnabled } from "@orbit/core/runtime/feature-flags";
 import { aggregateEffortVariants } from "./effortPresentation.ts";
+import { getEffortVariantsMode } from "./catalogRequest";
 import {
   PROVIDER_MODELS,
   PROVIDER_ID_TO_ALIAS,
@@ -180,12 +180,35 @@ export type { CachedCatalog, BackgroundRefreshScheduler } from "./catalogCache";
  */
 export type CatalogResponseOptions = {
   scheduleBackgroundRefresh?: BackgroundRefreshScheduler;
+  /** Return the unprojected catalog for internal management and exact lookups. */
+  internal?: boolean;
 };
 
 const BUILTIN_AUTO_YIELD_INTERVAL = 2;
 
 function yieldCatalogBuildTurn(): Promise<void> {
   return new Promise((resolve) => setImmediate(resolve));
+}
+
+function appendEffortVariantsVary(headers: Headers): void {
+  const values = (headers.get("vary") || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+  if (!values.some((value) => value.toLowerCase() === "x-orbit-effort-variants")) {
+    values.push("X-Orbit-Effort-Variants");
+    headers.set("Vary", values.join(", "));
+  }
+}
+
+function withEffortVariantsVary(response: Response): Response {
+  const headers = new Headers(response.headers);
+  appendEffortVariantsVary(headers);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 }
 
 /**
@@ -200,7 +223,7 @@ function yieldCatalogBuildTurn(): Promise<void> {
 export async function getUnifiedModelsResponse(
   request: Request,
   corsHeaders: Record<string, string> = {},
-  options: { scheduleBackgroundRefresh?: BackgroundRefreshScheduler; internal?: boolean } = {}
+  options: CatalogResponseOptions = {}
 ) {
   const diagnosticHeaders = getCatalogDiagnosticsHeaders({ request });
 
@@ -245,13 +268,16 @@ export async function getUnifiedModelsResponse(
         scheduleBackgroundRefresh: options.scheduleBackgroundRefresh,
       }
     );
-    if (options.internal || !response.ok || !isFeatureFlagEnabled("HIDE_EFFORT_VARIANTS")) return response;
+    const effortVariantsMode = getEffortVariantsMode(request);
+    if (options.internal) return response;
+    if (!response.ok || effortVariantsMode === "expanded") return withEffortVariantsVary(response);
     const payload = await response.json();
     payload.data = aggregateEffortVariants(payload.data);
     if (Array.isArray(payload.models)) payload.models = aggregateEffortVariants(payload.models);
     const headers = new Headers(response.headers);
     headers.delete("content-length");
     headers.delete("etag");
+    appendEffortVariantsVary(headers);
     return Response.json(payload, { status: response.status, headers });
   } catch (err) {
     // Hard rule #12: never put a raw err.message/err.stack in a response body.

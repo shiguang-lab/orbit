@@ -192,6 +192,8 @@ export interface ModelRowItem {
   id: string;
   name?: string;
   source?: "system" | "custom" | "imported" | "fallback" | "alias";
+  supportsReasoning?: boolean;
+  supportedThinkingEfforts?: string[];
   isFree?: boolean;
   isHidden?: boolean;
   compat?: ModelCompatData;
@@ -204,6 +206,7 @@ interface Props {
   providerId: string;
   providerDisplayAlias: string;
   models: ModelRowItem[];
+  loading?: boolean;
   modelAliases: Record<string, string>;
   allowModelImport?: boolean;
   autoFetchModels?: boolean;
@@ -229,6 +232,7 @@ export function ProviderModelsSection({
   providerId,
   providerDisplayAlias,
   models,
+  loading = false,
   modelAliases,
   allowModelImport = false,
   autoFetchModels = false,
@@ -422,6 +426,21 @@ export function ProviderModelsSection({
     }
   };
 
+  const renderThinkingTag = (model: ModelRowItem) => {
+    const efforts = (model.supportedThinkingEfforts || []).filter(Boolean);
+    if (efforts.length === 0 && !model.supportsReasoning) return null;
+    const label = efforts.length > 0
+      ? t("providers.reasoningEfforts", { efforts: efforts.join(" / ") })
+      : t("providers.reasoningSupported", "支持深度思考");
+    return (
+      <Tooltip title={t("providers.reasoningEffortsDesc", "该模型支持通过 reasoning_effort 调整思考深度")}>
+        <Tag color="purple" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
+          {label}
+        </Tag>
+      </Tooltip>
+    );
+  };
+
   return (
     <Card className={styles.sectionCard}>
       {/* Header Row */}
@@ -483,7 +502,7 @@ export function ProviderModelsSection({
                 loading={clearingModels}
                 icon={<MaterialIcon name="delete_sweep" size={16} />}
               >
-                {t("providers.clearAllModels", "清空模型")}
+                {t("providers.clearAllModels", "清理导入模型")}
               </Button>
             </Popconfirm>
           )}
@@ -547,7 +566,7 @@ export function ProviderModelsSection({
           >
             {testingAll && testProgress
               ? `${t("providers.testing", "测试中")} ${testProgress.done}/${testProgress.total}`
-              : t("providers.testAllModels", "测试全部")}
+              : t("providers.testAllModels", "测试")}
           </Button>
 
           <Segmented
@@ -582,18 +601,23 @@ export function ProviderModelsSection({
       </div>
 
       {/* Models List or Cards */}
-      {displayedModels.length === 0 ? (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description={
-            filterText
-              ? t("providers.noModelsMatch", `没有匹配 "${filterText}" 的模型`)
-              : t("providers.noModelsYet", "暂无可用的模型")
-          }
-        />
-      ) : viewMode === "card" ? (
-        <div className={styles.modelGridCards}>
-          {displayedModels.map((model) => {
+      <Spin
+        spinning={loading}
+        tip={t("providers.loadingModels", "正在加载模型列表...")}
+        style={{ width: "100%" }}
+      >
+        {displayedModels.length === 0 ? (
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={
+              filterText
+                ? t("providers.noModelsMatch", `没有匹配 "${filterText}" 的模型`)
+                : t("providers.noModelsYet", "暂无可用的模型")
+            }
+          />
+        ) : viewMode === "card" ? (
+          <div className={styles.modelGridCards}>
+            {displayedModels.map((model) => {
             const alias = aliasByModelId[model.id] || "";
             const isEditingAlias = editingAliasModelId === model.id;
             const fullModelName = `${providerDisplayAlias}/${model.id}`;
@@ -605,7 +629,7 @@ export function ProviderModelsSection({
               model.compat?.upstreamHeaders && Object.keys(model.compat.upstreamHeaders).length > 0
             );
 
-            return (
+              return (
               <div
                 key={model.id}
                 className={`${styles.modelCard} ${model.isHidden ? styles.modelHidden : ""}`}
@@ -714,6 +738,7 @@ export function ProviderModelsSection({
                       </Tag>
                     </Tooltip>
                   )}
+                  {renderThinkingTag(model)}
                 </div>
 
                 {/* Card Bottom: Test Button & Actions */}
@@ -790,12 +815,12 @@ export function ProviderModelsSection({
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className={styles.modelGrid}>
-          {displayedModels.map((model) => {
+              );
+            })}
+          </div>
+        ) : (
+          <div className={styles.modelGrid}>
+            {displayedModels.map((model) => {
             const alias = aliasByModelId[model.id] || "";
             const isEditingAlias = editingAliasModelId === model.id;
             const fullModelName = `${providerDisplayAlias}/${model.id}`;
@@ -808,7 +833,7 @@ export function ProviderModelsSection({
               model.compat?.upstreamHeaders && Object.keys(model.compat.upstreamHeaders).length > 0
             );
 
-            return (
+              return (
               <div
                 key={model.id}
                 className={`${styles.modelRow} ${model.isHidden ? styles.modelHidden : ""}`}
@@ -890,6 +915,7 @@ export function ProviderModelsSection({
                       {t("providers.compatBadgeUpstreamHeaders", "请求头")}
                     </Tag>
                   )}
+                  {renderThinkingTag(model)}
                 </div>
 
                 {/* Right Actions */}
@@ -958,10 +984,11 @@ export function ProviderModelsSection({
                   </Tooltip>
                 </div>
               </div>
-            );
-          })}
-        </div>
-      )}
+              );
+            })}
+          </div>
+        )}
+      </Spin>
     </Card>
   );
 }

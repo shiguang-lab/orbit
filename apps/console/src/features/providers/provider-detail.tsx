@@ -109,6 +109,21 @@ const HEADER_ICON_ALIASES: Record<string, string> = {
   clinepass: "cline",
   "codebuddy-cn": "tencent",
   qoder: "qoder",
+  volcengine: "volcengine",
+  "volcengine-agent-plan": "volcengine",
+  "volcengine-coding-plan": "volcengine",
+  deepseek: "deepseek",
+  "deepseek-web": "deepseek",
+  kimi: "kimi",
+  "kimi-web": "kimi",
+  minimax: "minimax",
+  zhipu: "zhipu",
+  glm: "zhipu",
+  qwen: "qwen",
+  google: "google",
+  gemini: "google",
+  openai: "openai",
+  anthropic: "anthropic",
 };
 const HEADER_LOBE_ICONS: Record<string, HeaderProviderIcon> = {
   antigravity: AntigravityColorIcon,
@@ -907,14 +922,46 @@ export default function ProviderDetailPage() {
     const map = new Map<string, ModelRowItem>();
     const compatMap = (modelsQuery.data as any)?.compatMap || new Map();
     const hiddenSet = new Set((modelsQuery.data as any)?.hiddenModelsByProvider?.[providerId] || []);
+    const normalizeThinkingEfforts = (value: unknown): string[] =>
+      Array.isArray(value)
+        ? [...new Set(value.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0))]
+        : [];
 
-    for (const m of ((modelsQuery.data as any)?.registryModels || []) as any[]) {
+    const registryModels = [...(((modelsQuery.data as any)?.registryModels || []) as any[])].sort(
+      (a, b) => Number(Boolean(a?.effortVariant)) - Number(Boolean(b?.effortVariant))
+    );
+    for (const m of registryModels) {
       const id = String(m.id ?? "").trim();
       if (!id) continue;
+
+      // Registry effort aliases (for example `glm-5.3-flash-high`) are
+      // compatibility IDs for clients that cannot send reasoning_effort. Keep
+      // them routable in the public catalog, but present the provider's model
+      // management page as one base model with its supported effort levels.
+      const effortVariant = m.effortVariant as { baseModel?: unknown; effort?: unknown } | undefined;
+      const baseModelId = typeof effortVariant?.baseModel === "string" ? effortVariant.baseModel.trim() : "";
+      const effort = typeof effortVariant?.effort === "string" ? effortVariant.effort.trim() : "";
+      if (baseModelId && effort) {
+        // Keep per-model visibility authoritative: hiding a compatibility alias
+        // must also remove that effort from the aggregated base-model metadata.
+        if (hiddenSet.has(id)) continue;
+        const base = map.get(baseModelId);
+        if (base) {
+          map.set(baseModelId, {
+            ...base,
+            supportsReasoning: true,
+            supportedThinkingEfforts: [...new Set([...(base.supportedThinkingEfforts || []), effort])],
+          });
+          continue;
+        }
+      }
+
       map.set(id, {
         id,
         name: m.name || id,
         source: "system",
+        supportsReasoning: Boolean(m.supportsReasoning),
+        supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
         isFree: Boolean(m.isFree),
         isHidden: hiddenSet.has(id),
         compat: compatMap.get(id),
@@ -933,6 +980,8 @@ export default function ProviderDetailPage() {
           id,
           name: m.name || id,
           source: "imported",
+          supportsReasoning: Boolean(m.supportsReasoning),
+          supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
           isFree: Boolean(m.isFree),
           isHidden: hiddenSet.has(id),
           compat: compatMap.get(id),
@@ -945,6 +994,11 @@ export default function ProviderDetailPage() {
         map.set(id, {
           ...existing,
           name: existing.name || m.name || id,
+          supportsReasoning: existing.supportsReasoning || Boolean(m.supportsReasoning),
+          supportedThinkingEfforts: [...new Set([
+            ...(existing.supportedThinkingEfforts || []),
+            ...normalizeThinkingEfforts(m.supportedThinkingEfforts),
+          ])],
           isFree: existing.isFree || Boolean(m.isFree),
           testError: modelTestErrors[id],
         });
@@ -969,6 +1023,8 @@ export default function ProviderDetailPage() {
           id,
           name: m.name || id,
           source: "imported",
+          supportsReasoning: Boolean(m.supportsReasoning),
+          supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
           isFree: Boolean(m.isFree),
           isHidden: hiddenSet.has(id),
           compat: compatMap.get(id),
@@ -1409,7 +1465,7 @@ export default function ProviderDetailPage() {
           >
             {HeaderIcon ? createElement(HeaderIcon, { size: 24, style: { color: info?.color ?? "#1677ff", position: "relative", zIndex: 1 }, "aria-label": info?.name ?? providerId }) : <img
               className={styles.headerIconImage}
-              src={`/providers/${headerIconId}.svg`}
+              src={info?.iconUrl || `/providers/${headerIconId}.svg`}
               alt=""
               onError={(event) => { event.currentTarget.style.display = "none"; }}
             />}
@@ -1985,6 +2041,7 @@ export default function ProviderDetailPage() {
                   providerId={providerId}
                   providerDisplayAlias={providerDisplayAlias}
                   models={availableModelRows}
+                  loading={modelsQuery.isFetching}
                   modelAliases={aliasesQuery.data || {}}
                   allowModelImport={!isCodingPlanProvider && (kind !== "upstream-proxy" || providerId === "cliproxyapi") && Boolean(connections.length > 0)}
                   autoFetchModels={!isCodingPlanProvider && (kind !== "upstream-proxy" || providerId === "cliproxyapi") && autoFetchModelsEnabled}

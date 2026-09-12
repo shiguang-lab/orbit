@@ -14,7 +14,13 @@ export function HEAD(): Response {
   });
 }
 
-/** GET /v1/models — OpenAI-compatible model catalog. */
+/**
+ * GET /v1/models — OpenAI-compatible model catalog.
+ *
+ * The default response groups Orbit-generated effort aliases into their base
+ * model. Clients that need suffix IDs can opt into the expanded projection via
+ * `?effort_variants=expanded` or `X-Orbit-Effort-Variants: expanded`.
+ */
 export function GET(request: Request): Promise<Response> {
   return getUnifiedModelsResponse(request, CORS_HEADERS, {
     // Nest has no Next request lifecycle hook. Yield to Fastify before a stale

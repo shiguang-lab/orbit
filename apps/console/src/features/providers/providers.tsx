@@ -1026,6 +1026,21 @@ const PROVIDER_ICON_ALIASES: Record<string, string> = {
   "opencode-go": "opencode",
   "opencode-zen": "opencode",
   "poe-web": "poe",
+  volcengine: "volcengine",
+  "volcengine-agent-plan": "volcengine",
+  "volcengine-coding-plan": "volcengine",
+  deepseek: "deepseek",
+  "deepseek-web": "deepseek",
+  kimi: "kimi",
+  "kimi-web": "kimi",
+  minimax: "minimax",
+  zhipu: "zhipu",
+  glm: "zhipu",
+  qwen: "qwen",
+  google: "google",
+  gemini: "google",
+  openai: "openai",
+  anthropic: "anthropic",
 };
 
 const LOBE_PROVIDER_ICONS: Record<string, ProviderLobeIcon> = {

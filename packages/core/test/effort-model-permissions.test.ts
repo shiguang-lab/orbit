@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 
-test("effort permissions and output-only feature flag", async (t) => {
+test("effort permissions preserve base and suffix targets", async (t) => {
   const dir = mkdtempSync(join(tmpdir(), "orbit-effort-policy-"));
   process.env.DATA_DIR = dir;
   process.env.API_KEY_SECRET = "effort-policy-test-secret";
@@ -15,7 +15,6 @@ test("effort permissions and output-only feature flag", async (t) => {
     db.resetDbInstance(); rmSync(dir, { recursive: true, force: true });
   });
   const keys = await import("../src/lib/db/apiKeys.ts");
-  const flags = await import("../src/shared/utils/featureFlags.ts");
   const key = await keys.createApiKey("effort-policy", "test");
   const base = "codex/gpt-5.6-sol";
   await keys.updateApiKeyPermissions(key.id, { modelAccessMode: "restricted", allowedModels: [`${base}-high`] });
@@ -38,12 +37,7 @@ test("effort permissions and output-only feature flag", async (t) => {
   await keys.updateApiKeyPermissions(key.id, { modelAccessMode: "all", allowedModels: [], blockedModels: [`${base}-high`] });
   assert.equal(await keys.isModelAllowedForKey(key.key, `${base}-high`), false);
   assert.equal(await keys.isModelAllowedForKey(key.key, base), false);
-  assert.equal(flags.isFeatureFlagEnabled("HIDE_EFFORT_VARIANTS"), true);
-  flags.setFeatureFlagOverride("HIDE_EFFORT_VARIANTS", "false");
-  assert.equal(flags.isFeatureFlagEnabled("HIDE_EFFORT_VARIANTS"), false);
   assert.equal(await keys.isModelAllowedForKey(key.key, base, "high"), false);
-  flags.setFeatureFlagOverride("HIDE_EFFORT_VARIANTS", "true");
-  assert.equal(flags.isFeatureFlagEnabled("HIDE_EFFORT_VARIANTS"), true);
   await keys.updateApiKeyPermissions(key.id, { modelAccessMode: "restricted", allowedModels: [base], blockedModels: [] });
   assert.equal(await keys.isModelAllowedForKey(key.key, `${base}-high`), true);
   await keys.updateApiKeyPermissions(key.id, { modelAccessMode: "restricted", allowedModels: [], blockedModels: [] });

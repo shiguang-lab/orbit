@@ -17,7 +17,7 @@ import { createHmac } from "node:crypto";
 import { getModelCatalogCacheVersion } from "@orbit/core/db/read-cache";
 import { extractApiKey } from "../services/auth.ts";
 
-import { isCodexModelCatalogClient } from "./catalogRequest";
+import { getEffortVariantsMode, isCodexModelCatalogClient } from "./catalogRequest";
 
 /** Fingerprint an API key for the catalog memo Map. Never store the raw secret. */
 export function fingerprintCatalogAuthKey(apiKey: string): string {
@@ -174,7 +174,8 @@ function buildCatalogCacheKey(request: Request, catalogSettings?: CatalogCacheOp
   const configuredOnly = url.searchParams.get("configuredOnly") === "true" ? "1" : "0";
   const hideAuto = catalogSettings?.hideAutoCombos ? "1" : "0";
   const hideNoThink = catalogSettings?.hideNoThinkVariants ? "1" : "0";
-  return `${prefix}|${isCodex}|${fingerprintCatalogAuthKey(apiKey)}|${configuredOnly}|${hideAuto}|${hideNoThink}`;
+  const effortVariants = getEffortVariantsMode(request);
+  return `${prefix}|${isCodex}|${fingerprintCatalogAuthKey(apiKey)}|${configuredOnly}|${hideAuto}|${hideNoThink}|${effortVariants}`;
 }
 
 // Tracks the model-catalog cache version (src/lib/db/readCache.ts) as of the last

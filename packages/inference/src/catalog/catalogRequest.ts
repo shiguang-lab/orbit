@@ -82,3 +82,19 @@ export function isCcDiscoveryModelCatalogClient(request: Request): boolean {
   const userAgent = request.headers.get("user-agent")?.toLowerCase() ?? "";
   return userAgent.includes("claude-cli");
 }
+
+export type EffortVariantsMode = "collapsed" | "expanded";
+
+/**
+ * Select the public `/models` projection for this request. Query parameters are
+ * useful for OpenAI-compatible clients that preserve the URL, while the header
+ * provides an equivalent opt-in for clients that centralize request metadata.
+ * Query parameters take precedence when both are present; unknown values keep
+ * the safe default and hide Orbit-generated aliases.
+ */
+export function getEffortVariantsMode(request: Request): EffortVariantsMode {
+  const queryValue = new URL(request.url).searchParams.get("effort_variants");
+  const headerValue = request.headers.get("x-orbit-effort-variants");
+  const value = (queryValue ?? headerValue)?.trim().toLowerCase();
+  return value === "expanded" ? "expanded" : "collapsed";
+}

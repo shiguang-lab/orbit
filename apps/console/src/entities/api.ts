@@ -136,6 +136,7 @@ export interface ProviderCatalogEntry {
   name: string;
   color?: string;
   icon?: string;
+  iconUrl?: string;
   textIcon?: string;
   apiType?: string;
   hasFree?: boolean;
