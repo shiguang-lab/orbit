@@ -384,10 +384,17 @@ export async function persistDiscoveredModels(
   // (auto-pool expansion, chat projections), not at write time.
   const registry = getRegistryEntry(providerId);
   const registryIds = new Set((registry?.models ?? []).map((model) => model.id));
+  const registryBaseIds = new Set(
+    (registry?.models ?? []).map((model) => model.effortVariant?.baseModel ?? model.id)
+  );
   const normalized = providerRuntimePorts.filterSelectableModels(
     providerId,
     normalizeDiscoveredModels(models, providerId)
-      .filter((model) => !registryIds.has(model.id))
+      .filter((model) => {
+        if (registryIds.has(model.id)) return false;
+        const match = model.id.match(/^(.*)-(none|low|medium|high|xhigh|max|ultra|extra)$/i);
+        return !(match && registryBaseIds.has(match[1]));
+      })
   );
   await replaceSyncedAvailableModelsForConnection(providerId, connectionId, normalized);
   return normalized;
