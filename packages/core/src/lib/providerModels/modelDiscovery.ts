@@ -6,6 +6,7 @@ import {
 } from "../db/models.js";
 import { CANONICAL_EFFORT_VALUES } from "../../shared/reasoning/effortStandardization.js";
 import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
+import { getRegistryEntry } from "@orbit/providers/provider-registry";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -381,9 +382,12 @@ export async function persistDiscoveredModels(
   // models must persist so per-connection endpoint routing (#11088) and the
   // /v1/models catalog can see them. Chat selectability is applied at read time
   // (auto-pool expansion, chat projections), not at write time.
+  const registry = getRegistryEntry(providerId);
+  const registryIds = new Set((registry?.models ?? []).map((model) => model.id));
   const normalized = providerRuntimePorts.filterSelectableModels(
     providerId,
     normalizeDiscoveredModels(models, providerId)
+      .filter((model) => !registryIds.has(model.id))
   );
   await replaceSyncedAvailableModelsForConnection(providerId, connectionId, normalized);
   return normalized;
