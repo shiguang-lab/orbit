@@ -45,6 +45,7 @@ export interface GeminiDiscoveryModel {
   outputTokenLimit?: number;
   description?: string;
   supportsThinking?: boolean;
+  supportsVision?: boolean;
   [key: string]: unknown;
 }
 
@@ -63,6 +64,14 @@ export function parseGeminiModelsList(data: any): GeminiDiscoveryModel[] {
 
       const id = ((m.name as string) || (m.id as string) || "").replace(/^models\//, "");
       const lowerId = id.toLowerCase();
+      const inputModalities = Array.isArray(m.inputModalities)
+        ? (m.inputModalities as unknown[])
+        : Array.isArray(m.input_modalities)
+          ? (m.input_modalities as unknown[])
+          : [];
+      const supportsVision = inputModalities.some(
+        (modality) => typeof modality === "string" && modality.toLowerCase() === "image"
+      );
 
       // Google exposes Imagen (image) and Veo (video) via long-running methods; the
       // method alone can't always distinguish them, so refine by model id.
@@ -92,6 +101,7 @@ export function parseGeminiModelsList(data: any): GeminiDiscoveryModel[] {
         ...(typeof m.outputTokenLimit === "number" ? { outputTokenLimit: m.outputTokenLimit } : {}),
         ...(typeof m.description === "string" ? { description: m.description } : {}),
         ...(m.thinking === true ? { supportsThinking: true } : {}),
+        ...(supportsVision ? { supportsVision: true } : {}),
       } as GeminiDiscoveryModel;
     })
     .filter(

@@ -11,7 +11,7 @@ import {
 test("keeps Antigravity chat and image catalog surfaces in discovery", () => {
   const models = normalizeAntigravityModelsResponse({
     models: {
-      "gemini-3.8-flash-low": { displayName: "Gemini 3.8 Flash (Low)" },
+      "gemini-3.8-flash-low": { displayName: "Gemini 3.8 Flash (Low)", supportsImages: true },
       "gemini-3.8-flash-medium": { displayName: "Gemini 3.8 Flash (Medium)" },
       "gemini-3.8-flash-high": { displayName: "Gemini 3.8 Flash (High)" },
       "gemini-3.1-flash-image": { displayName: "Gemini 3.1 Flash Image" },
@@ -33,12 +33,54 @@ test("keeps Antigravity chat and image catalog surfaces in discovery", () => {
   });
 
   assert.deepEqual(models.map((model) => model.id), [
-    "gemini-3.8-flash-low",
-    "gemini-3.8-flash-medium",
-    "gemini-3.8-flash-high",
+    "gemini-3.8-flash",
     "gemini-3.1-flash-image",
   ]);
+  assert.deepEqual(models[0]?.supportedThinkingEfforts, ["low", "medium", "high"]);
+  assert.deepEqual(models[0]?.effortModelIds, {
+    low: "gemini-3.8-flash-low",
+    medium: "gemini-3.8-flash-medium",
+    high: "gemini-3.8-flash-high",
+  });
+  assert.equal(models[0]?.supportsVision, true);
+  assert.equal(models[1]?.id, "gemini-3.1-flash-image");
   assert.deepEqual(models.at(-1)?.supportedEndpoints, ["images"]);
+});
+
+test("aggregates the models object instead of trusting agentModelSorts", () => {
+  const models = normalizeAntigravityModelsResponse({
+    models: {
+      "gemini-3.8-flash-tiered": { supportsThinking: true },
+      "gemini-3.7-flash-tiered": { supportsThinking: true },
+      "gemini-3.1-pro-low": { displayName: "Gemini 3.1 Pro (Low)", supportsThinking: true },
+      "gemini-pro-agent": { displayName: "Gemini 3.1 Pro (High)", supportsThinking: true },
+      "claude-opus-4-6-thinking": {
+        displayName: "Claude Opus 4.6 (Thinking)",
+        supportsThinking: true,
+      },
+      "gpt-oss-120b-medium": { displayName: "GPT-OSS 120B (Medium)", supportsThinking: true },
+      "not-in-agent-sort": { displayName: "Additional model" },
+    },
+    agentModelSorts: [{ groups: [{ modelIds: ["gpt-oss-120b-medium"] }] }],
+    tieredModelIds: {
+      flash: ["gemini-3.8-flash-tiered", "gemini-3.7-flash-tiered"],
+    },
+  });
+
+  assert.deepEqual(models.map((model) => model.id), [
+    "gemini-3.8-flash",
+    "gemini-3.7-flash",
+    "gemini-3.1-pro",
+    "claude-opus-4-6",
+    "gpt-oss-120b",
+    "not-in-agent-sort",
+  ]);
+  assert.equal(models[0]?.tieredModelId, "gemini-3.8-flash-tiered");
+  assert.deepEqual(models[0]?.supportedThinkingEfforts, ["low", "medium", "high"]);
+  assert.equal(models[1]?.tieredModelId, "gemini-3.7-flash-tiered");
+  assert.deepEqual(models[1]?.supportedThinkingEfforts, ["low", "medium", "high"]);
+  assert.equal(models[2]?.effortModelIds?.high, "gemini-pro-agent");
+  assert.equal(models[3]?.thinkingModelId, "claude-opus-4-6-thinking");
 });
 
 test("preserves Gemini method mapping, model heuristics, metadata, and retirement filtering", () => {

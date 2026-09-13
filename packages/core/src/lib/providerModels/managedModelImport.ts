@@ -40,6 +40,9 @@ export type ManagedImportedModel = {
   outputTokenLimit?: number;
   description?: string;
   supportsThinking?: boolean;
+  thinkingModelId?: string;
+  effortModelIds?: Record<string, string>;
+  tieredModelId?: string;
   alwaysThinking?: boolean;
   supportsTools?: boolean;
   supportsVideo?: boolean;
@@ -78,6 +81,15 @@ function copyImportedModelMetadata(target: ManagedImportedModel, model: JsonReco
   if (typeof model.description === "string") target.description = model.description;
   if (typeof model.supportsThinking === "boolean") {
     target.supportsThinking = model.supportsThinking;
+  }
+  if (toNonEmptyString(model.thinkingModelId)) {
+    target.thinkingModelId = model.thinkingModelId as string;
+  }
+  if (model.effortModelIds && typeof model.effortModelIds === "object") {
+    target.effortModelIds = model.effortModelIds as Record<string, string>;
+  }
+  if (toNonEmptyString(model.tieredModelId)) {
+    target.tieredModelId = model.tieredModelId as string;
   }
   if (model.alwaysThinking === true) target.alwaysThinking = true;
   if (typeof model.supportsTools === "boolean") target.supportsTools = model.supportsTools;
@@ -126,6 +138,11 @@ function copyComparableModelMetadata(target: JsonRecord, model: JsonRecord): voi
   if (typeof model.supportsThinking === "boolean") {
     target.supportsThinking = model.supportsThinking;
   }
+  if (toNonEmptyString(model.thinkingModelId)) target.thinkingModelId = model.thinkingModelId;
+  if (model.effortModelIds && typeof model.effortModelIds === "object") {
+    target.effortModelIds = model.effortModelIds;
+  }
+  if (toNonEmptyString(model.tieredModelId)) target.tieredModelId = model.tieredModelId;
   if (model.alwaysThinking === true) target.alwaysThinking = true;
   if (typeof model.supportsTools === "boolean") target.supportsTools = model.supportsTools;
   if (typeof model.supportsVideo === "boolean") target.supportsVideo = model.supportsVideo;

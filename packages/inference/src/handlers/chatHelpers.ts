@@ -126,6 +126,62 @@ export async function resolveModelOrError(
   if ("error" in modelInfo) return modelInfo;
   const sourceFormat = detectFormatFromEndpoint(body, endpointPath);
 
+  // Synced catalogs may collapse an upstream `-{thinking}` model id into a
+  // single base row for the UI. When the request explicitly enables reasoning,
+  // route that base row back to the provider's official thinking model id.
+  // A disabled/absent reasoning signal keeps the base id unchanged.
+  const thinkingModelId =
+    typeof (modelInfo as any).thinkingModelId === "string"
+      ? (modelInfo as any).thinkingModelId.trim()
+      : "";
+  const effortModelIds =
+    (modelInfo as any).effortModelIds && typeof (modelInfo as any).effortModelIds === "object"
+      ? ((modelInfo as any).effortModelIds as Record<string, string>)
+      : {};
+  const tieredModelId =
+    typeof (modelInfo as any).tieredModelId === "string"
+      ? (modelInfo as any).tieredModelId.trim()
+      : "";
+  if (thinkingModelId || Object.keys(effortModelIds).length > 0 || tieredModelId) {
+    const thinking = (body as any)?.thinking;
+    const reasoning = (body as any)?.reasoning;
+    const effort =
+      (body as any)?.reasoning_effort ??
+      (typeof reasoning === "object" && reasoning ? reasoning.effort : undefined) ??
+      (body as any)?.effort;
+    const thinkingDisabled =
+      typeof thinking === "object" && thinking !== null && thinking.type === "disabled";
+    const explicitlyDisabled =
+      thinkingDisabled ||
+      (typeof effort === "string" && effort.toLowerCase().trim() === "none");
+    const reasoningEnabled =
+      reasoning === true ||
+      (typeof reasoning === "object" &&
+        reasoning !== null &&
+        reasoning.enabled !== false &&
+        !(typeof effort === "string" && effort.toLowerCase() === "none"));
+    const explicitlyEnabled =
+      !thinkingDisabled &&
+      ((typeof thinking === "object" && thinking !== null
+        ? thinking.type !== "disabled"
+        : thinking === true) ||
+        reasoningEnabled ||
+        (typeof effort === "string" && effort.toLowerCase() !== "none"));
+    if (explicitlyEnabled) {
+      const normalizedEffort = typeof effort === "string" ? effort.toLowerCase().trim() : "";
+      const effortModelId = normalizedEffort ? effortModelIds[normalizedEffort] : undefined;
+      modelInfo.model = effortModelId || thinkingModelId || tieredModelId || modelInfo.model;
+    } else if (
+      tieredModelId &&
+      !explicitlyDisabled &&
+      (modelInfo.provider === "agy" || modelInfo.provider === "antigravity")
+    ) {
+      // AGY/Antigravity expose no callable bare base id for tiered families; use
+      // the provider's tiered/default id when the caller did not request a tier.
+      modelInfo.model = tieredModelId;
+    }
+  }
+
   if (
     modelInfo.provider === "openai" &&
     typeof modelInfo.model === "string" &&

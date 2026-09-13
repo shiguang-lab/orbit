@@ -248,8 +248,19 @@ function hasDeclaredEffortList(record: JsonRecord): boolean {
   return Array.isArray(asRecord(record.thinking).levels);
 }
 
-const EFFORT_SUFFIX = /^(.*)-(none|low|medium|high|xhigh|max)$/i;
-const EFFORT_DISPLAY_SUFFIX = /\s*\((none|low|medium|high|xhigh|max)\)\s*$/i;
+function detectThinkingSupport(record: JsonRecord, hasEffortList: boolean): boolean | undefined {
+  for (const key of ["supportsThinking", "supportsReasoning", "reasoning", "thinking"]) {
+    if (typeof record[key] === "boolean") return record[key] as boolean;
+  }
+  if (typeof record.thinkingBudget === "number" || hasEffortList) return true;
+  return undefined;
+}
+
+const EFFORT_SUFFIX = /^(.*?)-(none|extra-low|low|medium|high|xhigh|max)$/i;
+const EFFORT_DISPLAY_SUFFIX = /\s*\((none|extra-low|low|medium|high|xhigh|max)\)\s*$/i;
+const TIERED_SUFFIX = /^(.*)-tiered$/i;
+const THINKING_SUFFIX = /^(.*)-thinking$/i;
+const THINKING_DISPLAY_SUFFIX = /\s*(?:\(thinking\)|thinking)\s*$/i;
 
 /**
  * Convert upstream catalogs that encode reasoning effort in the model id into
@@ -263,28 +274,40 @@ export function collapseDiscoveredEffortVariants(
   models: readonly SyncedAvailableModel[]
 ): SyncedAvailableModel[] {
   const byId = new Map(models.map((model) => [model.id, model]));
-  const groups = new Map<string, SyncedAvailableModel[]>();
+  const groups = new Map<
+    string,
+    { efforts: SyncedAvailableModel[]; tiered: SyncedAvailableModel[] }
+  >();
 
   for (const model of models) {
-    const match = model.id.match(EFFORT_SUFFIX);
-    if (!match) continue;
-    const base = match[1];
-    const siblings = groups.get(base) || [];
-    siblings.push(model);
-    groups.set(base, siblings);
+    const effortMatch = model.id.match(EFFORT_SUFFIX);
+    const tieredMatch = model.id.match(TIERED_SUFFIX);
+    if (!effortMatch && !tieredMatch) continue;
+    const base = (effortMatch || tieredMatch)?.[1] || "";
+    if (!base) continue;
+    const group = groups.get(base) || { efforts: [], tiered: [] };
+    if (effortMatch) group.efforts.push(model);
+    if (tieredMatch) group.tiered.push(model);
+    groups.set(base, group);
   }
 
   const collapsedBases = new Set<string>();
   const output: SyncedAvailableModel[] = [];
   for (const model of models) {
-    const directMatch = model.id.match(EFFORT_SUFFIX);
+    const directMatch = model.id.match(EFFORT_SUFFIX) || model.id.match(TIERED_SUFFIX);
     const base = directMatch?.[1] || model.id;
-    const variants = groups.get(base) || [];
+    const group = groups.get(base);
+    const variants = group ? [...group.efforts, ...group.tiered] : [];
     const shouldCollapse =
       variants.length > 0 &&
       (byId.has(base) ||
         variants.length >= 2 ||
-        variants.some((variant) => EFFORT_DISPLAY_SUFFIX.test(variant.name)));
+        variants.some(
+          (variant) =>
+            variant.supportsThinking === true ||
+            EFFORT_DISPLAY_SUFFIX.test(variant.name) ||
+            /\s*\(tiered\)\s*$/i.test(variant.name)
+        ));
 
     if (!shouldCollapse || collapsedBases.has(base)) {
       if (!collapsedBases.has(base)) output.push(model);
@@ -293,11 +316,23 @@ export function collapseDiscoveredEffortVariants(
 
     collapsedBases.add(base);
     const direct = byId.get(base);
-    const representative = direct || variants[0];
+    const representative = direct || group?.tiered[0] || group?.efforts[0] || variants[0];
     const effortValues = new Set<string>(direct?.supportedThinkingEfforts || []);
-    for (const variant of variants) {
+    const effortModelIds: Record<string, string> = {
+      ...(direct?.effortModelIds || {}),
+    };
+    for (const variant of group?.efforts || []) {
       const match = variant.id.match(EFFORT_SUFFIX);
-      if (match) effortValues.add(normalizeSupportedEffort(match[2].toLowerCase()));
+      if (match) {
+        const effort = normalizeSupportedEffort(match[2].toLowerCase());
+        effortValues.add(effort);
+        effortModelIds[effort] = variant.id;
+      }
+    }
+    for (const variant of group?.tiered || []) {
+      for (const effort of variant.supportedThinkingEfforts || []) {
+        effortValues.add(normalizeSupportedEffort(effort));
+      }
     }
     const orderedEfforts = [
       ...CANONICAL_EFFORT_VALUES,
@@ -311,9 +346,63 @@ export function collapseDiscoveredEffortVariants(
       ...(direct || {}),
       id: base,
       name: name || base,
-      supportsThinking: true,
-      supportedThinkingEfforts: orderedEfforts,
+      ...(variants.some((variant) => variant.supportsThinking === true) || orderedEfforts.length > 0
+        ? { supportsThinking: true }
+        : {}),
+      ...(orderedEfforts.length > 0 ? { supportedThinkingEfforts: orderedEfforts } : {}),
+      ...(Object.keys(effortModelIds).length > 0 ? { effortModelIds } : {}),
+      ...((direct?.tieredModelId || group?.tiered[0]?.id)
+        ? { tieredModelId: direct?.tieredModelId || group?.tiered[0]?.id }
+        : {}),
     });
+  }
+
+  return output;
+}
+
+/**
+ * Collapse upstream rows that encode the thinking capability in the model id
+ * (for example `claude-opus-4-6-thinking`) into the base model row. The
+ * original id is retained as `thinkingModelId` so request routing can still
+ * address the provider's official model when thinking is enabled.
+ */
+export function collapseDiscoveredThinkingVariants(
+  models: readonly SyncedAvailableModel[]
+): SyncedAvailableModel[] {
+  const byId = new Map(models.map((model) => [model.id, model]));
+  const thinkingBases = new Set(
+    models
+      .map((model) => model.id.match(THINKING_SUFFIX)?.[1])
+      .filter((base): base is string => Boolean(base))
+  );
+  const output: SyncedAvailableModel[] = [];
+  const collapsed = new Set<string>();
+
+  for (const model of models) {
+    const match = model.id.match(THINKING_SUFFIX);
+    if (!match) {
+      if (thinkingBases.has(model.id)) continue;
+      if (!collapsed.has(model.id)) output.push(model);
+      continue;
+    }
+
+    const baseId = match[1];
+    if (!baseId || collapsed.has(baseId)) continue;
+    const base = byId.get(baseId);
+    const name = (base?.name || model.name).replace(THINKING_DISPLAY_SUFFIX, "").trim();
+    output.push({
+      ...model,
+      ...(base || {}),
+      id: baseId,
+      name: name || baseId,
+      supportsThinking: true,
+      thinkingModelId: model.id,
+      ...(base?.supportedThinkingEfforts
+        ? { supportedThinkingEfforts: base.supportedThinkingEfforts }
+        : {}),
+    });
+    collapsed.add(baseId);
+    collapsed.add(model.id);
   }
 
   return output;
@@ -342,6 +431,7 @@ export function normalizeDiscoveredModels(
 
     const isCrofReasoningModel = providerId === "crof" && record.reasoning_effort === true;
     const isCommandCodeModel = providerId === "command-code";
+    const declaredEffortList = hasDeclaredEffortList(record);
     const supportedThinkingEfforts = (() => {
       // The flat import field and every recognized upstream tier array remain
       // authoritative over the provider fallback, including an explicit empty list.
@@ -351,10 +441,11 @@ export function normalizeDiscoveredModels(
         );
       }
       const detected = detectSupportedThinkingEfforts(record);
-      if (detected || hasDeclaredEffortList(record)) return detected;
+      if (detected || declaredEffortList) return detected;
       if (isCrofReasoningModel) return [...CROF_REASONING_EFFORTS];
       return isCommandCodeModel ? [...COMMAND_CODE_REASONING_EFFORTS] : undefined;
     })();
+    const thinkingSupport = detectThinkingSupport(record, declaredEffortList || Boolean(supportedThinkingEfforts?.length));
     // Vendor-declared default effort (OpenRouter `reasoning.default_effort`, or the
     // flat import field). Normalized onto the canonical vocabulary (`max` → `xhigh`).
     const defaultThinkingEffort = detectDefaultThinkingEffort(record);
@@ -418,8 +509,8 @@ export function normalizeDiscoveredModels(
       ...(typeof inputTokenLimit === "number" ? { inputTokenLimit } : {}),
       ...(typeof outputTokenLimit === "number" ? { outputTokenLimit } : {}),
       ...(typeof record.description === "string" ? { description: record.description } : {}),
-      ...(typeof record.supportsThinking === "boolean"
-        ? { supportsThinking: record.supportsThinking }
+      ...(typeof thinkingSupport === "boolean"
+        ? { supportsThinking: thinkingSupport }
         : isCrofReasoningModel || isCommandCodeModel
           ? { supportsThinking: true }
           : {}),
@@ -430,7 +521,9 @@ export function normalizeDiscoveredModels(
     });
   }
 
-  return collapseDiscoveredEffortVariants(Array.from(deduped.values()));
+  return collapseDiscoveredThinkingVariants(
+    collapseDiscoveredEffortVariants(Array.from(deduped.values()))
+  );
 }
 
 export async function getCachedDiscoveredModels(

@@ -47,6 +47,9 @@ export async function maybeHandleConolModelDiscovery(
     id: model.id,
     name: model.name,
     supportsVision: model.supportsVision,
+    ...(model.efforts && model.efforts.length > 0
+      ? { supportsThinking: true, supportedThinkingEfforts: model.efforts }
+      : {}),
   }));
   if (!cookie) {
     const fallback = options.buildDiscoveryFallbackResponse({
@@ -75,7 +78,19 @@ export async function maybeHandleConolModelDiscovery(
           ...init,
         }),
     });
-    return options.buildApiDiscoveryResponse(discovery.models);
+    // Conol exposes its reasoning ladder as `efforts`; project the provider
+    // native field onto the canonical discovery contract before persistence so
+    // the shared effort/thinking aggregation and UI can consume it.
+    const models = discovery.models.map((model) => ({
+      ...model,
+      ...(model.efforts && model.efforts.length > 0
+        ? {
+            supportsThinking: true,
+            supportedThinkingEfforts: model.efforts,
+          }
+        : {}),
+    }));
+    return options.buildApiDiscoveryResponse(models);
   } catch (error) {
     console.log("Error fetching models from conol-web", {
       error: sanitizeErrorMessage(error instanceof Error ? error.message : error),

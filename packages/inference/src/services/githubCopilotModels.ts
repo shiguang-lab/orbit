@@ -74,6 +74,11 @@ export type GitHubCopilotModel = {
   id: string;
   name: string;
   owned_by: string;
+  supportsThinking?: boolean;
+  supportsVision?: boolean;
+  supportsVideo?: boolean;
+  supportedThinkingEfforts?: string[];
+  supportedEndpoints?: string[];
 };
 
 type RawRecord = Record<string, unknown>;
@@ -86,6 +91,56 @@ function toNonEmptyString(value: unknown): string | null {
   if (typeof value !== "string") return null;
   const trimmed = value.trim();
   return trimmed.length > 0 ? trimmed : null;
+}
+
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0)
+    : [];
+}
+
+function hasBoolean(record: RawRecord, keys: readonly string[]): boolean {
+  return keys.some((key) => record[key] === true);
+}
+
+function projectCopilotCapabilities(item: RawRecord): Pick<
+  GitHubCopilotModel,
+  "supportsThinking" | "supportsVision" | "supportsVideo" | "supportedThinkingEfforts" | "supportedEndpoints"
+> {
+  const capabilities = asRecord(item.capabilities);
+  const supportedEndpoints = stringArray(item.supported_endpoints).concat(
+    stringArray(capabilities.supported_endpoints)
+  );
+  const supportedThinkingEfforts = stringArray(item.supported_reasoning_levels).concat(
+    stringArray(item.supportedThinkingEfforts),
+    stringArray(capabilities.supported_reasoning_levels),
+    stringArray(capabilities.supportedThinkingEfforts)
+  );
+  const inputModalities = stringArray(item.input_modalities).concat(stringArray(capabilities.input_modalities));
+  const supportsVision =
+    hasBoolean(item, ["supportsVision", "supports_vision", "supportsImages", "supports_images"]) ||
+    hasBoolean(capabilities, ["supportsVision", "supports_vision", "vision", "image"]) ||
+    inputModalities.some((modality) => modality.toLowerCase() === "image");
+  const supportsVideo =
+    hasBoolean(item, ["supportsVideo", "supports_video", "supports_video_in"]) ||
+    hasBoolean(capabilities, ["supportsVideo", "supports_video", "video"]) ||
+    supportedEndpoints.some((endpoint) => /^videos?(?:[/.]|$)/i.test(endpoint));
+  const supportsThinking =
+    hasBoolean(item, ["supportsThinking", "supports_thinking", "supportsReasoning", "supports_reasoning"]) ||
+    hasBoolean(capabilities, ["supportsThinking", "supports_thinking", "supportsReasoning", "supports_reasoning"]) ||
+    supportedThinkingEfforts.length > 0;
+
+  return {
+    ...(supportsThinking ? { supportsThinking: true } : {}),
+    ...(supportsVision ? { supportsVision: true } : {}),
+    ...(supportsVideo ? { supportsVideo: true } : {}),
+    ...(supportedThinkingEfforts.length > 0
+      ? { supportedThinkingEfforts: Array.from(new Set(supportedThinkingEfforts)) }
+      : {}),
+    ...(supportedEndpoints.length > 0
+      ? { supportedEndpoints: Array.from(new Set(supportedEndpoints)) }
+      : {}),
+  };
 }
 
 // Decide whether a live /models row is a routable chat model. Capability-driven
@@ -152,7 +207,7 @@ export function parseGitHubCopilotModels(data: unknown): GitHubCopilotModel[] {
     if (!isRoutableChatModel(item)) continue;
     seen.add(id);
     const name = toNonEmptyString(item.name) || toNonEmptyString(item.display_name) || id;
-    models.push({ id, name, owned_by: "github" });
+    models.push({ id, name, owned_by: "github", ...projectCopilotCapabilities(item) });
   }
 
   return models;

@@ -926,6 +926,10 @@ export default function ProviderDetailPage() {
       Array.isArray(value)
         ? [...new Set(value.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0))]
         : [];
+    const normalizeSupportedEndpoints = (value: unknown): string[] =>
+      Array.isArray(value)
+        ? [...new Set(value.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0))]
+        : [];
 
     const registryModels = [...(((modelsQuery.data as any)?.registryModels || []) as any[])].sort(
       (a, b) => Number(Boolean(a?.effortVariant)) - Number(Boolean(b?.effortVariant))
@@ -951,6 +955,7 @@ export default function ProviderDetailPage() {
             ...base,
             supportsReasoning: true,
             supportedThinkingEfforts: [...new Set([...(base.supportedThinkingEfforts || []), effort])],
+            supportedEndpoints: base.supportedEndpoints,
           });
           continue;
         }
@@ -960,8 +965,12 @@ export default function ProviderDetailPage() {
         id,
         name: m.name || id,
         source: "system",
-        supportsReasoning: Boolean(m.supportsReasoning),
+        apiFormat: typeof m.apiFormat === "string" ? m.apiFormat : undefined,
+        supportsReasoning: Boolean(m.supportsReasoning ?? m.supportsThinking),
         supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
+        supportedEndpoints: normalizeSupportedEndpoints(m.supportedEndpoints),
+        supportsVision: m.supportsVision === true,
+        supportsVideo: m.supportsVideo === true,
         isFree: Boolean(m.isFree),
         isHidden: hiddenSet.has(id),
         compat: compatMap.get(id),
@@ -980,8 +989,12 @@ export default function ProviderDetailPage() {
           id,
           name: m.name || id,
           source: "imported",
-          supportsReasoning: Boolean(m.supportsReasoning),
+          apiFormat: typeof m.apiFormat === "string" ? m.apiFormat : undefined,
+          supportsReasoning: Boolean(m.supportsReasoning ?? m.supportsThinking),
           supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
+          supportedEndpoints: normalizeSupportedEndpoints(m.supportedEndpoints),
+          supportsVision: m.supportsVision === true,
+          supportsVideo: m.supportsVideo === true,
           isFree: Boolean(m.isFree),
           isHidden: hiddenSet.has(id),
           compat: compatMap.get(id),
@@ -994,11 +1007,18 @@ export default function ProviderDetailPage() {
         map.set(id, {
           ...existing,
           name: existing.name || m.name || id,
-          supportsReasoning: existing.supportsReasoning || Boolean(m.supportsReasoning),
+          apiFormat: existing.apiFormat || (typeof m.apiFormat === "string" ? m.apiFormat : undefined),
+          supportsReasoning: existing.supportsReasoning || Boolean(m.supportsReasoning ?? m.supportsThinking),
           supportedThinkingEfforts: [...new Set([
             ...(existing.supportedThinkingEfforts || []),
             ...normalizeThinkingEfforts(m.supportedThinkingEfforts),
           ])],
+          supportedEndpoints: [...new Set([
+            ...(existing.supportedEndpoints || []),
+            ...normalizeSupportedEndpoints(m.supportedEndpoints),
+          ])],
+          supportsVision: existing.supportsVision || m.supportsVision === true,
+          supportsVideo: existing.supportsVideo || m.supportsVideo === true,
           isFree: existing.isFree || Boolean(m.isFree),
           testError: modelTestErrors[id],
         });
@@ -1023,14 +1043,35 @@ export default function ProviderDetailPage() {
           id,
           name: m.name || id,
           source: "imported",
-          supportsReasoning: Boolean(m.supportsReasoning),
+          apiFormat: typeof m.apiFormat === "string" ? m.apiFormat : undefined,
+          supportsReasoning: Boolean(m.supportsReasoning ?? m.supportsThinking),
           supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
+          supportedEndpoints: normalizeSupportedEndpoints(m.supportedEndpoints),
+          supportsVision: m.supportsVision === true,
+          supportsVideo: m.supportsVideo === true,
           isFree: Boolean(m.isFree),
           isHidden: hiddenSet.has(id),
           compat: compatMap.get(id),
           testStatus: modelTestStatus[id],
           testError: modelTestErrors[id],
           latencyMs: modelTestLatencies[id],
+        });
+      } else {
+        map.set(id, {
+          ...existing,
+          name: existing.name || m.name || id,
+          apiFormat: existing.apiFormat || (typeof m.apiFormat === "string" ? m.apiFormat : undefined),
+          supportsReasoning: existing.supportsReasoning || Boolean(m.supportsReasoning ?? m.supportsThinking),
+          supportedThinkingEfforts: [...new Set([
+            ...(existing.supportedThinkingEfforts || []),
+            ...normalizeThinkingEfforts(m.supportedThinkingEfforts),
+          ])],
+          supportedEndpoints: [...new Set([
+            ...(existing.supportedEndpoints || []),
+            ...normalizeSupportedEndpoints(m.supportedEndpoints),
+          ])],
+          supportsVision: existing.supportsVision || m.supportsVision === true,
+          supportsVideo: existing.supportsVideo || m.supportsVideo === true,
         });
       }
     }

@@ -194,6 +194,11 @@ export interface ModelRowItem {
   source?: "system" | "custom" | "imported" | "fallback" | "alias";
   supportsReasoning?: boolean;
   supportedThinkingEfforts?: string[];
+  /** Capabilities advertised by the provider model catalog. */
+  apiFormat?: string;
+  supportedEndpoints?: string[];
+  supportsVision?: boolean;
+  supportsVideo?: boolean;
   isFree?: boolean;
   isHidden?: boolean;
   compat?: ModelCompatData;
@@ -427,7 +432,10 @@ export function ProviderModelsSection({
   };
 
   const renderThinkingTag = (model: ModelRowItem) => {
-    const efforts = (model.supportedThinkingEfforts || []).filter(Boolean);
+    // `tiered` is an upstream variant marker, not a user-selectable effort.
+    const efforts = (model.supportedThinkingEfforts || []).filter(
+      (effort) => Boolean(effort) && effort.trim().toLowerCase() !== "tiered"
+    );
     if (efforts.length === 0 && !model.supportsReasoning) return null;
     const label = efforts.length > 0
       ? t("providers.reasoningEfforts", { efforts: efforts.join(" / ") })
@@ -438,6 +446,49 @@ export function ProviderModelsSection({
           {label}
         </Tag>
       </Tooltip>
+    );
+  };
+
+  const renderCapabilityTags = (model: ModelRowItem) => {
+    const endpoints = new Set(
+      (model.supportedEndpoints || [])
+        .map((endpoint) => endpoint.trim().toLowerCase())
+        .filter(Boolean)
+    );
+    const format = model.apiFormat?.trim().toLowerCase() || "";
+    const supportsImageGeneration = Array.from(endpoints).some(
+      (endpoint) => endpoint === "image" || endpoint === "images" || /^images?(?:[/.]|$)/.test(endpoint)
+    ) || /image/.test(format);
+    const supportsVideoGeneration =
+      model.supportsVideo === true ||
+      Array.from(endpoints).some(
+        (endpoint) => endpoint === "video" || endpoint === "videos" || /^videos?(?:[/.]|$)/.test(endpoint)
+      ) || /video/.test(format);
+
+    return (
+      <>
+        {model.supportsVision === true && (
+          <Tooltip title={t("providers.visionCapableHint", "支持图像输入与视觉理解")}>
+            <Tag color="cyan" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
+              👁️ {t("providers.visionCapableLabel", "视觉")}
+            </Tag>
+          </Tooltip>
+        )}
+        {supportsImageGeneration && (
+          <Tooltip title={t("common.imageGeneration", "图像生成")}>
+            <Tag color="blue" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
+              🖼️ {t("common.imageGeneration", "图像生成")}
+            </Tag>
+          </Tooltip>
+        )}
+        {supportsVideoGeneration && (
+          <Tooltip title={t("common.videoGeneration", "视频生成")}>
+            <Tag color="magenta" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
+              🎬 {t("common.videoGeneration", "视频生成")}
+            </Tag>
+          </Tooltip>
+        )}
+      </>
     );
   };
 
@@ -738,6 +789,7 @@ export function ProviderModelsSection({
                       </Tag>
                     </Tooltip>
                   )}
+                  {renderCapabilityTags(model)}
                   {renderThinkingTag(model)}
                 </div>
 
@@ -915,6 +967,7 @@ export function ProviderModelsSection({
                       {t("providers.compatBadgeUpstreamHeaders", "请求头")}
                     </Tag>
                   )}
+                  {renderCapabilityTags(model)}
                   {renderThinkingTag(model)}
                 </div>
 

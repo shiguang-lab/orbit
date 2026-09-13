@@ -16,6 +16,12 @@ export interface SyncedAvailableModel {
   outputTokenLimit?: number;
   description?: string;
   supportsThinking?: boolean;
+  /** Upstream model id to use when thinking is explicitly requested. */
+  thinkingModelId?: string;
+  /** Upstream ids for provider-native effort variants, keyed by canonical effort. */
+  effortModelIds?: Record<string, string>;
+  /** Upstream id for a provider-native tiered/default variant. */
+  tieredModelId?: string;
   alwaysThinking?: boolean;
   supportsTools?: boolean;
   supportsVideo?: boolean;
@@ -82,6 +88,21 @@ function normalizeSyncedAvailableModel(model: unknown): SyncedAvailableModel | n
     ...(typeof record.description === "string" ? { description: record.description } : {}),
     ...(typeof record.supportsThinking === "boolean"
       ? { supportsThinking: record.supportsThinking }
+      : {}),
+    ...(toNonEmptyString(record.thinkingModelId)
+      ? { thinkingModelId: toNonEmptyString(record.thinkingModelId)! }
+      : {}),
+    ...(record.effortModelIds && typeof record.effortModelIds === "object" && !Array.isArray(record.effortModelIds)
+      ? {
+          effortModelIds: Object.fromEntries(
+            Object.entries(record.effortModelIds)
+              .filter(([, value]) => typeof value === "string" && value.trim().length > 0)
+              .map(([key, value]) => [key, String(value).trim()])
+          ),
+        }
+      : {}),
+    ...(toNonEmptyString(record.tieredModelId)
+      ? { tieredModelId: toNonEmptyString(record.tieredModelId)! }
       : {}),
     ...(record.alwaysThinking === true ? { alwaysThinking: true } : {}),
     ...(typeof record.supportsTools === "boolean" ? { supportsTools: record.supportsTools } : {}),

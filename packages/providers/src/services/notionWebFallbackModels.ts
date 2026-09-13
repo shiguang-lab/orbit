@@ -15,6 +15,7 @@ export type NotionDiscoveredModel = {
   name: string;
   owned_by: string;
   supportsReasoning?: boolean;
+  supportedThinkingEfforts?: string[];
   disabled?: boolean;
   /**
    * Internal Notion `model` codename for `runInferenceTranscript`

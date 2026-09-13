@@ -1752,7 +1752,16 @@ export async function getProviderModels(
       });
 
       if (discovery.source === "api" && discovery.models.length > 0) {
-        return buildApiDiscoveryResponse(discovery.models);
+        const models = discovery.models.map((model) => ({
+          ...model,
+          ...(model.capabilities?.thinking
+            ? { supportsThinking: true }
+            : {}),
+          ...(typeof model.contextLength === "number"
+            ? { inputTokenLimit: model.contextLength }
+            : {}),
+        }));
+        return buildApiDiscoveryResponse(models);
       }
 
       const fallback = buildDiscoveryFallbackResponse({

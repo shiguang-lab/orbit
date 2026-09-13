@@ -14,6 +14,10 @@ import {
   getClientVisibleAgyModelName,
 } from "@orbit/inference/config/agyModels";
 import { normalizeAntigravityClientProfile } from "@orbit/contracts/provider-client-profiles";
+import {
+  collapseDiscoveredEffortVariants,
+  collapseDiscoveredThinkingVariants,
+} from "@orbit/core/control/provider-discovery-support/modelDiscovery";
 import { ensureAntigravityProjectAssigned } from "@orbit/inference/services/antigravityProjectBootstrap";
 import { persistDiscoveredAntigravityProjectId } from "@orbit/inference/services/antigravityProjectPersist";
 import { asRecord, toNonEmptyString } from "./helpers.js";
@@ -26,14 +30,94 @@ const antigravityDiscoveryInflight = new Map<
 type AntigravityDiscoveryModel = {
   id: string;
   name: string;
+  source: "imported";
   isInternal?: boolean;
   supportsThinking?: boolean;
+  supportsVision?: boolean;
+  supportsVideo?: boolean;
   supportedThinkingEfforts?: string[];
   supportedEndpoints?: string[];
+  effortModelIds?: Record<string, string>;
+  tieredModelId?: string;
+  thinkingModelId?: string;
   /** Token window advertised by the upstream discovery payload, when present. */
   inputTokenLimit?: number;
   outputTokenLimit?: number;
 };
+
+function deriveAntigravityDisplayName(id: string): string {
+  const base = id.replace(/-tiered$/i, "");
+  return base
+    .split("-")
+    .filter(Boolean)
+    .map((part) => (/^\d/.test(part) ? part : part.charAt(0).toUpperCase() + part.slice(1)))
+    .join(" ");
+}
+
+function antigravityDisplayFamily(name: string): string {
+  return name
+    .replace(/\s*\((?:none|extra-low|low|medium|high|xhigh|max|thinking|tiered)\)\s*$/i, "")
+    .trim()
+    .toLowerCase();
+}
+
+/**
+ * A few AGY rows use a provider-internal id (`gemini-pro-agent`) while the
+ * neighboring effort rows use the public family id (`gemini-3.1-pro-low`).
+ * Their display family is the stable contract, so merge only when a group has
+ * an explicit effort/tiered suffix or a known agent row; never merge arbitrary
+ * rows solely because their (occasionally stale) display names collide.
+ */
+function collapseAntigravityDisplayVariants(
+  models: readonly AntigravityDiscoveryModel[]
+): AntigravityDiscoveryModel[] {
+  const groups = new Map<string, AntigravityDiscoveryModel[]>();
+  for (const model of models) {
+    const key = antigravityDisplayFamily(model.name);
+    const idLooksVariant = /-(?:none|extra-low|low|medium|high|xhigh|max|tiered)$/i.test(model.id);
+    const isAgentAlias = model.id === "gemini-pro-agent";
+    const isAggregatedBase = Boolean(model.effortModelIds || model.tieredModelId || model.thinkingModelId);
+    if (!key || (!idLooksVariant && !isAgentAlias && !isAggregatedBase)) continue;
+    const group = groups.get(key) || [];
+    group.push(model);
+    groups.set(key, group);
+  }
+
+  const consumed = new Set<string>();
+  const output: AntigravityDiscoveryModel[] = [];
+  for (const model of models) {
+    if (consumed.has(model.id)) continue;
+    const key = antigravityDisplayFamily(model.name);
+    const group = groups.get(key) || [];
+    if (group.length < 2) {
+      output.push(model);
+      continue;
+    }
+    const base = group.find((candidate) => candidate.id !== "gemini-pro-agent") || group[0];
+    const merged: AntigravityDiscoveryModel = { ...base };
+    const effortModelIds = { ...(base.effortModelIds || {}) };
+    for (const candidate of group) {
+      consumed.add(candidate.id);
+      if (candidate.supportsThinking === true) merged.supportsThinking = true;
+      if (candidate.supportsVision === true) merged.supportsVision = true;
+      if (candidate.supportsVideo === true) merged.supportsVideo = true;
+      if (candidate.tieredModelId) merged.tieredModelId = candidate.tieredModelId;
+      if (candidate.thinkingModelId) merged.thinkingModelId = candidate.thinkingModelId;
+      for (const [effort, id] of Object.entries(candidate.effortModelIds || {})) {
+        effortModelIds[effort] = id;
+      }
+      const effortMatch = candidate.id.match(/-(none|extra-low|low|medium|high|xhigh|max)$/i);
+      if (effortMatch) effortModelIds[effortMatch[1].toLowerCase()] = candidate.id;
+      if (candidate.id === "gemini-pro-agent") effortModelIds.high = candidate.id;
+    }
+    if (Object.keys(effortModelIds).length > 0) {
+      merged.effortModelIds = effortModelIds;
+      merged.supportedThinkingEfforts = Object.keys(effortModelIds);
+    }
+    output.push(merged);
+  }
+  return output;
+}
 
 /**
  * Forward discovery-advertised token windows when the upstream payload carries
@@ -78,12 +162,22 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
               ? item.displayName
               : typeof item.name === "string"
                 ? item.name
-                : id;
+                : deriveAntigravityDisplayName(id);
           return id
             ? {
                 id,
                 name,
+                source: "imported",
                 ...extractDiscoveryTokenLimits(item),
+                ...(item.supportsThinking === true || typeof item.thinkingBudget === "number"
+                  ? { supportsThinking: true }
+                  : {}),
+                ...(item.supportsImages === true ? { supportsVision: true } : {}),
+                ...(item.supportsVideo === true ? { supportsVideo: true } : {}),
+                ...(id.endsWith("-tiered") &&
+                (item.supportsThinking === true || typeof item.thinkingBudget === "number")
+                  ? { supportedThinkingEfforts: ["low", "medium", "high"] }
+                  : {}),
                 ...(item.isInternal === true ? { isInternal: true } : {}),
               }
             : null;
@@ -100,12 +194,22 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
             ? item.displayName
             : typeof item.name === "string"
               ? item.name
-              : id;
+              : deriveAntigravityDisplayName(id);
         return id
           ? {
               id,
               name,
+              source: "imported",
               ...extractDiscoveryTokenLimits(item),
+              ...(item.supportsThinking === true || typeof item.thinkingBudget === "number"
+                ? { supportsThinking: true }
+                : {}),
+              ...(item.supportsImages === true ? { supportsVision: true } : {}),
+              ...(item.supportsVideo === true ? { supportsVideo: true } : {}),
+              ...(id.endsWith("-tiered") &&
+              (item.supportsThinking === true || typeof item.thinkingBudget === "number")
+                ? { supportedThinkingEfforts: ["low", "medium", "high"] }
+                : {}),
               ...(item.isInternal === true ? { isInternal: true } : {}),
             }
           : null;
@@ -116,40 +220,28 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
   const rawModels = parseRawModels();
   if (rawModels.length === 0) return rawModels;
 
-  // `agentModelSorts` describes the CLI's chat picker, but it is not the whole
-  // provider catalog. Image generation (and other non-chat surfaces) are listed
-  // in separate top-level arrays and must remain discoverable/syncable.
-  const callableIds = Array.from(
-    new Set(
-      (Array.isArray(envelope.agentModelSorts) ? envelope.agentModelSorts : [])
-        .flatMap((sort) => {
-          const sortRecord = asRecord(sort);
-          const groups = Array.isArray(sortRecord.groups) ? sortRecord.groups : [];
-          return groups.flatMap((group) => {
-            const groupRecord = asRecord(group);
-            return Array.isArray(groupRecord.modelIds)
-              ? groupRecord.modelIds.filter((id): id is string => typeof id === "string")
-              : [];
-          });
-        })
-        .filter((id) => id.length > 0)
-    )
-  );
-  const callableSet = new Set(callableIds);
   const imageSet = new Set(
     Array.isArray(envelope.imageGenerationModelIds)
       ? envelope.imageGenerationModelIds.filter((id): id is string => typeof id === "string")
       : []
   );
-  const orderedModels = [
-    ...rawModels.filter((model) => callableSet.has(model.id)),
-    ...rawModels.filter((model) => !callableSet.has(model.id)),
-  ];
-  const callableModels = orderedModels.map((model) =>
-    imageSet.has(model.id) ? { ...model, supportedEndpoints: ["images"] } : model
+  const videoSet = new Set(
+    Array.isArray(envelope.videoGenerationModelIds)
+      ? envelope.videoGenerationModelIds.filter((id): id is string => typeof id === "string")
+      : []
   );
-
-  return callableModels;
+  const enrichedModels = rawModels.map((model) => {
+    const endpoints = new Set(model.supportedEndpoints || []);
+    if (imageSet.has(model.id)) endpoints.add("images");
+    if (videoSet.has(model.id)) endpoints.add("videos");
+    return endpoints.size > 0 ? { ...model, supportedEndpoints: [...endpoints] } : model;
+  });
+  // `agentModelSorts` is only a picker ordering/allowlist for one CLI surface.
+  // The provider catalog is the `models` object itself; collapse native effort,
+  // thinking, and tiered ids after reading that authoritative set.
+  return collapseAntigravityDisplayVariants(
+    collapseDiscoveredThinkingVariants(collapseDiscoveredEffortVariants(enrichedModels))
+  );
 }
 
 export function mapAntigravityModelForClient(
@@ -159,7 +251,12 @@ export function mapAntigravityModelForClient(
     inputTokenLimit?: number;
     outputTokenLimit?: number;
     supportsThinking?: boolean;
+    supportsVision?: boolean;
+    supportsVideo?: boolean;
     supportedThinkingEfforts?: string[];
+    effortModelIds?: Record<string, string>;
+    tieredModelId?: string;
+    thinkingModelId?: string;
     supportedEndpoints?: string[];
   },
   provider: "antigravity" | "agy" = "antigravity"
@@ -169,7 +266,12 @@ export function mapAntigravityModelForClient(
   inputTokenLimit?: number;
   outputTokenLimit?: number;
   supportsThinking?: boolean;
+  supportsVision?: boolean;
+  supportsVideo?: boolean;
   supportedThinkingEfforts?: string[];
+  effortModelIds?: Record<string, string>;
+  tieredModelId?: string;
+  thinkingModelId?: string;
   supportedEndpoints?: string[];
 } {
   const clientId = toClientAntigravityModelId(model.id);
@@ -186,8 +288,26 @@ export function mapAntigravityModelForClient(
       ? { outputTokenLimit: model.outputTokenLimit }
       : {}),
     ...(model.supportsThinking === true ? { supportsThinking: true } : {}),
+    ...(model.supportsVision === true ? { supportsVision: true } : {}),
+    ...(model.supportsVideo === true ? { supportsVideo: true } : {}),
     ...(Array.isArray(model.supportedThinkingEfforts)
       ? { supportedThinkingEfforts: model.supportedThinkingEfforts }
+      : {}),
+    ...(model.effortModelIds
+      ? {
+          effortModelIds: Object.fromEntries(
+            Object.entries(model.effortModelIds).map(([effort, id]) => [
+              effort,
+              toClientAntigravityModelId(id),
+            ])
+          ),
+        }
+      : {}),
+    ...(model.tieredModelId
+      ? { tieredModelId: toClientAntigravityModelId(model.tieredModelId) }
+      : {}),
+    ...(model.thinkingModelId
+      ? { thinkingModelId: toClientAntigravityModelId(model.thinkingModelId) }
       : {}),
     ...(Array.isArray(model.supportedEndpoints)
       ? { supportedEndpoints: model.supportedEndpoints }
@@ -202,7 +322,20 @@ export async function fetchAntigravityDiscoveryModelsCached(
   providerSpecificData?: unknown,
   provider: "antigravity" | "agy" = "antigravity"
 ): Promise<
-  Array<{ id: string; name: string; inputTokenLimit?: number; outputTokenLimit?: number }>
+  Array<{
+    id: string;
+    name: string;
+    inputTokenLimit?: number;
+    outputTokenLimit?: number;
+    supportsThinking?: boolean;
+    supportsVision?: boolean;
+    supportsVideo?: boolean;
+    supportedThinkingEfforts?: string[];
+    effortModelIds?: Record<string, string>;
+    tieredModelId?: string;
+    thinkingModelId?: string;
+    supportedEndpoints?: string[];
+  }>
 > {
   const profile = normalizeAntigravityClientProfile(asRecord(providerSpecificData).clientProfile);
   const cacheKey = `${provider}:${connectionId}:${accessToken.substring(0, 16)}:${profile}`;
@@ -289,7 +422,17 @@ export function normalizeDataRobotCatalogResponse(
 export function normalizeOpenAiLikeModelsResponse(
   data: unknown,
   fallbackOwner: string
-): Array<{ id: string; name: string; owned_by: string }> {
+): Array<{
+  id: string;
+  name: string;
+  owned_by: string;
+  apiFormat?: string;
+  supportedEndpoints?: string[];
+  supportsThinking?: boolean;
+  supportsVision?: boolean;
+  supportsVideo?: boolean;
+  supportedThinkingEfforts?: string[];
+}> {
   const payload = asRecord(data);
   const items = Array.isArray(data)
     ? data
@@ -312,7 +455,53 @@ export function normalizeOpenAiLikeModelsResponse(
         id;
       const ownedBy =
         toNonEmptyString(item.owned_by) || toNonEmptyString(item.provider) || fallbackOwner;
-      return { id, name, owned_by: ownedBy };
+      const supportedEndpoints = Array.from(
+        new Set(
+          [item.supportedEndpoints, item.supported_endpoints, item.endpoints]
+            .flatMap((value) => (Array.isArray(value) ? value : []))
+            .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+            .map((value) => value.trim())
+        )
+      );
+      const supportedThinkingEfforts = Array.from(
+        new Set(
+          [item.supportedThinkingEfforts, item.supported_reasoning_levels]
+            .flatMap((value) => (Array.isArray(value) ? value : []))
+            .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+            .map((value) => value.trim())
+        )
+      );
+      const inputModalities = [item.inputModalities, item.input_modalities]
+        .flatMap((value) => (Array.isArray(value) ? value : []))
+        .filter((value): value is string => typeof value === "string");
+      const supportsThinking =
+        item.supportsThinking === true ||
+        item.supports_thinking === true ||
+        item.supportsReasoning === true ||
+        item.supports_reasoning === true ||
+        supportedThinkingEfforts.length > 0;
+      const supportsVision =
+        item.supportsVision === true ||
+        item.supports_vision === true ||
+        item.supportsImages === true ||
+        item.supports_images === true ||
+        inputModalities.some((modality) => modality.toLowerCase() === "image");
+      const supportsVideo =
+        item.supportsVideo === true ||
+        item.supports_video === true ||
+        supportedEndpoints.some((endpoint) => /^videos?(?:[/.]|$)/i.test(endpoint));
+      const apiFormat = toNonEmptyString(item.apiFormat) || toNonEmptyString(item.api_format);
+      return {
+        id,
+        name,
+        owned_by: ownedBy,
+        ...(apiFormat ? { apiFormat } : {}),
+        ...(supportedEndpoints.length > 0 ? { supportedEndpoints } : {}),
+        ...(supportsThinking ? { supportsThinking: true } : {}),
+        ...(supportsVision ? { supportsVision: true } : {}),
+        ...(supportsVideo ? { supportsVideo: true } : {}),
+        ...(supportedThinkingEfforts.length > 0 ? { supportedThinkingEfforts } : {}),
+      };
     })
     .filter((value): value is { id: string; name: string; owned_by: string } => Boolean(value));
 }

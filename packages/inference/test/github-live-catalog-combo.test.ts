@@ -55,3 +55,26 @@ test("GitHub discovery drops policy-disabled and picker-hidden chat models", () 
   });
   assert.deepEqual(models.map((model) => model.id), ["enabled"]);
 });
+
+test("GitHub discovery projects provider capability metadata", () => {
+  const models = parseGitHubCopilotModels({
+    data: [{
+      id: "gemini-vision",
+      capabilities: {
+        type: "chat",
+        input_modalities: ["text", "image"],
+        supported_reasoning_levels: ["low", "high"],
+        supported_endpoints: ["/v1/chat/completions"],
+      },
+    }],
+  });
+  assert.deepEqual(models[0], {
+    id: "gemini-vision",
+    name: "gemini-vision",
+    owned_by: "github",
+    supportsThinking: true,
+    supportsVision: true,
+    supportedThinkingEfforts: ["low", "high"],
+    supportedEndpoints: ["/v1/chat/completions"],
+  });
+});

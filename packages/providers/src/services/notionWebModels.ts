@@ -94,11 +94,13 @@ function trimmedOrFallback(value: unknown, fallback: string): string {
   return typeof value === "string" && value.trim() ? value.trim() : fallback;
 }
 
-/** True when the row's `modelConfiguration.supportedReasoningEfforts` is a non-empty array. */
-function rowSupportsReasoning(row: Record<string, unknown>): boolean {
-  const efforts = (row.modelConfiguration as { supportedReasoningEfforts?: unknown } | undefined)
-    ?.supportedReasoningEfforts;
-  return Array.isArray(efforts) && efforts.length > 0;
+/** Read Notion's modelConfiguration reasoning ladder into the common contract. */
+function rowThinkingEfforts(row: Record<string, unknown>): string[] {
+  const configuration = row.modelConfiguration as Record<string, unknown> | undefined;
+  const efforts = configuration?.supportedReasoningEfforts ?? configuration?.supported_reasoning_levels;
+  return Array.isArray(efforts)
+    ? efforts.filter((effort): effort is string => typeof effort === "string" && effort.trim().length > 0)
+    : [];
 }
 
 /**
@@ -209,6 +211,7 @@ function parseNotionModelEntry(entry: unknown, seen: Set<string>): NotionDiscove
 
   const name = trimmedOrFallback(row.modelMessage, codename);
   const catalogId = catalogIdForNotionModel(codename, name);
+  const supportedThinkingEfforts = rowThinkingEfforts(row);
 
   // Dedupe on both catalog id and codename so a second row with the same
   // label or the same food codename is not listed twice.
@@ -221,7 +224,9 @@ function parseNotionModelEntry(entry: unknown, seen: Set<string>): NotionDiscove
     name,
     owned_by: trimmedOrFallback(row.modelFamily, "notion"),
     ...(catalogId !== codename ? { notionCodename: codename } : {}),
-    ...(rowSupportsReasoning(row) ? { supportsReasoning: true } : {}),
+    ...(supportedThinkingEfforts.length > 0
+      ? { supportsReasoning: true, supportedThinkingEfforts }
+      : {}),
   };
 }
 

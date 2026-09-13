@@ -66,6 +66,9 @@ export type KiroModel = {
   id: string;
   name: string;
   owned_by: string;
+  supportsThinking?: boolean;
+  supportsVision?: boolean;
+  supportedEndpoints?: string[];
   capabilities?: {
     thinking: boolean;
     agentic: boolean;
@@ -140,7 +143,11 @@ function formatDisplayName(modelName: unknown, modelId: string, rateMultiplier: 
   return `Kiro ${base} (${rate.toFixed(1)}x credit)`;
 }
 
-function buildVariants(upstream: string, displayName: string): KiroModel[] {
+function buildVariants(
+  upstream: string,
+  displayName: string,
+  capabilities: Pick<KiroModel, "supportsVision" | "supportedEndpoints"> = {}
+): KiroModel[] {
   const display = displayName || `Kiro ${upstream}`;
   const variants: KiroModel[] = [
     {
@@ -148,6 +155,7 @@ function buildVariants(upstream: string, displayName: string): KiroModel[] {
       name: display,
       owned_by: "kiro",
       capabilities: { thinking: false, agentic: false },
+      ...capabilities,
     },
   ];
 
@@ -157,6 +165,8 @@ function buildVariants(upstream: string, displayName: string): KiroModel[] {
       name: `${display} (Thinking)`,
       owned_by: "kiro",
       capabilities: { thinking: true, agentic: false },
+      supportsThinking: true,
+      ...capabilities,
     });
   }
 
@@ -190,8 +200,23 @@ function expandKiroModels(data: unknown): KiroModel[] {
     const contextLength = Number(tokenLimits.maxInputTokens) || 200000;
     const rateMultiplier = Number(item.rateMultiplier);
     const promptCaching = parsePromptCaching(item.promptCaching);
+    const inputModalities = [item.inputModalities, item.input_modalities, item.supportedInputModalities]
+      .flatMap((value) => (Array.isArray(value) ? value : []))
+      .filter((value): value is string => typeof value === "string");
+    const supportsVision =
+      item.supportsVision === true ||
+      item.supportsImages === true ||
+      inputModalities.some((modality) => modality.toLowerCase() === "image");
+    const supportedEndpoints = Array.isArray(item.supportedEndpoints)
+      ? item.supportedEndpoints.filter(
+          (endpoint): endpoint is string => typeof endpoint === "string" && endpoint.trim().length > 0
+        )
+      : [];
 
-    for (const variant of buildVariants(upstreamId, display)) {
+    for (const variant of buildVariants(upstreamId, display, {
+      ...(supportsVision ? { supportsVision: true } : {}),
+      ...(supportedEndpoints.length > 0 ? { supportedEndpoints } : {}),
+    })) {
       if (seen.has(variant.id)) continue;
       seen.add(variant.id);
       expanded.push({

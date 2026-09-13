@@ -110,6 +110,9 @@ type RuntimeModelMeta = {
   apiFormat?: string;
   targetFormat?: string;
   supportsThinking?: boolean;
+  thinkingModelId?: string;
+  effortModelIds?: Record<string, string>;
+  tieredModelId?: string;
   alwaysThinking?: boolean;
   supportedThinkingEfforts?: string[];
   defaultThinkingEffort?: string;
@@ -284,6 +287,15 @@ function resolveRuntimeFormats(
 function copySyncedThinkingMetadata(metadata: RuntimeModelMeta, syncedMatch: any): void {
   if (typeof syncedMatch?.supportsThinking === "boolean") {
     metadata.supportsThinking = syncedMatch.supportsThinking;
+  }
+  if (typeof syncedMatch?.thinkingModelId === "string" && syncedMatch.thinkingModelId.length > 0) {
+    metadata.thinkingModelId = syncedMatch.thinkingModelId;
+  }
+  if (syncedMatch?.effortModelIds && typeof syncedMatch.effortModelIds === "object") {
+    metadata.effortModelIds = syncedMatch.effortModelIds;
+  }
+  if (typeof syncedMatch?.tieredModelId === "string" && syncedMatch.tieredModelId.length > 0) {
+    metadata.tieredModelId = syncedMatch.tieredModelId;
   }
   if (syncedMatch?.alwaysThinking === true) metadata.alwaysThinking = true;
   // Only let a non-empty synced effort list override the static registry fallback;
