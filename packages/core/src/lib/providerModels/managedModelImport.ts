@@ -6,8 +6,6 @@ import {
   replaceCustomModels,
   replaceSyncedAvailableModelsForConnection,
   pruneStaleSyncedAvailableModelsForProvider,
-  setMitmAliasAll,
-  getSyncedAvailableModels,
   type ModelCompatPatch,
   type SyncedAvailableModel,
 } from "../db/models.js";
@@ -17,14 +15,6 @@ import {
   usesManagedAvailableModels,
 } from "./managedAvailableModels.js";
 import { normalizeDiscoveredModels } from "./modelDiscovery.js";
-import {
-  ANTIGRAVITY_MODEL_ALIASES,
-  ANTIGRAVITY_REVERSE_MODEL_ALIASES,
-  isDiscoverableAntigravityModelId,
-} from "@orbit/providers/support/config/antigravityModelAliases";
-import { isDiscoverableAgyModelId } from "@orbit/providers/support/config/agyModels";
-import { providerRuntimePorts } from "../../runtime/providerRuntimePorts.js";
-import { isSelfHostedChatProvider } from "@orbit/providers/catalog";
 
 type JsonRecord = Record<string, unknown>;
 
@@ -262,27 +252,11 @@ export async function importManagedModels({
     previousSyncedAvailableModelsInput ??
     (await getSyncedAvailableModelsForConnection(providerId, connectionId));
   const normalizedDiscoveredModels = normalizeDiscoveredModels(fetchedModels, providerId);
-  // Gemini 3.5 Flash elimination (ddf1bb760, carried from #11259): antigravity/
-  // agy discovery is restricted to each family's discoverable ids BEFORE any
-  // chat-selection filtering.
-  const providerFilteredModels =
-    providerId === "antigravity"
-      ? normalizedDiscoveredModels.filter((model) => isDiscoverableAntigravityModelId(model.id))
-      : providerId === "agy"
-        ? normalizedDiscoveredModels.filter((model) => isDiscoverableAgyModelId(model.id))
-        : normalizedDiscoveredModels;
-  // #11088 (option 1): self-hosted providers keep their non-chat models — chat
-  // filtering happens at read time (resolveLocalSyncedEndpointRoute). Every other
-  // provider keeps the import-time chat filter: the read-time path is gated on
-  // isSelfHostedChatProvider, so dropping it globally leaked image/video models
-  // into OpenAI chat selections (#11271).
-  const selectableModels = providerRuntimePorts.filterSelectableModels(
-    providerId,
-    providerFilteredModels
-  );
-  const discoveredModels = isSelfHostedChatProvider(providerId)
-    ? selectableModels
-    : providerRuntimePorts.filterChatSelectableModels(providerId, selectableModels);
+  // Import is a faithful snapshot of the provider's /models response. Do not
+  // apply the built-in registry, provider allowlists, chat-capability filters,
+  // or effort-variant expansion here. Those concerns belong to catalog/runtime
+  // resolution, not persistence of the upstream model list.
+  const discoveredModels = normalizedDiscoveredModels;
   const candidateImportedModels = normalizeImportedModels(discoveredModels);
   const importedIds = new Set(candidateImportedModels.map((model) => model.id));
 
@@ -341,80 +315,6 @@ export async function importManagedModels({
     new Set([...activeConnections.map((c) => String(c.id)), connectionId])
   );
   await pruneStaleSyncedAvailableModelsForProvider(providerId, allowedConnectionIds);
-
-  // If this is the "antigravity" provider, dynamically regenerate and persist the mitmAlias mapping for "antigravity"
-  if (providerId === "antigravity") {
-    const allAntigravityModels = await getSyncedAvailableModels("antigravity");
-    const syncedIds = new Set(allAntigravityModels.map((m) => m.id).filter(Boolean) as string[]);
-
-    // Transitive/recursive resolution helper
-    const resolveTransitively = (name: string): string => {
-      let current = name;
-      const visited = new Set<string>();
-      while (current && !visited.has(current)) {
-        if (syncedIds.has(current)) {
-          return current;
-        }
-        visited.add(current);
-        if (ANTIGRAVITY_MODEL_ALIASES && (ANTIGRAVITY_MODEL_ALIASES as any)[current]) {
-          current = (ANTIGRAVITY_MODEL_ALIASES as any)[current];
-          continue;
-        }
-        if (
-          ANTIGRAVITY_REVERSE_MODEL_ALIASES &&
-          (ANTIGRAVITY_REVERSE_MODEL_ALIASES as any)[current]
-        ) {
-          current = (ANTIGRAVITY_REVERSE_MODEL_ALIASES as any)[current];
-          continue;
-        }
-        break;
-      }
-      return current;
-    };
-
-    // Gather all candidate alias names to check
-    const candidates = new Set<string>();
-    for (const id of syncedIds) {
-      candidates.add(id);
-    }
-    for (const [k, v] of Object.entries(ANTIGRAVITY_MODEL_ALIASES || {})) {
-      candidates.add(k);
-      candidates.add(v);
-    }
-    for (const [k, v] of Object.entries(ANTIGRAVITY_REVERSE_MODEL_ALIASES || {})) {
-      candidates.add(k);
-      candidates.add(v);
-    }
-
-    // Build the dynamic mapping dictionary
-    const mappings: Record<string, string> = {};
-    for (const alias of candidates) {
-      const resolvedId = resolveTransitively(alias);
-      if (syncedIds.has(resolvedId)) {
-        mappings[alias] = `antigravity/${resolvedId}`;
-      }
-    }
-
-    // #11824/#11651: `syncedIds` is a UNION across every connection of this provider
-    // (getSyncedAvailableModels), so an identity mapping derived above can route a
-    // display id to the literal tier-suffixed upstream id (e.g. "gemini-3.7-flash-high")
-    // just because ONE connected account's own discovery happens to list it directly.
-    // Google's Cloud Code Assist backend only allows those tier-suffixed ids on
-    // accounts/projects it specifically provisioned for them — every other account can
-    // only call the shared "-tiered" endpoint id. Since this mitmAlias table is global
-    // (not scoped per connection) and consulted first/authoritatively by
-    // cleanModelName(), letting one account's discovery win here silently 404s every
-    // sibling account. Force every display id that the static ANTIGRAVITY_MODEL_ALIASES
-    // table already knows only has a safe "-tiered" target to always resolve there,
-    // regardless of what any single connection's discovery reported.
-    for (const [displayId, safeTarget] of Object.entries(ANTIGRAVITY_MODEL_ALIASES)) {
-      if (safeTarget === "gemini-3.7-flash-tiered") {
-        mappings[displayId] = `antigravity/${safeTarget}`;
-      }
-    }
-
-    await setMitmAliasAll("antigravity", mappings);
-  }
 
   let syncedAliases = 0;
   if (usesManagedAvailableModels(providerId) && (mode === "merge" || discoveredModels.length > 0)) {

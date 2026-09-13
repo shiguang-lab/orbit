@@ -8,12 +8,10 @@ import { getAntigravityContentHeaders } from "@orbit/inference/services/antigrav
 import { resolveAntigravityClientVersion } from "@orbit/inference/services/antigravity-client-profile";
 import {
   getClientVisibleAntigravityModelName,
-  isDiscoverableAntigravityModelId,
   toClientAntigravityModelId,
 } from "@orbit/inference/config/antigravityModelAliases";
 import {
   getClientVisibleAgyModelName,
-  isDiscoverableAgyModelId,
 } from "@orbit/inference/config/agyModels";
 import { normalizeAntigravityClientProfile } from "@orbit/contracts/provider-client-profiles";
 import { ensureAntigravityProjectAssigned } from "@orbit/inference/services/antigravityProjectBootstrap";
@@ -110,19 +108,6 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
     .filter((value): value is AntigravityDiscoveryModel => Boolean(value));
 }
 
-export function filterUserCallableAntigravityModels(
-  models: AntigravityDiscoveryModel[],
-  provider: "antigravity" | "agy" = "antigravity"
-) {
-  return models.filter(
-    (model) =>
-      model.isInternal !== true &&
-      (provider === "agy"
-        ? isDiscoverableAgyModelId(model.id)
-        : isDiscoverableAntigravityModelId(model.id))
-  );
-}
-
 export function mapAntigravityModelForClient(
   model: { id: string; name: string; inputTokenLimit?: number; outputTokenLimit?: number },
   provider: "antigravity" | "agy" = "antigravity"
@@ -197,10 +182,12 @@ export async function fetchAntigravityDiscoveryModelsCached(
           continue;
         }
 
-        const models = filterUserCallableAntigravityModels(
-          normalizeAntigravityModelsResponse(await response.json()),
-          provider
-        ).map((model) => mapAntigravityModelForClient(model, provider));
+        // The sync/import surface must mirror the authenticated upstream catalog.
+        // Keep every model returned by fetchAvailableModels; allowlisting and
+        // chat-selectability are runtime concerns, not import transformations.
+        const models = normalizeAntigravityModelsResponse(await response.json()).map((model) =>
+          mapAntigravityModelForClient(model, provider)
+        );
         if (models.length > 0) {
           return models;
         }

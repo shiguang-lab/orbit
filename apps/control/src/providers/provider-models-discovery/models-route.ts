@@ -98,7 +98,6 @@ import {
   getAzureOpenAIApiVersion,
   isLocalOpenAIStyleProvider,
   mergeLocalCatalogModels,
-  mergeSpecialtyCatalogIntoLiveModels,
   buildOptionalBearerHeaders,
   buildNamedOpenAiStyleHeaders,
   enrichOllamaLocalModels,
@@ -254,12 +253,15 @@ export async function getProviderModels(
       return mergeModelsWithCustomPrecedence(base, customRows);
     };
 
-    const buildResponse = (payload: any, statusConfig?: ResponseInit) => {
-      if (payload.models && Array.isArray(payload.models)) {
+    const buildResponse = (
+      payload: any,
+      statusConfig?: ResponseInit,
+      options: { preserveModels?: boolean } = {}
+    ) => {
+      if (!options.preserveModels && payload.models && Array.isArray(payload.models)) {
         payload.models = mergeCustomModels(payload.models);
         payload.models = filterModelsForRoute(provider, payload.models, chatOnly);
-      }
-      if (excludeHidden && payload.models && Array.isArray(payload.models)) {
+      } else if (!options.preserveModels && excludeHidden && payload.models && Array.isArray(payload.models)) {
         payload.models = payload.models.filter((m: any) => !getModelIsHidden(provider, m.id));
       }
       return Response.json(payload, statusConfig);
@@ -425,19 +427,16 @@ export async function getProviderModels(
     ) => {
       const discoveredModels = await persistDiscoveredModels(provider, connectionId, models);
       if (discoveredModels.length > 0) {
-        // #6976 — merge curated embedding/rerank specialty entries (e.g.
-        // OpenRouter's embeddingRegistry catalog) into the live-discovery
-        // response; the live /v1/models endpoint only lists chat models, and
-        // the specialty catalog otherwise only reached local_catalog fallback.
-        const mergedModels = mergeSpecialtyCatalogIntoLiveModels(models, provider);
+        // Keep the authenticated provider response unchanged. Registry and
+        // specialty catalog entries are resolved separately at runtime.
         return buildResponse({
           provider,
           connectionId,
-          models: mergedModels,
+          models,
           source: "api",
           ...(warning ? { warning } : {}),
           ...extraPayload,
-        });
+        }, undefined, { preserveModels: true });
       }
 
       // Empty discovery just cleared THIS connection's synced cache (via
