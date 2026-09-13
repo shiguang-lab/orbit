@@ -1,11 +1,45 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { parseGeminiModelsList } from "../src/providers/provider-models-discovery/discovery/gemini-models-parser.js";
+import { normalizeAntigravityModelsResponse } from "../src/providers/provider-models-discovery/discovery/normalizers.js";
 import {
   applyOllamaShowCapabilities,
   buildOllamaShowUrl,
   enrichOllamaModelsWithCapabilities,
 } from "../src/providers/provider-models-discovery/discovery/ollama-capabilities.js";
+
+test("keeps Antigravity chat and image catalog surfaces in discovery", () => {
+  const models = normalizeAntigravityModelsResponse({
+    models: {
+      "gemini-3.8-flash-low": { displayName: "Gemini 3.8 Flash (Low)" },
+      "gemini-3.8-flash-medium": { displayName: "Gemini 3.8 Flash (Medium)" },
+      "gemini-3.8-flash-high": { displayName: "Gemini 3.8 Flash (High)" },
+      "gemini-3.1-flash-image": { displayName: "Gemini 3.1 Flash Image" },
+    },
+    agentModelSorts: [
+      {
+        groups: [
+          {
+            modelIds: [
+              "gemini-3.8-flash-low",
+              "gemini-3.8-flash-medium",
+              "gemini-3.8-flash-high",
+            ],
+          },
+        ],
+      },
+    ],
+    imageGenerationModelIds: ["gemini-3.1-flash-image"],
+  });
+
+  assert.deepEqual(models.map((model) => model.id), [
+    "gemini-3.8-flash-low",
+    "gemini-3.8-flash-medium",
+    "gemini-3.8-flash-high",
+    "gemini-3.1-flash-image",
+  ]);
+  assert.deepEqual(models.at(-1)?.supportedEndpoints, ["images"]);
+});
 
 test("preserves Gemini method mapping, model heuristics, metadata, and retirement filtering", () => {
   assert.deepEqual(parseGeminiModelsList({ models: [

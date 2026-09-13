@@ -248,6 +248,77 @@ function hasDeclaredEffortList(record: JsonRecord): boolean {
   return Array.isArray(asRecord(record.thinking).levels);
 }
 
+const EFFORT_SUFFIX = /^(.*)-(none|low|medium|high|xhigh|max)$/i;
+const EFFORT_DISPLAY_SUFFIX = /\s*\((none|low|medium|high|xhigh|max)\)\s*$/i;
+
+/**
+ * Convert upstream catalogs that encode reasoning effort in the model id into
+ * Orbit's canonical representation: one base model plus supported effort values.
+ * A suffix is collapsed only when the catalog gives enough evidence that it is
+ * an effort variant (a base row exists, multiple sibling tiers exist, or the
+ * display name explicitly labels the tier). This avoids rewriting legitimate
+ * model names that merely happen to end in "-high" or "-max".
+ */
+export function collapseDiscoveredEffortVariants(
+  models: readonly SyncedAvailableModel[]
+): SyncedAvailableModel[] {
+  const byId = new Map(models.map((model) => [model.id, model]));
+  const groups = new Map<string, SyncedAvailableModel[]>();
+
+  for (const model of models) {
+    const match = model.id.match(EFFORT_SUFFIX);
+    if (!match) continue;
+    const base = match[1];
+    const siblings = groups.get(base) || [];
+    siblings.push(model);
+    groups.set(base, siblings);
+  }
+
+  const collapsedBases = new Set<string>();
+  const output: SyncedAvailableModel[] = [];
+  for (const model of models) {
+    const directMatch = model.id.match(EFFORT_SUFFIX);
+    const base = directMatch?.[1] || model.id;
+    const variants = groups.get(base) || [];
+    const shouldCollapse =
+      variants.length > 0 &&
+      (byId.has(base) ||
+        variants.length >= 2 ||
+        variants.some((variant) => EFFORT_DISPLAY_SUFFIX.test(variant.name)));
+
+    if (!shouldCollapse || collapsedBases.has(base)) {
+      if (!collapsedBases.has(base)) output.push(model);
+      continue;
+    }
+
+    collapsedBases.add(base);
+    const direct = byId.get(base);
+    const representative = direct || variants[0];
+    const effortValues = new Set<string>(direct?.supportedThinkingEfforts || []);
+    for (const variant of variants) {
+      const match = variant.id.match(EFFORT_SUFFIX);
+      if (match) effortValues.add(normalizeSupportedEffort(match[2].toLowerCase()));
+    }
+    const orderedEfforts = [
+      ...CANONICAL_EFFORT_VALUES,
+      ...Array.from(effortValues).filter(
+        (effort) => !(CANONICAL_EFFORT_VALUES as readonly string[]).includes(effort)
+      ),
+    ].filter((effort, index, values) => effortValues.has(effort) && values.indexOf(effort) === index);
+    const name = (direct?.name || representative.name).replace(EFFORT_DISPLAY_SUFFIX, "").trim();
+    output.push({
+      ...representative,
+      ...(direct || {}),
+      id: base,
+      name: name || base,
+      supportsThinking: true,
+      supportedThinkingEfforts: orderedEfforts,
+    });
+  }
+
+  return output;
+}
+
 export function isAutoFetchModelsEnabled(providerSpecificData: unknown): boolean {
   // Remote discovery writes its response into the shared synced-model cache, so
   // it must be an explicit per-connection opt-in rather than the default.
@@ -359,7 +430,7 @@ export function normalizeDiscoveredModels(
     });
   }
 
-  return Array.from(deduped.values());
+  return collapseDiscoveredEffortVariants(Array.from(deduped.values()));
 }
 
 export async function getCachedDiscoveredModels(

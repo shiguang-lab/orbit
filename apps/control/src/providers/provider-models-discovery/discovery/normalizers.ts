@@ -27,6 +27,9 @@ type AntigravityDiscoveryModel = {
   id: string;
   name: string;
   isInternal?: boolean;
+  supportsThinking?: boolean;
+  supportedThinkingEfforts?: string[];
+  supportedEndpoints?: string[];
   /** Token window advertised by the upstream discovery payload, when present. */
   inputTokenLimit?: number;
   outputTokenLimit?: number;
@@ -54,20 +57,44 @@ function extractDiscoveryTokenLimits(item: Record<string, unknown>): {
 }
 
 export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDiscoveryModel[] {
-  const payload = asRecord(data).models;
+  const envelope = asRecord(data);
+  const payload = envelope.models;
 
-  if (Array.isArray(payload)) {
-    return payload
-      .map((value) => {
+  const parseRawModels = (): AntigravityDiscoveryModel[] => {
+    if (Array.isArray(payload)) {
+      return payload
+        .map((value) => {
+          const item = asRecord(value);
+          const id =
+            typeof item.id === "string"
+              ? item.id
+              : typeof item.name === "string"
+                ? item.name
+                : typeof item.model === "string"
+                  ? item.model
+                  : "";
+          const name =
+            typeof item.displayName === "string"
+              ? item.displayName
+              : typeof item.name === "string"
+                ? item.name
+                : id;
+          return id
+            ? {
+                id,
+                name,
+                ...extractDiscoveryTokenLimits(item),
+                ...(item.isInternal === true ? { isInternal: true } : {}),
+              }
+            : null;
+        })
+        .filter((value): value is AntigravityDiscoveryModel => Boolean(value));
+    }
+
+    const modelsById = asRecord(payload);
+    return Object.entries(modelsById)
+      .map(([id, value]) => {
         const item = asRecord(value);
-        const id =
-          typeof item.id === "string"
-            ? item.id
-            : typeof item.name === "string"
-              ? item.name
-              : typeof item.model === "string"
-                ? item.model
-                : "";
         const name =
           typeof item.displayName === "string"
             ? item.displayName
@@ -84,38 +111,66 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
           : null;
       })
       .filter((value): value is AntigravityDiscoveryModel => Boolean(value));
-  }
+  };
 
-  const modelsById = asRecord(payload);
-  return Object.entries(modelsById)
-    .map(([id, value]) => {
-      const item = asRecord(value);
-      const name =
-        typeof item.displayName === "string"
-          ? item.displayName
-          : typeof item.name === "string"
-            ? item.name
-            : id;
-      return id
-        ? {
-            id,
-            name,
-            ...extractDiscoveryTokenLimits(item),
-            ...(item.isInternal === true ? { isInternal: true } : {}),
-          }
-        : null;
-    })
-    .filter((value): value is AntigravityDiscoveryModel => Boolean(value));
+  const rawModels = parseRawModels();
+  if (rawModels.length === 0) return rawModels;
+
+  // `agentModelSorts` describes the CLI's chat picker, but it is not the whole
+  // provider catalog. Image generation (and other non-chat surfaces) are listed
+  // in separate top-level arrays and must remain discoverable/syncable.
+  const callableIds = Array.from(
+    new Set(
+      (Array.isArray(envelope.agentModelSorts) ? envelope.agentModelSorts : [])
+        .flatMap((sort) => {
+          const sortRecord = asRecord(sort);
+          const groups = Array.isArray(sortRecord.groups) ? sortRecord.groups : [];
+          return groups.flatMap((group) => {
+            const groupRecord = asRecord(group);
+            return Array.isArray(groupRecord.modelIds)
+              ? groupRecord.modelIds.filter((id): id is string => typeof id === "string")
+              : [];
+          });
+        })
+        .filter((id) => id.length > 0)
+    )
+  );
+  const callableSet = new Set(callableIds);
+  const imageSet = new Set(
+    Array.isArray(envelope.imageGenerationModelIds)
+      ? envelope.imageGenerationModelIds.filter((id): id is string => typeof id === "string")
+      : []
+  );
+  const orderedModels = [
+    ...rawModels.filter((model) => callableSet.has(model.id)),
+    ...rawModels.filter((model) => !callableSet.has(model.id)),
+  ];
+  const callableModels = orderedModels.map((model) =>
+    imageSet.has(model.id) ? { ...model, supportedEndpoints: ["images"] } : model
+  );
+
+  return callableModels;
 }
 
 export function mapAntigravityModelForClient(
-  model: { id: string; name: string; inputTokenLimit?: number; outputTokenLimit?: number },
+  model: {
+    id: string;
+    name: string;
+    inputTokenLimit?: number;
+    outputTokenLimit?: number;
+    supportsThinking?: boolean;
+    supportedThinkingEfforts?: string[];
+    supportedEndpoints?: string[];
+  },
   provider: "antigravity" | "agy" = "antigravity"
 ): {
   id: string;
   name: string;
   inputTokenLimit?: number;
   outputTokenLimit?: number;
+  supportsThinking?: boolean;
+  supportedThinkingEfforts?: string[];
+  supportedEndpoints?: string[];
 } {
   const clientId = toClientAntigravityModelId(model.id);
   return {
@@ -129,6 +184,13 @@ export function mapAntigravityModelForClient(
       : {}),
     ...(typeof model.outputTokenLimit === "number"
       ? { outputTokenLimit: model.outputTokenLimit }
+      : {}),
+    ...(model.supportsThinking === true ? { supportsThinking: true } : {}),
+    ...(Array.isArray(model.supportedThinkingEfforts)
+      ? { supportedThinkingEfforts: model.supportedThinkingEfforts }
+      : {}),
+    ...(Array.isArray(model.supportedEndpoints)
+      ? { supportedEndpoints: model.supportedEndpoints }
       : {}),
   };
 }

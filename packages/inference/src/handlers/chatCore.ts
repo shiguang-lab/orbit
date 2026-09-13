@@ -2706,8 +2706,10 @@ export async function handleChatCore({
     // The synced catalog's vendor-declared `defaultThinkingEffort` (OpenRouter
     // `reasoning.default_effort`, captured by `detectDefaultThinkingEffort`) is the
     // lowest-priority default: it only fires when neither the suffix alias nor a
-    // static operator default exists. See open-sse/services/defaultReasoningEffort.ts.
-    if (targetFormat === FORMATS.OPENAI) {
+    // static operator default exists. The Antigravity translator converts this
+    // reasoning_effort into the upstream thinkingConfig shape as well. See
+    // open-sse/services/defaultReasoningEffort.ts.
+    if (targetFormat === FORMATS.OPENAI || targetFormat === FORMATS.ANTIGRAVITY) {
       translatedBody = applyDefaultReasoningEffort(
         translatedBody,
         finalModelToUpstream,

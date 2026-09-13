@@ -9,6 +9,7 @@ import {
   importManagedModels,
   type ManagedModelImportMode,
 } from "@orbit/core/control/provider-discovery-support/managedModelImport";
+import { normalizeDiscoveredModels } from "@orbit/core/control/provider-discovery-support/modelDiscovery";
 import { saveCallLog } from "@orbit/core/usage/call-logs";
 import { isAuthenticated } from "@orbit/core/control/authenticated";
 import {
@@ -478,7 +479,11 @@ export async function syncProviderModels(
         );
       }
       const previous = await getSyncedAvailableModelsForConnection(logProvider, id);
-      const synced = await replaceSyncedAvailableModelsForConnection(logProvider, id, discovered);
+      const synced = await replaceSyncedAvailableModelsForConnection(
+        logProvider,
+        id,
+        normalizeDiscoveredModels(discovered, logProvider)
+      );
       const prevIds = new Set(previous.map((m) => String(m.id)));
       const added = synced.filter((m) => !prevIds.has(String(m.id))).length;
       const removed = previous.filter(
