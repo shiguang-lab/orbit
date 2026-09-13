@@ -26,11 +26,12 @@ export const AGY_PUBLIC_MODELS = Object.freeze([
   },
   // Gemini 3.1 Pro
   {
-    id: "gemini-pro-agent",
-    name: "Gemini 3.1 Pro (High)",
+    id: "gemini-3.1-pro",
+    name: "Gemini 3.1 Pro",
     contextLength: 1048576,
     maxOutputTokens: 65535,
     supportsReasoning: true,
+    supportedThinkingEfforts: ["low", "medium", "high"],
     supportsVision: true,
     toolCalling: true,
   },
@@ -43,8 +44,8 @@ export const AGY_PUBLIC_MODELS = Object.freeze([
   },
   // Claude (Antigravity backend).
   {
-    id: "claude-opus-4-6-thinking",
-    name: "Claude Opus 4.6 (Thinking)",
+    id: "claude-opus-4-6",
+    name: "Claude Opus 4.6",
     contextLength: 1048576,
     maxOutputTokens: 65536,
     supportsReasoning: true,
@@ -62,11 +63,12 @@ export const AGY_PUBLIC_MODELS = Object.freeze([
   },
   // GPT-OSS
   {
-    id: "gpt-oss-120b-medium",
-    name: "GPT-OSS 120B (Medium)",
+    id: "gpt-oss-120b",
+    name: "GPT-OSS 120B",
     contextLength: 131072,
     maxOutputTokens: 32768,
     supportsReasoning: true,
+    supportedThinkingEfforts: ["medium"],
     toolCalling: true,
   },
 ]);
