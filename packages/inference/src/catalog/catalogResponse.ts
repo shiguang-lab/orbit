@@ -10,7 +10,6 @@
 
 import { appendNoThinkingVariants } from "../utils/noThinkingAlias.ts";
 import { appendClaudeEffortVariants } from "../utils/claudeEffortVariants.ts";
-import { appendSyncedEffortVariants } from "../utils/syncedEffortVariants.ts";
 import { appendCcDiscoveryAliases } from "../utils/ccDiscoveryAliases.ts";
 import {
   appendFunctionalGatewayMirrors,
@@ -153,7 +152,6 @@ export async function applyCatalogPostFilters(
   // captured `reasoning.supported_efforts` at sync time (capabilities.effort_tiers).
   // Skips codex/kimi (own suffix mechanism); authorization follows generation.
   if (!isDisableThinkingLevelVariantsEnabled()) {
-    finalModels = appendSyncedEffortVariants(finalModels);
   }
 
   await yieldTurn();
