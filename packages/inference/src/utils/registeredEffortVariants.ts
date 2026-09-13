@@ -15,17 +15,14 @@ export function getRegisteredProviderEffortBaseModelId(
 ): string | null {
   const providerModels = getProviderModels(providerId);
 
-  if (!providerModels.some((candidate) => candidate.id === modelId)) {
-    return null;
-  }
-
   for (const effort of REGISTERED_EFFORT_SUFFIXES) {
     const suffix = `-${effort}`;
     if (!modelId.endsWith(suffix)) continue;
 
     const baseModelId = modelId.slice(0, -suffix.length);
 
-    return providerModels.some((candidate) => candidate.id === baseModelId) ? baseModelId : null;
+    const base = providerModels.find((candidate) => candidate.id === baseModelId);
+    return base?.supportedThinkingEfforts?.includes(effort) ? baseModelId : null;
   }
 
   return null;
