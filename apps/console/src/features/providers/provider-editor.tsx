@@ -198,7 +198,7 @@ export default function ProviderEditorPage() {
                 <div>1. 打开并登录 <a href="https://chat.deepseek.com" target="_blank" rel="noreferrer">chat.deepseek.com</a>。</div>
                 <div>2. 按 F12 打开开发者工具 → <b>Application</b>（应用程序）→ <b>Storage</b> → <b>Local Storage</b> → <code>https://chat.deepseek.com</code>。</div>
                 <div>3. 找到 <b><code>userToken</code></b> 并复制其 Value，填入下方的凭据输入框。</div>
-                <div style={{ marginTop: 4 }}>💡 <b>双 Token 说明</b>：系统后端已内置自动换票和刷新机制，<b>仅需填写此单个 userToken</b>，后端会自动换取临时 accessToken，无需也不需要提供双 Token。</div>
+                <div style={{ marginTop: 4 }}><b>双 Token 说明</b>：系统后端已内置自动换票和刷新机制，<b>仅需填写此单个 userToken</b>，后端会自动换取临时 accessToken，无需也不需要提供双 Token。</div>
                 {isEdit && <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>编辑提示：下方输入框留空表示保留现有已保存的 userToken。</div>}
               </div>
             }
@@ -215,7 +215,7 @@ export default function ProviderEditorPage() {
                 <div>2. 按 F12 打开开发者工具 → <b>Application</b> → <b>Storage</b> → <b>Local Storage</b> → <code>https://www.kimi.com</code>。</div>
                 <div>3. 复制 <b><code>access_token</code></b> 填入下方的凭据输入框。</div>
                 <div>4. <b>双 Token 自动续期（推荐）</b>：复制 <b><code>refresh_token</code></b>，写入下方 Provider 专属配置：<code>{`{ "refreshToken": "..." }`}</code>。</div>
-                <div style={{ marginTop: 4, color: "var(--ant-color-success)" }}>⚡ <b>自动续期优势</b>：配置 refresh_token 后，系统将在 access_token 到期前自动换票轮换，实现长效保活。</div>
+                <div style={{ marginTop: 4, color: "var(--ant-color-success)" }}><b>自动续期优势</b>：配置 refresh_token 后，系统将在 access_token 到期前自动换票轮换，实现长效保活。</div>
                 {isEdit && <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>编辑提示：下方输入框留空表示保留现有已保存凭据。</div>}
               </div>
             }
@@ -245,7 +245,7 @@ export default function ProviderEditorPage() {
               <div style={{ fontSize: 13, lineHeight: 1.6 }}>
                 <div>1. 打开并登录 <a href="https://grok.com" target="_blank" rel="noreferrer">grok.com</a>。</div>
                 <div>2. 按 F12 打开开发者工具 → <b>Network</b> 面板刷新，从任一发往 grok.com 的请求头中复制包含 <b><code>sso</code></b> 和 <b><code>sso-rw</code></b> 的 Cookie 字符串。</div>
-                <div style={{ marginTop: 4, color: "var(--ant-color-warning)" }}>💡 <b>指纹说明</b>：Cloudflare 将验证绑定到浏览器的 IP、User-Agent 和 TLS 指纹，建议配合代理与同 UA 使用。</div>
+                <div style={{ marginTop: 4, color: "var(--ant-color-warning)" }}><b>指纹说明</b>：Cloudflare 将验证绑定到浏览器的 IP、User-Agent 和 TLS 指纹，建议配合代理与同 UA 使用。</div>
                 {isEdit && <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>编辑提示：下方输入框留空表示保留现有已保存凭据。</div>}
               </div>
             }
@@ -287,8 +287,8 @@ export default function ProviderEditorPage() {
                     </div>
                   </>
                 )}
-                {webSessionRequirement.hintFallback && <div style={{ marginTop: 4, color: "var(--ant-color-warning)" }}>💡 {webSessionRequirement.hintFallback}</div>}
-                {webSessionRequirement.guideNote && <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>📌 {webSessionRequirement.guideNote}</div>}
+                {webSessionRequirement.hintFallback && <div style={{ marginTop: 4, color: "var(--ant-color-warning)" }}>{webSessionRequirement.hintFallback}</div>}
+                {webSessionRequirement.guideNote && <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>{webSessionRequirement.guideNote}</div>}
                 {isEdit && <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>编辑提示：下方输入框留空表示保留现有已保存凭据。</div>}
               </div>
             }

@@ -13,7 +13,6 @@ import {
   Spin,
   Switch,
   Space,
-  Select,
 } from "antd";
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
@@ -84,7 +83,7 @@ const useStyles = createStyles(({ token }) => ({
     border: `1px solid ${token.colorBorderSecondary}`,
     background: token.colorBgContainer,
     transition: "all 0.2s ease",
-    minHeight: 112,
+    minHeight: 124,
     "&:hover": {
       borderColor: token.colorPrimaryBorder,
       boxShadow: token.boxShadowTertiary,
@@ -111,10 +110,21 @@ const useStyles = createStyles(({ token }) => ({
   },
   modelCardBody: {
     display: "flex",
+    flexDirection: "column",
+    gap: 6,
+    minHeight: 36,
+  },
+  modelAliasRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 6,
+    minWidth: 0,
+  },
+  modelTagsRow: {
+    display: "flex",
     alignItems: "center",
     flexWrap: "wrap",
     gap: 6,
-    minHeight: 24,
   },
   modelCardFooter: {
     display: "flex",
@@ -123,6 +133,7 @@ const useStyles = createStyles(({ token }) => ({
     borderTop: `1px solid ${token.colorBorderSecondary}`,
     paddingTop: 8,
     marginTop: 2,
+    gap: 8,
   },
   modelGrid: {
     display: "flex",
@@ -229,9 +240,51 @@ interface Props {
   onSaveModelCompat: (modelId: string, patch: ModelCompatData) => Promise<void>;
   onTestModel: (modelId: string, fullModel: string, effort?: string) => Promise<void>;
   testingModelId: string | null;
-  onTestAll: (targets: Array<{ modelId: string; fullModel: string }>, autoHideFailed?: boolean) => Promise<void>;
+  onTestAll: (
+    targets: Array<{ modelId: string; fullModel: string; effort?: string }>,
+    autoHideFailed?: boolean
+  ) => Promise<void>;
   testingAll: boolean;
   testProgress: { done: number; total: number } | null;
+}
+
+function parseModelTokens(id: string): (string | number)[] {
+  const normalized = id.toLowerCase();
+  const matches = normalized.match(/(\d+(?:\.\d+)*)|([^\d]+)/g) || [normalized];
+  return matches.map((chunk) => {
+    if (/^\d+(?:\.\d+)*$/.test(chunk)) {
+      const num = parseFloat(chunk);
+      return isNaN(num) ? chunk : num;
+    }
+    return chunk;
+  });
+}
+
+export function compareModelIds(idA: string, idB: string): number {
+  const tokensA = parseModelTokens(idA);
+  const tokensB = parseModelTokens(idB);
+  const minLen = Math.min(tokensA.length, tokensB.length);
+
+  for (let i = 0; i < minLen; i++) {
+    const a = tokensA[i];
+    const b = tokensB[i];
+
+    if (typeof a === "number" && typeof b === "number") {
+      if (a !== b) {
+        // High version numbers come first (descending order)
+        return b - a;
+      }
+    } else if (typeof a === "string" && typeof b === "string") {
+      if (a !== b) {
+        return a.localeCompare(b);
+      }
+    } else {
+      // Numbers before strings
+      return typeof a === "number" ? -1 : 1;
+    }
+  }
+
+  return tokensB.length - tokensA.length;
 }
 
 export function ProviderModelsSection({
@@ -293,10 +346,7 @@ export function ProviderModelsSection({
   // Map of modelId -> alias
   const aliasByModelId = useMemo(() => {
     const map: Record<string, string> = {};
-    const prefixes = [
-      `${providerDisplayAlias}/`,
-      `${providerId}/`,
-    ];
+    const prefixes = [`${providerDisplayAlias}/`, `${providerId}/`];
     for (const [alias, fullModel] of Object.entries(modelAliases)) {
       if (typeof fullModel !== "string") continue;
       const trimmedAlias = alias.trim();
@@ -352,14 +402,14 @@ export function ProviderModelsSection({
       result = result.filter((m) => !m.isFree);
     }
 
-    // Sort free first
-    if (sortFreeFirst) {
-      result.sort((a, b) => {
+    // Smart natural sorting: group similar ID families, sort versions descending
+    result.sort((a, b) => {
+      if (sortFreeFirst) {
         if (a.isFree && !b.isFree) return -1;
         if (!a.isFree && b.isFree) return 1;
-        return a.id.localeCompare(b.id);
-      });
-    }
+      }
+      return compareModelIds(a.id, b.id);
+    });
 
     return result;
   }, [models, filterText, visibilityFilter, freeFilter, sortFreeFirst, aliasByModelId]);
@@ -370,7 +420,17 @@ export function ProviderModelsSection({
   const handleTestAllClick = async () => {
     const targets = displayedModels
       .filter((m) => !m.isHidden)
-      .map((m) => ({ modelId: m.id, fullModel: `${providerDisplayAlias}/${m.id}` }));
+      .map((m) => {
+        const efforts = (m.supportedThinkingEfforts || []).filter(
+          (effort) => Boolean(effort) && effort.trim().toLowerCase() !== "tiered"
+        );
+        const effort = effortSelection[m.id] || (efforts.length > 0 ? efforts[0] : undefined);
+        return {
+          modelId: m.id,
+          fullModel: `${providerDisplayAlias}/${m.id}`,
+          effort,
+        };
+      });
     await onTestAll(targets, autoHideFailed);
     if (autoHideFailed) {
       setVisibilityFilter("visible");
@@ -433,43 +493,26 @@ export function ProviderModelsSection({
     }
   };
 
-  const renderThinkingTag = (model: ModelRowItem) => {
-    // `tiered` is an upstream variant marker, not a user-selectable effort.
+  const renderEffortSelector = (model: ModelRowItem) => {
     const efforts = (model.supportedThinkingEfforts || []).filter(
       (effort) => Boolean(effort) && effort.trim().toLowerCase() !== "tiered"
     );
-    if (efforts.length === 0 && !model.supportsReasoning) return null;
-    const selected = effortSelection[model.id] || "__default__";
-    const effortOptions = [
-      { value: "__default__", label: t("providers.effortDefault", "默认") },
-      ...efforts.map((effort) => ({ value: effort, label: effort })),
-    ];
+    if (efforts.length <= 1) return null;
+    const selected = effortSelection[model.id] || efforts[0];
+
     return (
-      <Space size={6} align="center">
-        {model.supportsReasoning && (
-          <Tooltip title={t("providers.reasoningSupportedDesc", "该模型支持生成深度思考内容")}>
-            <Tag color="purple" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
-              {t("providers.reasoningSupported", "支持深度思考")}
-            </Tag>
-          </Tooltip>
-        )}
-        {efforts.length > 0 && (
-          <Tooltip title={t("providers.reasoningEffortsDesc", "选择通过 reasoning_effort 发送的推力强度")}>
-            <Select
-              aria-label={t("providers.effortSelectorLabel", "推力强度")}
-              value={selected}
-              options={effortOptions}
-              onChange={(value) => {
-                setEffortSelection((current) => ({
-                  ...current,
-                  [model.id]: String(value),
-                }));
-              }}
-              style={{ minWidth: 112 }}
-            />
-          </Tooltip>
-        )}
-      </Space>
+      <Tooltip title={t("providers.reasoningEffortsDesc", "思考强度")}>
+        <Segmented
+          value={selected}
+          options={efforts.map((eff) => ({ label: eff, value: eff }))}
+          onChange={(value) => {
+            setEffortSelection((current) => ({
+              ...current,
+              [model.id]: String(value),
+            }));
+          }}
+        />
+      </Tooltip>
     );
   };
 
@@ -480,35 +523,46 @@ export function ProviderModelsSection({
         .filter(Boolean)
     );
     const format = model.apiFormat?.trim().toLowerCase() || "";
-    const supportsImageGeneration = Array.from(endpoints).some(
-      (endpoint) => endpoint === "image" || endpoint === "images" || /^images?(?:[/.]|$)/.test(endpoint)
-    ) || /image/.test(format);
+    const supportsImageGeneration =
+      Array.from(endpoints).some(
+        (endpoint) => endpoint === "image" || endpoint === "images" || /^images?(?:[/.]|$)/.test(endpoint)
+      ) || /image/.test(format);
     const supportsVideoGeneration =
       model.supportsVideo === true ||
       Array.from(endpoints).some(
         (endpoint) => endpoint === "video" || endpoint === "videos" || /^videos?(?:[/.]|$)/.test(endpoint)
       ) || /video/.test(format);
 
+    const isVision = model.supportsVision === true;
+    const isTextOnly = !isVision && !supportsImageGeneration && !supportsVideoGeneration;
+
     return (
       <>
-        {model.supportsVision === true && (
-          <Tooltip title={t("providers.visionCapableHint", "支持图像输入与视觉理解")}>
+        {isTextOnly && (
+          <Tooltip title={t("providers.textCapableHint", "支持文本生成与对话")}>
+            <Tag color="default" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
+              {t("providers.textCapableLabel", "文本")}
+            </Tag>
+          </Tooltip>
+        )}
+        {isVision && (
+          <Tooltip title={t("providers.visionCapableHint", "支持图像输入与多模态理解")}>
             <Tag color="cyan" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
-              👁️ {t("providers.visionCapableLabel", "视觉")}
+              {t("providers.multimodalLabel", "多模态")}
             </Tag>
           </Tooltip>
         )}
         {supportsImageGeneration && (
           <Tooltip title={t("common.imageGeneration", "图像生成")}>
             <Tag color="blue" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
-              🖼️ {t("common.imageGeneration", "图像生成")}
+              {t("common.imageGeneration", "图像")}
             </Tag>
           </Tooltip>
         )}
         {supportsVideoGeneration && (
           <Tooltip title={t("common.videoGeneration", "视频生成")}>
             <Tag color="magenta" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
-              🎬 {t("common.videoGeneration", "视频生成")}
+              {t("common.videoGeneration", "视频")}
             </Tag>
           </Tooltip>
         )}
@@ -546,10 +600,7 @@ export function ProviderModelsSection({
               <span style={{ fontSize: 13, color: "var(--ant-color-text-secondary)" }}>
                 {t("providers.autoSync", "自动同步")}
               </span>
-              <Switch
-                checked={autoSync}
-                onChange={(checked) => onToggleAutoSync(checked)}
-              />
+              <Switch checked={autoSync} onChange={(checked) => onToggleAutoSync(checked)} />
             </Space>
           )}
 
@@ -693,133 +744,328 @@ export function ProviderModelsSection({
         ) : viewMode === "card" ? (
           <div className={styles.modelGridCards}>
             {displayedModels.map((model) => {
-            const alias = aliasByModelId[model.id] || "";
-            const isEditingAlias = editingAliasModelId === model.id;
-            const fullModelName = `${providerDisplayAlias}/${model.id}`;
-            const isTestingThis = testingModelId === model.id;
+              const alias = aliasByModelId[model.id] || "";
+              const isEditingAlias = editingAliasModelId === model.id;
+              const fullModelName = `${providerDisplayAlias}/${model.id}`;
+              const isTestingThis = testingModelId === model.id;
 
-            const hasNormalize = Boolean(model.compat?.normalizeToolCallId);
-            const hasPreserveDev = Boolean(model.compat?.preserveOpenAIDeveloperRole);
-            const hasHeaders = Boolean(
-              model.compat?.upstreamHeaders && Object.keys(model.compat.upstreamHeaders).length > 0
-            );
+              const hasNormalize = Boolean(model.compat?.normalizeToolCallId);
+              const hasPreserveDev = Boolean(model.compat?.preserveOpenAIDeveloperRole);
+              const hasHeaders = Boolean(
+                model.compat?.upstreamHeaders && Object.keys(model.compat.upstreamHeaders).length > 0
+              );
 
               return (
-              <div
-                key={model.id}
-                className={`${styles.modelCard} ${model.isHidden ? styles.modelHidden : ""}`}
-              >
-                {/* Card Top: ID and Badges */}
-                <div className={styles.modelCardHeader}>
-                  <div className={styles.modelCardTitle}>
+                <div
+                  key={model.id}
+                  className={`${styles.modelCard} ${model.isHidden ? styles.modelHidden : ""}`}
+                >
+                  {/* Card Top: ID and Badges */}
+                  <div className={styles.modelCardHeader}>
+                    <div className={styles.modelCardTitle}>
+                      <MaterialIcon
+                        name={model.isHidden ? "visibility_off" : "smart_toy"}
+                        size={18}
+                        style={{ color: model.isHidden ? "#aaa" : "var(--ant-color-primary)", flexShrink: 0 }}
+                      />
+                      <Typography.Text
+                        className={styles.modelId}
+                        copyable={{ text: fullModelName }}
+                        ellipsis={{
+                          tooltip:
+                            model.name && model.name !== model.id
+                              ? `${fullModelName} (${model.name})`
+                              : fullModelName,
+                        }}
+                      >
+                        {fullModelName}
+                      </Typography.Text>
+                    </div>
+
+                    <div className={styles.modelCardBadges}>
+                      {renderSourceTag(model.source)}
+                      {model.isFree && (
+                        <Tag color="success" bordered={false} style={{ marginInlineEnd: 0, fontWeight: 600 }}>
+                          {t("providers.free", "免费")}
+                        </Tag>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Middle: Alias Row & Capability/Compat Badges Row */}
+                  <div className={styles.modelCardBody}>
+                    <div className={styles.modelAliasRow}>
+                      {isEditingAlias ? (
+                        <Input
+                          size="small"
+                          autoFocus
+                          className={styles.aliasInput}
+                          placeholder={t("providers.aliasInputPlaceholder", "别名")}
+                          value={aliasDraft}
+                          onChange={(e) => setAliasDraft(e.target.value)}
+                          onPressEnter={() => handleSaveAlias(model.id)}
+                          onBlur={() => handleSaveAlias(model.id)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Escape") setEditingAliasModelId(null);
+                          }}
+                        />
+                      ) : alias ? (
+                        <Tooltip title={t("providers.clickToEditAlias", { alias })}>
+                          <Tag
+                            color="purple"
+                            className={styles.aliasTag}
+                            onClick={() => handleStartEditAlias(model.id, alias)}
+                          >
+                            <MaterialIcon name="sell" size={12} />
+                            <span>{alias}</span>
+                          </Tag>
+                        </Tooltip>
+                      ) : model.name && model.name !== model.id ? (
+                        <Tooltip title={t("providers.modelNameClickToSetAlias", { name: model.name })}>
+                          <Tag
+                            bordered={false}
+                            style={{
+                              cursor: "pointer",
+                              maxWidth: 160,
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              whiteSpace: "nowrap",
+                              background: "var(--ant-color-fill-tertiary, rgba(0,0,0,0.04))",
+                              color: "var(--ant-color-text-secondary)",
+                              fontStyle: "italic",
+                              fontSize: 12,
+                            }}
+                            onClick={() => handleStartEditAlias(model.id, "")}
+                          >
+                            <span>{model.name}</span>
+                          </Tag>
+                        </Tooltip>
+                      ) : (
+                        <span
+                          className={styles.clickableText}
+                          onClick={() => handleStartEditAlias(model.id, "")}
+                        >
+                          + {t("providers.clickToSetAlias", "设置别名")}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className={styles.modelTagsRow}>
+                      {hasNormalize && (
+                        <Tooltip title="9位 ToolCall ID 规整已启用">
+                          <Tag color="geekblue" bordered={false} style={{ marginInlineEnd: 0 }}>
+                            ID×9
+                          </Tag>
+                        </Tooltip>
+                      )}
+                      {hasPreserveDev && (
+                        <Tooltip title="保留 OpenAI Developer 角色">
+                          <Tag color="volcano" bordered={false} style={{ marginInlineEnd: 0 }}>
+                            {t("providers.compatBadgeNoPreserve", "不保留")}
+                          </Tag>
+                        </Tooltip>
+                      )}
+                      {hasHeaders && (
+                        <Tooltip title="已配置自定义上游请求头">
+                          <Tag color="cyan" bordered={false} style={{ marginInlineEnd: 0 }}>
+                            {t("providers.compatBadgeUpstreamHeaders", "请求头")}
+                          </Tag>
+                        </Tooltip>
+                      )}
+                      {renderCapabilityTags(model)}
+                    </div>
+                  </div>
+
+                  {/* Card Bottom: Left Reason Effort Selector | Right Actions & Test Button */}
+                  <div className={styles.modelCardFooter}>
+                    <div style={{ display: "flex", alignItems: "center", minWidth: 0 }}>
+                      {renderEffortSelector(model)}
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                      {isTestingThis ? (
+                        <Spin size="small" style={{ marginInline: 8 }} />
+                      ) : (
+                        <Tooltip
+                          title={
+                            model.testStatus === "ok"
+                              ? `测试通过 (${model.latencyMs || 0}ms)`
+                              : model.testStatus === "quota"
+                              ? (model.testError ? `配额超限: ${model.testError}` : "配额超限")
+                              : model.testStatus === "error"
+                              ? (model.testError ? `测试失败: ${model.testError}` : "测试失败")
+                              : t("providers.testModel", "测试此模型")
+                          }
+                        >
+                          <Button
+                            size="small"
+                            type="text"
+                            onClick={() => {
+                              const efforts = (model.supportedThinkingEfforts || []).filter(
+                                (e) => Boolean(e) && e.trim().toLowerCase() !== "tiered"
+                              );
+                              const effort =
+                                effortSelection[model.id] || (efforts.length > 0 ? efforts[0] : undefined);
+                              onTestModel(model.id, fullModelName, effort);
+                            }}
+                            icon={
+                              model.testStatus === "ok" ? (
+                                <MaterialIcon name="check_circle" size={18} style={{ color: "#52c41a" }} />
+                              ) : model.testStatus === "quota" ? (
+                                <MaterialIcon name="warning" size={18} style={{ color: "#faad14" }} />
+                              ) : model.testStatus === "error" ? (
+                                <MaterialIcon name="cancel" size={18} style={{ color: "#ff4d4f" }} />
+                              ) : (
+                                <MaterialIcon name="play_circle" size={18} />
+                              )
+                            }
+                            style={{ paddingInline: 4, height: 24, fontSize: 12 }}
+                          >
+                            {model.latencyMs && model.testStatus === "ok" ? (
+                              <span style={{ fontSize: 11, color: "var(--ant-color-success)" }}>
+                                {model.latencyMs}ms
+                              </span>
+                            ) : null}
+                          </Button>
+                        </Tooltip>
+                      )}
+
+                      <ModelCompatPopover
+                        modelId={model.id}
+                        compat={model.compat}
+                        onSave={(patch) => onSaveModelCompat(model.id, patch)}
+                      />
+
+                      <Tooltip
+                        title={
+                          model.isHidden
+                            ? t("providers.enableModel", "取消隐藏此模型")
+                            : t("providers.hideModel", "隐藏此模型")
+                        }
+                      >
+                        <Button
+                          size="small"
+                          type="text"
+                          icon={
+                            <MaterialIcon
+                              name={model.isHidden ? "visibility_off" : "visibility"}
+                              size={18}
+                              style={{ color: model.isHidden ? "#bbb" : undefined }}
+                            />
+                          }
+                          onClick={() => onToggleModelHidden(model.id, !model.isHidden)}
+                        />
+                      </Tooltip>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className={styles.modelGrid}>
+            {displayedModels.map((model) => {
+              const alias = aliasByModelId[model.id] || "";
+              const isEditingAlias = editingAliasModelId === model.id;
+              const fullModelName = `${providerDisplayAlias}/${model.id}`;
+              const isTestingThis = testingModelId === model.id;
+
+              // Compat badges
+              const hasNormalize = Boolean(model.compat?.normalizeToolCallId);
+              const hasPreserveDev = Boolean(model.compat?.preserveOpenAIDeveloperRole);
+              const hasHeaders = Boolean(
+                model.compat?.upstreamHeaders && Object.keys(model.compat.upstreamHeaders).length > 0
+              );
+
+              return (
+                <div
+                  key={model.id}
+                  className={`${styles.modelRow} ${model.isHidden ? styles.modelHidden : ""}`}
+                >
+                  {/* Left Info */}
+                  <div className={styles.modelInfo}>
                     <MaterialIcon
                       name={model.isHidden ? "visibility_off" : "smart_toy"}
                       size={18}
-                      style={{ color: model.isHidden ? "#aaa" : "var(--ant-color-primary)", flexShrink: 0 }}
+                      style={{ color: model.isHidden ? "#aaa" : "var(--ant-color-primary)" }}
                     />
-                    <Typography.Text
-                      className={styles.modelId}
-                      copyable={{ text: fullModelName }}
-                      ellipsis={{ tooltip: model.name && model.name !== model.id ? `${fullModelName} (${model.name})` : fullModelName }}
-                    >
+
+                    <Typography.Text className={styles.modelId} copyable={{ text: fullModelName }}>
                       {fullModelName}
                     </Typography.Text>
-                  </div>
 
-                  <div className={styles.modelCardBadges}>
+                    {model.name && model.name !== model.id && (
+                      <Typography.Text type="secondary" style={{ fontSize: 12 }}>
+                        ({model.name})
+                      </Typography.Text>
+                    )}
+
                     {renderSourceTag(model.source)}
+
                     {model.isFree && (
-                      <Tag color="success" bordered={false} style={{ marginInlineEnd: 0, fontWeight: 600 }}>
+                      <Tag color="success" bordered={false} style={{ fontWeight: 600 }}>
                         {t("providers.free", "免费")}
                       </Tag>
                     )}
-                  </div>
-                </div>
 
-                {/* Card Middle: Alias & Compat badges */}
-                <div className={styles.modelCardBody}>
-                  {isEditingAlias ? (
-                    <Input
-                      size="small"
-                      autoFocus
-                      className={styles.aliasInput}
-                      placeholder={t("providers.aliasInputPlaceholder", "别名")}
-                      value={aliasDraft}
-                      onChange={(e) => setAliasDraft(e.target.value)}
-                      onPressEnter={() => handleSaveAlias(model.id)}
-                      onBlur={() => handleSaveAlias(model.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") setEditingAliasModelId(null);
-                      }}
-                    />
-                  ) : alias ? (
-                    <Tooltip title={t("providers.clickToEditAlias", { alias })}>
-                      <Tag
-                        color="purple"
-                        className={styles.aliasTag}
-                        onClick={() => handleStartEditAlias(model.id, alias)}
-                      >
-                        <MaterialIcon name="sell" size={12} />
-                        <span>{alias}</span>
-                      </Tag>
-                    </Tooltip>
-                  ) : model.name && model.name !== model.id ? (
-                    <Tooltip title={t("providers.modelNameClickToSetAlias", { name: model.name })}>
-                      <Tag
-                        bordered={false}
-                        style={{
-                          cursor: "pointer",
-                          maxWidth: 160,
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                          whiteSpace: "nowrap",
-                          background: "var(--ant-color-fill-tertiary, rgba(0,0,0,0.04))",
-                          color: "var(--ant-color-text-secondary)",
-                          fontStyle: "italic",
-                          fontSize: 12,
+                    {/* Inline Alias */}
+                    {isEditingAlias ? (
+                      <Input
+                        size="small"
+                        autoFocus
+                        className={styles.aliasInput}
+                        placeholder={t("providers.aliasInputPlaceholder", "别名")}
+                        value={aliasDraft}
+                        onChange={(e) => setAliasDraft(e.target.value)}
+                        onPressEnter={() => handleSaveAlias(model.id)}
+                        onBlur={() => handleSaveAlias(model.id)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Escape") setEditingAliasModelId(null);
                         }}
+                      />
+                    ) : alias ? (
+                      <Tooltip title={t("providers.clickToEditAlias", { alias })}>
+                        <Tag
+                          color="purple"
+                          className={styles.aliasTag}
+                          onClick={() => handleStartEditAlias(model.id, alias)}
+                        >
+                          <MaterialIcon name="sell" size={12} />
+                          <span>{alias}</span>
+                        </Tag>
+                      </Tooltip>
+                    ) : (
+                      <span
+                        className={styles.clickableText}
                         onClick={() => handleStartEditAlias(model.id, "")}
                       >
-                        <span>{model.name}</span>
-                      </Tag>
-                    </Tooltip>
-                  ) : (
-                    <span
-                      className={styles.clickableText}
-                      onClick={() => handleStartEditAlias(model.id, "")}
-                    >
-                      + {t("providers.clickToSetAlias", "设置别名")}
-                    </span>
-                  )}
+                        + {t("providers.clickToSetAlias", "设置别名")}
+                      </span>
+                    )}
 
-                  {hasNormalize && (
-                    <Tooltip title="9位 ToolCall ID 规整已启用">
-                      <Tag color="geekblue" bordered={false} style={{ marginInlineEnd: 0 }}>
+                    {/* Compat Badges */}
+                    {hasNormalize && (
+                      <Tag color="geekblue" bordered={false}>
                         ID×9
                       </Tag>
-                    </Tooltip>
-                  )}
-                  {hasPreserveDev && (
-                    <Tooltip title="保留 OpenAI Developer 角色">
-                      <Tag color="volcano" bordered={false} style={{ marginInlineEnd: 0 }}>
+                    )}
+                    {hasPreserveDev && (
+                      <Tag color="volcano" bordered={false}>
                         {t("providers.compatBadgeNoPreserve", "不保留")}
                       </Tag>
-                    </Tooltip>
-                  )}
-                  {hasHeaders && (
-                    <Tooltip title="已配置自定义上游请求头">
-                      <Tag color="cyan" bordered={false} style={{ marginInlineEnd: 0 }}>
+                    )}
+                    {hasHeaders && (
+                      <Tag color="cyan" bordered={false}>
                         {t("providers.compatBadgeUpstreamHeaders", "请求头")}
                       </Tag>
-                    </Tooltip>
-                  )}
-                  {renderCapabilityTags(model)}
-                  {renderThinkingTag(model)}
-                </div>
+                    )}
+                    {renderCapabilityTags(model)}
+                    {renderEffortSelector(model)}
+                  </div>
 
-                {/* Card Bottom: Test Button & Actions */}
-                <div className={styles.modelCardFooter}>
-                  <div>
+                  {/* Right Actions */}
+                  <div className={styles.modelActions}>
+                    {/* Test Status / Button */}
                     {isTestingThis ? (
                       <Spin size="small" style={{ marginInline: 8 }} />
                     ) : (
@@ -838,8 +1084,12 @@ export function ProviderModelsSection({
                           size="small"
                           type="text"
                           onClick={() => {
-                            const effort = effortSelection[model.id];
-                            onTestModel(model.id, fullModelName, effort && effort !== "__default__" ? effort : undefined);
+                            const efforts = (model.supportedThinkingEfforts || []).filter(
+                              (e) => Boolean(e) && e.trim().toLowerCase() !== "tiered"
+                            );
+                            const effort =
+                              effortSelection[model.id] || (efforts.length > 0 ? efforts[0] : undefined);
+                            onTestModel(model.id, fullModelName, effort);
                           }}
                           icon={
                             model.testStatus === "ok" ? (
@@ -862,15 +1112,15 @@ export function ProviderModelsSection({
                         </Button>
                       </Tooltip>
                     )}
-                  </div>
 
-                  <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                    {/* Compat Popover */}
                     <ModelCompatPopover
                       modelId={model.id}
                       compat={model.compat}
                       onSave={(patch) => onSaveModelCompat(model.id, patch)}
                     />
 
+                    {/* Visibility Toggle */}
                     <Tooltip
                       title={
                         model.isHidden
@@ -893,180 +1143,6 @@ export function ProviderModelsSection({
                     </Tooltip>
                   </div>
                 </div>
-              </div>
-              );
-            })}
-          </div>
-        ) : (
-          <div className={styles.modelGrid}>
-            {displayedModels.map((model) => {
-            const alias = aliasByModelId[model.id] || "";
-            const isEditingAlias = editingAliasModelId === model.id;
-            const fullModelName = `${providerDisplayAlias}/${model.id}`;
-            const isTestingThis = testingModelId === model.id;
-
-            // Compat badges
-            const hasNormalize = Boolean(model.compat?.normalizeToolCallId);
-            const hasPreserveDev = Boolean(model.compat?.preserveOpenAIDeveloperRole);
-            const hasHeaders = Boolean(
-              model.compat?.upstreamHeaders && Object.keys(model.compat.upstreamHeaders).length > 0
-            );
-
-              return (
-              <div
-                key={model.id}
-                className={`${styles.modelRow} ${model.isHidden ? styles.modelHidden : ""}`}
-              >
-                {/* Left Info */}
-                <div className={styles.modelInfo}>
-                  <MaterialIcon
-                    name={model.isHidden ? "visibility_off" : "smart_toy"}
-                    size={18}
-                    style={{ color: model.isHidden ? "#aaa" : "var(--ant-color-primary)" }}
-                  />
-
-                  <Typography.Text className={styles.modelId} copyable={{ text: fullModelName }}>
-                    {fullModelName}
-                  </Typography.Text>
-
-                  {model.name && model.name !== model.id && (
-                    <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-                      ({model.name})
-                    </Typography.Text>
-                  )}
-
-                  {renderSourceTag(model.source)}
-
-                  {model.isFree && (
-                    <Tag color="success" bordered={false} style={{ fontWeight: 600 }}>
-                      {t("providers.free", "免费")}
-                    </Tag>
-                  )}
-
-                  {/* Inline Alias */}
-                  {isEditingAlias ? (
-                    <Input
-                      size="small"
-                      autoFocus
-                      className={styles.aliasInput}
-                      placeholder={t("providers.aliasInputPlaceholder", "别名")}
-                      value={aliasDraft}
-                      onChange={(e) => setAliasDraft(e.target.value)}
-                      onPressEnter={() => handleSaveAlias(model.id)}
-                      onBlur={() => handleSaveAlias(model.id)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") setEditingAliasModelId(null);
-                      }}
-                    />
-                  ) : alias ? (
-                    <Tooltip title={t("providers.clickToEditAlias", { alias })}>
-                      <Tag
-                        color="purple"
-                        className={styles.aliasTag}
-                        onClick={() => handleStartEditAlias(model.id, alias)}
-                      >
-                        <MaterialIcon name="sell" size={12} />
-                        <span>{alias}</span>
-                      </Tag>
-                    </Tooltip>
-                  ) : (
-                    <span
-                      className={styles.clickableText}
-                      onClick={() => handleStartEditAlias(model.id, "")}
-                    >
-                      + {t("providers.clickToSetAlias", "设置别名")}
-                    </span>
-                  )}
-
-                  {/* Compat Badges */}
-                  {hasNormalize && (
-                    <Tag color="geekblue" bordered={false}>
-                      ID×9
-                    </Tag>
-                  )}
-                  {hasPreserveDev && (
-                    <Tag color="volcano" bordered={false}>
-                      {t("providers.compatBadgeNoPreserve", "不保留")}
-                    </Tag>
-                  )}
-                  {hasHeaders && (
-                    <Tag color="cyan" bordered={false}>
-                      {t("providers.compatBadgeUpstreamHeaders", "请求头")}
-                    </Tag>
-                  )}
-                  {renderCapabilityTags(model)}
-                  {renderThinkingTag(model)}
-                </div>
-
-                {/* Right Actions */}
-                <div className={styles.modelActions}>
-                  {/* Test Status / Button */}
-                  {isTestingThis ? (
-                    <Spin size="small" style={{ marginInline: 8 }} />
-                  ) : (
-                    <Tooltip
-                      title={
-                        model.testStatus === "ok"
-                          ? `测试通过 (${model.latencyMs || 0}ms)`
-                          : model.testStatus === "quota"
-                          ? (model.testError ? `配额超限: ${model.testError}` : "配额超限")
-                          : model.testStatus === "error"
-                          ? (model.testError ? `测试失败: ${model.testError}` : "测试失败")
-                          : t("providers.testModel", "测试此模型")
-                      }
-                    >
-                      <Button
-                        size="small"
-                        type="text"
-                        onClick={() => {
-                          const effort = effortSelection[model.id];
-                          onTestModel(model.id, fullModelName, effort && effort !== "__default__" ? effort : undefined);
-                        }}
-                        icon={
-                          model.testStatus === "ok" ? (
-                            <MaterialIcon name="check_circle" size={18} style={{ color: "#52c41a" }} />
-                          ) : model.testStatus === "quota" ? (
-                            <MaterialIcon name="warning" size={18} style={{ color: "#faad14" }} />
-                          ) : model.testStatus === "error" ? (
-                            <MaterialIcon name="cancel" size={18} style={{ color: "#ff4d4f" }} />
-                          ) : (
-                            <MaterialIcon name="play_circle" size={18} />
-                          )
-                        }
-                      />
-                    </Tooltip>
-                  )}
-
-                  {/* Compat Popover */}
-                  <ModelCompatPopover
-                    modelId={model.id}
-                    compat={model.compat}
-                    onSave={(patch) => onSaveModelCompat(model.id, patch)}
-                  />
-
-                  {/* Visibility Toggle */}
-                  <Tooltip
-                    title={
-                      model.isHidden
-                        ? t("providers.enableModel", "取消隐藏此模型")
-                        : t("providers.hideModel", "隐藏此模型")
-                    }
-                  >
-                    <Button
-                      size="small"
-                      type="text"
-                      icon={
-                        <MaterialIcon
-                          name={model.isHidden ? "visibility_off" : "visibility"}
-                          size={18}
-                          style={{ color: model.isHidden ? "#bbb" : undefined }}
-                        />
-                      }
-                      onClick={() => onToggleModelHidden(model.id, !model.isHidden)}
-                    />
-                  </Tooltip>
-                </div>
-              </div>
               );
             })}
           </div>

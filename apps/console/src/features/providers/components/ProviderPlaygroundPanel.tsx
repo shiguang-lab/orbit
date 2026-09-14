@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import {
   Card,
   Tabs,
@@ -7,6 +7,7 @@ import {
   Button,
   Space,
   Spin,
+  Tag,
   message,
 } from "antd";
 import { createStyles } from "antd-style";
@@ -98,16 +99,25 @@ const useStyles = createStyles(({ token }) => ({
   },
 }));
 
+export interface PlaygroundModelItem {
+  id: string;
+  name?: string;
+  supportsReasoning?: boolean;
+  supportedThinkingEfforts?: string[];
+  supportsVision?: boolean;
+}
+
 interface Props {
   providerId: string;
   providerDisplayAlias: string;
   serviceKinds?: string[];
-  availableModels: Array<{ id: string; name?: string }>;
+  availableModels: PlaygroundModelItem[];
 }
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
+  reasoningContent?: string;
 }
 
 export function ProviderPlaygroundPanel({
@@ -132,6 +142,39 @@ export function ProviderPlaygroundPanel({
       setSelectedModel(availableModels[0].id);
     }
   }, [availableModels, selectedModel]);
+
+  const currentModelObj = availableModels.find((m) => m.id === (selectedModel || firstModelId)) || availableModels[0];
+
+  const supportsReasoning = Boolean(
+    currentModelObj?.supportsReasoning ||
+    (currentModelObj?.supportedThinkingEfforts && currentModelObj.supportedThinkingEfforts.length > 0)
+  );
+
+  const [reasoningEffort, setReasoningEffort] = useState<string>("");
+
+  const effortOptions = useMemo(() => {
+    if (!supportsReasoning) return [];
+    const EFFORT_LABELS: Record<string, string> = {
+      "": "默认 (Auto)",
+      none: "关闭 (none)",
+      minimal: "极低 (minimal)",
+      low: "低 (low)",
+      medium: "中 (medium)",
+      high: "高 (high)",
+      xhigh: "很高 (xhigh)",
+      max: "极高 (max)",
+    };
+
+    const rawEfforts = currentModelObj?.supportedThinkingEfforts && currentModelObj.supportedThinkingEfforts.length > 0
+      ? currentModelObj.supportedThinkingEfforts
+      : ["low", "medium", "high", "max"];
+
+    const list = ["", ...rawEfforts.filter((e) => e !== "")];
+    return list.map((effort) => ({
+      label: EFFORT_LABELS[effort] || effort,
+      value: effort,
+    }));
+  }, [supportsReasoning, currentModelObj?.supportedThinkingEfforts]);
 
   // LLM Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -176,14 +219,20 @@ export function ProviderPlaygroundPanel({
     abortControllerRef.current = abortController;
 
     try {
+      const bodyPayload: Record<string, unknown> = {
+        model: qualifiedModel,
+        messages: newMessages,
+        stream: true,
+      };
+
+      if (supportsReasoning && reasoningEffort) {
+        bodyPayload.reasoning_effort = reasoningEffort;
+      }
+
       const response = await fetch("/api/v1/chat/completions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: qualifiedModel,
-          messages: newMessages,
-          stream: true,
-        }),
+        body: JSON.stringify(bodyPayload),
         signal: abortController.signal,
       });
 
@@ -197,6 +246,7 @@ export function ProviderPlaygroundPanel({
 
       const decoder = new TextDecoder();
       let assistantResponse = "";
+      let assistantReasoning = "";
       let inTokens = 0;
       let outTokens = 0;
 
@@ -214,14 +264,27 @@ export function ProviderPlaygroundPanel({
 
           try {
             const parsed = JSON.parse(dataStr);
-            const delta = parsed.choices?.[0]?.delta?.content;
-            if (typeof delta === "string") {
-              assistantResponse += delta;
+            const delta = parsed.choices?.[0]?.delta;
+            const contentDelta = delta?.content;
+            const reasoningDelta = delta?.reasoning_content || delta?.reasoning || delta?.thinking;
+
+            let updated = false;
+            if (typeof reasoningDelta === "string" && reasoningDelta) {
+              assistantReasoning += reasoningDelta;
+              updated = true;
+            }
+            if (typeof contentDelta === "string" && contentDelta) {
+              assistantResponse += contentDelta;
+              updated = true;
+            }
+
+            if (updated) {
               setMessages((prev) => {
                 const next = [...prev];
                 const last = next[next.length - 1];
                 if (last && last.role === "assistant") {
                   last.content = assistantResponse;
+                  last.reasoningContent = assistantReasoning;
                 }
                 return next;
               });
@@ -363,9 +426,33 @@ export function ProviderPlaygroundPanel({
             <Select
               style={{ minWidth: 220 }}
               value={selectedModel || firstModelId}
-              onChange={setSelectedModel}
+              onChange={(val) => {
+                setSelectedModel(val);
+                setReasoningEffort("");
+              }}
               options={availableModels.map((m) => ({ label: m.name ? `${m.id} (${m.name})` : m.id, value: m.id }))}
             />
+
+            {supportsReasoning && (
+              <>
+                <span style={{ fontSize: 13, fontWeight: 500, display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  <MaterialIcon name="psychology" size={16} style={{ color: "var(--ant-color-primary)" }} />
+                  思考强度 (Effort):
+                </span>
+                <Select
+                  style={{ minWidth: 130 }}
+                  value={reasoningEffort}
+                  onChange={setReasoningEffort}
+                  options={effortOptions}
+                />
+              </>
+            )}
+
+            {currentModelObj?.supportsVision && (
+              <Tag color="purple">
+                多模态
+              </Tag>
+            )}
 
             <Button
               type={showSystemPrompt ? "primary" : "default"}
@@ -408,7 +495,28 @@ export function ProviderPlaygroundPanel({
                   <div style={{ fontSize: 11, opacity: 0.7, marginBottom: 2, fontWeight: 600 }}>
                     {m.role === "user" ? "User" : "Assistant"}
                   </div>
-                  <div style={{ whiteSpace: "pre-wrap" }}>{m.content || (streaming && idx === messages.length - 1 ? <Spin size="small" /> : "")}</div>
+                  {m.reasoningContent && (
+                    <div
+                      style={{
+                        marginBottom: 8,
+                        padding: "6px 10px",
+                        borderRadius: 6,
+                        background: "rgba(255, 255, 255, 0.04)",
+                        borderLeft: "3px solid var(--ant-color-primary)",
+                        fontSize: 12,
+                        color: "var(--ant-color-text-secondary)",
+                      }}
+                    >
+                      <div style={{ fontWeight: 600, marginBottom: 4, display: "flex", alignItems: "center", gap: 4 }}>
+                        <MaterialIcon name="psychology" size={14} />
+                        <span>深度思考过程</span>
+                      </div>
+                      <div style={{ whiteSpace: "pre-wrap" }}>{m.reasoningContent}</div>
+                    </div>
+                  )}
+                  <div style={{ whiteSpace: "pre-wrap" }}>
+                    {m.content || (streaming && idx === messages.length - 1 && !m.reasoningContent ? <Spin size="small" /> : "")}
+                  </div>
                 </div>
               ))
             )}

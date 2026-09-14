@@ -25,14 +25,59 @@ export default defineConfig(({ mode }) => {
       host: "127.0.0.1",
       port: 5173,
       proxy: {
-        // Authentication/session is handled by the local BFF in every dev mode.
-        "/api/v1": { target: edgeTarget, changeOrigin: true },
-        "/api/v1beta": { target: edgeTarget, changeOrigin: true },
-        "/api/auth": { target: controlTarget, changeOrigin: false },
-        // 管理 API → control(Fastify + 本地 runtime)
-        "/api": { target: controlTarget, changeOrigin: true },
-        "/internal/service-nodes": { target: controlTarget, changeOrigin: true },
-        // 长连接 WS；生产环境由同源反向代理转发到本地 realtime 服务。
+        // Authentication/session is handled by proxy targets in dev mode.
+        "/api/v1": {
+          target: edgeTarget,
+          changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              if (env.ORBIT_ONLINE_AUTH_HEADER) proxyReq.setHeader("authorization", env.ORBIT_ONLINE_AUTH_HEADER);
+              if (env.ORBIT_ONLINE_COOKIE) proxyReq.setHeader("cookie", env.ORBIT_ONLINE_COOKIE);
+            });
+          },
+        },
+        "/api/v1beta": {
+          target: edgeTarget,
+          changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              if (env.ORBIT_ONLINE_AUTH_HEADER) proxyReq.setHeader("authorization", env.ORBIT_ONLINE_AUTH_HEADER);
+              if (env.ORBIT_ONLINE_COOKIE) proxyReq.setHeader("cookie", env.ORBIT_ONLINE_COOKIE);
+            });
+          },
+        },
+        "/api/auth": {
+          target: controlTarget,
+          changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              if (env.ORBIT_ONLINE_AUTH_HEADER) proxyReq.setHeader("authorization", env.ORBIT_ONLINE_AUTH_HEADER);
+              if (env.ORBIT_ONLINE_COOKIE) proxyReq.setHeader("cookie", env.ORBIT_ONLINE_COOKIE);
+            });
+          },
+        },
+        // 管理 API → control
+        "/api": {
+          target: controlTarget,
+          changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              if (env.ORBIT_ONLINE_AUTH_HEADER) proxyReq.setHeader("authorization", env.ORBIT_ONLINE_AUTH_HEADER);
+              if (env.ORBIT_ONLINE_COOKIE) proxyReq.setHeader("cookie", env.ORBIT_ONLINE_COOKIE);
+            });
+          },
+        },
+        "/internal/service-nodes": {
+          target: controlTarget,
+          changeOrigin: true,
+          configure: (proxy) => {
+            proxy.on("proxyReq", (proxyReq) => {
+              if (env.ORBIT_ONLINE_AUTH_HEADER) proxyReq.setHeader("authorization", env.ORBIT_ONLINE_AUTH_HEADER);
+              if (env.ORBIT_ONLINE_COOKIE) proxyReq.setHeader("cookie", env.ORBIT_ONLINE_COOKIE);
+            });
+          },
+        },
+        // 长连接 WS
         "/live-ws": {
           target: env.ORBIT_LIVE_WS_TARGET ?? "ws://127.0.0.1:20132",
           ws: true,

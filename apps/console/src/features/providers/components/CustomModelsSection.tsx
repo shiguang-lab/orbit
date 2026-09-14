@@ -69,10 +69,16 @@ const useStyles = createStyles(({ token }) => ({
   checkboxRow: {
     display: "flex",
     alignItems: "center",
+    justifyContent: "space-between",
     flexWrap: "wrap",
     gap: 16,
     marginTop: 8,
-    marginBottom: 12,
+  },
+  checkboxGroup: {
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 16,
   },
   modelsList: {
     display: "flex",
@@ -184,13 +190,13 @@ const TARGET_FORMAT_OPTIONS = [
 ];
 
 const ENDPOINT_OPTIONS = [
-  { label: "💬 聊天", value: "chat" },
-  { label: "📐 向量", value: "embeddings" },
-  { label: "🎯 Rerank", value: "rerank" },
-  { label: "🖼️ 图像", value: "images" },
-  { label: "🎬 视频", value: "videos" },
-  { label: "🔊 语音合成", value: "audio-speech" },
-  { label: "🎙️ 语音转写", value: "audio-transcriptions" },
+  { label: "聊天", value: "chat" },
+  { label: "向量", value: "embeddings" },
+  { label: "Rerank", value: "rerank" },
+  { label: "图像", value: "images" },
+  { label: "视频", value: "videos" },
+  { label: "语音合成", value: "audio-speech" },
+  { label: "语音转写", value: "audio-transcriptions" },
 ];
 
 export function CustomModelsSection({
@@ -351,33 +357,35 @@ export function CustomModelsSection({
         </div>
 
         <div className={styles.checkboxRow}>
-          <Checkbox.Group
-            options={ENDPOINT_OPTIONS}
-            value={newEndpoints}
-            onChange={(v) => setNewEndpoints(v as string[])}
-          />
+          <div className={styles.checkboxGroup}>
+            <Checkbox.Group
+              options={ENDPOINT_OPTIONS}
+              value={newEndpoints}
+              onChange={(v) => setNewEndpoints(v as string[])}
+            />
 
-          <Divider type="vertical" style={{ height: 16 }} />
+            <Divider type="vertical" style={{ height: 16 }} />
 
-          <Checkbox checked={newVision} onChange={(e) => setNewVision(e.target.checked)}>
-            {t("providers.visionCapableLabel", "👁️ 支持视觉")}
-          </Checkbox>
+            <Checkbox checked={newVision} onChange={(e) => setNewVision(e.target.checked)}>
+              {t("providers.visionCapableLabel", "多模态")}
+            </Checkbox>
 
-          <Checkbox checked={newFree} onChange={(e) => setNewFree(e.target.checked)}>
-            <Tag color="success" bordered={false}>
-              {t("providers.free", "免费")}
-            </Tag>
-          </Checkbox>
+            <Checkbox checked={newFree} onChange={(e) => setNewFree(e.target.checked)}>
+              <Tag color="success" bordered={false}>
+                {t("providers.free", "免费")}
+              </Tag>
+            </Checkbox>
+          </div>
+
+          <Button
+            type="primary"
+            loading={isAdding}
+            icon={<MaterialIcon name="add" size={16} />}
+            onClick={handleAdd}
+          >
+            {t("providers.addCustomModel", "添加模型")}
+          </Button>
         </div>
-
-        <Button
-          type="primary"
-          loading={isAdding}
-          icon={<MaterialIcon name="add" size={16} />}
-          onClick={handleAdd}
-        >
-          {t("providers.addCustomModel", "添加模型")}
-        </Button>
       </div>
 
       {/* Custom Models List */}
@@ -441,13 +449,13 @@ export function CustomModelsSection({
 
                     {contextWindow ? (
                       <Tag bordered={false}>
-                        🪟 {contextWindow.toLocaleString()}
+                        {contextWindow.toLocaleString()}
                       </Tag>
                     ) : null}
 
                     {isVision && (
                       <Tag color="cyan" bordered={false}>
-                        👁️ 视觉
+                        {t("providers.multimodalLabel", "多模态")}
                       </Tag>
                     )}
 
@@ -609,7 +617,7 @@ export function CustomModelsSection({
                       <Divider type="vertical" style={{ height: 16 }} />
 
                       <Checkbox checked={editVision} onChange={(e) => setEditVision(e.target.checked)}>
-                        {t("providers.visionCapableLabel", "👁️ 支持视觉")}
+                        {t("providers.visionCapableLabel", "多模态")}
                       </Checkbox>
 
                       <Checkbox checked={editFree} onChange={(e) => setEditFree(e.target.checked)}>

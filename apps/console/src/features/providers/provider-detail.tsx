@@ -68,7 +68,7 @@ const useStyles = createStyles(({ token }) => ({
   protocol: { borderLeft: `3px solid ${token.colorPrimary}` },
   formGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 },
   connectionRow: { display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12, width: "100%", minWidth: 0 },
-  connectionToolbar: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", flexWrap: "wrap" as const, marginBottom: 8 },
+  connectionToolbar: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, width: "100%", flexWrap: "wrap" as const, marginBottom: 8, padding: "4px 8px" },
   connectionToolbarFilters: { display: "flex", alignItems: "center", flexWrap: "wrap" as const, gap: 12, minWidth: 0 },
   bulkActions: { display: "flex", alignItems: "center", justifyContent: "flex-end", flexWrap: "wrap" as const, gap: 8, marginInlineStart: "auto" },
   bulkActionButton: { minHeight: 32, paddingInline: 12, fontWeight: 500 },
@@ -819,7 +819,7 @@ export default function ProviderDetailPage() {
   };
 
   const handleTestAll = async (
-    targets: Array<{ modelId: string; fullModel: string }>,
+    targets: Array<{ modelId: string; fullModel: string; effort?: string }>,
     autoHideFailed?: boolean
   ) => {
     if (testingAll || targets.length === 0) return;
@@ -833,11 +833,12 @@ export default function ProviderDetailPage() {
     for (let i = 0; i < targets.length; i += 3) {
       const chunk = targets.slice(i, i + 3);
       await Promise.all(
-        chunk.map(async ({ modelId, fullModel }) => {
+        chunk.map(async ({ modelId, fullModel, effort }) => {
           try {
+            const requestModel = effort ? `${fullModel}-${effort}` : fullModel;
             const res = await providersApi.testModel({
               providerId,
-              modelId: fullModel,
+              modelId: requestModel,
               ...(targetConnectionId ? { connectionId: targetConnectionId } : {}),
             });
             if (res.status === "ok") {
@@ -874,7 +875,7 @@ export default function ProviderDetailPage() {
       }).catch(() => {});
       messageApi.warning(`测试完成，已自动隐藏 ${failedModelIds.length} 个失败模型`);
     } else if (failedModelIds.length > 0) {
-      messageApi.warning(`测试完成：${targets.length - failedModelIds.length} 个通过，${failedModelIds.length} 个失败（鼠标悬浮 ❌ 可查看具体报错）`);
+      messageApi.warning(`测试完成：${targets.length - failedModelIds.length} 个通过，${failedModelIds.length} 个失败（鼠标悬浮图标可查看具体报错）`);
     } else {
       messageApi.success(`所有 ${targets.length} 个模型测试通过！`);
     }
@@ -945,6 +946,8 @@ export default function ProviderDetailPage() {
       const id = String(m.id ?? "").trim();
       if (!id) continue;
 
+      const supportsReasoning = Boolean(m.supportsReasoning ?? m.supportsThinking);
+
       // Registry effort aliases (for example `glm-5.3-flash-high`) are
       // compatibility IDs for clients that cannot send reasoning_effort. Keep
       // them routable in the public catalog, but present the provider's model
@@ -973,7 +976,7 @@ export default function ProviderDetailPage() {
         name: m.name || id,
         source: "system",
         apiFormat: typeof m.apiFormat === "string" ? m.apiFormat : undefined,
-        supportsReasoning: Boolean(m.supportsReasoning ?? m.supportsThinking),
+        supportsReasoning,
         supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
         supportedEndpoints: normalizeSupportedEndpoints(m.supportedEndpoints),
         supportsVision: m.supportsVision === true,
@@ -990,6 +993,7 @@ export default function ProviderDetailPage() {
     for (const m of syncedModels) {
       const id = String(m.id ?? "").trim();
       if (!id) continue;
+      const supportsReasoning = Boolean(m.supportsReasoning ?? m.supportsThinking);
       const existing = map.get(id);
       if (!existing) {
         map.set(id, {
@@ -997,7 +1001,7 @@ export default function ProviderDetailPage() {
           name: m.name || id,
           source: "imported",
           apiFormat: typeof m.apiFormat === "string" ? m.apiFormat : undefined,
-          supportsReasoning: Boolean(m.supportsReasoning ?? m.supportsThinking),
+          supportsReasoning,
           supportedThinkingEfforts: normalizeThinkingEfforts(m.supportedThinkingEfforts),
           supportedEndpoints: normalizeSupportedEndpoints(m.supportedEndpoints),
           supportsVision: m.supportsVision === true,
@@ -1015,7 +1019,7 @@ export default function ProviderDetailPage() {
           ...existing,
           name: existing.name || m.name || id,
           apiFormat: existing.apiFormat || (typeof m.apiFormat === "string" ? m.apiFormat : undefined),
-          supportsReasoning: existing.supportsReasoning || Boolean(m.supportsReasoning ?? m.supportsThinking),
+          supportsReasoning: existing.supportsReasoning || supportsReasoning,
           supportedThinkingEfforts: [...new Set([
             ...(existing.supportedThinkingEfforts || []),
             ...normalizeThinkingEfforts(m.supportedThinkingEfforts),
@@ -1269,7 +1273,7 @@ export default function ProviderDetailPage() {
               <div>3. 在左侧栏展开 <b>Storage</b> → <b>Local Storage</b>，点击 <code>https://chat.deepseek.com</code>。</div>
               <div>4. 在右侧列表中找到 <b><code>userToken</code></b> 项，复制其 Value 粘贴到下方凭据框。</div>
               <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
-                💡 <b>双 Token 说明</b>：系统已内置自动换票与定期续期机制，您<b>只需填写这一个 <code>userToken</code> 即可</b>，后端会自动换取临时 accessToken，无需也不需要提供双 Token。
+                <b>双 Token 说明</b>：系统已内置自动换票与定期续期机制，您<b>只需填写这一个 <code>userToken</code> 即可</b>，后端会自动换取临时 accessToken，无需也不需要提供双 Token。
               </div>
             </div>
             {editingConnection && (
@@ -1306,7 +1310,7 @@ export default function ProviderDetailPage() {
               <div>4. <b>主凭据 (必需)</b>：在列表中找到 <b><code>access_token</code></b>，复制其 Value 粘贴到下方主凭据输入框。</div>
               <div>5. <b>自动续期凭据 (推荐)</b>：找到同一列表中的 <b><code>refresh_token</code></b>，复制其 Value 粘贴到下方的“Refresh Token”输入框。</div>
               <div style={{ marginTop: 6, color: "var(--ant-color-success)" }}>
-                ⚡ <b>双 Token 自动续期优势</b>：配置 <code>refresh_token</code> 后，系统后台将在 <code>access_token</code> 即将到期前自动静默刷新换票并轮换保存，实现无需手动重新复制的长效保活！
+                <b>双 Token 自动续期优势</b>：配置 <code>refresh_token</code> 后，系统后台将在 <code>access_token</code> 即将到期前自动静默刷新换票并轮换保存，实现无需手动重新复制的长效保活！
               </div>
             </div>
             {editingConnection && (
@@ -1341,7 +1345,7 @@ export default function ProviderDetailPage() {
               <div>2. 按 <code>F12</code> 打开开发者工具，切换到 <b>Application</b>（应用程序）→ <b>Storage</b> → <b>Local Storage</b> → <code>https://chat.z.ai</code>。</div>
               <div>3. 找到名为 <b><code>token</code></b> 的条目，<b>仅复制其 Value</b> 粘贴到下方主凭据框。</div>
               <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
-                ⚠️ <b>重要说明</b>：切勿复制 Cookie 请求头，仅需 Local Storage 的 <code>token</code> 值。系统会通过内建浏览器传输层自动处理请求级人机验证（CAPTCHA）。
+                <b>重要说明</b>：切勿复制 Cookie 请求头，仅需 Local Storage 的 <code>token</code> 值。系统会通过内建浏览器传输层自动处理请求级人机验证（CAPTCHA）。
               </div>
             </div>
             {editingConnection && (
@@ -1376,7 +1380,7 @@ export default function ProviderDetailPage() {
               <div>2. 按 <code>F12</code> 打开开发者工具，在 <b>Network</b>（网络）面板刷新，找到任一发往 grok.com 的请求。</div>
               <div>3. 在请求头中找到 <b>Cookie</b>，复制包含 <b><code>sso</code></b> 和 <b><code>sso-rw</code></b> 的 Cookie 字符串粘贴到下方。</div>
               <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
-                💡 <b>网络与指纹说明</b>：Cloudflare 会将凭据与复制凭据所在浏览器的 IP、User-Agent 和 TLS 指纹绑定。若测试遇到拦截，请在高级配置中设置与该浏览器完全一致的 Custom User-Agent，并在相同网络/代理下使用。
+                <b>网络与指纹说明</b>：Cloudflare 会将凭据与复制凭据所在浏览器的 IP、User-Agent 和 TLS 指纹绑定。若测试遇到拦截，请在高级配置中设置与该浏览器完全一致的 Custom User-Agent，并在相同网络/代理下使用。
               </div>
             </div>
             {editingConnection && (
@@ -1411,7 +1415,7 @@ export default function ProviderDetailPage() {
               <div>2. 导出该浏览器上下文的 Playwright 兼容 <b>storageState</b> JSON（包含 cookies 与 origins）。</div>
               <div>3. 将完整的 JSON 字符串粘贴到下方凭据框中。</div>
               <div style={{ marginTop: 6, color: "var(--ant-color-text-tertiary)" }}>
-                🔒 凭据将在服务端本地加密存储，仅供本地浏览器上下文会话使用。
+                凭据将在服务端本地加密存储，仅供本地浏览器上下文会话使用。
               </div>
             </div>
             {editingConnection && (
@@ -1463,12 +1467,12 @@ export default function ProviderDetailPage() {
               )}
               {req?.hintFallback && (
                 <div style={{ marginTop: 6, color: "var(--ant-color-warning)" }}>
-                  💡 {req.hintFallback}
+                  {req.hintFallback}
                 </div>
               )}
               {req?.guideNote && (
                 <div style={{ marginTop: 4, color: "var(--ant-color-text-tertiary)" }}>
-                  📌 {req.guideNote}
+                  {req.guideNote}
                 </div>
               )}
             </div>
@@ -1927,7 +1931,7 @@ export default function ProviderDetailPage() {
               ) : (
                 connections.length > 1 && (
                   <Button icon={<MaterialIcon name="play_arrow" />} loading={batchTestMutation.isPending} onClick={() => void batchTestMutation.mutateAsync()}>
-                    {t("providers.testAll", "测试全部")}
+                    {t("providers.testAll", "测试")}
                   </Button>
                 )
               )}
@@ -2055,7 +2059,7 @@ export default function ProviderDetailPage() {
                     loading={statusMutation.isPending}
                     onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })}
                   />
-                  <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest")}</Button>
+                  <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest", "测试")}</Button>
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide" || row.provider === "kimi-web" || row.provider === "kimi_web") && (
                     <Button
                       className={styles.actionButton}
@@ -2072,7 +2076,7 @@ export default function ProviderDetailPage() {
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide") && <Button className={styles.actionButton} size="small" color="gold" variant="filled" icon={<MaterialIcon name="passkey" />} onClick={() => void startOAuth(row.id)}>{t("providers.reauthorize")}</Button>}
 
                   <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="edit" />} onClick={() => openEditConnection(row)}>{t("providers.edit")}</Button>
-                  <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => void openProxyConfig(row)}>{t("providers.proxyConfig")}</Button>
+                  <Button className={styles.actionButton} size="small" variant="filled" icon={<MaterialIcon name="vpn_lock" />} onClick={() => void openProxyConfig(row)}>{t("providers.proxyConfig", "代理")}</Button>
                   <Popconfirm title={t("providers.deleteConnectionConfirm")} onConfirm={() => deleteMutation.mutate(row.id)}><Button className={styles.actionButton} size="small" color="danger" variant="filled" icon={<MaterialIcon name="delete" />}>{t("providers.delete")}</Button></Popconfirm>
                 </Space>
               </div>
@@ -2134,7 +2138,13 @@ export default function ProviderDetailPage() {
             providerId={providerId}
             providerDisplayAlias={providerDisplayAlias}
             serviceKinds={info?.serviceKinds || ["llm"]}
-            availableModels={availableModelRows.map((m) => ({ id: m.id, name: m.name }))}
+            availableModels={availableModelRows.map((m) => ({
+              id: m.id,
+              name: m.name,
+              supportsReasoning: m.supportsReasoning,
+              supportedThinkingEfforts: m.supportedThinkingEfforts,
+              supportsVision: m.supportsVision,
+            }))}
           />
         )}
 
