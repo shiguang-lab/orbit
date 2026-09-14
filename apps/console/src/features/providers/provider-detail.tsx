@@ -194,14 +194,24 @@ export function cleanAccountName(value: string | null | undefined): string {
   return raw.replace(/\.json$/i, "").replace(/^[a-zA-Z0-9]+-[a-f0-9]{4,32}-/, "");
 }
 
-function maskAccountName(value: string | null | undefined): string {
+export function maskAccountName(value: string | null | undefined): string {
   const cleaned = cleanAccountName(value);
-  if (!cleaned || !cleaned.includes("@")) return cleaned;
-  const at = cleaned.lastIndexOf("@");
-  const user = cleaned.slice(0, at);
-  const domain = cleaned.slice(at + 1);
-  if (user.length <= 4) return cleaned;
-  return `${user.slice(0, 4)}***@${domain}`;
+  if (!cleaned) return "";
+
+  if (cleaned.includes("@")) {
+    const at = cleaned.lastIndexOf("@");
+    const user = cleaned.slice(0, at);
+    const domain = cleaned.slice(at + 1);
+
+    if (user.length <= 8) return cleaned;
+
+    const first4 = user.slice(0, 4);
+    const last4 = user.slice(-4);
+    return `${first4}***${last4}@${domain}`;
+  }
+
+  if (cleaned.length <= 8) return cleaned;
+  return `${cleaned.slice(0, 4)}***${cleaned.slice(-4)}`;
 }
 
 
