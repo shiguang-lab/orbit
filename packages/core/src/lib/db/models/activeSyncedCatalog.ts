@@ -161,11 +161,11 @@ export async function getActiveSyncedCatalog(providerId: string): Promise<Active
 
   try {
     const catalogs = await Promise.all(catalogLookupIds(storedProviderId).map(loadConnectionCatalog));
-    const models = await unionCustomModels(storedProviderId, unionModels(catalogs));
-    if (models.length > 0) {
+    const liveModels = unionModels(catalogs);
+    if (liveModels.length > 0) {
       return {
         authoritative: providerUsesAuthoritativeLiveCatalog(providerId),
-        models,
+        models: await unionCustomModels(storedProviderId, liveModels),
       };
     }
 
@@ -223,10 +223,12 @@ export async function getAllActiveSyncedModels(): Promise<Record<string, SyncedA
       Array.from(connectionIdsByProvider.entries()).map(async ([providerId, connectionIds]) => {
         const modelsByConnection = await getSyncedAvailableModelsByConnection(providerId);
 
-        const models = await unionCustomModels(
-          providerId,
-          collectModelsForConnections(modelsByConnection, connectionIds)
-        );
+        const liveModels = collectModelsForConnections(modelsByConnection, connectionIds);
+        // Custom models are added by the catalog's dedicated custom-model pass.
+        // Do not let a custom-only provider masquerade as a live synced catalog;
+        // otherwise it suppresses the static registry without any /models result.
+        if (liveModels.length === 0) return;
+        const models = await unionCustomModels(providerId, liveModels);
 
         if (models.length > 0) {
           result[providerId] = models;

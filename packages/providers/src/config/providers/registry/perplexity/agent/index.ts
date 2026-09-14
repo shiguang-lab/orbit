@@ -11,7 +11,6 @@ export const perplexityAgentProvider: RegistryEntry = {
   authType: "apikey",
   authHeader: "bearer",
   passthroughModels: true,
-  liveCatalogAuthoritative: false,
   models: [
     {
       id: "openai/gpt-5.6-sol",

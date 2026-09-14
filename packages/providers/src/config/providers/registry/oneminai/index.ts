@@ -21,7 +21,6 @@ export const oneminaiProvider: RegistryEntry = {
   // catalogued; passthroughModels lets any other slug the account has access
   // to be used by id.
   passthroughModels: true,
-  liveCatalogAuthoritative: false,
   // No tool/function-calling, JSON mode, or vision support is wired up by the
   // executor's translation (1min.ai's attachments.images/files feature would
   // need separate Asset API upload plumbing this provider doesn't implement).

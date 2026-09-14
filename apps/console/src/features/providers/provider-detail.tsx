@@ -310,7 +310,7 @@ export default function ProviderDetailPage() {
         registryModels: registry.models || [],
         syncedModels: synced.models || [],
         manifestModels: pluginManifest?.providers?.find((provider) => provider.id === providerId)?.models || [],
-        customModels: (metadata as any).customModels || [],
+        customModels: (metadata as any).models || [],
         compatMap,
       };
     },
@@ -783,13 +783,14 @@ export default function ProviderDetailPage() {
     },
   });
 
-  const handleTestModel = async (modelId: string, fullModel: string) => {
+  const handleTestModel = async (modelId: string, fullModel: string, effort?: string) => {
     setTestingModelId(modelId);
     try {
       const targetConnectionId = selectedConnectionIds.length === 1 ? selectedConnectionIds[0] : undefined;
+      const requestModel = effort ? `${fullModel}-${effort}` : fullModel;
       const res = await providersApi.testModel({
         providerId,
-        modelId: fullModel,
+        modelId: requestModel,
         ...(targetConnectionId ? { connectionId: targetConnectionId } : {}),
       });
       if (res.status === "ok") {
@@ -931,9 +932,15 @@ export default function ProviderDetailPage() {
         ? [...new Set(value.filter((entry): entry is string => typeof entry === "string" && entry.trim().length > 0))]
         : [];
 
-    const registryModels = [...(((modelsQuery.data as any)?.registryModels || []) as any[])].sort(
-      (a, b) => Number(Boolean(a?.effortVariant)) - Number(Boolean(b?.effortVariant))
-    );
+    const syncedModels = [...(((modelsQuery.data as any)?.syncedModels || []) as any[])];
+    // A successful synced catalog replaces the registry. The static registry is
+    // only an initialization/fallback source and must not reintroduce omitted
+    // models after discovery has produced a usable list.
+    const registryModels = syncedModels.length > 0
+      ? []
+      : [...(((modelsQuery.data as any)?.registryModels || []) as any[])].sort(
+          (a, b) => Number(Boolean(a?.effortVariant)) - Number(Boolean(b?.effortVariant))
+        );
     for (const m of registryModels) {
       const id = String(m.id ?? "").trim();
       if (!id) continue;
@@ -980,7 +987,7 @@ export default function ProviderDetailPage() {
       });
     }
 
-    for (const m of ((modelsQuery.data as any)?.syncedModels || []) as any[]) {
+    for (const m of syncedModels) {
       const id = String(m.id ?? "").trim();
       if (!id) continue;
       const existing = map.get(id);
@@ -1082,7 +1089,10 @@ export default function ProviderDetailPage() {
   const customModelRows: CustomModelItem[] = useMemo(() => {
     const compatMap = (modelsQuery.data as any)?.compatMap || new Map();
     const hiddenSet = new Set((modelsQuery.data as any)?.hiddenModelsByProvider?.[providerId] || []);
-    const registrySet = new Set(((modelsQuery.data as any)?.registryModels || []).map((m: any) => String(m.id)));
+    const registrySet = new Set([
+      ...(((modelsQuery.data as any)?.registryModels || []) as any[]).map((m: any) => String(m.id)),
+      ...(((modelsQuery.data as any)?.syncedModels || []) as any[]).map((m: any) => String(m.id)),
+    ]);
 
     return ((modelsQuery.data as any)?.customModels || []).map((m: any) => {
       const id = String(m.id ?? "").trim();

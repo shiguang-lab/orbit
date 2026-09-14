@@ -18,6 +18,7 @@ import {
   updateModelAliasSchema,
   validateBody,
 } from "@orbit/core/control/model-management";
+import { providerUsesAuthoritativeLiveCatalog } from "@orbit/providers/provider-registry";
 import {
   buildAliasMaps,
   resolveCanonicalProviderId as resolveCanonicalProviderIdFromMaps,
@@ -151,7 +152,9 @@ export async function handleGetModels(request: Request, dependencies: GetModelsD
       const syncedForProvider = syncedModelIdsByCanonicalProvider.get(canonicalProviderId);
       const providerHasSynced = syncedForProvider !== undefined && syncedForProvider.size > 0;
       const suppressedBySync = shouldSuppressStaticModelForExclusiveListing({
-        exclusiveListing: providerUsesExclusiveSyncedListing(canonicalProviderId),
+        exclusiveListing:
+          providerUsesExclusiveSyncedListing(canonicalProviderId) ||
+          providerUsesAuthoritativeLiveCatalog(canonicalProviderId),
         providerHasSynced,
         staticModelId: m.model,
         syncedModelIds: syncedForProvider ? [...syncedForProvider] : [],

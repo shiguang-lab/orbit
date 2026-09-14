@@ -16,7 +16,6 @@ export const command_codeProvider: RegistryEntry = {
   modelsUrl: "https://api.commandcode.ai/provider/v1/models",
   // The discovery response is a partial routing catalog; static registry
   // entries omitted from it can still be accepted by the gateway.
-  liveCatalogAuthoritative: false,
   authType: "apikey",
   authHeader: "Authorization",
   authPrefix: "Bearer ",

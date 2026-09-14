@@ -5,6 +5,7 @@ import {
   NOAUTH_PROVIDERS,
 } from "@orbit/providers/catalog";
 import { getRegistryEntry } from "@orbit/inference/config/providerRegistry";
+import { normalizeRegistryModelRows } from "@orbit/providers/provider-registry";
 import { getModelsByProviderId } from "@orbit/core/catalog/provider-models";
 import { resolveAlibabaProviderModelsUrl } from "@orbit/providers/alibaba-regions";
 import { getStaticModelsForProvider } from "@orbit/inference/services/static-models";
@@ -128,7 +129,7 @@ import { buildNoAuthModelsResponse, filterModelsForRoute } from "./modelRoutePro
 import { requireManagementAuth } from "@orbit/core/control/management-auth";
 
 /**
- * GET /api/providers/:id/catalog-models - Return the built-in registry catalog.
+ * GET /api/providers/:id/catalog-models - Return the normalized built-in registry catalog.
  * This is intentionally local-only: unlike /models, it never calls the upstream
  * provider and is therefore safe for the provider detail model picker.
  */
@@ -147,7 +148,7 @@ export async function getProviderCatalogModels(
   if (!entry) return Response.json({ error: "Provider not found" }, { status: 404 });
 
   const models = Array.isArray(entry.models)
-    ? entry.models.map((model) => ({ ...model }))
+    ? normalizeRegistryModelRows(entry.models).map((model) => ({ ...model }))
     : [];
   return Response.json({ models, source: "registry" });
 }

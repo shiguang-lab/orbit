@@ -13,6 +13,7 @@ import {
   Spin,
   Switch,
   Space,
+  Select,
 } from "antd";
 import { createStyles } from "antd-style";
 import { MaterialIcon } from "@/app/nav";
@@ -226,7 +227,7 @@ interface Props {
   onDeleteAlias: (alias: string) => Promise<void>;
   onToggleModelHidden: (modelId: string, hidden: boolean) => Promise<void>;
   onSaveModelCompat: (modelId: string, patch: ModelCompatData) => Promise<void>;
-  onTestModel: (modelId: string, fullModel: string) => Promise<void>;
+  onTestModel: (modelId: string, fullModel: string, effort?: string) => Promise<void>;
   testingModelId: string | null;
   onTestAll: (targets: Array<{ modelId: string; fullModel: string }>, autoHideFailed?: boolean) => Promise<void>;
   testingAll: boolean;
@@ -267,6 +268,7 @@ export function ProviderModelsSection({
   const [freeFilter, setFreeFilter] = useState<"all" | "free" | "paid">("all");
   const [sortFreeFirst, setSortFreeFirst] = useState(false);
   const [autoHideFailed, setAutoHideFailed] = useState(false);
+  const [effortSelection, setEffortSelection] = useState<Record<string, string>>({});
 
   // View mode: card grid vs full-width list (defaults to card)
   const [viewMode, setViewMode] = useState<"card" | "list">(() => {
@@ -437,15 +439,37 @@ export function ProviderModelsSection({
       (effort) => Boolean(effort) && effort.trim().toLowerCase() !== "tiered"
     );
     if (efforts.length === 0 && !model.supportsReasoning) return null;
-    const label = efforts.length > 0
-      ? t("providers.reasoningEfforts", { efforts: efforts.join(" / ") })
-      : t("providers.reasoningSupported", "支持深度思考");
+    const selected = effortSelection[model.id] || "__default__";
+    const effortOptions = [
+      { value: "__default__", label: t("providers.effortDefault", "默认") },
+      ...efforts.map((effort) => ({ value: effort, label: effort })),
+    ];
     return (
-      <Tooltip title={t("providers.reasoningEffortsDesc", "该模型支持通过 reasoning_effort 调整思考深度")}>
-        <Tag color="purple" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
-          {label}
-        </Tag>
-      </Tooltip>
+      <Space size={6} align="center">
+        {model.supportsReasoning && (
+          <Tooltip title={t("providers.reasoningSupportedDesc", "该模型支持生成深度思考内容")}>
+            <Tag color="purple" bordered={false} style={{ fontSize: 11, fontWeight: 500 }}>
+              {t("providers.reasoningSupported", "支持深度思考")}
+            </Tag>
+          </Tooltip>
+        )}
+        {efforts.length > 0 && (
+          <Tooltip title={t("providers.reasoningEffortsDesc", "选择通过 reasoning_effort 发送的推力强度")}>
+            <Select
+              aria-label={t("providers.effortSelectorLabel", "推力强度")}
+              value={selected}
+              options={effortOptions}
+              onChange={(value) => {
+                setEffortSelection((current) => ({
+                  ...current,
+                  [model.id]: String(value),
+                }));
+              }}
+              style={{ minWidth: 112 }}
+            />
+          </Tooltip>
+        )}
+      </Space>
     );
   };
 
@@ -813,7 +837,10 @@ export function ProviderModelsSection({
                         <Button
                           size="small"
                           type="text"
-                          onClick={() => onTestModel(model.id, fullModelName)}
+                          onClick={() => {
+                            const effort = effortSelection[model.id];
+                            onTestModel(model.id, fullModelName, effort && effort !== "__default__" ? effort : undefined);
+                          }}
                           icon={
                             model.testStatus === "ok" ? (
                               <MaterialIcon name="check_circle" size={18} style={{ color: "#52c41a" }} />
@@ -991,7 +1018,10 @@ export function ProviderModelsSection({
                       <Button
                         size="small"
                         type="text"
-                        onClick={() => onTestModel(model.id, fullModelName)}
+                        onClick={() => {
+                          const effort = effortSelection[model.id];
+                          onTestModel(model.id, fullModelName, effort && effort !== "__default__" ? effort : undefined);
+                        }}
                         icon={
                           model.testStatus === "ok" ? (
                             <MaterialIcon name="check_circle" size={18} style={{ color: "#52c41a" }} />

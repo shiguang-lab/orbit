@@ -313,9 +313,21 @@ function copySyncedThinkingMetadata(metadata: RuntimeModelMeta, syncedMatch: any
 }
 
 function copyRegistryThinkingMetadata(metadata: RuntimeModelMeta, registryMatch: any): void {
-  if (typeof registryMatch?.supportsReasoning === "boolean") {
+  if (typeof registryMatch?.supportsThinking === "boolean") {
+    metadata.supportsThinking = registryMatch.supportsThinking;
+  } else if (typeof registryMatch?.supportsReasoning === "boolean") {
     metadata.supportsThinking = registryMatch.supportsReasoning;
   }
+  if (typeof registryMatch?.thinkingModelId === "string" && registryMatch.thinkingModelId.length > 0) {
+    metadata.thinkingModelId = registryMatch.thinkingModelId;
+  }
+  if (registryMatch?.effortModelIds && typeof registryMatch.effortModelIds === "object") {
+    metadata.effortModelIds = registryMatch.effortModelIds;
+  }
+  if (typeof registryMatch?.tieredModelId === "string" && registryMatch.tieredModelId.length > 0) {
+    metadata.tieredModelId = registryMatch.tieredModelId;
+  }
+  if (registryMatch?.alwaysThinking === true) metadata.alwaysThinking = true;
   if (Array.isArray(registryMatch?.supportedThinkingEfforts)) {
     metadata.supportedThinkingEfforts = [...registryMatch.supportedThinkingEfforts];
   }

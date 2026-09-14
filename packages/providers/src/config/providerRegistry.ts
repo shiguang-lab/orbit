@@ -54,6 +54,7 @@ export type {
   RegistryModel,
   RegistryOAuth,
 } from "./providers/shared.ts";
+export { normalizeRegistryModelRows } from "./registryModelNormalization.ts";
 export {
   ALIBABA_MODEL_STUDIO_MODELS,
   ALIBABA_MODEL_STUDIO_MODELS as ALIBABA_DASHSCOPE_MODELS,
@@ -255,20 +256,11 @@ export function getRegistryThinkingEfforts(
 }
 
 /**
- * Decide whether a non-empty live catalog may exclude omitted static models
- * during request routing and wildcard expansion.
- *
- * Live discovery is authoritative by default, including for dynamic providers.
- * Providers with intentionally partial discovery must explicitly opt out in
- * their registry entry.
+ * A non-empty synced catalog always replaces the static registry. The registry
+ * is only an initialization/fallback source; it must not reintroduce models that
+ * the provider's successful discovery response omitted.
  */
-export function providerUsesAuthoritativeLiveCatalog(provider: string): boolean {
-  const entry = getRegistryEntry(provider);
-
-  if (entry && typeof entry.liveCatalogAuthoritative === "boolean") {
-    return entry.liveCatalogAuthoritative;
-  }
-
+export function providerUsesAuthoritativeLiveCatalog(_provider: string): boolean {
   return true;
 }
 

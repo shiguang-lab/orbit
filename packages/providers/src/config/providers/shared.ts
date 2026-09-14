@@ -60,8 +60,17 @@ export interface RegistryModel {
    */
   liveCatalogIds?: readonly string[];
   toolCalling?: boolean;
+  /** Whether the model can emit hidden/visible reasoning content. */
+  supportsThinking?: boolean;
   supportsReasoning?: boolean;
   supportedThinkingEfforts?: readonly string[];
+  /** Provider-native ids used when the UI exposes one base model. */
+  thinkingModelId?: string;
+  effortModelIds?: Readonly<Record<string, string | undefined>>;
+  tieredModelId?: string;
+  alwaysThinking?: boolean;
+  supportedEndpoints?: string[];
+  apiFormat?: string;
   supportsVision?: boolean;
   supportsAudio?: boolean;
   supportsVideo?: boolean;
@@ -180,7 +189,6 @@ export interface RegistryEntry {
    * discovery endpoint is known to return only a partial subset of the models
    * that the provider can route.
    */
-  liveCatalogAuthoritative?: boolean;
   /** Default context window for all models in this provider (can be overridden per-model) */
   defaultContextLength?: number;
   /** Maximum OpenAI-compatible function name length accepted by this provider. */

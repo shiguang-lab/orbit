@@ -71,6 +71,15 @@ test("picker-only model is in the authoritative live catalog", async () => {
   assert.equal(catalogContainsModel(catalog, PICKER_MODEL), true);
 });
 
+test("custom-only models do not suppress the static registry", async () => {
+  await replaceSyncedAvailableModelsForConnection(PROVIDER, CONNECTION_ID, []);
+  await addCustomModel(PROVIDER, PICKER_MODEL, "DeepSeek R1 via picker");
+
+  const catalog = await getActiveSyncedCatalog(PROVIDER);
+  assert.equal(catalog.authoritative, false);
+  assert.ok(catalog.models.some((model) => model.id === PICKER_MODEL));
+});
+
 test("reconcile must not exclude a provider for a picker-only model", async () => {
   await addCustomModel(PROVIDER, PICKER_MODEL, "DeepSeek R1 via picker");
 

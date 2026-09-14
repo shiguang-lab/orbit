@@ -142,6 +142,7 @@ export async function resolveModelOrError(
     typeof (modelInfo as any).tieredModelId === "string"
       ? (modelInfo as any).tieredModelId.trim()
       : "";
+  const alwaysThinking = (modelInfo as any).alwaysThinking === true;
   if (thinkingModelId || Object.keys(effortModelIds).length > 0 || tieredModelId) {
     const thinking = (body as any)?.thinking;
     const reasoning = (body as any)?.reasoning;
@@ -167,7 +168,7 @@ export async function resolveModelOrError(
         : thinking === true) ||
         reasoningEnabled ||
         (typeof effort === "string" && effort.toLowerCase() !== "none"));
-    if (explicitlyEnabled) {
+    if (explicitlyEnabled || alwaysThinking) {
       const normalizedEffort = typeof effort === "string" ? effort.toLowerCase().trim() : "";
       const effortModelId = normalizedEffort ? effortModelIds[normalizedEffort] : undefined;
       modelInfo.model = effortModelId || thinkingModelId || tieredModelId || modelInfo.model;
