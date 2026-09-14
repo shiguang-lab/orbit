@@ -547,11 +547,15 @@ export function ComboModal({
   const handleAddPrecisionStep = () => {
     if (!addProviderId || !addModelId) return;
 
+    const fullModel = addModelId.includes("/")
+      ? addModelId
+      : `${addProviderId}/${addModelId}`;
+
     const newStep: ComboModelStep = {
       id: `step-${Date.now()}`,
       kind: "model",
       providerId: addProviderId,
-      model: addModelId,
+      model: fullModel,
       connectionId: addConnectionId || undefined,
       weight: strategy === "weighted" ? (models.length === 0 ? 100 : 0) : 100,
     };

@@ -529,7 +529,12 @@ export function hasKimiCodingPreset(combos: Array<{ name?: string | null }>): bo
 /* ---------------- Step Helpers ---------------- */
 
 export function getStepDisplayName(step: import("@orbit/contracts").ComboStep): string {
-  if ("model" in step && typeof step.model === "string") return step.model;
+  if ("model" in step && typeof step.model === "string") {
+    if (step.providerId && !step.model.includes("/")) {
+      return `${step.providerId}/${step.model}`;
+    }
+    return step.model;
+  }
   if ("comboName" in step && typeof step.comboName === "string") return `combo:${step.comboName}`;
   if ("modelPattern" in step && typeof step.modelPattern === "string")
     return `${step.providerId || "any"}/${step.modelPattern}`;
