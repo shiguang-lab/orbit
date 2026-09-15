@@ -119,6 +119,10 @@ export function resolveModelTestTimeoutMs(
     return Math.max(requestedTimeoutMs, ZAI_WEB_TEST_TIMEOUT_MS);
   }
 
+  if (normalizedProviderId === "antigravity" || normalizedProviderId === "agy") {
+    return Math.max(requestedTimeoutMs, 60_000);
+  }
+
   return requestedTimeoutMs;
 }
 

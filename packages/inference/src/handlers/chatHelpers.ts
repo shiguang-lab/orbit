@@ -149,7 +149,8 @@ export async function resolveModelOrError(
     const effort =
       (body as any)?.reasoning_effort ??
       (typeof reasoning === "object" && reasoning ? reasoning.effort : undefined) ??
-      (body as any)?.effort;
+      (body as any)?.effort ??
+      (modelInfo as any)?.resolvedThinkingEffort;
     const thinkingDisabled =
       typeof thinking === "object" && thinking !== null && thinking.type === "disabled";
     const explicitlyDisabled =
