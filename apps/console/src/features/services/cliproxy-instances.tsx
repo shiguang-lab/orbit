@@ -617,10 +617,11 @@ export default function CliproxyInstances() {
     });
   };
 
-  const handleDeleteCredential = (
+  const handleDeleteCredential = async (
     record: NonNullable<Instance["credentials"]>[number],
   ) => {
-    mutation.mutate(async () => {
+    setDeletingCredentialId(record.id);
+    try {
       await manageCredential(
         "DELETE",
         `auth-files?name=${encodeURIComponent(record.name)}`,
@@ -629,7 +630,15 @@ export default function CliproxyInstances() {
       if (node) await handleRefreshNode(node.id, true);
       void refresh();
       message.success(tt("凭据已删除", "Credential deleted"));
-    });
+    } catch (error) {
+      message.error(
+        error instanceof Error
+          ? error.message
+          : tt("删除失败", "Delete failed"),
+      );
+    } finally {
+      setDeletingCredentialId(undefined);
+    }
   };
 
   const settingsMutation = useMutation({
@@ -1363,10 +1372,10 @@ export default function CliproxyInstances() {
                           width: 80,
                           align: "right",
                           render: (_, record) => (
-                            <Space size={0}>
+                            <Space size={4}>
                               <Button
                                 type="link"
-                                style={{ paddingInline: 2 }}
+                                icon={<ReloadOutlined />}
                                 loading={mutation.isPending}
                                 onClick={() => void handleRefreshNode(node.id)}
                               >
@@ -1385,19 +1394,19 @@ export default function CliproxyInstances() {
                                 cancelText={tt("取消", "Cancel")}
                                 okButtonProps={{
                                   danger: true,
-                                  loading: mutation.isPending,
                                 }}
-                                onConfirm={() => handleDeleteCredential(record)}
+                                onConfirm={() =>
+                                  void handleDeleteCredential(record)
+                                }
                               >
                                 <Button
                                   type="link"
                                   danger
                                   icon={<DeleteOutlined />}
-                                  aria-label={tt(
-                                    "删除凭据",
-                                    "Delete credential",
-                                  )}
-                                />
+                                  loading={deletingCredentialId === record.id}
+                                >
+                                  {tt("删除", "Delete")}
+                                </Button>
                               </Popconfirm>
                             </Space>
                           ),
