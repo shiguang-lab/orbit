@@ -629,6 +629,14 @@ export default function CliproxyInstances() {
       await credentials.refetch();
       if (node) await handleRefreshNode(node.id, true);
       void refresh();
+      await client.invalidateQueries({ queryKey: ["cliproxy-accounts"] });
+      await client.invalidateQueries({
+        queryKey: ["providers", "provider-models", "cliproxyapi"],
+      });
+      await client.invalidateQueries({
+        queryKey: ["providers", "provider-models", "cliproxy"],
+      });
+      await client.invalidateQueries({ queryKey: ["providers"] });
       message.success(tt("凭据已删除", "Credential deleted"));
     } catch (error) {
       message.error(
