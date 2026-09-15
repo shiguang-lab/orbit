@@ -100,23 +100,29 @@ export const ANTIGRAVITY_PUBLIC_MODELS = Object.freeze([
 ]);
 
 export const ANTIGRAVITY_MODEL_ALIASES = Object.freeze({
-  // Gemini 3.7 Flash tiers map to the upstream tiered endpoint model; the thinking
+  // Gemini 3.8 Flash tiers map to the upstream tiered endpoint model; the thinking
   // budget is steered via generationConfig.thinkingConfig.thinkingBudget.
+  "gemini-3.8-flash": "gemini-3.8-flash-tiered",
+  "gemini-3.8-flash-high": "gemini-3.8-flash-tiered",
+  "gemini-3.8-flash-medium": "gemini-3.8-flash-tiered",
+  "gemini-3.8-flash-low": "gemini-3.8-flash-tiered",
+  // Gemini 3.7 Flash tiers map to the upstream tiered endpoint model.
   "gemini-3.7-flash": "gemini-3.7-flash-tiered",
   "gemini-3.7-flash-high": "gemini-3.7-flash-tiered",
   "gemini-3.7-flash-medium": "gemini-3.7-flash-tiered",
   "gemini-3.7-flash-low": "gemini-3.7-flash-tiered",
+  // Gemini 3.6 Flash tiers map to the upstream tiered endpoint model.
+  "gemini-3.6-flash": "gemini-3.6-flash-tiered",
+  "gemini-3.6-flash-high": "gemini-3.6-flash-tiered",
+  "gemini-3.6-flash-medium": "gemini-3.6-flash-tiered",
+  "gemini-3.6-flash-low": "gemini-3.6-flash-tiered",
   "gpt-oss-120b": "gpt-oss-120b-medium",
-  // gemini-3.1-pro-low is not aliased: the upstream accepts it verbatim.
-  // gemini-3.1-pro-high: the discovery slot returns HTTP 400 on v1internal;
-  // the live upstream id is gemini-pro-agent (see ANTIGRAVITY_PUBLIC_MODELS).
+  // gemini-3.1-pro maps to gemini-pro-agent (the default high-effort tier).
+  "gemini-3.1-pro": "gemini-pro-agent",
   "gemini-3.1-pro-high": "gemini-pro-agent",
   "gemini-3-pro-image-preview": "gemini-3-pro-image",
-  // Legacy Claude display ids → current upstream ids. NOTE: an earlier comment here
-  // assumed Claude was removed from Antigravity 2.0 and would 404; discussion #3184
-  // disproved that — the Antigravity OAuth backend still serves claude-opus-4-6-thinking
-  // and claude-sonnet-4-6 (now listed in ANTIGRAVITY_PUBLIC_MODELS above). These aliases
-  // remap the old gemini-claude-* ids to the live upstream ids.
+  "claude-opus-4-6": "claude-opus-4-6-thinking",
+  // Legacy Claude display ids → current upstream ids.
   "gemini-claude-sonnet-4-5": "claude-sonnet-4-6",
   "gemini-claude-sonnet-4-5-thinking": "claude-sonnet-4-6",
   "gemini-claude-opus-4-5-thinking": "claude-opus-4-6-thinking",

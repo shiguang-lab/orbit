@@ -2667,6 +2667,42 @@ export async function handleChatCore({
       finalModelToUpstream = finalModelToUpstream.slice(alias.length + 1);
     }
   }
+
+  // Universal variant resolution across all providers: if the catalog model metadata
+  // declares a tieredModelId, effortModelIds, or thinkingModelId, map finalModelToUpstream
+  // to the provider's native upstream model ID.
+  if (typeof finalModelToUpstream === "string" && modelInfo && typeof modelInfo === "object") {
+    const info = modelInfo as {
+      tieredModelId?: string;
+      thinkingModelId?: string;
+      effortModelIds?: Record<string, string>;
+      resolvedThinkingEffort?: string;
+      defaultThinkingEffort?: string;
+      alwaysThinking?: boolean;
+      supportsThinking?: boolean;
+    };
+    const isThinkingDisabled =
+      translatedBody.reasoning_effort === "none" ||
+      (translatedBody.thinking as { type?: string } | undefined)?.type === "disabled";
+
+    const effort =
+      (translatedBody.reasoning_effort as string) ||
+      info.resolvedThinkingEffort ||
+      info.defaultThinkingEffort;
+
+    if (info.effortModelIds && effort && info.effortModelIds[effort]) {
+      finalModelToUpstream = info.effortModelIds[effort];
+    } else if (info.tieredModelId) {
+      finalModelToUpstream = info.tieredModelId;
+    } else if (
+      info.thinkingModelId &&
+      !isThinkingDisabled &&
+      (info.alwaysThinking || info.supportsThinking || Boolean(effort))
+    ) {
+      finalModelToUpstream = info.thinkingModelId;
+    }
+  }
+
   translatedBody.model = finalModelToUpstream;
 
   // #3554: a combo/route may substitute the upstream model AFTER the client chose its

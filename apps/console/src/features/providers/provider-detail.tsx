@@ -2066,17 +2066,30 @@ export default function ProviderDetailPage() {
                   <Switch
                     size="small"
                     checked={row.isActive !== false}
-                    loading={statusMutation.isPending}
+                    loading={statusMutation.isPending && statusMutation.variables?.id === row.id}
                     onChange={(checked) => statusMutation.mutate({ id: row.id, isActive: checked })}
                   />
-                  <Button className={styles.actionButton} size="small" color="blue" variant="filled" loading={testMutation.isPending} icon={<MaterialIcon name="refresh" />} onClick={() => testMutation.mutate(row.id)}>{t("providers.retest", "测试")}</Button>
+                  <Button
+                    className={styles.actionButton}
+                    size="small"
+                    color="blue"
+                    variant="filled"
+                    loading={
+                      (testMutation.isPending && testMutation.variables === row.id) ||
+                      (batchTestMutation.isPending && (!batchTestMutation.variables || batchTestMutation.variables.includes(row.id)))
+                    }
+                    icon={<MaterialIcon name="refresh" />}
+                    onClick={() => testMutation.mutate(row.id)}
+                  >
+                    {t("providers.retest", "测试")}
+                  </Button>
                   {(row.authType === "oauth" || kind === "oauth" || kind === "ide" || row.provider === "kimi-web" || row.provider === "kimi_web") && (
                     <Button
                       className={styles.actionButton}
                       size="small"
                       color="orange"
                       variant="filled"
-                      loading={refreshTokenMutation.isPending}
+                      loading={refreshTokenMutation.isPending && refreshTokenMutation.variables?.id === row.id}
                       icon={<MaterialIcon name="token" />}
                       onClick={() => refreshTokenMutation.mutate(row)}
                     >
