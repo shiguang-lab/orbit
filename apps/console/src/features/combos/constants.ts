@@ -1,3 +1,4 @@
+import { getComboModelLabel, getComboProviderScope } from "./combo-model-scope";
 /**
  * Combos 页面常量与配置：
  * - 路由策略定义与多语言说明
@@ -528,16 +529,13 @@ export function hasKimiCodingPreset(combos: Array<{ name?: string | null }>): bo
 
 /* ---------------- Step Helpers ---------------- */
 
-export function getStepDisplayName(step: import("@orbit/contracts").ComboStep): string {
+export function getStepDisplayName(step: import("@orbit/contracts").ComboStep, providers: import("@orbit/contracts").ComboBuilderOptions["providers"] = []): string {
   if ("model" in step && typeof step.model === "string") {
-    if (step.providerId && !step.model.includes("/")) {
-      return `${step.providerId}/${step.model}`;
-    }
-    return step.model;
+    return getComboModelLabel(step.model, step.providerId, providers);
   }
   if ("comboName" in step && typeof step.comboName === "string") return `combo:${step.comboName}`;
   if ("modelPattern" in step && typeof step.modelPattern === "string")
-    return `${step.providerId || "any"}/${step.modelPattern}`;
+    return `${getComboProviderScope(step.providerId || "any", providers)}/${step.modelPattern}`;
   return "unknown";
 }
 

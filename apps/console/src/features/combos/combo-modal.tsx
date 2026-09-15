@@ -1,3 +1,4 @@
+import { getSelectedComboModel, getComboProviderScope } from "./combo-model-scope";
 import { useI18n } from "@/i18n";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -547,9 +548,7 @@ export function ComboModal({
   const handleAddPrecisionStep = () => {
     if (!addProviderId || !addModelId) return;
 
-    const fullModel = addModelId.includes("/")
-      ? addModelId
-      : `${addProviderId}/${addModelId}`;
+    const fullModel = getSelectedComboModel(addProviderId, addModelId, providers);
 
     const newStep: ComboModelStep = {
       id: `step-${Date.now()}`,
@@ -828,7 +827,7 @@ export function ComboModal({
       title: "调度目标与类型",
       key: "modelName",
       render: (_: unknown, record: ComboStep) => {
-        const displayName = getStepDisplayName(record);
+        const displayName = getStepDisplayName(record, providers);
         const provider = getStepProvider(record);
         const connection = getStepConnection(record);
         const isCombo = record.kind === "combo-ref";
@@ -860,7 +859,7 @@ export function ComboModal({
             <Space size={6} wrap>
               {provider && !isWildcard && (
                 <Tag color="purple" style={{ fontSize: 10, margin: 0, padding: "0 6px" }}>
-                  {provider}
+                  {getComboProviderScope(provider, providers)}
                 </Tag>
               )}
               {connection && (
@@ -2274,7 +2273,7 @@ export function ComboModal({
                           </Tag>
                         )}
                         <Text strong style={{ fontSize: 12, fontFamily: "monospace" }}>
-                          {getStepDisplayName(m)}
+                          {getStepDisplayName(m, providers)}
                         </Text>
                         {strategy === "weighted" && (
                           <Tag color="gold" style={{ marginLeft: "auto", margin: 0, fontSize: 10 }}>

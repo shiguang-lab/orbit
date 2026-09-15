@@ -141,7 +141,7 @@ export function CombosPage() {
         const matchName = c.name.toLowerCase().includes(q);
         const matchDesc = (c.description || "").toLowerCase().includes(q);
         const matchModels = (c.models || []).some((m) => {
-          const dName = getStepDisplayName(m).toLowerCase();
+          const dName = getStepDisplayName(m, builderOptions?.providers).toLowerCase();
           const pId = (getStepProvider(m) || "").toLowerCase();
           return dName.includes(q) || pId.includes(q);
         });
@@ -530,6 +530,7 @@ export function CombosPage() {
               <ComboCard
                 key={combo.id}
                 combo={combo}
+                providers={builderOptions?.providers}
                 metrics={metrics[combo.name] || null}
                 compressionEnabled={compressionEnabled}
                 hasProxy={Boolean(proxyAssignments[combo.name])}

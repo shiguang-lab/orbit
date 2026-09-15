@@ -21,6 +21,7 @@ const { Text } = Typography;
 
 interface ComboCardProps {
   combo: ComboItem;
+  providers?: import("@orbit/contracts").ComboBuilderOptions["providers"];
   metrics?: ComboMetrics | null;
   compressionEnabled?: boolean;
   hasProxy?: boolean;
@@ -43,6 +44,7 @@ interface ComboCardProps {
 
 export function ComboCard({
   combo,
+  providers = [],
   metrics,
   compressionEnabled = false,
   hasProxy = false,
@@ -211,7 +213,7 @@ export function ComboCard({
                 <>
                   {models.slice(0, 3).map((m, idx) => (
                     <Tag key={idx} style={{ margin: 0, fontSize: 10, borderRadius: 4 }}>
-                      <code>{getStepDisplayName(m)}</code>
+                      <code>{getStepDisplayName(m, providers)}</code>
                       {combo.strategy === "weighted" && typeof m.weight === "number" && (
                         <span style={{ opacity: 0.7 }}> ({m.weight}%)</span>
                       )}
