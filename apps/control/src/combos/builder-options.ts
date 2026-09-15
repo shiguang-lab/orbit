@@ -1,10 +1,16 @@
-import { getAllCustomModels, getAllSyncedAvailableModels } from "@orbit/core/db/models";
+import {
+  getAllCustomModels,
+  getAllSyncedAvailableModels,
+} from "@orbit/core/db/models";
 import { getModelIsHidden } from "@orbit/core/db/hidden-models";
 import { getCombos } from "@orbit/core/db/combos";
 import { getProviderConnections } from "@orbit/core/db/provider-connections";
 import { getProviderNodes } from "@orbit/core/db/provider-nodes";
 import { getSettings } from "@orbit/core/db/settings";
-import { getAccountDisplayName, getProviderDisplayName } from "@orbit/core/catalog/display-names";
+import {
+  getAccountDisplayName,
+  getProviderDisplayName,
+} from "@orbit/core/catalog/display-names";
 import { getCompatibleFallbackModels } from "@orbit/core/catalog/managed-available-models";
 import { getResolvedModelCapabilities } from "@orbit/core/catalog/model-capabilities";
 import { getSyncedCapabilities } from "@orbit/core/catalog/synced-model-capabilities";
@@ -22,7 +28,11 @@ type JsonRecord = Record<string, unknown>;
 
 type BuilderModelSource = "imported" | "system" | "custom" | "fallback";
 type BuilderConnectionStatus = "active" | "inactive" | "rate-limited" | "error";
-type ProviderVisual = { icon: string; color: string; source: "system" | "provider-node" };
+type ProviderVisual = {
+  icon: string;
+  color: string;
+  source: "system" | "provider-node";
+};
 
 type CustomModelLike = {
   id?: string;
@@ -133,7 +143,9 @@ export interface ComboBuilderOptionsPayload {
 }
 
 function toStringOrNull(value: unknown): string | null {
-  return typeof value === "string" && value.trim().length > 0 ? value.trim() : null;
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : null;
 }
 
 function toNumberOrNull(value: unknown): number | null {
@@ -168,7 +180,9 @@ function getSourcePriority(source: BuilderModelSource): number {
   }
 }
 
-function getCompatibleProviderVisual(providerNodeType: string | null): ProviderVisual {
+function getCompatibleProviderVisual(
+  providerNodeType: string | null,
+): ProviderVisual {
   if (providerNodeType === "openai-compatible") {
     return { icon: "api", color: "#10A37F", source: "provider-node" };
   }
@@ -183,7 +197,7 @@ function getCompatibleProviderVisual(providerNodeType: string | null): ProviderV
 
 function getProviderVisual(
   providerId: string,
-  providerNode: ProviderNodeLike | null
+  providerNode: ProviderNodeLike | null,
 ): ProviderVisual & { alias: string; providerType: string } {
   const providerEntry = AI_PROVIDERS[providerId];
   if (providerEntry) {
@@ -205,13 +219,18 @@ function getProviderVisual(
   };
 }
 
-function deriveConnectionStatus(connection: ProviderConnectionLike): BuilderConnectionStatus {
+function deriveConnectionStatus(
+  connection: ProviderConnectionLike,
+): BuilderConnectionStatus {
   if (connection.isActive === false) return "inactive";
   const rateLimitedUntil = toNumberOrNull(connection.rateLimitedUntil);
   if (typeof rateLimitedUntil === "number" && rateLimitedUntil > Date.now()) {
     return "rate-limited";
   }
-  if (typeof connection.testStatus === "string" && /error|fail/i.test(connection.testStatus)) {
+  if (
+    typeof connection.testStatus === "string" &&
+    /error|fail/i.test(connection.testStatus)
+  ) {
     return "error";
   }
   return "active";
@@ -227,18 +246,21 @@ function deriveConnectionStatus(connection: ProviderConnectionLike): BuilderConn
  * Rows without fingerprints are converted 1:1 via buildConnectionOption as before.
  */
 export function expandConnectionOptions(
-  connections: ProviderConnectionLike[]
+  connections: ProviderConnectionLike[],
 ): ComboBuilderConnectionOption[] {
   const result: ComboBuilderConnectionOption[] = [];
   for (const connection of connections) {
-    const fingerprints = Array.isArray(connection.providerSpecificData?.fingerprints)
+    const fingerprints = Array.isArray(
+      connection.providerSpecificData?.fingerprints,
+    )
       ? (connection.providerSpecificData.fingerprints as unknown[]).filter(
-          (fp): fp is string => typeof fp === "string" && fp.length > 0
+          (fp): fp is string => typeof fp === "string" && fp.length > 0,
         )
       : [];
     if (fingerprints.length > 0) {
       const baseStatus = deriveConnectionStatus(connection);
-      const basePriority = typeof connection.priority === "number" ? connection.priority : 0;
+      const basePriority =
+        typeof connection.priority === "number" ? connection.priority : 0;
       for (let i = 0; i < fingerprints.length; i++) {
         result.push({
           id: `${toStringOrNull(connection.id) || ""}|fp|${fingerprints[i]}`,
@@ -262,7 +284,7 @@ export function expandConnectionOptions(
 }
 
 function buildConnectionOption(
-  connection: ProviderConnectionLike
+  connection: ProviderConnectionLike,
 ): ComboBuilderConnectionOption | null {
   const id = toStringOrNull(connection.id);
   if (!id) return null;
@@ -294,7 +316,7 @@ function addModelOption(
     outputTokenLimit?: number | null;
     supportsThinking?: boolean;
     customPrecedence?: boolean;
-  }
+  },
 ) {
   const modelId = toStringOrNull(input.id);
   if (!modelId) return;
@@ -312,8 +334,12 @@ function addModelOption(
       ...(input.supportedEndpoints && input.supportedEndpoints.length > 0
         ? { supportedEndpoints: input.supportedEndpoints }
         : {}),
-      ...(toStringOrNull(input.apiFormat) ? { apiFormat: input.apiFormat || undefined } : {}),
-      ...(typeof input.contextLength === "number" ? { contextLength: input.contextLength } : {}),
+      ...(toStringOrNull(input.apiFormat)
+        ? { apiFormat: input.apiFormat || undefined }
+        : {}),
+      ...(typeof input.contextLength === "number"
+        ? { contextLength: input.contextLength }
+        : {}),
       ...(typeof input.outputTokenLimit === "number"
         ? { outputTokenLimit: input.outputTokenLimit }
         : {}),
@@ -325,16 +351,22 @@ function addModelOption(
   }
 
   const existingPriority = getSourcePriority(existing.source);
-  const mergedSources = new Set<BuilderModelSource>([...existing.sources, input.source]);
+  const mergedSources = new Set<BuilderModelSource>([
+    ...existing.sources,
+    input.source,
+  ]);
 
   if (nextSourcePriority < existingPriority) {
     existing.source = input.source;
   }
   if (input.customPrecedence) {
     existing.name = toStringOrNull(input.name) || existing.name;
-    if (input.supportedEndpoints?.length) existing.supportedEndpoints = input.supportedEndpoints;
-    if (toStringOrNull(input.apiFormat)) existing.apiFormat = input.apiFormat || undefined;
-    if (typeof input.contextLength === "number") existing.contextLength = input.contextLength;
+    if (input.supportedEndpoints?.length)
+      existing.supportedEndpoints = input.supportedEndpoints;
+    if (toStringOrNull(input.apiFormat))
+      existing.apiFormat = input.apiFormat || undefined;
+    if (typeof input.contextLength === "number")
+      existing.contextLength = input.contextLength;
     if (typeof input.outputTokenLimit === "number") {
       existing.outputTokenLimit = input.outputTokenLimit;
     }
@@ -351,18 +383,27 @@ function addModelOption(
     if (!existing.apiFormat && toStringOrNull(input.apiFormat)) {
       existing.apiFormat = input.apiFormat || undefined;
     }
-    if (existing.contextLength == null && typeof input.contextLength === "number") {
+    if (
+      existing.contextLength == null &&
+      typeof input.contextLength === "number"
+    ) {
       existing.contextLength = input.contextLength;
     }
-    if (existing.outputTokenLimit == null && typeof input.outputTokenLimit === "number") {
+    if (
+      existing.outputTokenLimit == null &&
+      typeof input.outputTokenLimit === "number"
+    ) {
       existing.outputTokenLimit = input.outputTokenLimit;
     }
-    if (existing.supportsThinking == null && typeof input.supportsThinking === "boolean") {
+    if (
+      existing.supportsThinking == null &&
+      typeof input.supportsThinking === "boolean"
+    ) {
       existing.supportsThinking = input.supportsThinking;
     }
   }
   existing.sources = Array.from(mergedSources).sort(
-    (left, right) => getSourcePriority(left) - getSourcePriority(right)
+    (left, right) => getSourcePriority(left) - getSourcePriority(right),
   );
 }
 
@@ -370,7 +411,7 @@ function buildModelOptions(
   providerId: string,
   builtInModels: RegistryModel[],
   syncedModels: SyncedModelLike[],
-  customModels: CustomModelLike[]
+  customModels: CustomModelLike[],
 ): Map<string, ComboBuilderModelOption> {
   const modelMap = new Map<string, ComboBuilderModelOption>();
   const fallbackModels = getCompatibleFallbackModels(providerId, builtInModels);
@@ -385,8 +426,10 @@ function buildModelOptions(
       name: toStringOrNull(model.name),
       source: "imported",
       supportedEndpoints: toStringArray(model.supportedEndpoints),
-      contextLength: toNumberOrNull(model.inputTokenLimit) ?? resolved.contextWindow,
-      outputTokenLimit: toNumberOrNull(model.outputTokenLimit) ?? resolved.maxOutputTokens,
+      contextLength:
+        toNumberOrNull(model.inputTokenLimit) ?? resolved.contextWindow,
+      outputTokenLimit:
+        toNumberOrNull(model.outputTokenLimit) ?? resolved.maxOutputTokens,
       supportsThinking:
         typeof model.supportsThinking === "boolean"
           ? model.supportsThinking
@@ -403,7 +446,8 @@ function buildModelOptions(
       id: toStringOrNull(model.id),
       name: toStringOrNull(model.name),
       source: "system",
-      contextLength: toNumberOrNull(model.contextLength) ?? resolved.contextWindow,
+      contextLength:
+        toNumberOrNull(model.contextLength) ?? resolved.contextWindow,
       outputTokenLimit: resolved.maxOutputTokens,
       supportsThinking: resolved.supportsThinking ?? undefined,
     });
@@ -412,7 +456,7 @@ function buildModelOptions(
   for (const model of customModels) {
     if (model.isHidden === true) continue;
     const source = ["api-sync", "auto-sync", "imported"].includes(
-      toStringOrNull(model.source)?.toLowerCase() || ""
+      toStringOrNull(model.source)?.toLowerCase() || "",
     )
       ? "imported"
       : ("custom" as BuilderModelSource);
@@ -425,7 +469,9 @@ function buildModelOptions(
       contextLength: toNumberOrNull(model.inputTokenLimit),
       outputTokenLimit: toNumberOrNull(model.outputTokenLimit),
       supportsThinking:
-        typeof model.supportsThinking === "boolean" ? model.supportsThinking : undefined,
+        typeof model.supportsThinking === "boolean"
+          ? model.supportsThinking
+          : undefined,
       customPrecedence: true,
     });
   }
@@ -441,7 +487,8 @@ function buildModelOptions(
         name: toStringOrNull(model.name),
         source: "fallback",
         contextLength:
-          typeof (model as { contextLength?: number }).contextLength === "number"
+          typeof (model as { contextLength?: number }).contextLength ===
+          "number"
             ? (model as { contextLength?: number }).contextLength || null
             : resolved.contextWindow,
         outputTokenLimit: resolved.maxOutputTokens,
@@ -457,7 +504,7 @@ function buildModelOptions(
 function rewriteQualifiedModelPrefix(
   modelMap: Map<string, ComboBuilderModelOption>,
   providerId: string,
-  routingPrefix: string
+  routingPrefix: string,
 ): void {
   if (routingPrefix === providerId) return;
   for (const option of modelMap.values()) {
@@ -475,7 +522,9 @@ function rewriteQualifiedModelPrefix(
  * by 2+ distinct ids, fall back every entry in that group to its own `id` as the
  * display name (display-only — `id`/`qualifiedModel` used for routing untouched).
  */
-function disambiguateCollidingModelNames(modelMap: Map<string, ComboBuilderModelOption>): void {
+function disambiguateCollidingModelNames(
+  modelMap: Map<string, ComboBuilderModelOption>,
+): void {
   const idsByName = new Map<string, string[]>();
   for (const option of modelMap.values()) {
     const bucket = idsByName.get(option.name) || [];
@@ -493,36 +542,46 @@ function disambiguateCollidingModelNames(modelMap: Map<string, ComboBuilderModel
 
 function compareConnections(
   left: ComboBuilderConnectionOption,
-  right: ComboBuilderConnectionOption
+  right: ComboBuilderConnectionOption,
 ): number {
   if (left.isActive !== right.isActive) return left.isActive ? -1 : 1;
   if (left.priority !== right.priority) return left.priority - right.priority;
-  return left.label.localeCompare(right.label, undefined, { sensitivity: "base" });
+  return left.label.localeCompare(right.label, undefined, {
+    sensitivity: "base",
+  });
 }
 
-function compareModels(left: ComboBuilderModelOption, right: ComboBuilderModelOption): number {
-  const sourceDelta = getSourcePriority(left.source) - getSourcePriority(right.source);
+function compareModels(
+  left: ComboBuilderModelOption,
+  right: ComboBuilderModelOption,
+): number {
+  const sourceDelta =
+    getSourcePriority(left.source) - getSourcePriority(right.source);
   if (sourceDelta !== 0) return sourceDelta;
-  const nameDelta = left.name.localeCompare(right.name, undefined, { sensitivity: "base" });
+  const nameDelta = left.name.localeCompare(right.name, undefined, {
+    sensitivity: "base",
+  });
   if (nameDelta !== 0) return nameDelta;
   return left.id.localeCompare(right.id, undefined, { sensitivity: "base" });
 }
 
 function compareProviders(
   left: ComboBuilderProviderOption,
-  right: ComboBuilderProviderOption
+  right: ComboBuilderProviderOption,
 ): number {
   if (left.activeConnectionCount !== right.activeConnectionCount) {
     return right.activeConnectionCount - left.activeConnectionCount;
   }
-  return left.displayName.localeCompare(right.displayName, undefined, { sensitivity: "base" });
+  return left.displayName.localeCompare(right.displayName, undefined, {
+    sensitivity: "base",
+  });
 }
 
 function normalizeCustomModels(raw: unknown): CustomModelLike[] {
   return Array.isArray(raw)
     ? raw.filter(
         (model): model is CustomModelLike =>
-          Boolean(model) && typeof model === "object" && !Array.isArray(model)
+          Boolean(model) && typeof model === "object" && !Array.isArray(model),
       )
     : [];
 }
@@ -531,26 +590,32 @@ function normalizeSyncedModels(raw: unknown): SyncedModelLike[] {
   return Array.isArray(raw)
     ? raw.filter(
         (model): model is SyncedModelLike =>
-          Boolean(model) && typeof model === "object" && !Array.isArray(model)
+          Boolean(model) && typeof model === "object" && !Array.isArray(model),
       )
     : [];
 }
 
 export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPayload> {
   getSyncedCapabilities();
-  const [connections, providerNodes, customModelsMap, syncedModelsMap, combos, settings] =
-    await Promise.all([
-      getProviderConnections(),
-      getProviderNodes(),
-      getAllCustomModels(),
-      getAllSyncedAvailableModels(),
-      getCombos(),
-      getSettings().catch(() => ({}) as Record<string, unknown>),
-    ]);
+  const [
+    connections,
+    providerNodes,
+    customModelsMap,
+    syncedModelsMap,
+    combos,
+    settings,
+  ] = await Promise.all([
+    getProviderConnections(),
+    getProviderNodes(),
+    getAllCustomModels(),
+    getAllSyncedAvailableModels(),
+    getCombos(),
+    getSettings().catch(() => ({}) as Record<string, unknown>),
+  ]);
   const blockedProviders = new Set(
     Array.isArray((settings as Record<string, unknown>).blockedProviders)
       ? ((settings as Record<string, unknown>).blockedProviders as string[])
-      : []
+      : [],
   );
 
   const providerNodeMap = new Map<string, ProviderNodeLike>();
@@ -576,13 +641,15 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
     const providerVisual = getProviderVisual(providerId, providerNode);
     const builtInModels = getModelsByProviderId(providerId);
     const syncedModels = normalizeSyncedModels(
-      (syncedModelsMap as Record<string, unknown>)[providerId]
+      (syncedModelsMap as Record<string, unknown>)[providerId],
     );
     const customModels = normalizeCustomModels(
-      (customModelsMap as Record<string, unknown>)[providerId]
+      (customModelsMap as Record<string, unknown>)[providerId],
     );
     const acceptsArbitraryModel =
-      Boolean((AI_PROVIDERS[providerId] as JsonRecord | undefined)?.passthroughModels) ||
+      Boolean(
+        (AI_PROVIDERS[providerId] as JsonRecord | undefined)?.passthroughModels,
+      ) ||
       isOpenAICompatibleProvider(providerId) ||
       isAnthropicCompatibleProvider(providerId) ||
       isClaudeCodeCompatibleProvider(providerId);
@@ -590,20 +657,29 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
       providerId,
       builtInModels as RegistryModel[],
       syncedModels,
-      customModels
+      customModels,
     );
 
     // #2901 follow-up: a configured OpenCode connection shadows the no-auth
     // entry below, so it must receive the same `oc/` routing prefix. The raw
     // `opencode/` prefix is reserved by model parsing for the api-key tier.
-    const routingPrefix = providerId === "opencode" ? providerVisual.alias : providerId;
+    // Managed CLIProxy providers are persisted with an internal provider id
+    // but exposed to routing through the stable node prefix (for example
+    // `cpa-nas`). Keep combo model ids aligned with the provider detail page.
+    const isManagedCliproxy =
+      providerId.startsWith("openai-compatible-cliproxy-") ||
+      providerNode?.prefix?.startsWith("cpa-") === true;
+    const routingPrefix =
+      providerId === "opencode" || isManagedCliproxy
+        ? providerVisual.alias
+        : providerId;
     rewriteQualifiedModelPrefix(modelMap, providerId, routingPrefix);
 
     const normalizedConnections =
       expandConnectionOptions(providerConnections).sort(compareConnections);
 
     const activeConnectionCount = normalizedConnections.filter(
-      (connection) => connection.isActive
+      (connection) => connection.isActive,
     ).length;
     const displayName = (providerEntryName(providerId) ||
       getProviderDisplayName(providerId, providerNode) ||
@@ -633,7 +709,8 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
     const providerId = noAuthProvider.id;
     if (
       blockedProviders.has(providerId) ||
-      (typeof noAuthProvider.alias === "string" && blockedProviders.has(noAuthProvider.alias))
+      (typeof noAuthProvider.alias === "string" &&
+        blockedProviders.has(noAuthProvider.alias))
     )
       continue;
     // Skip if already covered (defensive: shouldn't happen for true no-auth providers)
@@ -642,13 +719,15 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
     const providerVisual = getProviderVisual(providerId, null);
     const builtInModels = getModelsByProviderId(providerId);
     const syncedModels = normalizeSyncedModels(
-      (syncedModelsMap as Record<string, unknown>)[providerId]
+      (syncedModelsMap as Record<string, unknown>)[providerId],
     );
     const customModels = normalizeCustomModels(
-      (customModelsMap as Record<string, unknown>)[providerId]
+      (customModelsMap as Record<string, unknown>)[providerId],
     );
     const acceptsArbitraryModel =
-      Boolean((AI_PROVIDERS[providerId] as JsonRecord | undefined)?.passthroughModels) ||
+      Boolean(
+        (AI_PROVIDERS[providerId] as JsonRecord | undefined)?.passthroughModels,
+      ) ||
       isOpenAICompatibleProvider(providerId) ||
       isAnthropicCompatibleProvider(providerId) ||
       isClaudeCodeCompatibleProvider(providerId);
@@ -656,7 +735,7 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
       providerId,
       builtInModels as RegistryModel[],
       syncedModels,
-      customModels
+      customModels,
     );
 
     // #2901: no-auth providers must route under their alias (e.g. "oc"), not
@@ -696,15 +775,23 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
       strategy: toStringOrNull(combo.strategy) || "priority",
       stepCount: Array.isArray(combo.models) ? combo.models.length : 0,
       version: typeof combo.version === "number" ? combo.version : 2,
-      ...(typeof combo.sortOrder === "number" ? { sortOrder: combo.sortOrder } : {}),
+      ...(typeof combo.sortOrder === "number"
+        ? { sortOrder: combo.sortOrder }
+        : {}),
     }))
     .sort((left, right) => {
       const leftSort =
-        typeof left.sortOrder === "number" ? left.sortOrder : Number.MAX_SAFE_INTEGER;
+        typeof left.sortOrder === "number"
+          ? left.sortOrder
+          : Number.MAX_SAFE_INTEGER;
       const rightSort =
-        typeof right.sortOrder === "number" ? right.sortOrder : Number.MAX_SAFE_INTEGER;
+        typeof right.sortOrder === "number"
+          ? right.sortOrder
+          : Number.MAX_SAFE_INTEGER;
       if (leftSort !== rightSort) return leftSort - rightSort;
-      return left.name.localeCompare(right.name, undefined, { sensitivity: "base" });
+      return left.name.localeCompare(right.name, undefined, {
+        sensitivity: "base",
+      });
     });
 
   return {
@@ -716,6 +803,7 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
 }
 
 function providerEntryName(providerId: string): string | null {
-  const providerEntry = AI_PROVIDERS[providerId] as { name?: string } | undefined;
+  const providerEntry = AI_PROVIDERS[providerId] as
+    { name?: string } | undefined;
   return toStringOrNull(providerEntry?.name);
 }
