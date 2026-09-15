@@ -226,6 +226,11 @@ export const ANTIGRAVITY_MODEL_ALIASES = Object.freeze({
   "gemini-3.1-pro-high": "gemini-pro-agent",
   "gemini-3-pro-image-preview": "gemini-3-pro-image",
   "claude-opus-4-6": "claude-opus-4-6-thinking",
+  // Legacy Gemini 2.5 models → current upstream generation.
+  "gemini-2.5-pro": "gemini-pro-agent",
+  "gemini-2.5-flash": "gemini-3.7-flash-tiered",
+  "gemini-2.5-flash-thinking": "gemini-3.7-flash-tiered",
+  "gemini-2.5-flash-lite": "gemini-3.5-flash-lite",
   // Legacy Claude display ids → current upstream ids.
   "gemini-claude-sonnet-4-5": "claude-sonnet-4-6",
   "gemini-claude-sonnet-4-5-thinking": "claude-sonnet-4-6",

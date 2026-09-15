@@ -147,12 +147,19 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
   const isInternalModel = (item: Record<string, unknown>): boolean =>
     item.isInternal === true || item.apiProvider === "API_PROVIDER_INTERNAL";
 
+  const isDecommissionedModel = (item: Record<string, unknown>, id: string): boolean => {
+    if (isInternalModel(item)) return true;
+    const modelEnum = typeof item.model === "string" ? item.model : "";
+    if (/^MODEL_GOOGLE_GEMINI_2_/i.test(modelEnum)) return true;
+    if (/^gemini-2\./i.test(id)) return true;
+    return false;
+  };
+
   const parseRawModels = (): AntigravityDiscoveryModel[] => {
     if (Array.isArray(payload)) {
       return payload
         .map((value) => {
           const item = asRecord(value);
-          if (isInternalModel(item)) return null;
           const id =
             typeof item.id === "string"
               ? item.id
@@ -161,6 +168,7 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
                 : typeof item.model === "string"
                   ? item.model
                   : "";
+          if (isDecommissionedModel(item, id)) return null;
           const name =
             typeof item.displayName === "string"
               ? item.displayName
@@ -192,7 +200,7 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
     return Object.entries(modelsById)
       .map(([id, value]) => {
         const item = asRecord(value);
-        if (isInternalModel(item)) return null;
+        if (isDecommissionedModel(item, id)) return null;
         const name =
           typeof item.displayName === "string"
             ? item.displayName

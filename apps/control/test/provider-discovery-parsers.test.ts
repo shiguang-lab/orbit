@@ -83,6 +83,30 @@ test("aggregates the models object instead of trusting agentModelSorts", () => {
   assert.equal(models[3]?.thinkingModelId, "claude-opus-4-6-thinking");
 });
 
+test("filters out internal and decommissioned Gemini 2.x models from Antigravity discovery", () => {
+  const models = normalizeAntigravityModelsResponse({
+    models: {
+      "chat_23310": { model: "MODEL_CHAT_23310", isInternal: true },
+      "chat_20706": { model: "MODEL_CHAT_20706", apiProvider: "API_PROVIDER_INTERNAL" },
+      "gemini-2.5-pro": { model: "MODEL_GOOGLE_GEMINI_2_5_PRO", displayName: "Gemini 2.5 Pro" },
+      "gemini-2.5-flash": { model: "MODEL_GOOGLE_GEMINI_2_5_FLASH", displayName: "Gemini 2.5 Flash" },
+      "gemini-3.7-flash-tiered": { model: "MODEL_PLACEHOLDER_M301", supportsThinking: true },
+      "gemini-3.8-flash-tiered": { model: "MODEL_PLACEHOLDER_M322", supportsThinking: true },
+      "gemini-3.1-pro-low": { model: "MODEL_PLACEHOLDER_M36", displayName: "Gemini 3.1 Pro (Low)" },
+    },
+  });
+
+  const ids = models.map((m) => m.id);
+  assert.ok(!ids.includes("chat_23310"), "chat_23310 must be filtered out");
+  assert.ok(!ids.includes("chat_20706"), "chat_20706 must be filtered out");
+  assert.ok(!ids.includes("gemini-2.5-pro"), "gemini-2.5-pro must be filtered out");
+  assert.ok(!ids.includes("gemini-2.5-flash"), "gemini-2.5-flash must be filtered out");
+  assert.ok(ids.includes("gemini-3.7-flash"), "gemini-3.7-flash must be preserved");
+  assert.ok(ids.includes("gemini-3.8-flash"), "gemini-3.8-flash must be preserved");
+  assert.ok(ids.includes("gemini-3.1-pro"), "gemini-3.1-pro must be preserved");
+});
+
+
 test("preserves Gemini method mapping, model heuristics, metadata, and retirement filtering", () => {
   assert.deepEqual(parseGeminiModelsList({ models: [
     {
