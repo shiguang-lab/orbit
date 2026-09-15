@@ -636,6 +636,7 @@ export async function getAntigravityUsage(
       if (
         !modelKey ||
         info.isInternal === true ||
+        info.apiProvider === "API_PROVIDER_INTERNAL" ||
         !(provider === "agy"
           ? isUserCallableAgyModelId(modelKey)
           : isDiscoverableAntigravityModelId(modelKey)) ||

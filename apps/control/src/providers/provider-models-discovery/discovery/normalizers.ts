@@ -144,11 +144,15 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
   const envelope = asRecord(data);
   const payload = envelope.models;
 
+  const isInternalModel = (item: Record<string, unknown>): boolean =>
+    item.isInternal === true || item.apiProvider === "API_PROVIDER_INTERNAL";
+
   const parseRawModels = (): AntigravityDiscoveryModel[] => {
     if (Array.isArray(payload)) {
       return payload
         .map((value) => {
           const item = asRecord(value);
+          if (isInternalModel(item)) return null;
           const id =
             typeof item.id === "string"
               ? item.id
@@ -178,7 +182,6 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
                 (item.supportsThinking === true || typeof item.thinkingBudget === "number")
                   ? { supportedThinkingEfforts: ["low", "medium", "high"] }
                   : {}),
-                ...(item.isInternal === true ? { isInternal: true } : {}),
               }
             : null;
         })
@@ -189,6 +192,7 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
     return Object.entries(modelsById)
       .map(([id, value]) => {
         const item = asRecord(value);
+        if (isInternalModel(item)) return null;
         const name =
           typeof item.displayName === "string"
             ? item.displayName
@@ -210,7 +214,6 @@ export function normalizeAntigravityModelsResponse(data: unknown): AntigravityDi
               (item.supportsThinking === true || typeof item.thinkingBudget === "number")
                 ? { supportedThinkingEfforts: ["low", "medium", "high"] }
                 : {}),
-              ...(item.isInternal === true ? { isInternal: true } : {}),
             }
           : null;
       })

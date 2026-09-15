@@ -161,3 +161,36 @@ test("caps Ollama show concurrency at four, preserves order, and fails open per 
   assert.equal(result[0]?.apiFormat, "embeddings");
   assert.deepEqual(result[5], models[5]);
 });
+
+test("filters out internal Antigravity models marked with isInternal or API_PROVIDER_INTERNAL", () => {
+  const models = normalizeAntigravityModelsResponse({
+    models: {
+      "gemini-3.7-flash": {
+        displayName: "Gemini 3.7 Flash",
+        apiProvider: "API_PROVIDER_GOOGLE_GEMINI",
+        supportsThinking: true,
+      },
+      "claude-sonnet-4-6": {
+        displayName: "Claude Sonnet 4.6",
+        apiProvider: "API_PROVIDER_ANTHROPIC_VERTEX",
+        supportsThinking: true,
+      },
+      "chat_23310": {
+        displayName: "Chat_23310",
+        isInternal: true,
+        apiProvider: "API_PROVIDER_INTERNAL",
+      },
+      "chat_20706": {
+        displayName: "Chat_20706",
+        isInternal: true,
+        apiProvider: "API_PROVIDER_INTERNAL",
+      },
+    },
+  });
+
+  assert.deepEqual(
+    models.map((model) => model.id),
+    ["gemini-3.7-flash", "claude-sonnet-4-6"]
+  );
+});
+
