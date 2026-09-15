@@ -669,8 +669,9 @@ export async function getComboBuilderOptions(): Promise<ComboBuilderOptionsPaylo
     const isManagedCliproxy =
       providerId.startsWith("openai-compatible-cliproxy-") ||
       providerNode?.prefix?.startsWith("cpa-") === true;
-    const routingPrefix =
-      providerId === "opencode" || isManagedCliproxy
+    const routingPrefix = isManagedCliproxy
+      ? toStringOrNull(providerNode?.prefix) || providerVisual.alias
+      : providerId === "opencode"
         ? providerVisual.alias
         : providerId;
     rewriteQualifiedModelPrefix(modelMap, providerId, routingPrefix);
