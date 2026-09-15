@@ -346,6 +346,7 @@ export default function CliproxyInstances() {
   const [callbackURL, setCallbackURL] = useState("");
   const [credentialName, setCredentialName] = useState("");
   const [credentialJSON, setCredentialJSON] = useState("");
+  const [deletingCredentialId, setDeletingCredentialId] = useState<string>();
   const [detail, setDetail] = useState<{ title: string; text: string }>();
   const [nodeForm] = Form.useForm();
   const [instanceForm] = Form.useForm();
