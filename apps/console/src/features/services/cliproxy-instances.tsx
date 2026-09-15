@@ -443,17 +443,19 @@ export default function CliproxyInstances() {
       versions.length > 0
         ? versions.join(", ")
         : item.online
-          ? (primaryInstance?.version ||
+          ? primaryInstance?.version ||
             (primaryInstance
               ? stateText(primaryInstance.state)
-              : tt("未安装", "Not installed")))
+              : tt("未安装", "Not installed"))
           : "—";
     const latency = instances.find(
       (i) => typeof i.latencyMs === "number" && i.latencyMs > 0,
     )?.latencyMs;
     const port = instances[0]?.port;
     const lastSeenText = item.lastSeenAt
-      ? dayjs(item.lastSeenAt).locale(locale === "zh-CN" ? "zh-cn" : "en").fromNow()
+      ? dayjs(item.lastSeenAt)
+          .locale(locale === "zh-CN" ? "zh-cn" : "en")
+          .fromNow()
       : item.online
         ? tt("刚刚", "Just now")
         : tt("从未连通", "Never");
@@ -601,6 +603,8 @@ export default function CliproxyInstances() {
       );
       await authStatus.refetch();
       await credentials.refetch();
+      setAuthFlow(undefined);
+      setMountModalOpen(false);
       setTimeout(() => {
         if (node) void handleRefreshNode(node.id, true);
         void refresh();
@@ -612,11 +616,35 @@ export default function CliproxyInstances() {
     });
   };
 
+  const handleDeleteCredential = (
+    record: NonNullable<Instance["credentials"]>[number],
+  ) => {
+    mutation.mutate(async () => {
+      await manageCredential(
+        "DELETE",
+        `auth-files?name=${encodeURIComponent(record.name)}`,
+      );
+      await credentials.refetch();
+      if (node) await handleRefreshNode(node.id, true);
+      void refresh();
+      message.success(tt("凭据已删除", "Credential deleted"));
+    });
+  };
+
   const settingsMutation = useMutation({
-    mutationFn: async (settings: { autoStart?: boolean; providerExpose?: boolean }) => {
-      await api(instancePath(node!.id, instance!.id), { method: "PATCH", body: JSON.stringify(settings) });
+    mutationFn: async (settings: {
+      autoStart?: boolean;
+      providerExpose?: boolean;
+    }) => {
+      await api(instancePath(node!.id, instance!.id), {
+        method: "PATCH",
+        body: JSON.stringify(settings),
+      });
     },
-    onSuccess: () => { void client.invalidateQueries({ queryKey: ["service-nodes"] }); message.success(tt("配置已保存", "Settings saved")); },
+    onSuccess: () => {
+      void client.invalidateQueries({ queryKey: ["service-nodes"] });
+      message.success(tt("配置已保存", "Settings saved"));
+    },
     onError: (error: Error) => message.error(error.message),
   });
 
@@ -630,10 +658,14 @@ export default function CliproxyInstances() {
 
   const modelAliasesQuery = useQuery({
     queryKey: ["managed-instance-model-aliases", node?.id, instance?.id],
-    queryFn: () => api<{ "oauth-model-alias": Record<string, ModelAlias[]> }>(
-      `${instancePath(node!.id, instance!.id)}/management`,
-      { method: "POST", body: JSON.stringify({ method: "GET", path: "oauth-model-alias" }) },
-    ),
+    queryFn: () =>
+      api<{ "oauth-model-alias": Record<string, ModelAlias[]> }>(
+        `${instancePath(node!.id, instance!.id)}/management`,
+        {
+          method: "POST",
+          body: JSON.stringify({ method: "GET", path: "oauth-model-alias" }),
+        },
+      ),
     enabled: Boolean(node?.online && instance?.healthy),
   });
 
@@ -704,7 +736,9 @@ export default function CliproxyInstances() {
         }
         style={{ marginInlineEnd: 4 }}
       />
-      {server.online ? stateText(i.state) : tt("实例尚未连接", "Instance is disconnected")}
+      {server.online
+        ? stateText(i.state)
+        : tt("实例尚未连接", "Instance is disconnected")}
     </Tag>
   );
 
@@ -760,11 +794,7 @@ export default function CliproxyInstances() {
           {latency !== undefined && (
             <Tag
               color={
-                latency < 100
-                  ? "success"
-                  : latency < 300
-                    ? "warning"
-                    : "error"
+                latency < 100 ? "success" : latency < 300 ? "warning" : "error"
               }
               style={{ margin: 0, fontSize: 11 }}
             >
@@ -854,15 +884,30 @@ export default function CliproxyInstances() {
                   />
                 )}
                 {instance?.version && (
-                  <Button disabled={!node.online || busy} onClick={() => {
-                    setVersion("latest");
-                    setOperation({ instance, action: "upgrade", nodeId: node.id, nodeName: node.name });
-                  }}>{tt("升级", "Upgrade")}</Button>
+                  <Button
+                    disabled={!node.online || busy}
+                    onClick={() => {
+                      setVersion("latest");
+                      setOperation({
+                        instance,
+                        action: "upgrade",
+                        nodeId: node.id,
+                        nodeName: node.name,
+                      });
+                    }}
+                  >
+                    {tt("升级", "Upgrade")}
+                  </Button>
                 )}
-                <Button disabled={!instance?.healthy || !node.online} onClick={() => setConfigOpen(true)}>
+                <Button
+                  disabled={!instance?.healthy || !node.online}
+                  onClick={() => setConfigOpen(true)}
+                >
                   {tt("运行配置", "Runtime settings")}
                 </Button>
-                <Button onClick={() => setHistoryOpen(true)}>{tt("操作记录", "Operation history")}</Button>
+                <Button onClick={() => setHistoryOpen(true)}>
+                  {tt("操作记录", "Operation history")}
+                </Button>
                 <Button
                   icon={<ReloadOutlined />}
                   loading={busy}
@@ -889,409 +934,657 @@ export default function CliproxyInstances() {
               {/* ROW 1: 服务运行时状态 (Left 50%) + 自动化与安全凭据 (Right 50%) (100% Equal Height & Full Width) */}
               <Row gutter={[12, 12]} align="stretch">
                 <Col xs={24} md={12} style={{ display: "flex" }}>
-                            <Card
-                              title={tt("服务运行时状态", "Service Runtime Status")}
-                              className={styles.sectionCard}
-                              size="small"
-                              style={{ width: "100%", flex: 1 }}
-                              styles={{
-                                body: {
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  flex: 1,
-                                  justifyContent: "space-between",
-                                  padding: "12px 14px",
-                                },
-                              }}
-                            >
-                              <Space direction="vertical" size={7} style={{ width: "100%", fontSize: 13 }}>
-                                <Flex className={styles.statusRow} justify="space-between" align="center">
-                                  <Typography.Text className={styles.statusLabel} type="secondary">
-                                    {tt("运行状态:", "Runtime Status:")}
-                                  </Typography.Text>
-                                  <Flex className={styles.statusValue} align="center" gap={6}>
-                                    <Badge
-                                      status={
-                                        !node.online
-                                          ? "default"
-                                          : instance.healthy
-                                            ? "success"
-                                            : instance.state === "error"
-                                              ? "error"
-                                              : "default"
-                                      }
-                                    />
-                                    <Typography.Text strong className={styles.statusText}>
-                                      {!node.online
-                                        ? tt("离线 / 未连接", "Offline / Disconnected")
-                                        : !instance.version
-                                          ? tt("未安装", "Not installed")
-                                          : instance.healthy
-                                            ? tt("正常在线 (Healthy)", "Healthy (Online)")
-                                            : instance.state === "stopped"
-                                              ? tt("已停止", "Stopped")
-                                              : stateText(instance.state)}
-                                    </Typography.Text>
-                                  </Flex>
-                                </Flex>
-                                <Flex className={styles.statusRow} justify="space-between" align="center">
-                                  <Typography.Text className={styles.statusLabel} type="secondary">
-                                    {tt("绑定本地环回端口:", "Loopback Port:")}
-                                  </Typography.Text>
-                                  <Typography.Text code copyable>{instance.port || 8317}</Typography.Text>
-                                </Flex>
-                                <Flex className={styles.statusRow} justify="space-between" align="center">
-                                  <Typography.Text className={styles.statusLabel} type="secondary">
-                                    {tt("进程 PID:", "Process PID:")}
-                                  </Typography.Text>
-                                  <Typography.Text code>{instance.pid || "—"}</Typography.Text>
-                                </Flex>
-                                <Flex className={styles.statusRow} justify="space-between" align="center">
-                                  <Typography.Text className={styles.statusLabel} type="secondary">
-                                    {tt("当前版本:", "Version:")}
-                                  </Typography.Text>
-                                  {instance.version ? (
-                                    <Tag color="blue">v{instance.version.replace(/^v/, "")}</Tag>
-                                  ) : (
-                                    <Tag>{tt("未安装", "Not installed")}</Tag>
-                                  )}
-                                </Flex>
-                                <Flex className={styles.statusRow} justify="space-between" align="center">
-                                  <Typography.Text className={styles.statusLabel} type="secondary">
-                                    {tt("启动时间:", "Started At:")}
-                                  </Typography.Text>
-                                  <Typography.Text style={{ fontSize: 11 }}>
-                                    {instance.startedAt
-                                      ? dayjs(instance.startedAt).format("YYYY/M/D HH:mm:ss")
-                                      : "—"}
-                                  </Typography.Text>
-                                </Flex>
-                              </Space>
-
-                              {/* Action Buttons */}
-                              <div
-                                style={{
-                                  marginTop: 10,
-                                  paddingTop: 8,
-                                  borderTop: `1px solid ${token.colorBorderSecondary}`,
-                                }}
-                              >
-                                <Flex gap={8} wrap>
-                                  {!instance.version ? (
-                                    <Button
-                                      type="primary"
-                                      loading={busy}
-                                      disabled={!node.online}
-                                      onClick={() => {
-                                        setVersion("latest");
-                                        setOperation({ instance, action: "install", nodeId: node.id, nodeName: node.name });
-                                      }}
-                                      style={{ flex: 1 }}
-                                    >
-                                      {tt("安装服务", "Install service")}
-                                    </Button>
-                                  ) : instance.desiredState === "running" ? (
-                                    <>
-                                      <Popconfirm
-                                        title={tt("确定要停止此内嵌服务吗？", "Stop this service?")}
-                                        description={tt("停止后相关模型的本地代理路由将暂停服务。", "Local proxy routes will be paused after stopping.")}
-                                        onConfirm={() => {
-                                          mutation.mutate(() => doAction({ instance, action: "stop", nodeId: node.id, nodeName: node.name }));
-                                        }}
-                                        okText={tt("确认停止", "Stop")}
-                                        cancelText={tt("取消", "Cancel")}
-                                      >
-                                        <Button
-                                          danger
-                                          icon={<BorderOutlined />}
-                                          loading={busy}
-                                          disabled={!node.online}
-                                          style={{ flex: 1 }}
-                                        >
-                                          {tt("停止", "Stop")}
-                                        </Button>
-                                      </Popconfirm>
-                                      <Button
-                                        icon={<ReloadOutlined />}
-                                        loading={busy}
-                                        disabled={!node.online}
-                                        onClick={() => {
-                                          setOperation({ instance, action: "restart", nodeId: node.id, nodeName: node.name });
-                                        }}
-                                        style={{ flex: 1 }}
-                                      >
-                                        {tt("重启", "Restart")}
-                                      </Button>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Button
-                                        type="primary"
-                                        icon={<CaretRightOutlined />}
-                                        loading={busy}
-                                        disabled={!node.online}
-                                        onClick={() => {
-                                          setOperation({ instance, action: "start", nodeId: node.id, nodeName: node.name });
-                                        }}
-                                        style={{ flex: 1 }}
-                                      >
-                                        {tt("启动服务", "Start service")}
-                                      </Button>
-                                      <Button
-                                        icon={<ReloadOutlined />}
-                                        loading={busy}
-                                        disabled={!node.online}
-                                        onClick={() => {
-                                          setOperation({ instance, action: "restart", nodeId: node.id, nodeName: node.name });
-                                        }}
-                                        style={{ flex: 1 }}
-                                      >
-                                        {tt("重启", "Restart")}
-                                      </Button>
-                                    </>
-                                  )}
-                                </Flex>
-                              </div>
-                            </Card>
-                          </Col>
-
-                          <Col xs={24} md={12} style={{ display: "flex" }}>
-                            <Card
-                              title={tt("自动化与安全凭据", "Automation & Security")}
-                              className={styles.sectionCard}
-                              size="small"
-                              style={{ width: "100%", flex: 1 }}
-                              styles={{
-                                body: {
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  flex: 1,
-                                  justifyContent: "space-between",
-                                  padding: "12px 14px",
-                                },
-                              }}
-                            >
-                              <Space direction="vertical" size={8} style={{ width: "100%" }}>
-                                <Flex justify="space-between" align="center">
-                                  <div>
-                                    <Typography.Text strong style={{ fontSize: 13 }}>
-                                      {tt("实例服务启动时自动运行", "Auto Start")}
-                                    </Typography.Text>
-                                    <div style={{ fontSize: 11, color: token.colorTextSecondary }}>
-                                      {tt("cliproxy-manager 重启后自动恢复运行", "Resume the process when cliproxy-manager restarts")}
-                                    </div>
-                                  </div>
-                                  <Switch
-                                    checked={instance.autoStart ?? true}
-                                    disabled={!node.online || settingsMutation.isPending}
-                                    onChange={(val) => {
-                                      settingsMutation.mutate({ autoStart: val });
-                                    }}
-                                  />
-                                </Flex>
-
-                                <Flex justify="space-between" align="center">
-                                  <div>
-                                    <Typography.Text strong style={{ fontSize: 13 }}>
-                                      {tt("参与模型路由", "Provider Expose")}
-                                    </Typography.Text>
-                                    <div style={{ fontSize: 11, color: token.colorTextSecondary }}>
-                                      {tt("允许模型组合选择此实例的凭据", "Allow other gateway upstreams to forward via this service")}
-                                    </div>
-                                  </div>
-                                  <Switch
-                                    checked={instance.providerExpose ?? true}
-                                    disabled={!node.online || settingsMutation.isPending}
-                                    onChange={(val) => {
-                                      settingsMutation.mutate({ providerExpose: val });
-                                    }}
-                                  />
-                                </Flex>
-                              </Space>
-                            </Card>
-                          </Col>
-                        </Row>
-
-                        {/* ROW 2: 已挂载 CLI 凭据与账号健康度 (Left 50%) + 智能模型映射 (Right 50%) */}
-                        <Row gutter={[12, 12]} align="stretch">
-                          <Col xs={24} md={12} style={{ display: "flex" }}>
-                            <Card
-                              title={tt("已挂载 CLI 凭据与账号健康度", "Mounted CLI Credentials & Account Health")}
-                              className={styles.sectionCard}
-                              size="small"
-                              style={{ width: "100%", flex: 1 }}
-                              styles={{ body: { flex: 1, padding: 8, display: "flex", flexDirection: "column" } }}
-                              extra={
-                                <Button
-                                  icon={<PlusOutlined />}
-                                  onClick={() => setMountModalOpen(true)}
-                                >
-                                  {tt("挂载新凭据", "Mount Credential")}
-                                </Button>
-                              }
-                            >
-                              <Table
-                                rowKey="id"
-                                size="small"
-                                pagination={false}
-                                scroll={{ y: 150 }}
-                                dataSource={instance.credentials ?? []}
-                                columns={[
-                                  {
-                                    title: tt("账号", "Account"),
-                                    dataIndex: "email",
-                                    ellipsis: true,
-                                    render: (email) =>
-                                      email || <Typography.Text type="secondary">—</Typography.Text>,
-                                  },
-                                  {
-                                    title: tt("提供商", "Provider"),
-                                    dataIndex: "provider",
-                                    key: "provider",
-                                    width: 80,
-                                    render: (p: string) => <Tag color="blue">{(p || "codex").toUpperCase()}</Tag>,
-                                  },
-                                  {
-                                    title: tt("状态", "Status"),
-                                    key: "status",
-                                    width: 75,
-                                    render: (_, record) => (
-                                      <Tag color={record.disabled ? "default" : record.routable ? "success" : "error"}>
-                                        {record.disabled ? tt("已停用", "Disabled") : record.routable ? tt("在线", "Online") : tt("失效", "Offline")}
-                                      </Tag>
-                                    ),
-                                  },
-                                  {
-                                    title: tt("模型", "Models"),
-                                    key: "modelCount",
-                                    width: 60,
-                                    render: (_, record) => (
-                                      <span style={{ fontFamily: "monospace", fontWeight: 600, fontSize: 11 }}>
-                                        {record.models.length}
-                                      </span>
-                                    ),
-                                  },
-                                  {
-                                    title: tt("操作", "Actions"),
-                                    key: "action",
-                                    width: 80,
-                                    align: "right",
-                                    render: () => (
-                                        <Button
-                                          type="link"
-                                          style={{ paddingInline: 2 }}
-                                        onClick={() => void handleRefreshNode(node.id)}
-                                      >
-                                        {tt("刷新", "Refresh")}
-                                      </Button>
-                                    ),
-                                  },
-                                ]}
-                              />
-                            </Card>
-                          </Col>
-
-                          <Col xs={24} md={12} style={{ display: "flex" }}>
-                            <Card
-                              title={tt("智能模型映射", "Smart Model Mapping")}
-                              className={styles.sectionCard}
-                              size="small"
-                              style={{ width: "100%", flex: 1 }}
-                              styles={{ body: { flex: 1, display: "flex", flexDirection: "column", padding: "10px 14px" } }}
-                              extra={
-                                <Button
-                                  type="primary"
-                                  style={{ background: "#6366f1" }}
-                                  onClick={() => setMappingModalOpen(true)}
-                                >
-                                  {tt("编辑映射规则", "Edit Mapping Rules")}
-                                </Button>
-                              }
-                            >
-                              <Typography.Paragraph type="secondary" style={{ fontSize: 11, margin: "0 0 6px 0" }}>
-                                {tt("配置客户端请求模型到 CLI 上游真实模型的自动重写：", "Configure automatic rewriting of client request models to CLI upstream models:")}
-                              </Typography.Paragraph>
-                              {modelAliasesQuery.error && <Alert type="error" message={modelAliasesQuery.error.message} />}
-                              <div style={{ display: "flex", flexDirection: "column", gap: 6, flex: 1, maxHeight: 110, overflowY: "auto", paddingRight: 2 }}>
-                                {mappingsList.length === 0 ? (
-                                  <Empty
-                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                                    description={tt("暂无自定义模型映射", "No custom model mappings")}
-                                    style={{ padding: "8px 0" }}
-                                  />
-                                ) : (
-                                  mappingsList.map(([from, to]) => (
-                                    <Flex
-                                      key={from}
-                                      justify="space-between"
-                                      align="center"
-                                      style={{
-                                        padding: "4px 8px",
-                                        background: "rgba(255,255,255,0.02)",
-                                        borderRadius: 4,
-                                        border: `1px solid ${token.colorBorderSecondary}`,
-                                        fontSize: 12,
-                                      }}
-                                    >
-                                      <Typography.Text strong style={{ fontFamily: "monospace", color: "#818cf8" }}>{from}</Typography.Text>
-                                      <ArrowRightOutlined style={{ color: "rgba(255,255,255,0.3)", fontSize: 12 }} />
-                                      <Typography.Text strong style={{ fontFamily: "monospace", color: "#34d399" }}>{to}</Typography.Text>
-                                    </Flex>
-                                  ))
-                                )}
-                              </div>
-                              <div style={{ marginTop: 8, paddingTop: 6, borderTop: `1px solid ${token.colorBorderSecondary}` }}>
-                                <Typography.Text type="secondary" style={{ fontSize: 11 }}>{tt("终端导出指引：", "Terminal Export Guide:")}</Typography.Text>
-                                <pre className={styles.codeSnippet} style={{ marginTop: 4 }}>
-                                  {`export OPENAI_BASE_URL="${typeof window === "undefined" ? "" : window.location.origin}/v1"
-# model: ${node.scopePrefix}/<model>`}
-                                </pre>
-                              </div>
-                            </Card>
-                          </Col>
-                        </Row>
-
-                        {/* ROW 3: 实时控制台输出日志 (Full Width at Bottom) */}
-                        <Card
-                          title={
-                            <Flex justify="space-between" align="center">
-                              <Flex align="center" gap={6}>
-                                <FileTextOutlined style={{ fontSize: 16 }} />
-                                <span>{tt("实时控制台输出日志", "Real-time Console Output Logs")}</span>
-                              </Flex>
-                              <Space size={4}>
-                                <Button
-                                  type="text"
-                                  icon={<CopyOutlined style={{ fontSize: 14 }} />}
-                                  onClick={() => {
-                                    const allLogs = logsQuery.data?.text ?? "";
-                                    void navigator.clipboard.writeText(allLogs);
-                                    message.success(tt("日志已复制到剪贴板", "Logs copied to clipboard"));
-                                  }}
-                                />
-                                <Button
-                                  type="text"
-                                  aria-label={tt("刷新日志", "Refresh logs")}
-                                  icon={<ReloadOutlined style={{ fontSize: 14 }} />}
-                                  loading={logsQuery.isFetching}
-                                  onClick={() => void logsQuery.refetch()}
-                                />
-                              </Space>
-                            </Flex>
-                          }
-                          className={styles.sectionCard}
-                          size="small"
-                          style={{ width: "100%" }}
-                          styles={{ body: { padding: 8 } }}
+                  <Card
+                    title={tt("服务运行时状态", "Service Runtime Status")}
+                    className={styles.sectionCard}
+                    size="small"
+                    style={{ width: "100%", flex: 1 }}
+                    styles={{
+                      body: {
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        justifyContent: "space-between",
+                        padding: "12px 14px",
+                      },
+                    }}
+                  >
+                    <Space
+                      direction="vertical"
+                      size={7}
+                      style={{ width: "100%", fontSize: 13 }}
+                    >
+                      <Flex
+                        className={styles.statusRow}
+                        justify="space-between"
+                        align="center"
+                      >
+                        <Typography.Text
+                          className={styles.statusLabel}
+                          type="secondary"
                         >
-                          <pre className={styles.terminal}>
-                            {!logsQuery.data?.text ? (
-                              <span style={{ color: "rgba(255,255,255,0.3)" }}>{tt("暂无输出日志...", "No console output logs...")}</span>
-                            ) : (
-                              logsQuery.data.text
+                          {tt("运行状态:", "Runtime Status:")}
+                        </Typography.Text>
+                        <Flex
+                          className={styles.statusValue}
+                          align="center"
+                          gap={6}
+                        >
+                          <Badge
+                            status={
+                              !node.online
+                                ? "default"
+                                : instance.healthy
+                                  ? "success"
+                                  : instance.state === "error"
+                                    ? "error"
+                                    : "default"
+                            }
+                          />
+                          <Typography.Text strong className={styles.statusText}>
+                            {!node.online
+                              ? tt("离线 / 未连接", "Offline / Disconnected")
+                              : !instance.version
+                                ? tt("未安装", "Not installed")
+                                : instance.healthy
+                                  ? tt("正常在线 (Healthy)", "Healthy (Online)")
+                                  : instance.state === "stopped"
+                                    ? tt("已停止", "Stopped")
+                                    : stateText(instance.state)}
+                          </Typography.Text>
+                        </Flex>
+                      </Flex>
+                      <Flex
+                        className={styles.statusRow}
+                        justify="space-between"
+                        align="center"
+                      >
+                        <Typography.Text
+                          className={styles.statusLabel}
+                          type="secondary"
+                        >
+                          {tt("绑定本地环回端口:", "Loopback Port:")}
+                        </Typography.Text>
+                        <Typography.Text code copyable>
+                          {instance.port || 8317}
+                        </Typography.Text>
+                      </Flex>
+                      <Flex
+                        className={styles.statusRow}
+                        justify="space-between"
+                        align="center"
+                      >
+                        <Typography.Text
+                          className={styles.statusLabel}
+                          type="secondary"
+                        >
+                          {tt("进程 PID:", "Process PID:")}
+                        </Typography.Text>
+                        <Typography.Text code>
+                          {instance.pid || "—"}
+                        </Typography.Text>
+                      </Flex>
+                      <Flex
+                        className={styles.statusRow}
+                        justify="space-between"
+                        align="center"
+                      >
+                        <Typography.Text
+                          className={styles.statusLabel}
+                          type="secondary"
+                        >
+                          {tt("当前版本:", "Version:")}
+                        </Typography.Text>
+                        {instance.version ? (
+                          <Tag color="blue">
+                            v{instance.version.replace(/^v/, "")}
+                          </Tag>
+                        ) : (
+                          <Tag>{tt("未安装", "Not installed")}</Tag>
+                        )}
+                      </Flex>
+                      <Flex
+                        className={styles.statusRow}
+                        justify="space-between"
+                        align="center"
+                      >
+                        <Typography.Text
+                          className={styles.statusLabel}
+                          type="secondary"
+                        >
+                          {tt("启动时间:", "Started At:")}
+                        </Typography.Text>
+                        <Typography.Text style={{ fontSize: 11 }}>
+                          {instance.startedAt
+                            ? dayjs(instance.startedAt).format(
+                                "YYYY/M/D HH:mm:ss",
+                              )
+                            : "—"}
+                        </Typography.Text>
+                      </Flex>
+                    </Space>
+
+                    {/* Action Buttons */}
+                    <div
+                      style={{
+                        marginTop: 10,
+                        paddingTop: 8,
+                        borderTop: `1px solid ${token.colorBorderSecondary}`,
+                      }}
+                    >
+                      <Flex gap={8} wrap>
+                        {!instance.version ? (
+                          <Button
+                            type="primary"
+                            loading={busy}
+                            disabled={!node.online}
+                            onClick={() => {
+                              setVersion("latest");
+                              setOperation({
+                                instance,
+                                action: "install",
+                                nodeId: node.id,
+                                nodeName: node.name,
+                              });
+                            }}
+                            style={{ flex: 1 }}
+                          >
+                            {tt("安装服务", "Install service")}
+                          </Button>
+                        ) : instance.desiredState === "running" ? (
+                          <>
+                            <Popconfirm
+                              title={tt(
+                                "确定要停止此内嵌服务吗？",
+                                "Stop this service?",
+                              )}
+                              description={tt(
+                                "停止后相关模型的本地代理路由将暂停服务。",
+                                "Local proxy routes will be paused after stopping.",
+                              )}
+                              onConfirm={() => {
+                                mutation.mutate(() =>
+                                  doAction({
+                                    instance,
+                                    action: "stop",
+                                    nodeId: node.id,
+                                    nodeName: node.name,
+                                  }),
+                                );
+                              }}
+                              okText={tt("确认停止", "Stop")}
+                              cancelText={tt("取消", "Cancel")}
+                            >
+                              <Button
+                                danger
+                                icon={<BorderOutlined />}
+                                loading={busy}
+                                disabled={!node.online}
+                                style={{ flex: 1 }}
+                              >
+                                {tt("停止", "Stop")}
+                              </Button>
+                            </Popconfirm>
+                            <Button
+                              icon={<ReloadOutlined />}
+                              loading={busy}
+                              disabled={!node.online}
+                              onClick={() => {
+                                setOperation({
+                                  instance,
+                                  action: "restart",
+                                  nodeId: node.id,
+                                  nodeName: node.name,
+                                });
+                              }}
+                              style={{ flex: 1 }}
+                            >
+                              {tt("重启", "Restart")}
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <Button
+                              type="primary"
+                              icon={<CaretRightOutlined />}
+                              loading={busy}
+                              disabled={!node.online}
+                              onClick={() => {
+                                setOperation({
+                                  instance,
+                                  action: "start",
+                                  nodeId: node.id,
+                                  nodeName: node.name,
+                                });
+                              }}
+                              style={{ flex: 1 }}
+                            >
+                              {tt("启动服务", "Start service")}
+                            </Button>
+                            <Button
+                              icon={<ReloadOutlined />}
+                              loading={busy}
+                              disabled={!node.online}
+                              onClick={() => {
+                                setOperation({
+                                  instance,
+                                  action: "restart",
+                                  nodeId: node.id,
+                                  nodeName: node.name,
+                                });
+                              }}
+                              style={{ flex: 1 }}
+                            >
+                              {tt("重启", "Restart")}
+                            </Button>
+                          </>
+                        )}
+                      </Flex>
+                    </div>
+                  </Card>
+                </Col>
+
+                <Col xs={24} md={12} style={{ display: "flex" }}>
+                  <Card
+                    title={tt("自动化与安全凭据", "Automation & Security")}
+                    className={styles.sectionCard}
+                    size="small"
+                    style={{ width: "100%", flex: 1 }}
+                    styles={{
+                      body: {
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        justifyContent: "space-between",
+                        padding: "12px 14px",
+                      },
+                    }}
+                  >
+                    <Space
+                      direction="vertical"
+                      size={8}
+                      style={{ width: "100%" }}
+                    >
+                      <Flex justify="space-between" align="center">
+                        <div>
+                          <Typography.Text strong style={{ fontSize: 13 }}>
+                            {tt("实例服务启动时自动运行", "Auto Start")}
+                          </Typography.Text>
+                          <div
+                            style={{
+                              fontSize: 11,
+                              color: token.colorTextSecondary,
+                            }}
+                          >
+                            {tt(
+                              "cliproxy-manager 重启后自动恢复运行",
+                              "Resume the process when cliproxy-manager restarts",
                             )}
-                          </pre>
-                        </Card>
+                          </div>
+                        </div>
+                        <Switch
+                          checked={instance.autoStart ?? true}
+                          disabled={!node.online || settingsMutation.isPending}
+                          onChange={(val) => {
+                            settingsMutation.mutate({ autoStart: val });
+                          }}
+                        />
+                      </Flex>
+
+                      <Flex justify="space-between" align="center">
+                        <div>
+                          <Typography.Text strong style={{ fontSize: 13 }}>
+                            {tt("参与模型路由", "Provider Expose")}
+                          </Typography.Text>
+                          <div
+                            style={{
+                              fontSize: 11,
+                              color: token.colorTextSecondary,
+                            }}
+                          >
+                            {tt(
+                              "允许模型组合选择此实例的凭据",
+                              "Allow other gateway upstreams to forward via this service",
+                            )}
+                          </div>
+                        </div>
+                        <Switch
+                          checked={instance.providerExpose ?? true}
+                          disabled={!node.online || settingsMutation.isPending}
+                          onChange={(val) => {
+                            settingsMutation.mutate({ providerExpose: val });
+                          }}
+                        />
+                      </Flex>
+                    </Space>
+                  </Card>
+                </Col>
+              </Row>
+
+              {/* ROW 2: 已挂载 CLI 凭据与账号健康度 (Left 50%) + 智能模型映射 (Right 50%) */}
+              <Row gutter={[12, 12]} align="stretch">
+                <Col xs={24} md={12} style={{ display: "flex" }}>
+                  <Card
+                    title={tt(
+                      "已挂载 CLI 凭据与账号健康度",
+                      "Mounted CLI Credentials & Account Health",
+                    )}
+                    className={styles.sectionCard}
+                    size="small"
+                    style={{ width: "100%", flex: 1 }}
+                    styles={{
+                      body: {
+                        flex: 1,
+                        padding: 8,
+                        display: "flex",
+                        flexDirection: "column",
+                      },
+                    }}
+                    extra={
+                      <Button
+                        icon={<PlusOutlined />}
+                        onClick={() => setMountModalOpen(true)}
+                      >
+                        {tt("挂载新凭据", "Mount Credential")}
+                      </Button>
+                    }
+                  >
+                    <Table
+                      rowKey="id"
+                      size="small"
+                      pagination={false}
+                      scroll={{ y: 150 }}
+                      dataSource={instance.credentials ?? []}
+                      columns={[
+                        {
+                          title: tt("账号", "Account"),
+                          dataIndex: "email",
+                          ellipsis: true,
+                          render: (email) =>
+                            email || (
+                              <Typography.Text type="secondary">
+                                —
+                              </Typography.Text>
+                            ),
+                        },
+                        {
+                          title: tt("提供商", "Provider"),
+                          dataIndex: "provider",
+                          key: "provider",
+                          width: 80,
+                          render: (p: string) => (
+                            <Tag color="blue">
+                              {(p || "codex").toUpperCase()}
+                            </Tag>
+                          ),
+                        },
+                        {
+                          title: tt("状态", "Status"),
+                          key: "status",
+                          width: 75,
+                          render: (_, record) => (
+                            <Tag
+                              color={
+                                record.disabled
+                                  ? "default"
+                                  : record.routable
+                                    ? "success"
+                                    : "error"
+                              }
+                            >
+                              {record.disabled
+                                ? tt("已停用", "Disabled")
+                                : record.routable
+                                  ? tt("在线", "Online")
+                                  : tt("失效", "Offline")}
+                            </Tag>
+                          ),
+                        },
+                        {
+                          title: tt("模型", "Models"),
+                          key: "modelCount",
+                          width: 60,
+                          render: (_, record) => (
+                            <span
+                              style={{
+                                fontFamily: "monospace",
+                                fontWeight: 600,
+                                fontSize: 11,
+                              }}
+                            >
+                              {record.models.length}
+                            </span>
+                          ),
+                        },
+                        {
+                          title: tt("操作", "Actions"),
+                          key: "action",
+                          width: 80,
+                          align: "right",
+                          render: (_, record) => (
+                            <Space size={0}>
+                              <Button
+                                type="link"
+                                style={{ paddingInline: 2 }}
+                                loading={mutation.isPending}
+                                onClick={() => void handleRefreshNode(node.id)}
+                              >
+                                {tt("刷新", "Refresh")}
+                              </Button>
+                              <Popconfirm
+                                title={tt(
+                                  "确定删除此凭据？",
+                                  "Delete this credential?",
+                                )}
+                                description={tt(
+                                  "删除后需要重新授权才能恢复。",
+                                  "You will need to authorize again to restore it.",
+                                )}
+                                okText={tt("删除", "Delete")}
+                                cancelText={tt("取消", "Cancel")}
+                                okButtonProps={{
+                                  danger: true,
+                                  loading: mutation.isPending,
+                                }}
+                                onConfirm={() => handleDeleteCredential(record)}
+                              >
+                                <Button
+                                  type="link"
+                                  danger
+                                  icon={<DeleteOutlined />}
+                                  aria-label={tt(
+                                    "删除凭据",
+                                    "Delete credential",
+                                  )}
+                                />
+                              </Popconfirm>
+                            </Space>
+                          ),
+                        },
+                      ]}
+                    />
+                  </Card>
+                </Col>
+
+                <Col xs={24} md={12} style={{ display: "flex" }}>
+                  <Card
+                    title={tt("智能模型映射", "Smart Model Mapping")}
+                    className={styles.sectionCard}
+                    size="small"
+                    style={{ width: "100%", flex: 1 }}
+                    styles={{
+                      body: {
+                        flex: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        padding: "10px 14px",
+                      },
+                    }}
+                    extra={
+                      <Button
+                        type="primary"
+                        style={{ background: "#6366f1" }}
+                        onClick={() => setMappingModalOpen(true)}
+                      >
+                        {tt("编辑映射规则", "Edit Mapping Rules")}
+                      </Button>
+                    }
+                  >
+                    <Typography.Paragraph
+                      type="secondary"
+                      style={{ fontSize: 11, margin: "0 0 6px 0" }}
+                    >
+                      {tt(
+                        "配置客户端请求模型到 CLI 上游真实模型的自动重写：",
+                        "Configure automatic rewriting of client request models to CLI upstream models:",
+                      )}
+                    </Typography.Paragraph>
+                    {modelAliasesQuery.error && (
+                      <Alert
+                        type="error"
+                        message={modelAliasesQuery.error.message}
+                      />
+                    )}
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 6,
+                        flex: 1,
+                        maxHeight: 110,
+                        overflowY: "auto",
+                        paddingRight: 2,
+                      }}
+                    >
+                      {mappingsList.length === 0 ? (
+                        <Empty
+                          image={Empty.PRESENTED_IMAGE_SIMPLE}
+                          description={tt(
+                            "暂无自定义模型映射",
+                            "No custom model mappings",
+                          )}
+                          style={{ padding: "8px 0" }}
+                        />
+                      ) : (
+                        mappingsList.map(([from, to]) => (
+                          <Flex
+                            key={from}
+                            justify="space-between"
+                            align="center"
+                            style={{
+                              padding: "4px 8px",
+                              background: "rgba(255,255,255,0.02)",
+                              borderRadius: 4,
+                              border: `1px solid ${token.colorBorderSecondary}`,
+                              fontSize: 12,
+                            }}
+                          >
+                            <Typography.Text
+                              strong
+                              style={{
+                                fontFamily: "monospace",
+                                color: "#818cf8",
+                              }}
+                            >
+                              {from}
+                            </Typography.Text>
+                            <ArrowRightOutlined
+                              style={{
+                                color: "rgba(255,255,255,0.3)",
+                                fontSize: 12,
+                              }}
+                            />
+                            <Typography.Text
+                              strong
+                              style={{
+                                fontFamily: "monospace",
+                                color: "#34d399",
+                              }}
+                            >
+                              {to}
+                            </Typography.Text>
+                          </Flex>
+                        ))
+                      )}
+                    </div>
+                    <div
+                      style={{
+                        marginTop: 8,
+                        paddingTop: 6,
+                        borderTop: `1px solid ${token.colorBorderSecondary}`,
+                      }}
+                    >
+                      <Typography.Text
+                        type="secondary"
+                        style={{ fontSize: 11 }}
+                      >
+                        {tt("终端导出指引：", "Terminal Export Guide:")}
+                      </Typography.Text>
+                      <pre
+                        className={styles.codeSnippet}
+                        style={{ marginTop: 4 }}
+                      >
+                        {`export OPENAI_BASE_URL="${typeof window === "undefined" ? "" : window.location.origin}/v1"
+# model: ${node.scopePrefix}/<model>`}
+                      </pre>
+                    </div>
+                  </Card>
+                </Col>
+              </Row>
+
+              {/* ROW 3: 实时控制台输出日志 (Full Width at Bottom) */}
+              <Card
+                title={
+                  <Flex justify="space-between" align="center">
+                    <Flex align="center" gap={6}>
+                      <FileTextOutlined style={{ fontSize: 16 }} />
+                      <span>
+                        {tt(
+                          "实时控制台输出日志",
+                          "Real-time Console Output Logs",
+                        )}
+                      </span>
+                    </Flex>
+                    <Space size={4}>
+                      <Button
+                        type="text"
+                        icon={<CopyOutlined style={{ fontSize: 14 }} />}
+                        onClick={() => {
+                          const allLogs = logsQuery.data?.text ?? "";
+                          void navigator.clipboard.writeText(allLogs);
+                          message.success(
+                            tt(
+                              "日志已复制到剪贴板",
+                              "Logs copied to clipboard",
+                            ),
+                          );
+                        }}
+                      />
+                      <Button
+                        type="text"
+                        aria-label={tt("刷新日志", "Refresh logs")}
+                        icon={<ReloadOutlined style={{ fontSize: 14 }} />}
+                        loading={logsQuery.isFetching}
+                        onClick={() => void logsQuery.refetch()}
+                      />
+                    </Space>
+                  </Flex>
+                }
+                className={styles.sectionCard}
+                size="small"
+                style={{ width: "100%" }}
+                styles={{ body: { padding: 8 } }}
+              >
+                <pre className={styles.terminal}>
+                  {!logsQuery.data?.text ? (
+                    <span style={{ color: "rgba(255,255,255,0.3)" }}>
+                      {tt("暂无输出日志...", "No console output logs...")}
+                    </span>
+                  ) : (
+                    logsQuery.data.text
+                  )}
+                </pre>
+              </Card>
 
               {/* Modal for Mount Credential */}
               <Modal
@@ -1310,30 +1603,42 @@ export default function CliproxyInstances() {
                   void refresh();
                 }}
                 afterClose={() => setMountTab("oauth")}
-                footer={mountTab === "upload" && node.online && instance.healthy ? (
-                  <Button
-                    type="primary"
-                    icon={<UploadOutlined />}
-                    disabled={!credentialName.endsWith(".json") || !credentialJSON || busy}
-                    onClick={() =>
-                      mutation.mutate(async () => {
-                        await manageCredential(
-                          "POST",
-                          `auth-files?name=${encodeURIComponent(credentialName)}`,
-                          JSON.parse(credentialJSON),
-                        );
-                        setCredentialJSON("");
-                        setCredentialName("");
-                        await credentials.refetch();
-                        void handleRefreshNode(node.id);
-                        setMountModalOpen(false);
-                        message.success(tt("凭据文件已成功导入", "Credential file imported"));
-                      })
-                    }
-                  >
-                    {tt("上传到此实例", "Upload to this instance")}
-                  </Button>
-                ) : null}
+                footer={
+                  mountTab === "upload" && node.online && instance.healthy ? (
+                    <Button
+                      type="primary"
+                      icon={<UploadOutlined />}
+                      loading={busy}
+                      disabled={
+                        !credentialName.endsWith(".json") ||
+                        !credentialJSON ||
+                        busy
+                      }
+                      onClick={() =>
+                        mutation.mutate(async () => {
+                          await manageCredential(
+                            "POST",
+                            `auth-files?name=${encodeURIComponent(credentialName)}`,
+                            JSON.parse(credentialJSON),
+                          );
+                          setCredentialJSON("");
+                          setCredentialName("");
+                          await credentials.refetch();
+                          void handleRefreshNode(node.id);
+                          setMountModalOpen(false);
+                          message.success(
+                            tt(
+                              "凭据文件已成功导入",
+                              "Credential file imported",
+                            ),
+                          );
+                        })
+                      }
+                    >
+                      {tt("上传到此实例", "Upload to this instance")}
+                    </Button>
+                  ) : null
+                }
                 destroyOnClose
                 width={680}
               >
@@ -1357,18 +1662,28 @@ export default function CliproxyInstances() {
                           label: (
                             <Space size={6}>
                               <ThunderboltOutlined />
-                              <span>{tt("添加授权账号", "Authorize an account")}</span>
+                              <span>
+                                {tt("添加授权账号", "Authorize an account")}
+                              </span>
                             </Space>
                           ),
                           children: (
-                            <Space direction="vertical" size={14} style={{ width: "100%", padding: "10px 0" }}>
+                            <Space
+                              direction="vertical"
+                              size={14}
+                              style={{ width: "100%", padding: "10px 0" }}
+                            >
                               <Typography.Text type="secondary">
                                 {tt(
                                   "选择 AI 提供商并打开官方 OAuth 网页进行授权。授权完成后，系统将自动检测并同步凭据。",
                                   "Select an AI provider and open the official OAuth page. Tokens will be automatically detected and synced.",
                                 )}
                               </Typography.Text>
-                              <Flex align="center" gap={12} style={{ width: "100%" }}>
+                              <Flex
+                                align="center"
+                                gap={12}
+                                style={{ width: "100%" }}
+                              >
                                 <Select
                                   value={authProvider}
                                   disabled={!!authFlow}
@@ -1376,8 +1691,14 @@ export default function CliproxyInstances() {
                                   style={{ flex: 1, minWidth: 0 }}
                                   options={[
                                     { value: "codex", label: "Codex (OpenAI)" },
-                                    { value: "anthropic", label: "Claude (Anthropic)" },
-                                    { value: "antigravity", label: "Antigravity (Google)" },
+                                    {
+                                      value: "anthropic",
+                                      label: "Claude (Anthropic)",
+                                    },
+                                    {
+                                      value: "antigravity",
+                                      label: "Antigravity (Google)",
+                                    },
                                     { value: "kimi", label: "Kimi (Moonshot)" },
                                     { value: "xai", label: "xAI (Grok)" },
                                   ]}
@@ -1388,7 +1709,11 @@ export default function CliproxyInstances() {
                                   icon={<LinkOutlined />}
                                   onClick={() => {
                                     if (authFlow) {
-                                      window.open(authFlow.url, "_blank", "noopener,noreferrer");
+                                      window.open(
+                                        authFlow.url,
+                                        "_blank",
+                                        "noopener,noreferrer",
+                                      );
                                       return;
                                     }
                                     mutation.mutate(async () => {
@@ -1416,12 +1741,24 @@ export default function CliproxyInstances() {
                                         state: flow.state,
                                         user_code: flow.user_code,
                                       });
-                                      window.open(flow.url, "_blank", "noopener,noreferrer");
-                                      message.success(tt("已在新窗口打开授权页面", "Authorization page opened in a new window"));
+                                      window.open(
+                                        flow.url,
+                                        "_blank",
+                                        "noopener,noreferrer",
+                                      );
+                                      message.success(
+                                        tt(
+                                          "已在新窗口打开授权页面",
+                                          "Authorization page opened in a new window",
+                                        ),
+                                      );
                                     });
                                   }}
                                 >
-                                  {tt("打开授权链接", "Open authorization link")}
+                                  {tt(
+                                    "打开授权链接",
+                                    "Open authorization link",
+                                  )}
                                 </Button>
                               </Flex>
 
@@ -1443,17 +1780,33 @@ export default function CliproxyInstances() {
                                         padding: "10px 14px",
                                         borderRadius: 6,
                                         background: "rgba(59, 130, 246, 0.08)",
-                                        border: "1px solid rgba(59, 130, 246, 0.2)",
+                                        border:
+                                          "1px solid rgba(59, 130, 246, 0.2)",
                                       }}
                                     >
-                                      <Flex align="center" justify="space-between" wrap="wrap" gap={8}>
-                                        <Typography.Text type="secondary" style={{ fontSize: 13 }}>
-                                          {tt("设备验证码（若网页提示输入）：", "Device Code (if prompted): ")}
+                                      <Flex
+                                        align="center"
+                                        justify="space-between"
+                                        wrap="wrap"
+                                        gap={8}
+                                      >
+                                        <Typography.Text
+                                          type="secondary"
+                                          style={{ fontSize: 13 }}
+                                        >
+                                          {tt(
+                                            "设备验证码（若网页提示输入）：",
+                                            "Device Code (if prompted): ",
+                                          )}
                                         </Typography.Text>
                                         <Typography.Text
                                           copyable
                                           code
-                                          style={{ fontSize: 16, fontWeight: "bold", letterSpacing: 2 }}
+                                          style={{
+                                            fontSize: 16,
+                                            fontWeight: "bold",
+                                            letterSpacing: 2,
+                                          }}
                                         >
                                           {authFlow.user_code}
                                         </Typography.Text>
@@ -1471,15 +1824,22 @@ export default function CliproxyInstances() {
                                     }
                                     showIcon
                                     icon={
-                                      authStatus.data?.status === "wait" || !authStatus.data ? (
+                                      authStatus.data?.status === "wait" ||
+                                      !authStatus.data ? (
                                         <SyncOutlined spin />
                                       ) : undefined
                                     }
                                     message={
                                       authStatus.data?.status === "ok"
-                                        ? tt("授权成功！正在同步凭据并刷新列表...", "Authorization completed! Syncing credentials...")
+                                        ? tt(
+                                            "授权成功！正在同步凭据并刷新列表...",
+                                            "Authorization completed! Syncing credentials...",
+                                          )
                                         : authStatus.data?.status === "error"
-                                          ? tt(`授权失败：${authStatus.data?.error || "已过期"}`, `Authorization failed: ${authStatus.data?.error || "expired"}`)
+                                          ? tt(
+                                              `授权失败：${authStatus.data?.error || "已过期"}`,
+                                              `Authorization failed: ${authStatus.data?.error || "expired"}`,
+                                            )
                                           : tt(
                                               "已在新窗口打开授权页面，等待完成授权中... 授权成功后将自动检测并存储凭据。",
                                               "Authorization page opened. Waiting for completion... Credentials will be saved automatically.",
@@ -1498,7 +1858,10 @@ export default function CliproxyInstances() {
                                   >
                                     <Typography.Paragraph
                                       type="secondary"
-                                      style={{ fontSize: 12, margin: "0 0 8px 0" }}
+                                      style={{
+                                        fontSize: 12,
+                                        margin: "0 0 8px 0",
+                                      }}
                                     >
                                       {tt(
                                         "💡 远程 / NAS 提示：如果在无头或远程服务器上授权，完成登录后若浏览器跳转至无法访问的 localhost 地址，请复制浏览器地址栏中的完整 URL 粘贴至下方：",
@@ -1508,14 +1871,17 @@ export default function CliproxyInstances() {
                                     <Flex gap={8}>
                                       <Input
                                         value={callbackURL}
-                                        onChange={(e) => setCallbackURL(e.target.value)}
+                                        onChange={(e) =>
+                                          setCallbackURL(e.target.value)
+                                        }
                                         placeholder={tt(
                                           "粘贴浏览器地址栏中的完整回调地址 (如 http://localhost:1455/...)",
                                           "Paste full callback URL from browser (e.g. http://localhost:1455/...)",
                                         )}
                                         style={{ flex: 1 }}
                                         onPressEnter={() => {
-                                          if (callbackURL.trim() && !busy) submitCallback();
+                                          if (callbackURL.trim() && !busy)
+                                            submitCallback();
                                         }}
                                       />
                                       <Button
@@ -1538,48 +1904,98 @@ export default function CliproxyInstances() {
                           label: (
                             <Space size={6}>
                               <UploadOutlined />
-                              <span>{tt("导入凭证文件", "Import credential file")}</span>
+                              <span>
+                                {tt("导入凭证文件", "Import credential file")}
+                              </span>
                             </Space>
                           ),
                           children: (
-                            <Space direction="vertical" size={14} style={{ width: "100%", padding: "10px 0" }}>
+                            <Space
+                              direction="vertical"
+                              size={14}
+                              style={{ width: "100%", padding: "10px 0" }}
+                            >
                               <Upload.Dragger
                                 accept=".json,application/json"
                                 showUploadList={false}
                                 beforeUpload={(file) => {
                                   if (file.size > 1024 * 1024) {
-                                    message.error(tt("文件不能超过 1 MiB", "File must not exceed 1 MiB"));
+                                    message.error(
+                                      tt(
+                                        "文件不能超过 1 MiB",
+                                        "File must not exceed 1 MiB",
+                                      ),
+                                    );
                                     return false;
                                   }
                                   setCredentialName(file.name);
-                                  void file.text().then(setCredentialJSON).catch((error: Error) => message.error(error.message));
+                                  void file
+                                    .text()
+                                    .then(setCredentialJSON)
+                                    .catch((error: Error) =>
+                                      message.error(error.message),
+                                    );
                                   return false;
                                 }}
                                 style={{ padding: "16px 0" }}
                               >
-                                <p className="ant-upload-drag-icon" style={{ marginBottom: 8 }}>
-                                  <InboxOutlined style={{ fontSize: 36, color: token.colorPrimary }} />
+                                <p
+                                  className="ant-upload-drag-icon"
+                                  style={{ marginBottom: 8 }}
+                                >
+                                  <InboxOutlined
+                                    style={{
+                                      fontSize: 36,
+                                      color: token.colorPrimary,
+                                    }}
+                                  />
                                 </p>
-                                <p className="ant-upload-text" style={{ fontSize: 14 }}>
-                                  {tt("点击或拖拽凭证 JSON 文件到此区域", "Choose credential file")}
+                                <p
+                                  className="ant-upload-text"
+                                  style={{ fontSize: 14 }}
+                                >
+                                  {tt(
+                                    "点击或拖拽凭证 JSON 文件到此区域",
+                                    "Choose credential file",
+                                  )}
                                 </p>
-                                <p className="ant-upload-hint" style={{ fontSize: 12 }}>
-                                  {tt("支持 account.json 等官方 CLI 导出的凭据文件（大小不超过 1 MiB）", "Upload account.json or other credential JSON files")}
+                                <p
+                                  className="ant-upload-hint"
+                                  style={{ fontSize: 12 }}
+                                >
+                                  {tt(
+                                    "支持 account.json 等官方 CLI 导出的凭据文件（大小不超过 1 MiB）",
+                                    "Upload account.json or other credential JSON files",
+                                  )}
                                 </p>
                               </Upload.Dragger>
 
                               <Input
-                                prefix={<FileTextOutlined style={{ color: token.colorPrimary }} />}
-                                placeholder={tt("文件名，例如 account.json", "Filename, e.g. account.json")}
+                                prefix={
+                                  <FileTextOutlined
+                                    style={{ color: token.colorPrimary }}
+                                  />
+                                }
+                                placeholder={tt(
+                                  "文件名，例如 account.json",
+                                  "Filename, e.g. account.json",
+                                )}
                                 value={credentialName}
-                                onChange={(e) => setCredentialName(e.target.value)}
+                                onChange={(e) =>
+                                  setCredentialName(e.target.value)
+                                }
                               />
                               {credentialJSON && (
                                 <Input.TextArea
                                   rows={4}
-                                  style={{ fontFamily: "monospace", fontSize: 12 }}
+                                  style={{
+                                    fontFamily: "monospace",
+                                    fontSize: 12,
+                                  }}
                                   value={credentialJSON}
-                                  onChange={(e) => setCredentialJSON(e.target.value)}
+                                  onChange={(e) =>
+                                    setCredentialJSON(e.target.value)
+                                  }
                                   placeholder="{ ... }"
                                 />
                               )}
@@ -1591,7 +2007,12 @@ export default function CliproxyInstances() {
                           label: (
                             <Space size={6}>
                               <KeyOutlined />
-                              <span>{tt("管理已存凭据", "Manage stored credentials")}</span>
+                              <span>
+                                {tt(
+                                  "管理已存凭据",
+                                  "Manage stored credentials",
+                                )}
+                              </span>
                             </Space>
                           ),
                           children: (
@@ -1601,27 +2022,58 @@ export default function CliproxyInstances() {
                                 size="small"
                                 loading={credentials.isFetching}
                                 dataSource={credentials.data?.files ?? []}
-                                pagination={{ pageSize: 5, hideOnSinglePage: true }}
+                                pagination={{
+                                  pageSize: 5,
+                                  hideOnSinglePage: true,
+                                }}
                                 columns={[
                                   {
                                     title: tt("账号", "Account"),
                                     dataIndex: "email",
                                     render: (email) =>
-                                      email || <Typography.Text type="secondary">—</Typography.Text>,
+                                      email || (
+                                        <Typography.Text type="secondary">
+                                          —
+                                        </Typography.Text>
+                                      ),
                                   },
                                   {
                                     title: tt("状态", "Status"),
                                     render: (_, record) => {
-                                      const status = record.disabled ? "disabled" : record.status;
-                                      const states: Record<string, { color: string; label: string }> = {
-                                        active: { color: "success", label: tt("在线", "Online") },
-                                        disabled: { color: "default", label: tt("已停用", "Disabled") },
-                                        error: { color: "error", label: tt("失效", "Offline") },
+                                      const status = record.disabled
+                                        ? "disabled"
+                                        : record.status;
+                                      const states: Record<
+                                        string,
+                                        { color: string; label: string }
+                                      > = {
+                                        active: {
+                                          color: "success",
+                                          label: tt("在线", "Online"),
+                                        },
+                                        disabled: {
+                                          color: "default",
+                                          label: tt("已停用", "Disabled"),
+                                        },
+                                        error: {
+                                          color: "error",
+                                          label: tt("失效", "Offline"),
+                                        },
                                       };
                                       const state = status
-                                        ? states[status] ?? { color: "default", label: tt("未知", "Unknown") }
-                                        : { color: "success", label: tt("已启用", "Enabled") };
-                                      return <Tag color={state.color}>{state.label}</Tag>;
+                                        ? (states[status] ?? {
+                                            color: "default",
+                                            label: tt("未知", "Unknown"),
+                                          })
+                                        : {
+                                            color: "success",
+                                            label: tt("已启用", "Enabled"),
+                                          };
+                                      return (
+                                        <Tag color={state.color}>
+                                          {state.label}
+                                        </Tag>
+                                      );
                                     },
                                   },
                                   {
@@ -1668,7 +2120,11 @@ export default function CliproxyInstances() {
                                             })
                                           }
                                         >
-                                          <Button type="link" danger disabled={busy}>
+                                          <Button
+                                            type="link"
+                                            danger
+                                            disabled={busy}
+                                          >
                                             {tt("删除", "Delete")}
                                           </Button>
                                         </Popconfirm>
@@ -1686,32 +2142,70 @@ export default function CliproxyInstances() {
                 </div>
               </Modal>
 
-              <Modal title={tt("运行配置", "Runtime settings")} open={configOpen}
-                onCancel={() => setConfigOpen(false)} footer={null} destroyOnClose>
-                <InstanceSettings nodeId={node.id} instanceId={instance.id}
-                  enabled={Boolean(configOpen && node.online && instance.healthy)} mode="config" />
+              <Modal
+                title={tt("运行配置", "Runtime settings")}
+                open={configOpen}
+                onCancel={() => setConfigOpen(false)}
+                footer={null}
+                destroyOnClose
+              >
+                <InstanceSettings
+                  nodeId={node.id}
+                  instanceId={instance.id}
+                  enabled={Boolean(
+                    configOpen && node.online && instance.healthy,
+                  )}
+                  mode="config"
+                />
               </Modal>
-              <Drawer title={tt("操作记录", "Operation history")} open={historyOpen}
-                onClose={() => setHistoryOpen(false)} width={720}>
-                <Table<Job> rowKey="id" pagination={false}
-                  dataSource={(node.report?.jobs ?? []).filter(job => job.instanceId === instance.id)
-                    .slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt))}
+              <Drawer
+                title={tt("操作记录", "Operation history")}
+                open={historyOpen}
+                onClose={() => setHistoryOpen(false)}
+                width={720}
+              >
+                <Table<Job>
+                  rowKey="id"
+                  pagination={false}
+                  dataSource={(node.report?.jobs ?? [])
+                    .filter((job) => job.instanceId === instance.id)
+                    .slice()
+                    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))}
                   columns={[
-                    { title: tt("操作", "Action"), dataIndex: "action", render: actionText },
-                    { title: tt("状态", "Status"), dataIndex: "status", render: (status: string) => ({
-                      queued: tt("排队中", "Queued"), running: tt("执行中", "Running"),
-                      succeeded: tt("成功", "Succeeded"), failed: tt("失败", "Failed"),
-                    })[status] ?? status },
-                    { title: tt("提交时间", "Created at"), dataIndex: "createdAt", render: (value: string) => dayjs(value).format("YYYY-MM-DD HH:mm:ss") },
+                    {
+                      title: tt("操作", "Action"),
+                      dataIndex: "action",
+                      render: actionText,
+                    },
+                    {
+                      title: tt("状态", "Status"),
+                      dataIndex: "status",
+                      render: (status: string) =>
+                        ({
+                          queued: tt("排队中", "Queued"),
+                          running: tt("执行中", "Running"),
+                          succeeded: tt("成功", "Succeeded"),
+                          failed: tt("失败", "Failed"),
+                        })[status] ?? status,
+                    },
+                    {
+                      title: tt("提交时间", "Created at"),
+                      dataIndex: "createdAt",
+                      render: (value: string) =>
+                        dayjs(value).format("YYYY-MM-DD HH:mm:ss"),
+                    },
                     { title: tt("错误", "Error"), dataIndex: "error" },
-                  ]} />
+                  ]}
+                />
               </Drawer>
               {/* Modal for Edit Model Mapping Rules */}
               <Modal
                 title={
                   <Space size={6}>
                     <ApartmentOutlined style={{ color: token.colorPrimary }} />
-                    <span>{tt("编辑模型映射规则", "Edit Model Mapping Rules")}</span>
+                    <span>
+                      {tt("编辑模型映射规则", "Edit Model Mapping Rules")}
+                    </span>
                   </Space>
                 }
                 open={mappingModalOpen}
@@ -1728,7 +2222,9 @@ export default function CliproxyInstances() {
                     key={`${node.id}/${instance.id}/models`}
                     nodeId={node.id}
                     instanceId={instance.id}
-                    enabled={Boolean(node.online && instance.healthy && mappingModalOpen)}
+                    enabled={Boolean(
+                      node.online && instance.healthy && mappingModalOpen,
+                    )}
                     mode="models"
                   />
                 </div>
@@ -1743,7 +2239,10 @@ export default function CliproxyInstances() {
               description={
                 node
                   ? node.online
-                    ? tt("未检测到 CLIProxyAPI 进程", "No CLIProxyAPI process detected")
+                    ? tt(
+                        "未检测到 CLIProxyAPI 进程",
+                        "No CLIProxyAPI process detected",
+                      )
                     : tt("实例尚未连接", "Instance is disconnected")
                   : tt("实例不存在", "Instance not found")
               }
@@ -1755,15 +2254,21 @@ export default function CliproxyInstances() {
               )}
             </Empty>
           )}
-
         </>
       ) : (
         <>
           <div className={styles.toolbar}>
-            <Flex align="center" gap={12} wrap="wrap" style={{ flex: 1, minWidth: 280 }}>
+            <Flex
+              align="center"
+              gap={12}
+              wrap="wrap"
+              style={{ flex: 1, minWidth: 280 }}
+            >
               <Input
                 allowClear
-                prefix={<SearchOutlined style={{ color: token.colorTextTertiary }} />}
+                prefix={
+                  <SearchOutlined style={{ color: token.colorTextTertiary }} />
+                }
                 aria-label={tt("搜索实例", "Search instances")}
                 placeholder={tt(
                   "搜索实例名称、地址或作用域",
@@ -1777,7 +2282,10 @@ export default function CliproxyInstances() {
                 <Tag bordered={false} color="blue">
                   {tt(`共 ${nodes.length} 个实例`, `Total: ${nodes.length}`)}
                 </Tag>
-                <Tag bordered={false} color={onlineCount > 0 ? "success" : "default"}>
+                <Tag
+                  bordered={false}
+                  color={onlineCount > 0 ? "success" : "default"}
+                >
                   {tt(`${onlineCount} 在线`, `${onlineCount} Online`)}
                 </Tag>
                 {nodes.length - onlineCount > 0 && (
@@ -1950,10 +2458,7 @@ export default function CliproxyInstances() {
                             color="blue"
                             style={{ margin: 0 }}
                           >
-                            {tt(
-                              `${totalModels} 模型`,
-                              `${totalModels} models`,
-                            )}
+                            {tt(`${totalModels} 模型`, `${totalModels} models`)}
                           </Tag>
                         )}
                       </Space>
@@ -2053,42 +2558,106 @@ export default function CliproxyInstances() {
           ) : query.isLoading ? (
             <div className={styles.instanceGrid}>
               {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className={styles.instanceCard} style={{ cursor: "default" }}>
+                <div
+                  key={i}
+                  className={styles.instanceCard}
+                  style={{ cursor: "default" }}
+                >
                   <div className={styles.cardHeader}>
-                    <Flex align="center" gap={12} style={{ flex: 1, minWidth: 0 }}>
+                    <Flex
+                      align="center"
+                      gap={12}
+                      style={{ flex: 1, minWidth: 0 }}
+                    >
                       <Skeleton.Avatar active shape="square" size={36} />
                       <Flex vertical gap={6} style={{ flex: 1, minWidth: 0 }}>
-                        <Skeleton.Input active size="small" style={{ width: 130, height: 20 }} />
-                        <Skeleton.Input active size="small" style={{ width: 70, height: 16 }} />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 130, height: 20 }}
+                        />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 70, height: 16 }}
+                        />
                       </Flex>
                     </Flex>
-                    <Skeleton.Button active size="small" style={{ width: 46, height: 22 }} />
+                    <Skeleton.Button
+                      active
+                      size="small"
+                      style={{ width: 46, height: 22 }}
+                    />
                   </div>
                   <div className={styles.cardBody}>
                     <div className={styles.endpointBox}>
-                      <Skeleton.Input active size="small" style={{ width: "100%", height: 16 }} />
+                      <Skeleton.Input
+                        active
+                        size="small"
+                        style={{ width: "100%", height: 16 }}
+                      />
                     </div>
                     <div className={styles.metricsGrid}>
                       <div className={styles.metricCell}>
-                        <Skeleton.Input active size="small" style={{ width: 32, height: 12 }} />
-                        <Skeleton.Input active size="small" style={{ width: 48, height: 16 }} />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 32, height: 12 }}
+                        />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 48, height: 16 }}
+                        />
                       </div>
                       <div className={styles.metricCell}>
-                        <Skeleton.Input active size="small" style={{ width: 32, height: 12 }} />
-                        <Skeleton.Input active size="small" style={{ width: 48, height: 16 }} />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 32, height: 12 }}
+                        />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 48, height: 16 }}
+                        />
                       </div>
                       <div className={styles.metricCell}>
-                        <Skeleton.Input active size="small" style={{ width: 32, height: 12 }} />
-                        <Skeleton.Input active size="small" style={{ width: 48, height: 16 }} />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 32, height: 12 }}
+                        />
+                        <Skeleton.Input
+                          active
+                          size="small"
+                          style={{ width: 48, height: 16 }}
+                        />
                       </div>
                     </div>
                   </div>
                   <div className={styles.cardFooter}>
-                    <Skeleton.Input active size="small" style={{ width: 64, height: 16 }} />
+                    <Skeleton.Input
+                      active
+                      size="small"
+                      style={{ width: 64, height: 16 }}
+                    />
                     <Space size={6}>
-                      <Skeleton.Button active size="small" style={{ width: 48, height: 24 }} />
-                      <Skeleton.Button active size="small" style={{ width: 48, height: 24 }} />
-                      <Skeleton.Button active size="small" style={{ width: 48, height: 24 }} />
+                      <Skeleton.Button
+                        active
+                        size="small"
+                        style={{ width: 48, height: 24 }}
+                      />
+                      <Skeleton.Button
+                        active
+                        size="small"
+                        style={{ width: 48, height: 24 }}
+                      />
+                      <Skeleton.Button
+                        active
+                        size="small"
+                        style={{ width: 48, height: 24 }}
+                      />
                     </Space>
                   </div>
                 </div>
@@ -2097,7 +2666,6 @@ export default function CliproxyInstances() {
           ) : rows.length ? (
             <div className={styles.instanceGrid}>
               {rows.map((item) => {
-
                 const {
                   totalCredentials,
                   totalModels,
@@ -2318,10 +2886,7 @@ export default function CliproxyInstances() {
                           {tt("刷新", "Refresh")}
                         </Button>
                         <Popconfirm
-                          title={tt(
-                            "移除此实例连接？",
-                            "Remove instance?",
-                          )}
+                          title={tt("移除此实例连接？", "Remove instance?")}
                           onConfirm={(e) => {
                             e?.stopPropagation();
                             void handleDeleteNode(item.id);
@@ -2355,7 +2920,6 @@ export default function CliproxyInstances() {
           ) : (
             <Empty description={tt("暂无实例", "No instances")} />
           )}
-
         </>
       )}
       <Modal
@@ -2536,7 +3100,10 @@ export function InstanceLogs({
             <FileTextOutlined style={{ color: token.colorPrimary }} />
             <span>{tt("实时运行日志", "Live Process Logs")}</span>
             <Tag color="processing" style={{ margin: 0, fontSize: 11 }}>
-              <SyncOutlined spin={logs.isFetching} style={{ marginInlineEnd: 4 }} />
+              <SyncOutlined
+                spin={logs.isFetching}
+                style={{ marginInlineEnd: 4 }}
+              />
               {tt("5秒自动轮询", "5s Auto-refresh")}
             </Tag>
           </Space>
@@ -2547,7 +3114,9 @@ export function InstanceLogs({
               onClick={() => {
                 if (logs.data?.text) {
                   void navigator.clipboard.writeText(logs.data.text);
-                  message.success(tt("日志已复制到剪贴板", "Logs copied to clipboard"));
+                  message.success(
+                    tt("日志已复制到剪贴板", "Logs copied to clipboard"),
+                  );
                 }
               }}
             >
@@ -2620,8 +3189,7 @@ function InstanceSettings({
   useEffect(() => {
     if (!settings.data) return;
     const mappings = settings.data["oauth-model-alias"] as
-      | Record<string, ModelAlias[]>
-      | undefined;
+      Record<string, ModelAlias[]> | undefined;
     form.resetFields();
     form.setFieldsValue(
       mode === "models"
@@ -2655,7 +3223,9 @@ function InstanceSettings({
         await request("PUT", "routing/strategy", { value: values.strategy });
       }
       await settings.refetch();
-      await client.invalidateQueries({ queryKey: ["managed-instance-model-aliases", nodeId, instanceId] });
+      await client.invalidateQueries({
+        queryKey: ["managed-instance-model-aliases", nodeId, instanceId],
+      });
       await client.invalidateQueries({ queryKey: ["service-nodes"] });
       message.success(tt("已保存", "Saved"));
     },
@@ -2685,8 +3255,7 @@ function InstanceSettings({
     );
   if (!settings.data) return <Card loading />;
   const aliases = settings.data["oauth-model-alias"] as
-    | Record<string, ModelAlias[]>
-    | undefined;
+    Record<string, ModelAlias[]> | undefined;
   return (
     <Space direction="vertical" size={16} style={{ width: "100%" }}>
       {mode === "models" && (
@@ -2698,7 +3267,9 @@ function InstanceSettings({
             )}
           </Typography.Text>
           <Space size={8}>
-            <Typography.Text type="secondary">{tt("提供商：", "Provider: ")}</Typography.Text>
+            <Typography.Text type="secondary">
+              {tt("提供商：", "Provider: ")}
+            </Typography.Text>
             <Select
               aria-label={tt("提供商", "Provider")}
               value={channel}
