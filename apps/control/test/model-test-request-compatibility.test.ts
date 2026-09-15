@@ -6,6 +6,7 @@ import {
   buildInternalChatRequest,
   buildInternalImageGenerationRequest,
   detectTestKind,
+  runSingleModelTest,
 } from "../src/models/model-test.runner.js";
 import { extractComboTestResponseText } from "../src/combos/combo-test.js";
 
@@ -294,4 +295,41 @@ test("extractComboTestResponseText correctly extracts b64_json image outputs", (
   };
   const extracted = extractComboTestResponseText(b64Response);
   assert.equal(extracted, "[Image generated successfully]");
+});
+
+test("runSingleModelTest passes structured effort into testBody", async () => {
+  let receivedBody = "";
+  const server = createServer((req, res) => {
+    let data = "";
+    req.on("data", (chunk) => {
+      data += chunk;
+    });
+    req.on("end", () => {
+      receivedBody = data;
+      res.writeHead(200, { "Content-Type": "text/event-stream" });
+      res.end('data: {"choices":[{"delta":{"content":"ok"}}]}\n\ndata: [DONE]\n\n');
+    });
+  });
+
+  await new Promise<void>((resolve) => {
+    server.listen(0, "127.0.0.1", () => resolve());
+  });
+  const port = (server.address() as any).port;
+  process.env.EDGE_GATEWAY_URL = `http://127.0.0.1:${port}`;
+
+  try {
+    const res = await runSingleModelTest({
+      providerId: "antigravity",
+      modelId: "gemini-3.1-pro",
+      effort: "high",
+    });
+    assert.equal(res.status, "ok");
+    const parsed = JSON.parse(receivedBody);
+    assert.equal(parsed.model, "antigravity/gemini-3.1-pro");
+    assert.equal(parsed.effort, "high");
+    assert.equal(parsed.reasoning_effort, "high");
+  } finally {
+    delete process.env.EDGE_GATEWAY_URL;
+    server.close();
+  }
 });

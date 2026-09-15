@@ -19,7 +19,7 @@ import {
   stripContextWindowSuffix,
 } from "../services/model.ts";
 import { getLearnedReasoningEffortForModel } from "../services/learnedReasoningEffortCaps.ts";
-import { REGISTRY } from "../config/providerRegistry.ts";
+import { REGISTRY, normalizeRegistryModelRows } from "../config/providerRegistry.ts";
 import { getRegisteredProviderEffortBaseModelId } from "../utils/registeredEffortVariants.ts";
 import { getReservedProviderPrefixes } from "@orbit/core/catalog/reserved-provider-prefixes";
 import {
@@ -175,9 +175,13 @@ function resolveRegistryModelIdAndEffort(
 
 function findRegistryModel(providerId: string, modelId: string): any {
   const registryModels = REGISTRY[providerId]?.models;
-  return Array.isArray(registryModels)
-    ? registryModels.find((candidate) => candidate?.id === modelId)
-    : undefined;
+  if (!Array.isArray(registryModels)) return undefined;
+  const directMatch = registryModels.find((candidate) => candidate?.id === modelId);
+  if (directMatch?.effortModelIds || directMatch?.thinkingModelId || directMatch?.tieredModelId) {
+    return directMatch;
+  }
+  const normalized = normalizeRegistryModelRows(registryModels);
+  return normalized.find((candidate) => candidate?.id === modelId) || directMatch;
 }
 
 /**

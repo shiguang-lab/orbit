@@ -20,6 +20,7 @@ const CONSECUTIVE_BOT_STOP_THRESHOLD = 2;
 const testModelSchema = z.object({
   providerId: z.string().min(1),
   modelId: z.string().min(1),
+  effort: z.string().optional(),
   connectionId: z.string().min(1).optional(),
 });
 const testAllSchema = z.object({
@@ -87,7 +88,7 @@ export class ModelsService {
       const detail = validation.error.issues.map((issue) => `${issue.path.join(".") || "body"}: ${issue.message}`).join("; ");
       return json({ status: "error", error: `Invalid request: ${detail}` }, 400);
     }
-    const { providerId, modelId, connectionId } = validation.data;
+    const { providerId, modelId, effort, connectionId } = validation.data;
 
     let hidePaid = false;
     try {
@@ -101,6 +102,7 @@ export class ModelsService {
       const result = await runSingleModelTest({
         providerId,
         modelId,
+        ...(effort ? { effort } : {}),
         ...(connectionId ? { connectionId } : {}),
         timeoutMs: providerId.toLowerCase() === "nvidia" ? NVIDIA_SINGLE_TEST_TIMEOUT_MS : DEFAULT_MODEL_TEST_TIMEOUT_MS,
         streamChat: true,

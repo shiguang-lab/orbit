@@ -332,7 +332,7 @@ export const providersApi = {
     api<{ success?: boolean }>(`/models/alias?alias=${encodeURIComponent(alias)}`, {
       method: "DELETE",
     }),
-  testModel: (data: { providerId: string; modelId: string; connectionId?: string }) =>
+  testModel: (data: { providerId: string; modelId: string; effort?: string; connectionId?: string }) =>
     api<{ status: "ok" | "error"; latencyMs?: number; responseText?: string; error?: string }>("/models/test", {
       method: "POST",
       body: JSON.stringify(data),

@@ -215,6 +215,9 @@ export interface ModelRowItem {
   isHidden?: boolean;
   compat?: ModelCompatData;
   latencyMs?: number;
+  effortModelIds?: Record<string, string>;
+  thinkingModelId?: string;
+  tieredModelId?: string;
   testStatus?: "ok" | "error" | "quota";
   testError?: string;
 }
@@ -499,9 +502,16 @@ export function ProviderModelsSection({
     );
     if (efforts.length <= 1) return null;
     const selected = effortSelection[model.id] || efforts[0];
+    const mappedTargetId =
+      model.effortModelIds?.[selected] ||
+      (selected === "high" && model.thinkingModelId ? model.thinkingModelId : undefined);
+    const tooltipTitle =
+      mappedTargetId && mappedTargetId !== model.id
+        ? `${t("providers.reasoningEffortsDesc", "思考强度")} (${mappedTargetId})`
+        : t("providers.reasoningEffortsDesc", "思考强度");
 
     return (
-      <Tooltip title={t("providers.reasoningEffortsDesc", "思考强度")}>
+      <Tooltip title={tooltipTitle}>
         <Segmented
           value={selected}
           options={efforts.map((eff) => ({ label: eff, value: eff }))}

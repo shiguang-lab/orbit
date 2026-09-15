@@ -152,9 +152,9 @@ import {
   isNoAuthProviderBlockedBySettings,
 } from "./noAuthProviderSettings";
 import { resolveAccountProxiesFromRegistry } from "./noAuthProxyResolution";
-import { getNoAuthHydrationProviderIds } from "@orbit/inference/services/noAuthProviderSiblings";
-import { loadOptionalNoAuthApiKeyCredentials } from "@orbit/inference/services/noAuthOptionalApiKey";
-import { getResource404Bypass } from "@orbit/inference/services/requestResourceHealth";
+import { getNoAuthHydrationProviderIds } from "./noAuthProviderSiblings";
+import { loadOptionalNoAuthApiKeyCredentials } from "./noAuthOptionalApiKey";
+import { getResource404Bypass } from "./requestResourceHealth";
 import { isVertexConnectionWidePermissionDenied } from "./vertexErrorClassifier";
 import { maybeAutoDisableBannedAccount } from "./autoDisableBannedAccount";
 import * as log from "../utils/sseLogger.ts";

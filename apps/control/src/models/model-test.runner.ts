@@ -371,6 +371,7 @@ export function parseRetryAfterHeader(value: string | null | undefined): number 
 export interface RunSingleModelTestOptions {
   providerId: string;
   modelId: string;
+  effort?: string;
   connectionId?: string;
   timeoutMs?: number;
   streamChat?: boolean;
@@ -479,6 +480,7 @@ export async function runSingleModelTest(
   const {
     providerId,
     modelId,
+    effort,
     connectionId,
     timeoutMs = DEFAULT_MODEL_TEST_TIMEOUT_MS,
     streamChat = true,
@@ -536,6 +538,11 @@ export async function runSingleModelTest(
             stream: !isEmbedding && streamChat,
             maxTokens: !isEmbedding && streamChat ? STREAMING_CHAT_TEST_MAX_TOKENS : undefined,
           });
+
+  if (effort && !isRerank && !isAudioTranscription && !isEmbedding && !isImageGeneration) {
+    (testBody as Record<string, unknown>).effort = effort;
+    (testBody as Record<string, unknown>).reasoning_effort = effort;
+  }
 
   // Per-model AbortController. Track whether this deadline fired so timeout
   // results remain distinct from transport failures.

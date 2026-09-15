@@ -32,3 +32,15 @@ test("resolves Antigravity model IDs and effort variants to upstream endpoints",
   assert.equal(resolveAntigravityModelId("claude-opus-4-6"), "claude-opus-4-6-thinking");
 });
 
+test("Antigravity public base models declare explicit effortModelIds mapping", async () => {
+  const { ANTIGRAVITY_PUBLIC_MODELS } = await import("../src/config/antigravityModelAliases.ts");
+  const pro = ANTIGRAVITY_PUBLIC_MODELS.find((m) => m.id === "gemini-3.1-pro");
+  assert.ok(pro, "gemini-3.1-pro must be present as a public base model");
+  assert.equal(pro?.effortModelIds?.low, "gemini-3.1-pro-low");
+  assert.equal(pro?.effortModelIds?.high, "gemini-pro-agent");
+
+  const flash37 = ANTIGRAVITY_PUBLIC_MODELS.find((m) => m.id === "gemini-3.7-flash");
+  assert.ok(flash37, "gemini-3.7-flash must be present as a public base model");
+  assert.equal(flash37?.tieredModelId, "gemini-3.7-flash-tiered");
+  assert.equal(flash37?.effortModelIds?.high, "gemini-3.7-flash-tiered");
+});

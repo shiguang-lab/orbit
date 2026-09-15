@@ -797,10 +797,10 @@ export default function ProviderDetailPage() {
     setTestingModelId(modelId);
     try {
       const targetConnectionId = selectedConnectionIds.length === 1 ? selectedConnectionIds[0] : undefined;
-      const requestModel = effort ? `${fullModel}-${effort}` : fullModel;
       const res = await providersApi.testModel({
         providerId,
-        modelId: requestModel,
+        modelId: fullModel,
+        ...(effort ? { effort } : {}),
         ...(targetConnectionId ? { connectionId: targetConnectionId } : {}),
       });
       if (res.status === "ok") {
@@ -845,10 +845,10 @@ export default function ProviderDetailPage() {
       await Promise.all(
         chunk.map(async ({ modelId, fullModel, effort }) => {
           try {
-            const requestModel = effort ? `${fullModel}-${effort}` : fullModel;
             const res = await providersApi.testModel({
               providerId,
-              modelId: requestModel,
+              modelId: fullModel,
+              ...(effort ? { effort } : {}),
               ...(targetConnectionId ? { connectionId: targetConnectionId } : {}),
             });
             if (res.status === "ok") {

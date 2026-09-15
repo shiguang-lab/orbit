@@ -52,6 +52,42 @@ export const ANTIGRAVITY_PUBLIC_MODELS = Object.freeze([
     supportsVision: true,
     toolCalling: true,
   },
+  // Gemini 3.7 Flash
+  {
+    id: "gemini-3.7-flash",
+    name: "Gemini 3.7 Flash",
+    contextLength: 1048576,
+    maxOutputTokens: 65536,
+    supportsReasoning: true,
+    supportsThinking: true,
+    supportedThinkingEfforts: ["low", "medium", "high"],
+    tieredModelId: "gemini-3.7-flash-tiered",
+    effortModelIds: {
+      low: "gemini-3.7-flash-tiered",
+      medium: "gemini-3.7-flash-tiered",
+      high: "gemini-3.7-flash-tiered",
+    },
+    supportsVision: true,
+    toolCalling: true,
+  },
+  // Gemini 3.6 Flash
+  {
+    id: "gemini-3.6-flash",
+    name: "Gemini 3.6 Flash",
+    contextLength: 1048576,
+    maxOutputTokens: 65536,
+    supportsReasoning: true,
+    supportsThinking: true,
+    supportedThinkingEfforts: ["low", "medium", "high"],
+    tieredModelId: "gemini-3.6-flash-tiered",
+    effortModelIds: {
+      low: "gemini-3.6-flash-tiered",
+      medium: "gemini-3.6-flash-tiered",
+      high: "gemini-3.6-flash-tiered",
+    },
+    supportsVision: true,
+    toolCalling: true,
+  },
   // Gemini 3.7 Flash tiers listed by the current official Antigravity model catalog.
   // Keep the upstream model ids unchanged so discovery and execution address the same
   // models selected by the native client.
@@ -94,6 +130,21 @@ export const ANTIGRAVITY_PUBLIC_MODELS = Object.freeze([
   // Gemini 3.1 Pro budget tiers. Live streamGenerateContent validation uses
   // `gemini-pro-agent` for High; the separately advertised `gemini-3.1-pro-high`
   // discovery slot currently returns HTTP 400 and is intentionally not public.
+  {
+    id: "gemini-3.1-pro",
+    name: "Gemini 3.1 Pro",
+    contextLength: 1048576,
+    maxOutputTokens: 65535,
+    supportsReasoning: true,
+    supportsThinking: true,
+    supportedThinkingEfforts: ["low", "high"],
+    effortModelIds: {
+      low: "gemini-3.1-pro-low",
+      high: "gemini-pro-agent",
+    },
+    supportsVision: true,
+    toolCalling: true,
+  },
   {
     id: "gemini-pro-agent",
     name: "Gemini 3.1 Pro (High)",
@@ -233,7 +284,6 @@ const ANTIGRAVITY_NON_CHAT_MODEL_IDS = new Set([
 
 const ANTIGRAVITY_RETIRED_MODEL_IDS = new Set([
   "gemini-3-pro-preview",
-  "gemini-3.1-pro",
   "gemini-3.6-flash-high",
   "gemini-3.6-flash-medium",
   "gemini-3.6-flash-low",
