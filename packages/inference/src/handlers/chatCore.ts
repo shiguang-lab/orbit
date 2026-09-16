@@ -3011,9 +3011,24 @@ export async function handleChatCore({
       const effort = translatedBody.reasoning_effort || translatedBody.reasoning?.effort ||
         translatedBody.output_config?.effort ||
         (translatedBody.thinking?.type === "disabled" ? "none" : undefined);
-      allowed = Boolean(key?.key) && await isModelAllowedForKey(
-        key!.key, `${provider}/${finalModelToUpstream}`, effort
-      );
+      const effectiveComboName =
+        (isCombo && (comboName || (typeof body?.model === "string" ? body.model : null))) ||
+        routingComboId;
+      if (effectiveComboName) {
+        const { comboTargetPassesKeyModelPolicy } = await import("./chat/comboTargetKeyPolicy.ts");
+        allowed = Boolean(key?.key) && await comboTargetPassesKeyModelPolicy({
+          apiKey: key!.key,
+          apiKeyInfo,
+          requestedModel: effectiveComboName,
+          targetModel: `${provider}/${finalModelToUpstream}`,
+          effort,
+          isModelAllowedForKey,
+        });
+      } else {
+        allowed = Boolean(key?.key) && await isModelAllowedForKey(
+          key!.key, `${provider}/${finalModelToUpstream}`, effort
+        );
+      }
     } catch {
       // Policy backend failure must not permit the upstream request.
     }
