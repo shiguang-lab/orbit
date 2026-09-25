@@ -33,8 +33,7 @@ import { PageSkeleton } from "@/shared/components/PageSkeleton";
 import { useI18n } from "@/i18n";
 import {
   parseQuotaData,
-  hasCanonicalWindowOrder,
-  sortQuotasByWindow,
+  sortQuotasDeterministically,
 } from "./quotaParsing";
 import {
   formatQuotaLabel,
@@ -985,9 +984,7 @@ export function QuotaPage() {
                     const plan = quotaInfo?.plan || (record.plan as string);
                     const purchaseType = getPurchaseType(record.authType, plan);
                     const rawQuotas = quotaInfo?.quotas || [];
-                    const allQuotas = hasCanonicalWindowOrder(rawQuotas)
-                      ? sortQuotasByWindow(rawQuotas)
-                      : rawQuotas;
+                    const allQuotas = sortQuotasDeterministically(rawQuotas, record.provider);
                     const visibleQuotas = filterQuotasByVisibility(record.provider, allQuotas, quotaVisibility);
                     const hiddenQuotas = getHiddenQuotaRows(record.provider, allQuotas, quotaVisibility);
                     const isAccountExpanded = Boolean(expandedAccounts[record.id]);

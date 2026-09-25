@@ -20,7 +20,13 @@ const KIMI_CODING_PROVIDERS = ["kimi-coding", "kimi-coding-apikey"];
 
 export function hasFixedQuotaOrder(providerId: string | undefined): boolean {
   const id = String(providerId || "").toLowerCase();
-  return id === "codex" || GLM_FAMILY_PROVIDERS.includes(id) || KIMI_CODING_PROVIDERS.includes(id);
+  return (
+    id === "codex" ||
+    id === "antigravity" ||
+    id === "agy" ||
+    GLM_FAMILY_PROVIDERS.includes(id) ||
+    KIMI_CODING_PROVIDERS.includes(id)
+  );
 }
 
 export function quotaWindowRank(name: unknown): number | null {
@@ -322,6 +328,80 @@ function sortKimiOrder(providerId: string, quotas: any[]) {
   });
 }
 
+export function getAntigravityModelRank(name: unknown): number {
+  const key = String(name ?? "").trim().toLowerCase().replace(/[-_.]/g, " ");
+  if (!key) return 99;
+  if (key === "credits") return 0;
+
+  // Claude flagship thinking / sonnet
+  if (key.includes("claude") && key.includes("opus")) return 10;
+  if (key.includes("claude") && key.includes("sonnet")) return 11;
+  if (key.includes("claude")) return 15;
+
+  // Gemini Pro flagship
+  if (key.includes("gemini") && key.includes("pro")) {
+    if (key.includes("low")) return 20;
+    if (key.includes("high") || key.includes("agent")) return 21;
+    return 22;
+  }
+
+  // Gemini Flash family
+  if (key.includes("gemini") || key.includes("flash")) {
+    if (key.includes("3 8") || key.includes("38")) return 30;
+    if (key.includes("3 7") || key.includes("37")) return 31;
+    if (key.includes("3 6") || key.includes("36")) return 32;
+    if (key.includes("lite")) return 33;
+    if (key.includes("image")) return 34;
+    return 35;
+  }
+
+  // GPT OSS
+  if (key.includes("gpt")) return 40;
+
+  return 50;
+}
+
+export function compareAntigravityQuotas(a: any, b: any): number {
+  const isCreditA = a?.isCredits ? 0 : 1;
+  const isCreditB = b?.isCredits ? 0 : 1;
+  if (isCreditA !== isCreditB) return isCreditA - isCreditB;
+
+  const rankA = getAntigravityModelRank(a?.name ?? a?.displayName);
+  const rankB = getAntigravityModelRank(b?.name ?? b?.displayName);
+  if (rankA !== rankB) return rankA - rankB;
+
+  const nameA = String(a?.displayName || a?.name || "");
+  const nameB = String(b?.displayName || b?.name || "");
+  return nameA.localeCompare(nameB);
+}
+
+function sortAntigravityOrder(providerId: string, quotas: any[]) {
+  if (providerId !== "antigravity" && providerId !== "agy") return;
+  quotas.sort(compareAntigravityQuotas);
+}
+
+export function compareGenericQuotas(a: any, b: any): number {
+  const isCreditA = a?.isCredits ? 0 : 1;
+  const isCreditB = b?.isCredits ? 0 : 1;
+  if (isCreditA !== isCreditB) return isCreditA - isCreditB;
+
+  const nameA = String(a?.displayName || a?.name || "");
+  const nameB = String(b?.displayName || b?.name || "");
+  return nameA.localeCompare(nameB);
+}
+
+export function sortQuotasDeterministically<T>(quotas: T[], providerId?: string): T[] {
+  if (!Array.isArray(quotas) || quotas.length <= 1) return quotas;
+  if (hasCanonicalWindowOrder(quotas)) {
+    return sortQuotasByWindow(quotas);
+  }
+  const id = String(providerId || "").toLowerCase();
+  if (id === "antigravity" || id === "agy") {
+    return [...quotas].sort(compareAntigravityQuotas);
+  }
+  return [...quotas].sort(compareGenericQuotas);
+}
+
 export function parseQuotaData(provider: string | undefined, data: any): any[] {
   if (!data || typeof data !== "object") return [];
   const providerId = String(provider || "").toLowerCase();
@@ -331,6 +411,7 @@ export function parseQuotaData(provider: string | undefined, data: any): any[] {
     sortGlmOrder(providerId, normalizedQuotas);
     sortCodexOrder(providerId, normalizedQuotas);
     sortKimiOrder(providerId, normalizedQuotas);
+    sortAntigravityOrder(providerId, normalizedQuotas);
     return normalizedQuotas;
   } catch (error) {
     console.error(`Error parsing quota data for ${provider}:`, error);
