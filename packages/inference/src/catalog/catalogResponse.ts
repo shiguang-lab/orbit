@@ -188,6 +188,28 @@ export async function filterUnauthorizedFunctionalGatewayMirrors(
   return filtered;
 }
 
+function modelMatchesCatalogAllowPattern(pattern: string, modelId: string): boolean {
+  if (pattern === modelId) return true;
+  if (pattern.endsWith("/*")) {
+    const prefix = pattern.slice(0, -1);
+    return modelId.startsWith(prefix);
+  }
+  if (pattern.includes("*")) {
+    const pSegs = pattern.split("/");
+    const mSegs = modelId.split("/");
+    if (pSegs.length === mSegs.length) {
+      return pSegs.every((seg, i) => {
+        if (seg === "*" || seg === mSegs[i]) return true;
+        const regex = new RegExp(
+          "^" + seg.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&").replace(/\\\*/g, ".*") + "$"
+        );
+        return regex.test(mSegs[i]);
+      });
+    }
+  }
+  return false;
+}
+
 /**
  * Enrich the selected models and serialise the catalog response.
  *
@@ -210,12 +232,55 @@ export async function finalizeCatalogResponse(
     );
     const keyMeta = await getApiKeyMetadata(apiKey);
     if (keyMeta && keyMeta.id !== "env-key" && !keyMeta.allowedQuotas?.length) {
+      const isRestrictedAllowlist =
+        keyMeta.modelAccessMode === "restricted" &&
+        Array.isArray(keyMeta.allowedModels) &&
+        keyMeta.allowedModels.length > 0;
+
+      const bareCatalogModelIds = isRestrictedAllowlist
+        ? new Set(
+            finalModels
+              .map((m) => (typeof m.id === "string" && !m.id.includes("/") ? m.id : null))
+              .filter((id): id is string => Boolean(id))
+          )
+        : null;
+
       const permitted: Array<Record<string, unknown>> = [];
       for (const model of finalModels) {
+        if (typeof model.id !== "string") continue;
         const variant = model.effort_variant as { base_model?: string; effort?: string } | undefined;
-        if (typeof model.id === "string" && await isModelAllowedForKey(
-          apiKey, variant?.base_model || model.id, variant?.effort
-        )) permitted.push(model);
+        const targetId = model.id;
+        const baseId = typeof variant?.base_model === "string" ? variant.base_model : targetId;
+
+        const isAllowed = await isModelAllowedForKey(
+          apiKey, baseId, variant?.effort
+        );
+        if (!isAllowed) continue;
+
+        if (isRestrictedAllowlist && bareCatalogModelIds && keyMeta.allowedModels) {
+          const hasExplicitMatch = keyMeta.allowedModels.some(
+            (pattern) =>
+              modelMatchesCatalogAllowPattern(pattern, targetId) ||
+              (baseId !== targetId && modelMatchesCatalogAllowPattern(pattern, baseId))
+          );
+          if (!hasExplicitMatch && model.owned_by !== "combo" && targetId.includes("/")) {
+            const firstSlash = targetId.indexOf("/");
+            const providerScopedModel = targetId.slice(firstSlash + 1);
+            const baseScopedModel = baseId.includes("/")
+              ? baseId.slice(baseId.indexOf("/") + 1)
+              : baseId;
+            if (
+              bareCatalogModelIds.has(providerScopedModel) ||
+              bareCatalogModelIds.has(baseScopedModel)
+            ) {
+              // A bare combo/catalog entry exists for this model name, and the allowlist only specified
+              // that bare entry without an explicit provider prefix. Suppress underlying provider mirrors.
+              continue;
+            }
+          }
+        }
+
+        permitted.push(model);
       }
       finalModels = await filterUnauthorizedFunctionalGatewayMirrors(permitted, apiKey, isModelAllowedForKey);
     }

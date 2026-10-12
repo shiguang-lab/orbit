@@ -75,4 +75,23 @@ test("public catalog defaults to collapsed and supports request-level expansion"
   });
   const fullyBlocked = (await (await getUnifiedModelsResponse(request())).json()).data;
   assert.deepEqual(fullyBlocked, []);
+
+  // Verify that an allowlist with a bare combo name does NOT leak underlying provider mirrors
+  const { createCombo } = await import("@orbit/core/db/combos");
+  await createCombo({
+    name: "gpt-5.6-sol",
+    models: [{ model: "codex/gpt-5.6-sol" }],
+    isActive: true,
+  } as any);
+  await keys.updateApiKeyPermissions(key.id, {
+    modelAccessMode: "restricted",
+    allowedModels: ["gpt-5.6-sol"],
+    blockedModels: [],
+  });
+  const comboOnlyResponse = await getUnifiedModelsResponse(request());
+  const comboOnly = (await comboOnlyResponse.json()).data;
+  assert.equal(comboOnly.length, 1);
+  assert.equal(comboOnly[0].id, "gpt-5.6-sol");
+  assert.equal(comboOnly[0].owned_by, "combo");
 });
+
