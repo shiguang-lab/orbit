@@ -351,8 +351,13 @@ export default function ProviderDetailPage() {
   const proxyConfigQuery = useQuery({ queryKey: ["settings", "proxy"], queryFn: () => settingsApi.proxyConfig(), staleTime: 30_000, enabled: Boolean(providerId) });
   const node = nodesQuery.data?.nodes.find((item) => item.id === providerId);
   const isCliproxyManaged = providerId.startsWith("openai-compatible-cliproxy-") || Boolean(node?.prefix?.startsWith("cpa-"));
-  const providerProxy = (proxyConfigQuery.data as Record<string, unknown> | undefined)?.providers as Record<string, { host?: string; name?: string }> | undefined;
-  const providerProxyHost = providerProxy?.[providerId]?.host;
+  const providerProxy = (proxyConfigQuery.data as Record<string, unknown> | undefined)?.providers as Record<string, { host?: string; port?: number | string; name?: string }> | undefined;
+  const configuredProviderProxy = providerProxy?.[providerId];
+  const providerProxyHost = configuredProviderProxy?.host;
+  const providerProxyLabel = configuredProviderProxy?.name || providerProxyHost;
+  const providerProxyAddress = providerProxyHost
+    ? `${providerProxyHost}${configuredProviderProxy?.port ? `:${configuredProviderProxy.port}` : ""}`
+    : undefined;
   const providerDisplayAlias = node?.prefix || (info as any)?.alias || providerId;
   const headerIconId = (HEADER_ICON_ALIASES[providerId.toLowerCase()] ?? info?.icon ?? providerId).toLowerCase();
   const HeaderIcon = HEADER_LOBE_ICONS[headerIconId];
@@ -1750,13 +1755,14 @@ export default function ProviderDetailPage() {
                 <span>{t("providers.connections")}</span>
                 <Button
                   className={styles.providerProxyButton}
-                  color={providerProxyHost ? "orange" : "default"}
+                  color={providerProxyLabel ? "orange" : "default"}
+                  title={providerProxyAddress}
                   variant="filled"
                   icon={<MaterialIcon name="vpn_lock" />}
                   loading={proxyBusy && proxyTarget?.scope === "provider" && !proxyModalOpen}
                   onClick={() => void openProviderProxyConfig()}
                 >
-                  {providerProxyHost ?? t("providers.providerProxy")}
+                  {providerProxyLabel || t("providers.providerProxy")}
                 </Button>
               </div>
             }

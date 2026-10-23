@@ -278,6 +278,10 @@ export function ensureProxyLogsColumns(db: SqliteDatabase) {
       name?: string;
     }>;
     const columnNames = new Set(columns.map((column) => String(column.name ?? "")));
+    if (!columnNames.has("proxy_name")) {
+      db.exec("ALTER TABLE proxy_logs ADD COLUMN proxy_name TEXT");
+      console.log("[DB] Added proxy_logs.proxy_name column");
+    }
     if (!columnNames.has("egress_ip")) {
       db.exec("ALTER TABLE proxy_logs ADD COLUMN egress_ip TEXT");
       console.log("[DB] Added proxy_logs.egress_ip column");

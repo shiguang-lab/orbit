@@ -16,6 +16,7 @@ const shouldPersistToDisk = !isCloud && !isBuildPhase;
 const MAX_IN_MEMORY_ENTRIES = 200;
 
 interface ProxyInfo {
+  name?: string;
   type: string;
   host: string;
   port: number | string;
@@ -67,8 +68,7 @@ function loadFromDb() {
   if (!shouldPersistToDisk) return;
   try {
     const db = getDbInstance();
-    // Self-heal the proxy_logs schema before reading/writing (migration 134
-    // guarantees egress_ip on every migrated DB; this covers restored/odd states).
+    // Verify persisted log columns before hydrating restored databases.
     ensureProxyLogsColumns(db);
     const rows = db
       .prepare("SELECT * FROM proxy_logs ORDER BY timestamp DESC LIMIT ?")
@@ -80,7 +80,12 @@ function loadFromDb() {
         timestamp: row.timestamp,
         status: row.status || "success",
         proxy: row.proxy_host
-          ? { type: row.proxy_type, host: row.proxy_host, port: row.proxy_port }
+          ? {
+              type: row.proxy_type,
+              host: row.proxy_host,
+              port: row.proxy_port,
+              ...(row.proxy_name ? { name: row.proxy_name } : {}),
+            }
           : null,
         level: row.level || "direct",
         levelId: row.level_id || null,
@@ -268,10 +273,10 @@ export function flushProxyLogsSync() {
   try {
     const db = getDbInstance();
     const insertStmt = db.prepare(
-      `INSERT INTO proxy_logs (id, timestamp, status, proxy_type, proxy_host, proxy_port,
+      `INSERT INTO proxy_logs (id, timestamp, status, proxy_type, proxy_host, proxy_port, proxy_name,
         level, level_id, provider, target_url, public_ip, egress_ip, latency_ms, error,
         connection_id, combo_id, account, tls_fingerprint)
-      VALUES (@id, @timestamp, @status, @proxyType, @proxyHost, @proxyPort,
+      VALUES (@id, @timestamp, @status, @proxyType, @proxyHost, @proxyPort, @proxyName,
         @level, @levelId, @provider, @targetUrl, @clientIp, @egressIp, @latencyMs, @error,
         @connectionId, @comboId, @account, @tlsFingerprint)`
     );
@@ -283,6 +288,7 @@ export function flushProxyLogsSync() {
           timestamp: item.timestamp,
           status: item.status,
           proxyType: item.proxy?.type || null,
+          proxyName: item.proxy?.name || null,
           proxyHost: item.proxy?.host || null,
           proxyPort: item.proxy?.port ? Number(item.proxy.port) : null,
           level: item.level,
@@ -355,6 +361,7 @@ export function getProxyLogs(filters: ProxyLogFilters = {}) {
     logs = logs.filter(
       (l) =>
         (l.proxy?.host || "").toLowerCase().includes(q) ||
+        (l.proxy?.name || "").toLowerCase().includes(q) ||
         (l.provider || "").toLowerCase().includes(q) ||
         (l.targetUrl || "").toLowerCase().includes(q) ||
         (l.clientIp || "").toLowerCase().includes(q) ||

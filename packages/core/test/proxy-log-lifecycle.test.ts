@@ -74,3 +74,59 @@ test("edge exclusively owns proxy-log startup and shutdown ordering", () => {
     assert.doesNotMatch(controlSource, /(?:initialize|close)ProxyLogStorage/);
   }
 });
+
+test("proxy names survive storage hydration and remain searchable", () => {
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "proxy-log-name-"));
+  const loggerUrl = JSON.stringify(pathToFileURL(proxyLoggerPath).href);
+  try {
+    runIsolated(`
+      const logger = await import(${loggerUrl});
+      logger.initializeProxyLogStorage();
+      logger.logProxyEvent({ proxy: { name: "硅谷-VLESS", type: "socks5", host: "192.168.32.1", port: 17891 } });
+      logger.closeProxyLogStorage();
+    `, dataDir);
+    runIsolated(`
+      const assert = (await import("node:assert/strict")).default;
+      const logger = await import(${loggerUrl});
+      logger.initializeProxyLogStorage();
+      assert.equal(logger.getProxyLogs()[0].proxy.name, "硅谷-VLESS");
+      assert.equal(logger.getProxyLogs({ search: "硅谷" }).length, 1);
+      logger.closeProxyLogStorage();
+    `, dataDir);
+  } finally {
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  }
+});
+
+test("name migration matches historical endpoints without guessing ambiguous names", () => {
+  const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), "proxy-log-name-migration-"));
+  const migration = fs.readFileSync(path.join(packageRoot, "src/lib/db/migrations/178_proxy_logs_name.sql"), "utf8");
+  try {
+    runIsolated(`
+      const assert = (await import("node:assert/strict")).default;
+      const { getDbInstance } = await import(${JSON.stringify(pathToFileURL(path.join(packageRoot, "src/lib/db/core.ts")).href)});
+      const db = getDbInstance();
+      const insertProxy = db.prepare("INSERT INTO proxy_registry (id, name, type, host, port) VALUES (?, ?, ?, ?, ?)");
+      insertProxy.run("seoul", "首尔-VLESS", "socks5", "192.168.32.1", 17890);
+      insertProxy.run("silicon", "硅谷-VLESS", "socks5", "192.168.32.1", 17891);
+      insertProxy.run("shared-1", "Shared A", "socks5", "192.168.32.1", 17892);
+      insertProxy.run("shared-2", "Shared B", "socks5", "192.168.32.1", 17892);
+      const insertLog = db.prepare("INSERT INTO proxy_logs (id, timestamp, proxy_type, proxy_host, proxy_port) VALUES (?, datetime('now'), ?, ?, ?)");
+      for (const port of [17890, 17891, 17892, 17893]) insertLog.run(String(port), "socks5", "192.168.32.1", port);
+      insertLog.run("different-protocol", "http", "192.168.32.1", 17890);
+      insertLog.run("direct", null, null, null);
+      db.exec("ALTER TABLE proxy_logs DROP COLUMN proxy_name");
+      db.exec(${JSON.stringify(migration)});
+      const names = Object.fromEntries(db.prepare("SELECT id, proxy_name FROM proxy_logs").all().map(r => [r.id, r.proxy_name]));
+      assert.deepEqual(names, { "17890": "首尔-VLESS", "17891": "硅谷-VLESS", "17892": null, "17893": null, "different-protocol": null, "direct": null });
+      db.prepare("UPDATE proxy_registry SET name = 'Renamed' WHERE id = 'silicon'").run();
+      const logger = await import(${JSON.stringify(pathToFileURL(proxyLoggerPath).href)});
+      logger.initializeProxyLogStorage();
+      assert.equal(logger.getProxyLogs().find(r => r.id === "17891").proxy.name, "硅谷-VLESS");
+      assert.equal(logger.getProxyLogs().find(r => r.id === "direct").proxy, null);
+      logger.closeProxyLogStorage();
+    `, dataDir);
+  } finally {
+    fs.rmSync(dataDir, { recursive: true, force: true });
+  }
+});
