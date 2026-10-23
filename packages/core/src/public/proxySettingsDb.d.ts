@@ -8,6 +8,7 @@ export interface ProxyConfig {
 }
 
 export function getProxyConfig(): Promise<ProxyConfig>;
+export function bumpProxyConfigGeneration(): void;
 export function getProxyForLevel(level: string, id?: string | null): Promise<ProxyValue>;
 export function setProxyConfig(config: Record<string, unknown>): Promise<ProxyConfig>;
 export function deleteProxyForLevel(level: string, id: string | null): Promise<ProxyConfig>;

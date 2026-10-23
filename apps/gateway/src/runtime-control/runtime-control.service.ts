@@ -620,6 +620,9 @@ export class RuntimeControlService {
       }
       case "runtime-cache.invalidate": {
         if (command.target === "proxy-dispatcher") {
+          const { bumpProxyConfigGeneration } = await import("@orbit/core/db/proxy-settings");
+          // Control writes bindings in another process; discard this process's resolved route too.
+          bumpProxyConfigGeneration();
           const { clearDispatcherCache } = await import(
             "@orbit/inference/utils/proxyDispatcher"
           );

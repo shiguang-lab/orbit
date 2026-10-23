@@ -1,4 +1,5 @@
 export {
+  bumpProxyConfigGeneration,
   deleteProxyForLevel,
   getProxyConfig,
   getProxyForLevel,
