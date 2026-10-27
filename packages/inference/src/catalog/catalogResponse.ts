@@ -237,14 +237,6 @@ export async function finalizeCatalogResponse(
         Array.isArray(keyMeta.allowedModels) &&
         keyMeta.allowedModels.length > 0;
 
-      const bareCatalogModelIds = isRestrictedAllowlist
-        ? new Set(
-            finalModels
-              .map((m) => (typeof m.id === "string" && !m.id.includes("/") ? m.id : null))
-              .filter((id): id is string => Boolean(id))
-          )
-        : null;
-
       const permitted: Array<Record<string, unknown>> = [];
       for (const model of finalModels) {
         if (typeof model.id !== "string") continue;
@@ -257,27 +249,15 @@ export async function finalizeCatalogResponse(
         );
         if (!isAllowed) continue;
 
-        if (isRestrictedAllowlist && bareCatalogModelIds && keyMeta.allowedModels) {
+        if (isRestrictedAllowlist && keyMeta.allowedModels) {
+          // Catalog visibility follows the full public ID. Request-time alias
+          // resolution must not advertise unselected routes, including combos.
           const hasExplicitMatch = keyMeta.allowedModels.some(
             (pattern) =>
               modelMatchesCatalogAllowPattern(pattern, targetId) ||
               (baseId !== targetId && modelMatchesCatalogAllowPattern(pattern, baseId))
           );
-          if (!hasExplicitMatch && model.owned_by !== "combo" && targetId.includes("/")) {
-            const firstSlash = targetId.indexOf("/");
-            const providerScopedModel = targetId.slice(firstSlash + 1);
-            const baseScopedModel = baseId.includes("/")
-              ? baseId.slice(baseId.indexOf("/") + 1)
-              : baseId;
-            if (
-              bareCatalogModelIds.has(providerScopedModel) ||
-              bareCatalogModelIds.has(baseScopedModel)
-            ) {
-              // A bare combo/catalog entry exists for this model name, and the allowlist only specified
-              // that bare entry without an explicit provider prefix. Suppress underlying provider mirrors.
-              continue;
-            }
-          }
+          if (!hasExplicitMatch) continue;
         }
 
         permitted.push(model);

@@ -28,6 +28,7 @@ import {
 import { createStyles } from "antd-style";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { Scrollbar } from "@shiguang2/components/esm/scrollbar";
 import {
   combosApi,
   keysApi,
@@ -1182,8 +1183,8 @@ export default function ApiManagerPage() {
         confirmLoading={updateMutation.isPending}
         okText={tt("保存更改", "Save Changes")}
         cancelText={tt("取消", "Cancel")}
-        styles={{ body: { maxHeight: "calc(100dvh - 160px)", overflowY: "auto", overflowX: "hidden", paddingRight: 8 } }}
       >
+        <Scrollbar scrollX={false} style={{ maxHeight: "calc(100dvh - 160px)" }}>
         <Form
           form={editForm}
           layout="vertical"
@@ -1227,7 +1228,7 @@ export default function ApiManagerPage() {
             };
             updateMutation.mutate({ id: editTarget.id, patch });
           }}
-          style={{ marginTop: 12, maxWidth: "100%", overflowX: "hidden" }}
+          style={{ marginTop: 12, maxWidth: "100%", overflowX: "hidden", paddingRight: 8 }}
         >
           {/* Top Card: 基本标识与生命周期 (Full Width) */}
           <div
@@ -1718,6 +1719,7 @@ export default function ApiManagerPage() {
             }]}
           />
         </Form>
+        </Scrollbar>
       </Modal>
     </Flex>
   );
